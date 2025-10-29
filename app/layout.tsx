@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import { cn } from "@/lib/utils";
+import { Toaster } from "@/components/ui/sonner"
 import "./globals.css";
 
 const mainFont = Roboto({
@@ -26,6 +27,7 @@ export default function RootLayout({
         suppressHydrationWarning
       >
         {children}
+        <Toaster position="top-right" theme="dark" richColors />
       </body>
     </html>
   );

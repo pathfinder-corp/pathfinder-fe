@@ -13,7 +13,9 @@ export function middleware(request: NextRequest) {
   }
 
   if (!token && !isPublicRoute && pathname !== '/') {
-    return NextResponse.redirect(new URL('/login', request.url));
+    const url = new URL('/login', request.url);
+    url.searchParams.set('from', pathname);
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();
@@ -21,6 +23,6 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.svg|.*\\.png|.*\\.jpg).*)',
+    '/((?!api|_next/static|_next/image|favicon.ico|.*\\.svg|.*\\.png|.*\\.jpg|.*\\.ico|.*\\.webp).*)',
   ],
 };
