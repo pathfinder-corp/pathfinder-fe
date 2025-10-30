@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { resetPassword } from '@/lib/auth';
+import { authService } from '@/services';
 
 const resetPasswordSchema = z.object({
   newPassword: z
@@ -50,6 +50,8 @@ export default function ResetPasswordPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const [resetSuccess, setResetSuccess] = useState<boolean>(false);
   const [token, setToken] = useState<string | null>(null);
+
+  const resetPasswordService = authService?.resetPassword;
 
   const {
     register,
@@ -85,7 +87,7 @@ export default function ResetPasswordPage() {
     setIsLoading(true);
 
     try {
-      await resetPassword({
+      await resetPasswordService?.({
         token,
         newPassword: data.newPassword,
       });
@@ -164,7 +166,7 @@ export default function ResetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
                   disabled={isLoading}
                 >
                   {showPassword ? (
@@ -209,7 +211,7 @@ export default function ResetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
                   disabled={isLoading}
                 >
                   {showConfirmPassword ? (

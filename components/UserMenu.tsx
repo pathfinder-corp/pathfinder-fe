@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { LogOut, User, Settings } from 'lucide-react';
 import { useUserStore } from '@/stores/user.store';
-import { logout } from '@/lib/auth';
+import { authService } from '@/services';
 import { toast } from 'sonner';
 
 export function UserMenu() {
@@ -14,13 +14,15 @@ export function UserMenu() {
   const user = useUserStore((state) => state.user);
   const clearUser = useUserStore((state) => state.clearUser);
 
+  const logoutService = authService?.logout;
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   if (!user) return null;
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logoutService?.();
       clearUser();
       router.push('/login');
       router.refresh();

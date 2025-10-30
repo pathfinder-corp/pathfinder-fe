@@ -1,3 +1,5 @@
+import { IUser, UserRole } from "./user.type";
+
 export interface ILoginRequest {
   email: string;
   password: string;
@@ -15,7 +17,7 @@ export interface IRegisterRequest {
   password: string;
   firstName: string;
   lastName: string;
-  role: 'student' | 'teacher' | 'admin';
+  role: UserRole;
 }
 
 export interface IRegisterResponse {
@@ -40,21 +42,6 @@ export interface IResetPasswordRequest {
 
 export interface IResetPasswordResponse {
   message: string;
-}
-
-export interface IUser {
-  id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  role: 'student' | 'teacher' | 'admin';
-  status: 'active' | 'inactive';
-  avatar: string | null;
-  phone: string | null;
-  dateOfBirth: string | null;
-  location: string | null;
-  createdAt: string;
-  updatedAt: string;
 }
 
 export interface IApiError {

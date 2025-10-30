@@ -2,12 +2,15 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { authService } from '@/services';
+import type { IRegisterRequest } from '@/types';
+import { USER_ROLES } from '@/constants';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -20,8 +23,13 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { register as registerUser } from '@/lib/auth';
-import type { IRegisterRequest } from '@/types/auth';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const registerSchema = z.object({
   email: z
@@ -50,7 +58,7 @@ const registerSchema = z.object({
     .min(1, { message: 'Tên là bắt buộc' })
     .min(2, { message: 'Tên phải có ít nhất 2 ký tự' })
     .max(50, { message: 'Tên quá dài' }),
-  role: z.enum(['student', 'teacher']),
+  role: z.enum(['student', 'counselor']),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Mật khẩu xác nhận không khớp',
   path: ['confirmPassword'],
@@ -60,14 +68,17 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-
+  
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  
+  const registerService = authService?.register;
 
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -93,7 +104,7 @@ export default function RegisterPage() {
         role: data.role
       };
 
-      await registerUser(registerPayload);
+      await registerService?.(registerPayload);
 
       toast.success('Đăng ký thành công!', {
         description: 'Đang chuyển đến trang đăng nhập...'
@@ -138,7 +149,7 @@ export default function RegisterPage() {
                 id="firstName"
                 type="text"
                 placeholder="Nguyễn Văn"
-                autoComplete="given-name"
+                autoComplete="off"
                 disabled={isLoading}
                 className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
                   errors.firstName ? 'border-red-500 focus:border-red-500' : ''
@@ -158,7 +169,7 @@ export default function RegisterPage() {
                 id="lastName"
                 type="text"
                 placeholder="An"
-                autoComplete="family-name"
+                autoComplete="off"
                 disabled={isLoading}
                 className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
                   errors.lastName ? 'border-red-500 focus:border-red-500' : ''
@@ -179,7 +190,7 @@ export default function RegisterPage() {
               id="email"
               type="email"
               placeholder="user@example.com"
-              autoComplete="email"
+              autoComplete="off"
               disabled={isLoading}
               className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
                 errors.email ? 'border-red-500 focus:border-red-500' : ''
@@ -210,7 +221,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
                 disabled={isLoading}
               >
                 {showPassword ? (
@@ -244,7 +255,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
                 disabled={isLoading}
               >
                 {showConfirmPassword ? (
@@ -263,17 +274,33 @@ export default function RegisterPage() {
             <Label htmlFor="role" className="text-lg">
               Vai trò <span className="text-red-500">*</span>
             </Label>
-            <select
-              id="role"
-              disabled={isLoading}
-              className={`flex h-12 w-full rounded-md border !text-lg bg-neutral-900/50 border-neutral-800 px-3 py-2 focus:border-neutral-600 focus:outline-none ${
-                errors.role ? 'border-red-500 focus:border-red-500' : ''
-              }`}
-              {...register('role')}
-            >
-              <option value="student">Học viên</option>
-              <option value="teacher">Giảng viên</option>
-            </select>
+            <Controller
+              name="role"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  disabled={isLoading}
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <SelectTrigger 
+                    className={`!h-12 !text-lg w-full bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
+                      errors.role ? 'border-red-500 focus:border-red-500' : ''
+                    }`}
+                  >
+                    <SelectValue placeholder="Chọn vai trò" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-neutral-900 border-neutral-800">
+                    <SelectItem value={USER_ROLES.STUDENT} className="!text-lg focus:bg-neutral-800 focus:text-white">
+                      Học viên
+                    </SelectItem>
+                    <SelectItem value={USER_ROLES.COUNSELOR} className="!text-lg focus:bg-neutral-800 focus:text-white">
+                      Tư vấn viên
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
             {errors.role && (
               <p className="text-lg text-red-500">{errors.role.message}</p>
             )}

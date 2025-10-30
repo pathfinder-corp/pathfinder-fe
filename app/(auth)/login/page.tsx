@@ -21,7 +21,8 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { login, setAuthCookie } from '@/lib/auth';
+import { authService } from '@/services';
+import { setAuthCookie } from '@/lib';
 
 const loginSchema = z.object({
   email: z
@@ -41,6 +42,8 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setUser = useUserStore((state) => state.setUser);
+
+  const loginService = authService?.login;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -70,7 +73,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await login(data);
+      const response = await loginService?.(data);
 
       setAuthCookie(response.accessToken, response.expiresIn);
 
@@ -121,7 +124,7 @@ export default function LoginPage() {
               id="email"
               type="email"
               placeholder="user@example.com"
-              autoComplete="email"
+              autoComplete="off"
               disabled={isLoading}
               className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
                 errors.email ? 'border-red-500 focus:border-red-500' : ''
@@ -158,7 +161,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
                 disabled={isLoading}
               >
                 {showPassword ? (

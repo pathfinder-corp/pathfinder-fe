@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { forgotPassword } from '@/lib/auth';
+import { authService } from '@/services';
 
 const forgotPasswordSchema = z.object({
   email: z
@@ -34,6 +34,8 @@ type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [emailSent, setEmailSent] = useState<boolean>(false);
+
+  const forgotPasswordService = authService?.forgotPassword;
 
   const {
     register,
@@ -51,7 +53,7 @@ export default function ForgotPasswordPage() {
     setIsLoading(true);
 
     try {
-      await forgotPassword(data.email);
+      await forgotPasswordService?.(data.email);
 
       setEmailSent(true);
 
@@ -105,7 +107,7 @@ export default function ForgotPasswordPage() {
                   id="email"
                   type="email"
                   placeholder="user@example.com"
-                  autoComplete="email"
+                  autoComplete="off"
                   disabled={isLoading}
                   className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pl-11 ${
                     errors.email ? 'border-red-500 focus:border-red-500' : ''
