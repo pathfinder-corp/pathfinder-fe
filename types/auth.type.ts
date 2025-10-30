@@ -43,9 +43,3 @@ export interface IResetPasswordRequest {
 export interface IResetPasswordResponse {
   message: string;
 }
-
-export interface IApiError {
-  message: string;
-  statusCode: number;
-  error?: string;
-}

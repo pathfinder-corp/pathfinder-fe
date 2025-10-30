@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useUserStore } from '@/stores/user.store';
+import { useUserStore } from '@/stores';
 
 import { Button } from '@/components/ui/button';
 import { UserMenu } from '@/components/UserMenu';

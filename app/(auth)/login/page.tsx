@@ -8,7 +8,7 @@ import * as z from 'zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { useUserStore } from '@/stores/user.store';
+import { useUserStore } from '@/stores';
 
 import { Button } from '@/components/ui/button';
 import {

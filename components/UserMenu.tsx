@@ -4,10 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { LogOut, User, Settings } from 'lucide-react';
-import { useUserStore } from '@/stores/user.store';
+import { LogOut, User, Settings, LayoutDashboard } from 'lucide-react';
+import { useUserStore } from '@/stores';
 import { authService } from '@/services';
 import { toast } from 'sonner';
+import { USER_ROLES } from '@/constants';
 
 export function UserMenu() {
   const router = useRouter();
@@ -27,7 +28,11 @@ export function UserMenu() {
       router.push('/login');
       router.refresh();
     } catch (error) {
-      toast.error('Có lỗi khi đăng xuất');
+      const errorMessage =
+        error instanceof Error ? error.message : 'Có lỗi xảy ra. Vui lòng thử lại.';
+      toast.error('Đăng xuất thất bại', {
+        description: errorMessage,
+      });
     }
   };
 
@@ -64,10 +69,7 @@ export function UserMenu() {
 
       {isOpen && (
         <>
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setIsOpen(false)}
-          />
+          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
 
           <div className="absolute right-0 mt-2 w-64 bg-neutral-900 border border-neutral-800 rounded-xl shadow-xl z-50 overflow-hidden">
             <div className="p-4 border-b border-neutral-800">
@@ -75,17 +77,23 @@ export function UserMenu() {
                 {user.firstName} {user.lastName}
               </p>
               <p className="text-base text-neutral-400">{user.email}</p>
-              <p className="text-sm text-neutral-500 mt-1 capitalize">
-                {user.role === 'student' ? 'Học viên' : 'Giảng viên'}
-              </p>
             </div>
+
+            <Link
+              href="/dashboard"
+              className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer border-b border-neutral-800"
+              onClick={() => setIsOpen(false)}
+            >
+              <LayoutDashboard className="size-5" />
+              Dashboard
+            </Link>
 
             <Link
               href="/profile"
               className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
               onClick={() => setIsOpen(false)}
             >
-              <User className="h-5 w-5" />
+              <User className="size-5" />
               Hồ sơ của tôi
             </Link>
 
@@ -94,7 +102,7 @@ export function UserMenu() {
               className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
               onClick={() => setIsOpen(false)}
             >
-              <Settings className="h-5 w-5" />
+              <Settings className="size-5" />
               Cài đặt
             </Link>
 
@@ -102,7 +110,7 @@ export function UserMenu() {
               onClick={handleLogout}
               className="w-full flex items-center gap-3 px-4 py-3 text-base text-red-400 hover:bg-neutral-800 hover:text-red-300 transition-colors cursor-pointer"
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className="size-5" />
               Đăng xuất
             </button>
           </div>
