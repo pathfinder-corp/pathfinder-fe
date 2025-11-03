@@ -5,27 +5,26 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('auth-token')?.value;
   const { pathname } = request.nextUrl;
 
-  const publicRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
-  const protectedRoutes = [
-    '/dashboard',
-    '/profile',
-    '/courses', 
-    '/my-courses',
-    '/students',
-    '/admin'
-  ];
+  const publicRoutePrefixes = ['/', '/contact'];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
   
-  const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route));
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
+  const isPublicRoute = publicRoutePrefixes.some(route => {
+    if (route === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(route);
+  });
+  
+  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
 
-  if (token && isPublicRoute) {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-
-  if (!token && isProtectedRoute) {
+  if (!token && !isPublicRoute && !isAuthRoute) {
     const url = new URL('/login', request.url);
     url.searchParams.set('from', pathname);
     return NextResponse.redirect(url);
+  }
+
+  if (token && isAuthRoute) {
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   return NextResponse.next();

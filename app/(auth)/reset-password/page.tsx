@@ -25,17 +25,17 @@ import { authService } from '@/services';
 const resetPasswordSchema = z.object({
   newPassword: z
     .string()
-    .min(8, { message: 'Mật khẩu phải có ít nhất 8 ký tự' })
-    .max(100, { message: 'Mật khẩu quá dài' })
-    .regex(/[A-Z]/, { message: 'Mật khẩu phải có ít nhất 1 chữ hoa' })
-    .regex(/[a-z]/, { message: 'Mật khẩu phải có ít nhất 1 chữ thường' })
-    .regex(/[0-9]/, { message: 'Mật khẩu phải có ít nhất 1 số' })
-    .regex(/[^A-Za-z0-9]/, { message: 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt' }),
+    .min(8, { message: 'Password must be at least 8 characters' })
+    .max(100, { message: 'Password is too long' })
+    .regex(/[A-Z]/, { message: 'Password must contain at least 1 uppercase letter' })
+    .regex(/[a-z]/, { message: 'Password must contain at least 1 lowercase letter' })
+    .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
+    .regex(/[^A-Za-z0-9]/, { message: 'Password must contain at least 1 special character' }),
   confirmPassword: z
     .string()
-    .min(1, { message: 'Vui lòng xác nhận mật khẩu' }),
+    .min(1, { message: 'Please confirm password' }),
 }).refine((data) => data.newPassword === data.confirmPassword, {
-  message: 'Mật khẩu xác nhận không khớp',
+  message: 'Confirm password does not match',
   path: ['confirmPassword'],
 });
 
@@ -69,8 +69,8 @@ export default function ResetPasswordPage() {
     const tokenFromUrl = searchParams.get('token');
     
     if (!tokenFromUrl) {
-      toast.error('Token không hợp lệ', {
-        description: 'Vui lòng sử dụng liên kết từ email để đặt lại mật khẩu.'
+      toast.error('Invalid token', {
+        description: 'Please use the link from the email to reset your password.'
       });
       router.push('/forgot-password');
     } else {
@@ -80,7 +80,7 @@ export default function ResetPasswordPage() {
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!token) {
-      toast.error('Token không hợp lệ');
+      toast.error('Invalid token');
       return;
     }
 
@@ -94,8 +94,8 @@ export default function ResetPasswordPage() {
 
       setResetSuccess(true);
 
-      toast.success('Đặt lại mật khẩu thành công!', {
-        description: 'Bạn có thể đăng nhập bằng mật khẩu mới.'
+      toast.success('Password reset successful!', {
+        description: 'You can login with your new password.'
       });
 
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -105,9 +105,9 @@ export default function ResetPasswordPage() {
       console.error('Reset password error:', error);
 
       const errorMessage =
-        error instanceof Error ? error.message : 'Đã xảy ra lỗi khi đặt lại mật khẩu. Vui lòng thử lại.';
+        error instanceof Error ? error.message : 'An error occurred while resetting your password. Please try again.';
 
-      toast.error('Đặt lại mật khẩu thất bại', {
+      toast.error('Password reset failed', {
         description: errorMessage
       });
     } finally {
@@ -120,7 +120,7 @@ export default function ResetPasswordPage() {
       <Card className="border-neutral-800 bg-neutral-950/50 backdrop-blur-sm">
         <CardHeader className="space-y-1">
           <CardTitle className="text-3xl font-bold tracking-tight">
-            Đang xác thực...
+            Verifying...
           </CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center py-8">
@@ -134,12 +134,12 @@ export default function ResetPasswordPage() {
     <Card className="border-neutral-800 bg-neutral-950/50 backdrop-blur-sm">
       <CardHeader className="space-y-1">
         <CardTitle className="text-3xl font-bold tracking-tight">
-          {resetSuccess ? 'Thành công!' : 'Đặt lại mật khẩu'}
+          {resetSuccess ? 'Success!' : 'Reset password'}
         </CardTitle>
         <CardDescription className="text-xl text-neutral-400">
           {resetSuccess 
-            ? 'Mật khẩu của bạn đã được đặt lại thành công'
-            : 'Nhập mật khẩu mới của bạn'
+            ? 'Your password has been reset successfully'
+            : 'Enter your new password'
           }
         </CardDescription>
       </CardHeader>
@@ -149,7 +149,7 @@ export default function ResetPasswordPage() {
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="newPassword" className="text-lg">
-                Mật khẩu mới <span className="text-red-500">*</span>
+                New password <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Input
@@ -181,20 +181,20 @@ export default function ResetPasswordPage() {
               )}
               
               <div className="mt-2 space-y-1">
-                <p className="text-base text-neutral-500">Mật khẩu phải có:</p>
+                <p className="text-base text-neutral-500">Password must contain:</p>
                 <ul className="text-base text-neutral-500 space-y-1 ml-4">
-                  <li>• Ít nhất 8 ký tự</li>
-                  <li>• Ít nhất 1 chữ hoa</li>
-                  <li>• Ít nhất 1 chữ thường</li>
-                  <li>• Ít nhất 1 số</li>
-                  <li>• Ít nhất 1 ký tự đặc biệt</li>
+                  <li>• At least 8 characters</li>
+                  <li>• At least 1 uppercase letter</li>
+                  <li>• At least 1 lowercase letter</li>
+                  <li>• At least 1 number</li>
+                  <li>• At least 1 special character</li>
                 </ul>
               </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="confirmPassword" className="text-lg">
-                Xác nhận mật khẩu mới <span className="text-red-500">*</span>
+                Confirm new password <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
                 <Input
@@ -235,21 +235,21 @@ export default function ResetPasswordPage() {
             >
               {isLoading ? (
                 <>
-                  Đang xử lý...
+                  Processing...
                   <Loader2 className="ml-2 size-6 animate-spin" />
                 </>
               ) : (
-                'Đặt lại mật khẩu'
+                'Reset password'
               )}
             </Button>
 
             <p className="text-center text-lg text-neutral-400">
-              Nhớ mật khẩu rồi?{' '}
+              Remember your password?{' '}
               <Link
                 href="/login"
                 className="font-medium text-neutral-200 hover:underline"
               >
-                Đăng nhập ngay
+                Login now
               </Link>
             </p>
           </CardFooter>
@@ -263,10 +263,10 @@ export default function ResetPasswordPage() {
             
             <div className="text-center space-y-2">
               <p className="text-xl text-neutral-300">
-                Mật khẩu của bạn đã được đặt lại thành công!
+                Your password has been reset successfully!
               </p>
               <p className="text-base text-neutral-400">
-                Bạn có thể đăng nhập bằng mật khẩu mới của mình.
+                You can login with your new password.
               </p>
             </div>
           </div>
@@ -276,7 +276,7 @@ export default function ResetPasswordPage() {
             className="w-full h-12 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
           >
             <Link href="/login">
-              Đăng nhập ngay
+              Login now
             </Link>
           </Button>
         </CardContent>

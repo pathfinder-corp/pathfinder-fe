@@ -27,13 +27,13 @@ import { setAuthCookie } from '@/lib';
 const loginSchema = z.object({
   email: z
     .string()
-    .min(1, { message: 'Email là bắt buộc' })
-    .email({ message: 'Email không hợp lệ' })
+    .min(1, { message: 'Email is required' })
+    .email({ message: 'Invalid email address' })
     .toLowerCase(),
   password: z
     .string()
-    .min(6, { message: 'Mật khẩu phải có ít nhất 6 ký tự' })
-    .max(100, { message: 'Mật khẩu quá dài' }),
+    .min(6, { message: 'Password must be at least 6 characters' })
+    .max(100, { message: 'Password is too long' }),
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
@@ -62,8 +62,8 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (searchParams.get('registered') === 'true') {
-      toast.success('Đăng ký thành công!', {
-        description: 'Vui lòng đăng nhập để tiếp tục.'
+      toast.success('Registration successful!', {
+        description: 'Please login to continue.'
       });
       router.replace('/login');
     }
@@ -83,8 +83,8 @@ export default function LoginPage() {
 
       setUser(response.user);
 
-      toast.success('Đăng nhập thành công!', {
-        description: `Chào mừng ${response.user.firstName}!`
+      toast.success('Login successful!', {
+        description: `Welcome ${response.user.firstName}!`
       });
 
       await new Promise(resolve => setTimeout(resolve, 500));
@@ -95,9 +95,9 @@ export default function LoginPage() {
       console.error('Login error:', error);
 
       const errorMessage =
-        error instanceof Error ? error.message : 'Đã xảy ra lỗi khi đăng nhập. Vui lòng thử lại.';
+        error instanceof Error ? error.message : 'An error occurred while logging in. Please try again.';
 
-      toast.error('Đăng nhập thất bại', {
+      toast.error('Login failed', {
         description: errorMessage
       });
     } finally {
@@ -109,17 +109,17 @@ export default function LoginPage() {
     <Card className="border-neutral-800 bg-neutral-950/50 backdrop-blur-sm">
       <CardHeader className="space-y-1">
         <CardTitle className="text-3xl font-bold tracking-tight">
-          Đăng nhập
+          Login
         </CardTitle>
         <CardDescription className="text-xl text-neutral-400">
-          Nhập email và mật khẩu của bạn để đăng nhập
+          Enter your email and password to login
         </CardDescription>
       </CardHeader>
   
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-lg">Email</Label>
+            <Label htmlFor="email" className="text-lg">Email address</Label>
             <Input
               id="email"
               type="email"
@@ -138,12 +138,12 @@ export default function LoginPage() {
   
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-lg">Mật khẩu</Label>
+              <Label htmlFor="password" className="text-lg">Password</Label>
               <Link
                 href="/forgot-password"
                 className="text-lg text-neutral-400 hover:text-neutral-200 transition-colors"
               >
-                Quên mật khẩu?
+                Forgot password?
               </Link>
             </div>
             <div className="relative">
@@ -185,23 +185,27 @@ export default function LoginPage() {
           >
             {isLoading ? (
               <>
-                Đang đăng nhập...
+                Logging in...
                 <Loader2 className="ml-2 size-6 animate-spin" />
               </>
             ) : (
-              'Đăng nhập'
+              'Login'
             )}
           </Button>
   
-          <p className="text-center text-lg text-neutral-400">
-            Chưa có tài khoản?{' '}
+          <p className="text-center text-lg text-neutral-400 mb-2">
+            Don&apos;t have an account?{' '}
             <Link
               href="/register"
               className="font-medium text-neutral-200 hover:underline"
             >
-              Đăng ký ngay
+              Register now
             </Link>
           </p>
+
+          <Link href="/" className="text-center text-lg hover:underline text-neutral-400 hover:text-neutral-200 transition-colors">
+            Back to home
+          </Link>
         </CardFooter>
       </form>
     </Card>

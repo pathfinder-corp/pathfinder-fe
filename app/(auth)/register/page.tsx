@@ -34,33 +34,33 @@ import {
 const registerSchema = z.object({
   email: z
     .string()
-    .min(1, { message: 'Email là bắt buộc' })
-    .email({ message: 'Email không hợp lệ' })
+    .min(1, { message: 'Email is required' })
+    .email({ message: 'Invalid email address' })
     .toLowerCase(),
   password: z
     .string()
-    .min(8, { message: 'Mật khẩu phải có ít nhất 8 ký tự' })
-    .max(100, { message: 'Mật khẩu quá dài' })
-    .regex(/[A-Z]/, { message: 'Mật khẩu phải có ít nhất 1 chữ hoa' })
-    .regex(/[a-z]/, { message: 'Mật khẩu phải có ít nhất 1 chữ thường' })
-    .regex(/[0-9]/, { message: 'Mật khẩu phải có ít nhất 1 số' })
-    .regex(/[^A-Za-z0-9]/, { message: 'Mật khẩu phải có ít nhất 1 ký tự đặc biệt' }),
+    .min(8, { message: 'Password must be at least 8 characters' })
+    .max(100, { message: 'Password is too long' })
+    .regex(/[A-Z]/, { message: 'Password must contain at least 1 uppercase letter' })
+    .regex(/[a-z]/, { message: 'Password must contain at least 1 lowercase letter' })
+    .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
+    .regex(/[^A-Za-z0-9]/, { message: 'Password must contain at least 1 special character' }),
   confirmPassword: z
     .string()
-    .min(1, { message: 'Vui lòng xác nhận mật khẩu' }),
+    .min(1, { message: 'Please confirm password' }),
   firstName: z
     .string()
-    .min(1, { message: 'Họ là bắt buộc' })
-    .min(2, { message: 'Họ phải có ít nhất 2 ký tự' })
-    .max(50, { message: 'Họ quá dài' }),
+    .min(1, { message: 'First name is required' })
+    .min(2, { message: 'First name must be at least 2 characters' })
+    .max(50, { message: 'First name is too long' }),
   lastName: z
     .string()
-    .min(1, { message: 'Tên là bắt buộc' })
-    .min(2, { message: 'Tên phải có ít nhất 2 ký tự' })
-    .max(50, { message: 'Tên quá dài' }),
+    .min(1, { message: 'Last name is required' })
+    .min(2, { message: 'Last name must be at least 2 characters' })
+    .max(50, { message: 'Last name is too long' }),
   role: z.enum(['student', 'counselor']),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: 'Mật khẩu xác nhận không khớp',
+  message: 'Confirm password does not match',
   path: ['confirmPassword'],
 });
 
@@ -106,8 +106,8 @@ export default function RegisterPage() {
 
       await registerService?.(registerPayload);
 
-      toast.success('Đăng ký thành công!', {
-        description: 'Đang chuyển đến trang đăng nhập...'
+      toast.success('Registration successful!', {
+        description: 'Redirecting to login page...'
       });
 
       await new Promise(resolve => setTimeout(resolve, 1500));
@@ -117,9 +117,9 @@ export default function RegisterPage() {
       console.error('Register error:', error);
 
       const errorMessage =
-        error instanceof Error ? error.message : 'Đã xảy ra lỗi khi đăng ký. Vui lòng thử lại.';
+        error instanceof Error ? error.message : 'An error occurred while registering. Please try again.';
 
-      toast.error('Đăng ký thất bại', {
+      toast.error('Registration failed', {
         description: errorMessage
       });
     } finally {
@@ -131,10 +131,10 @@ export default function RegisterPage() {
     <Card className="border-neutral-800 bg-neutral-950/50 backdrop-blur-sm">
       <CardHeader className="space-y-1">
         <CardTitle className="text-3xl font-bold tracking-tight">
-          Đăng ký tài khoản
+          Register
         </CardTitle>
         <CardDescription className="text-xl text-neutral-400">
-          Tạo tài khoản mới để bắt đầu hành trình của bạn
+          Create a new account to start your journey
         </CardDescription>
       </CardHeader>
   
@@ -143,12 +143,12 @@ export default function RegisterPage() {
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName" className="text-lg">
-                Họ <span className="text-red-500">*</span>
+                First name <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="firstName"
                 type="text"
-                placeholder="Nguyễn Văn"
+                placeholder="John Doe"
                 autoComplete="off"
                 disabled={isLoading}
                 className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
@@ -163,12 +163,12 @@ export default function RegisterPage() {
   
             <div className="space-y-2">
               <Label htmlFor="lastName" className="text-lg">
-                Tên <span className="text-red-500">*</span>
+                Last name <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="lastName"
                 type="text"
-                placeholder="An"
+                placeholder="Doe"
                 autoComplete="off"
                 disabled={isLoading}
                 className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
@@ -184,12 +184,12 @@ export default function RegisterPage() {
   
           <div className="space-y-2">
             <Label htmlFor="email" className="text-lg">
-              Email <span className="text-red-500">*</span>
+              Email address <span className="text-red-500">*</span>
             </Label>
             <Input
               id="email"
               type="email"
-              placeholder="user@example.com"
+              placeholder="john.doe@example.com"
               autoComplete="off"
               disabled={isLoading}
               className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
@@ -204,7 +204,7 @@ export default function RegisterPage() {
   
           <div className="space-y-2">
             <Label htmlFor="password" className="text-lg">
-              Mật khẩu <span className="text-red-500">*</span>
+              Password <span className="text-red-500">*</span>
             </Label>
             <div className="relative">
               <Input
@@ -238,7 +238,7 @@ export default function RegisterPage() {
   
           <div className="space-y-2">
             <Label htmlFor="confirmPassword" className="text-lg">
-              Xác nhận mật khẩu <span className="text-red-500">*</span>
+              Confirm password <span className="text-red-500">*</span>
             </Label>
             <div className="relative">
               <Input
@@ -272,7 +272,7 @@ export default function RegisterPage() {
   
           <div className="space-y-2">
             <Label htmlFor="role" className="text-lg">
-              Vai trò <span className="text-red-500">*</span>
+              Role <span className="text-red-500">*</span>
             </Label>
             <Controller
               name="role"
@@ -288,14 +288,14 @@ export default function RegisterPage() {
                       errors.role ? 'border-red-500 focus:border-red-500' : ''
                     }`}
                   >
-                    <SelectValue placeholder="Chọn vai trò" />
+                    <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent className="bg-neutral-900 border-neutral-800">
                     <SelectItem value={USER_ROLES.STUDENT} className="!text-lg focus:bg-neutral-800 focus:text-white">
-                      Học viên
+                      Student
                     </SelectItem>
                     <SelectItem value={USER_ROLES.COUNSELOR} className="!text-lg focus:bg-neutral-800 focus:text-white">
-                      Tư vấn viên
+                      Counselor
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -315,32 +315,32 @@ export default function RegisterPage() {
           >
             {isLoading ? (
               <>
-                Đang đăng ký...
+                Registering...
                 <Loader2 className="ml-2 size-6 animate-spin" />
               </>
             ) : (
-              'Đăng ký'
+              'Register'
             )}
           </Button>
   
           <p className="text-center text-lg text-neutral-400">
-            Đã có tài khoản?{' '}
+            Already have an account?{' '}
             <Link
               href="/login"
               className="font-medium text-neutral-200 hover:underline"
             >
-              Đăng nhập ngay
+              Login now
             </Link>
           </p>
   
           <p className="text-center text-base text-neutral-500">
-            Bằng việc đăng ký, bạn đồng ý với{' '}
+            By registering, you agree to the{' '}
             <Link href="/terms" className="underline hover:text-neutral-400">
-              Điều khoản dịch vụ
+              Terms of service
             </Link>{' '}
             và{' '}
             <Link href="/privacy" className="underline hover:text-neutral-400">
-              Chính sách bảo mật
+              Privacy policy
             </Link>
           </p>
         </CardFooter>

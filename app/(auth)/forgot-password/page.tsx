@@ -24,8 +24,8 @@ import { authService } from '@/services';
 const forgotPasswordSchema = z.object({
   email: z
     .string()
-    .min(1, { message: 'Email là bắt buộc' })
-    .email({ message: 'Email không hợp lệ' })
+    .min(1, { message: 'Email is required' })
+    .email({ message: 'Invalid email address' })
     .toLowerCase(),
 });
 
@@ -57,16 +57,16 @@ export default function ForgotPasswordPage() {
 
       setEmailSent(true);
 
-      toast.success('Email đã được gửi!', {
-        description: 'Vui lòng kiểm tra hộp thư đến của bạn để đặt lại mật khẩu.'
+      toast.success('Email has been sent!', {
+        description: 'Please check your email (and spam folder) to find the email containing the reset password link. This link will expire after 15 minutes.'
       });
     } catch (error: unknown) {
       console.error('Forgot password error:', error);
 
       const errorMessage =
-        error instanceof Error ? error.message : 'Đã xảy ra lỗi khi gửi email. Vui lòng thử lại.';
+        error instanceof Error ? error.message : 'An error occurred while sending email. Please try again.';
 
-      toast.error('Gửi email thất bại', {
+      toast.error('Failed to send email', {
         description: errorMessage
       });
     } finally {
@@ -85,13 +85,13 @@ export default function ForgotPasswordPage() {
             <ArrowLeft className="size-6" />
           </Link>
           <CardTitle className="text-3xl font-bold tracking-tight">
-            Quên mật khẩu?
+            Forgot password?
           </CardTitle>
         </div>
         <CardDescription className="text-xl text-neutral-400">
           {emailSent 
-            ? 'Chúng tôi đã gửi hướng dẫn đặt lại mật khẩu đến email của bạn'
-            : 'Nhập email của bạn để nhận hướng dẫn đặt lại mật khẩu'
+            ? 'We have sent you an email with instructions to reset your password'
+            : 'Enter your email to receive instructions to reset your password'
           }
         </CardDescription>
       </CardHeader>
@@ -100,7 +100,7 @@ export default function ForgotPasswordPage() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-lg">Email</Label>
+              <Label htmlFor="email" className="text-lg">Email address</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-neutral-400" />
                 <Input
@@ -129,21 +129,21 @@ export default function ForgotPasswordPage() {
             >
               {isLoading ? (
                 <>
-                  Đang gửi...
+                  Sending...
                   <Loader2 className="ml-2 size-6 animate-spin" />
                 </>
               ) : (
-                'Gửi hướng dẫn đặt lại mật khẩu'
+                'Send email'
               )}
             </Button>
 
             <p className="text-center text-lg text-neutral-400">
-              Nhớ mật khẩu rồi?{' '}
+              Remember your password?{' '}
               <Link
                 href="/login"
                 className="font-medium text-neutral-200 hover:underline"
               >
-                Đăng nhập ngay
+                Login now
               </Link>
             </p>
           </CardFooter>
@@ -157,7 +157,7 @@ export default function ForgotPasswordPage() {
             
             <div className="text-center space-y-2">
               <p className="text-xl text-neutral-300">
-                Email đã được gửi đến
+                Email has been sent to
               </p>
               <p className="text-xl font-semibold text-white">
                 {getValues('email')}
@@ -166,8 +166,8 @@ export default function ForgotPasswordPage() {
 
             <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-4 max-w-md">
               <p className="text-base text-neutral-400 leading-relaxed">
-                Vui lòng kiểm tra hộp thư đến (và cả thư mục spam) để tìm email chứa 
-                liên kết đặt lại mật khẩu. Liên kết này sẽ hết hạn sau 15 phút.
+                Please check your email (and spam folder) to find the email containing 
+                the reset password link. This link will expire after 15 minutes.
               </p>
             </div>
           </div>
@@ -178,7 +178,7 @@ export default function ForgotPasswordPage() {
               variant="ghost"
               className="w-full h-12 text-lg border border-neutral-700 hover:border-white hover:bg-white/5"
             >
-              Gửi lại email
+              Send email again
             </Button>
 
             <Button
@@ -186,7 +186,7 @@ export default function ForgotPasswordPage() {
               className="w-full h-12 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
             >
               <Link href="/login">
-                Quay về đăng nhập
+                Back to login
               </Link>
             </Button>
           </div>

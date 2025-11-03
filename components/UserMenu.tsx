@@ -4,11 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { LogOut, User, Settings, LayoutDashboard } from 'lucide-react';
+import { LogOut, User, Settings } from 'lucide-react';
 import { useUserStore } from '@/stores';
 import { authService } from '@/services';
 import { toast } from 'sonner';
-import { USER_ROLES } from '@/constants';
 
 export function UserMenu() {
   const router = useRouter();
@@ -29,8 +28,8 @@ export function UserMenu() {
       router.refresh();
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Có lỗi xảy ra. Vui lòng thử lại.';
-      toast.error('Đăng xuất thất bại', {
+        error instanceof Error ? error.message : 'An error occurred. Please try again.';
+      toast.error('Logout failed', {
         description: errorMessage,
       });
     }
@@ -80,21 +79,12 @@ export function UserMenu() {
             </div>
 
             <Link
-              href="/dashboard"
-              className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer border-b border-neutral-800"
-              onClick={() => setIsOpen(false)}
-            >
-              <LayoutDashboard className="size-5" />
-              Dashboard
-            </Link>
-
-            <Link
               href="/profile"
               className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
               onClick={() => setIsOpen(false)}
             >
               <User className="size-5" />
-              Hồ sơ của tôi
+              My profile
             </Link>
 
             <Link
@@ -103,7 +93,7 @@ export function UserMenu() {
               onClick={() => setIsOpen(false)}
             >
               <Settings className="size-5" />
-              Cài đặt
+              Settings
             </Link>
 
             <button
@@ -111,7 +101,7 @@ export function UserMenu() {
               className="w-full flex items-center gap-3 px-4 py-3 text-base text-red-400 hover:bg-neutral-800 hover:text-red-300 transition-colors cursor-pointer"
             >
               <LogOut className="size-5" />
-              Đăng xuất
+              Logout
             </button>
           </div>
         </>
