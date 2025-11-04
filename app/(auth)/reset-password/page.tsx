@@ -227,7 +227,7 @@ export default function ResetPasswordPage() {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-4 mt-4">
+          <CardFooter className="flex flex-col space-y-4 mt-6">
             <Button
               type="submit"
               className="w-full h-12 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"

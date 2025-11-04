@@ -137,15 +137,7 @@ export default function LoginPage() {
           </div>
   
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-lg">Password</Label>
-              <Link
-                href="/forgot-password"
-                className="text-lg text-neutral-400 hover:text-neutral-200 transition-colors"
-              >
-                Forgot password?
-              </Link>
-            </div>
+            <Label htmlFor="password" className="text-lg">Password</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -174,10 +166,18 @@ export default function LoginPage() {
             {errors.password && (
               <p className="text-lg text-red-500">{errors.password.message}</p>
             )}
+            <div className="text-right">
+              <Link
+                href="/forgot-password"
+                className="text-lg text-neutral-400 hover:text-neutral-200 transition-colors"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
         </CardContent>
   
-        <CardFooter className="flex flex-col space-y-4 mt-4">
+        <CardFooter className="flex flex-col space-y-4 mt-6">
           <Button
             type="submit"
             className="w-full h-12 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
