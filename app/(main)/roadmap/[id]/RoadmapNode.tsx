@@ -14,7 +14,7 @@ import {
 export interface RoadmapNodeData {
   label: string;
   description: string;
-  status: 'completed' | 'in-progress' | 'pending' | 'phase'; // ✅ Bỏ 'locked'
+  status: 'completed' | 'in-progress' | 'pending' | 'phase';
   duration: string;
 }
 
@@ -67,10 +67,10 @@ function RoadmapNode({ data }: NodeProps<any>) {
           <TooltipTrigger asChild>
             <div
               className={cn(
-                'px-6 py-4 rounded-xl border-2 transition-all duration-300 backdrop-blur-sm',
+                'px-4 py-4 rounded-xl border-2 transition-all duration-300 backdrop-blur-sm',
                 'w-[280px] max-w-[280px]',
                 config.bg,
-                'hover:scale-105 cursor-pointer hover:shadow-2xl' // ✅ Bỏ điều kiện status !== 'locked'
+                'hover:scale-105 cursor-pointer hover:shadow-2xl'
               )}
             >
               <div className="flex items-start gap-3">
@@ -98,7 +98,7 @@ function RoadmapNode({ data }: NodeProps<any>) {
           
           <TooltipContent 
             side="right" 
-            className="max-w-sm py-4 bg-[#272727] border-neutral-700"
+            className="max-w-sm px-4 py-4 bg-[#272727] border-neutral-700"
           >
             <div className="space-y-2">
               <h4 className="font-bold text-base text-white">{label}</h4>

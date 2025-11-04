@@ -35,6 +35,33 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initialEdges);
   const { setCenter } = useReactFlow();
 
+  const getViewportBounds = useCallback((): [[number, number], [number, number]] => {
+    if (nodes.length === 0) {
+      return [[-500, -500], [1500, 2000]];
+    }
+  
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+  
+    nodes.forEach(node => {
+      const nodeWidth = 280;
+      const nodeHeight = 150;
+      
+      minX = Math.min(minX, node.position.x);
+      maxX = Math.max(maxX, node.position.x + nodeWidth);
+      minY = Math.min(minY, node.position.y);
+      maxY = Math.max(maxY, node.position.y + nodeHeight);
+    });
+  
+    const padding = 300;
+    return [
+      [minX - padding, minY - padding],
+      [maxX + padding, maxY + padding]
+    ];
+  }, [nodes]);
+
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
@@ -99,6 +126,7 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
       zoomOnScroll={true}
       minZoom={0.65}
       maxZoom={1.5}
+      translateExtent={getViewportBounds()}
     >
       <Background 
         variant={BackgroundVariant.Dots} 

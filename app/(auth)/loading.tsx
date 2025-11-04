@@ -3,7 +3,7 @@ export default function Loading() {
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
         <div className="-mb-2 inline-block size-12 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
-        <p className="mt-4 text-neutral-400 text-3xl">Đang tải...</p>
+        <p className="mt-4 text-neutral-400 text-3xl">Loading...</p>
       </div>
     </div>
   );

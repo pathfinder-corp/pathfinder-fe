@@ -18,13 +18,13 @@ import { Select, SelectValue, SelectTrigger, SelectItem, SelectContent } from '@
 import { DateRangePicker } from '@/components/ui/date-range-picker';
 
 const roadmapSchema = z.object({
-  topic: z.string().min(3, 'Chủ đề phải có ít nhất 3 ký tự'),
+  topic: z.string().min(3, 'Topic must be at least 3 characters'),
   background: z.string().optional(),
   targetOutcome: z.string().optional(),
   experienceLevel: z.enum(['beginner', 'intermediate', 'advanced']).optional(),
   learningPace: z.enum(['flexible', 'balanced', 'intensive']).optional(),
   timeframe: z.string().optional(),
-  preferences: z.string().optional(),
+  preferences: z.string().optional()
 });
 
 type RoadmapFormData = z.infer<typeof roadmapSchema>;
@@ -64,10 +64,10 @@ export default function RoadmapPage() {
   
       const response = await roadmapService.createRoadmap(requestData);
       
-      toast.success('Tạo lộ trình thành công!');
+      toast.success('Create roadmap successfully!');
       router.push(`/roadmap/${response.id}`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Có lỗi xảy ra khi tạo lộ trình');
+      toast.error(error instanceof Error ? error.message : 'An error occurred while creating the roadmap');
     } finally {
       setIsLoading(false);
     }
@@ -75,19 +75,19 @@ export default function RoadmapPage() {
   
   return (
     <div className="pt-10 flex flex-col items-center justify-center">
-      <h1 className="text-5xl font-bold mb-6">Bạn cần giúp đỡ vấn đề gì?</h1>
+      <h1 className="text-5xl font-bold mb-6">What do you want to learn today?</h1>
       <p className="text-xl text-neutral-500">
-        Nhập 1 chủ đề bất kỳ dưới đây để tự động tạo lộ trình mà bạn mong muốn
+        Enter any topic below to automatically create a roadmap you want
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-7 mt-6">
         <div className="space-y-[.65rem]">
           <Label htmlFor="topic" className="text-[1.35rem]">
-            Chủ đề <span className="text-red-500">*</span>
+            Topic <span className="text-red-500">*</span>
           </Label>
           <Input
             {...register('topic')}
-            placeholder="Nhập 1 chủ đề bất kỳ..."
+            placeholder="Enter any topic..."
             className="w-full !h-18 !text-[1.25rem] !px-5"
           />
           {errors.topic && (
@@ -98,31 +98,31 @@ export default function RoadmapPage() {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-[.65rem]">
             <Label htmlFor="background" className="text-[1.35rem]">
-              Nền tảng
+              Background
             </Label>
             <Input
               {...register('background')}
-              placeholder="Nhập nền tảng..."
+              placeholder="Enter background..."
               className="w-full !h-18 !text-[1.25rem] !px-5"
             />
           </div>
           <div className="space-y-[.65rem]">
             <Label htmlFor="experienceLevel" className="text-[1.35rem]">
-              Kinh nghiệm
+              Experience
             </Label>
             <Select onValueChange={(value) => setValue('experienceLevel', value as any)}>
               <SelectTrigger className="w-full !h-18 !text-[1.25rem] !px-5">
-                <SelectValue placeholder="Chọn kinh nghiệm" />
+                <SelectValue placeholder="Select experience" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="beginner" className="!text-[1.25rem]">
-                  Cơ bản
+                  Beginner
                 </SelectItem>
                 <SelectItem value="intermediate" className="!text-[1.25rem]">
-                  Trung bình
+                  Intermediate
                 </SelectItem>
                 <SelectItem value="advanced" className="!text-[1.25rem]">
-                  Nâng cao
+                  Advanced
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -132,31 +132,31 @@ export default function RoadmapPage() {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-[.65rem]">
             <Label htmlFor="targetOutcome" className="text-[1.35rem]">
-              Mục tiêu
+              Target Outcome
             </Label>
             <Input
               {...register('targetOutcome')}
-              placeholder="Nhập mục tiêu..."
+              placeholder="Enter target outcome..."
               className="w-full !h-18 !text-[1.25rem] !px-5"
             />
           </div>
           <div className="space-y-[.65rem]">
             <Label htmlFor="learningPace" className="text-[1.35rem]">
-              Nhịp độ học
+              Learning Pace
             </Label>
             <Select onValueChange={(value) => setValue('learningPace', value as any)}>
               <SelectTrigger className="w-full !h-18 !text-[1.25rem] !px-5">
-                <SelectValue placeholder="Chọn nhịp độ học" />
+                <SelectValue placeholder="Select learning pace" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="flexible" className="!text-[1.25rem]">
-                  Linh hoạt
+                  Flexible
                 </SelectItem>
                 <SelectItem value="balanced" className="!text-[1.25rem]">
-                  Cân bằng
+                  Balanced
                 </SelectItem>
                 <SelectItem value="intensive" className="!text-[1.25rem]">
-                  Tập trung
+                  Intensive
                 </SelectItem>
               </SelectContent>
             </Select>
@@ -166,13 +166,13 @@ export default function RoadmapPage() {
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-[.65rem]">
             <Label htmlFor="timeframe" className="text-[1.35rem]">
-              Thời gian
+              Timeframe
             </Label>
             <DateRangePicker
               onUpdate={(values) => {
                 setDateRange({
                   from: values.range.from,
-                  to: values.range.to,
+                  to: values.range.to
                 });
               }}
               align="start"
@@ -183,11 +183,11 @@ export default function RoadmapPage() {
           </div>
           <div className="space-y-[.65rem]">
             <Label htmlFor="preferences" className="text-[1.35rem]">
-              Cá nhân hóa
+              Personalization
             </Label>
             <Input
               {...register('preferences')}
-              placeholder="Nhập..."
+              placeholder="Enter preferences..."
               className="w-full !h-18 !text-[1.25rem] !px-5"
             />
           </div>
@@ -200,12 +200,12 @@ export default function RoadmapPage() {
         >
           {isLoading ? (
             <>
-              Đang tạo lộ trình...
+              Creating roadmap...
               <Loader2 className="size-5.5 animate-spin" />
             </>
           ) : (
             <>
-              Tạo lộ trình
+              Create roadmap
               <Send className="size-6" />
             </>
           )}

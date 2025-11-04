@@ -1,20 +1,15 @@
 'use client';
 
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Calendar, Zap, ChevronDown, Maximize2, ExternalLink, Clock, Sparkles, RotateCcw, Send, ArrowLeft, User, Bot } from 'lucide-react';
+import { Calendar, Zap, Maximize2, Clock, RotateCcw, ArrowLeft, Sparkles, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm'; 
 import type { IRoadmapResponse } from '@/types';
 import type { Node, Edge } from '@xyflow/react';
-import { roadmapService } from '@/services/roadmap.service';
+import { roadmapService } from '@/services';
 import { convertRoadmapToFlow, extractTitle } from '@/lib';
 
 import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { TextShimmer } from '@/components/motion-primitives/text-shimmer';
-import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import {
   Sheet,
   SheetContent,
@@ -24,41 +19,15 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger
-} from '@/components/ui/collapsible';
-import { ScrollArea } from '@/components/ui/scroll-area';
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from '@/components/ui/accordion';
 import RoadmapFlow from './RoadmapFlow';
 import DetailLoading from './loading';
-
-interface INodeDetail {
-  title: string;
-  description: string;
-  duration: string;
-  outcome?: string;
-  keyActivities?: string[];
-  resources?: Array<{
-    type: string;
-    title: string;
-    url: string;
-    description: string;
-  }>;
-  isPhase: boolean;
-  phaseTitle?: string;
-}
-
-interface IChatMessage {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-}
-
-type LoadingStates = {
-  initial: boolean;
-  aiChat: boolean;
-};
+import { AIChatInterface, RoadmapNodeDetail } from './components';
+import type { INodeDetail, IChatMessage, LoadingStates } from './types';
 
 export default function RoadmapDetailPage() {
   const params = useParams();
@@ -72,15 +41,14 @@ export default function RoadmapDetailPage() {
     initial: true,
     aiChat: false,
   });
-  const [isSummaryOpen, setIsSummaryOpen] = useState<boolean>(false);
   const [selectedNode, setSelectedNode] = useState<INodeDetail | null>(null);
+  const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState<boolean>(false);
   const [resetTrigger, setResetTrigger] = useState<number>(0);
   const [isChatMode, setIsChatMode] = useState<boolean>(false);
   const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
+  const [chatHistoryByNode, setChatHistoryByNode] = useState<Record<string, IChatMessage[]>>({});
   const [chatInput, setChatInput] = useState<string>('');
-
-  const chatEndRef = useRef<HTMLDivElement>(null);
 
   const updateLoadingState = useCallback((key: keyof LoadingStates, value: boolean) => {
     setLoadingStates(prev => ({ ...prev, [key]: value }));
@@ -97,7 +65,7 @@ export default function RoadmapDetailPage() {
         setNodes(flowNodes);
         setEdges(flowEdges);
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Không thể tải lộ trình');
+        toast.error(error instanceof Error ? error.message : 'Cannot load roadmap');
         router.push('/roadmap');
       } finally {
         updateLoadingState('initial', false);
@@ -109,19 +77,13 @@ export default function RoadmapDetailPage() {
     }
   }, [roadmapId, router, updateLoadingState]);
 
-  useEffect(() => {
-    if (chatMessages.length > 0 || loadingStates.aiChat) {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }
-  }, [chatMessages, loadingStates.aiChat]);
-
   const handleNodeClick = (nodeId: string) => {
     if (!roadmap) return;
-
+  
     const [type, phaseIdx, stepIdx] = nodeId.split('-');
     
     if (type === 'start') return;
-
+  
     const phaseIndex = parseInt(phaseIdx);
     
     if (type === 'phase') {
@@ -135,6 +97,7 @@ export default function RoadmapDetailPage() {
           isPhase: true,
           phaseTitle: phase.title
         });
+        setSelectedNodeId(nodeId);
         setIsDetailOpen(true);
       }
     } else if (type === 'step') {
@@ -152,6 +115,7 @@ export default function RoadmapDetailPage() {
           isPhase: false,
           phaseTitle: phase.title
         });
+        setSelectedNodeId(nodeId);
         setIsDetailOpen(true);
       }
     }
@@ -160,10 +124,10 @@ export default function RoadmapDetailPage() {
   const handleAskAI = () => {
     setIsChatMode(true);
     
-    if (chatMessages.length === 0 && selectedNode) {
+    if (selectedNodeId && (!chatHistoryByNode[selectedNodeId] || chatHistoryByNode[selectedNodeId].length === 0) && selectedNode) {
       const suggestedQuestion = selectedNode.isPhase
-        ? `Can you explain the "${selectedNode.title}" phase in more detail?`
-        : `What are the key activities I should focus on in "${selectedNode.title}"?`;
+        ? `Can you explain the "${extractTitle(selectedNode.title)}" phase in more detail?`
+        : `What are the key activities I should focus on in "${extractTitle(selectedNode.title)}"?`;
       setChatInput(suggestedQuestion);
     }
   };
@@ -173,7 +137,7 @@ export default function RoadmapDetailPage() {
   };
 
   const handleSendMessage = async () => {
-    if (!chatInput.trim() || loadingStates.aiChat || !selectedNode) return;
+    if (!chatInput.trim() || loadingStates.aiChat || !selectedNode || !selectedNodeId) return;
   
     const userMessage: IChatMessage = {
       id: Date.now().toString(),
@@ -182,7 +146,11 @@ export default function RoadmapDetailPage() {
       timestamp: new Date(),
     };
   
-    setChatMessages(prev => [...prev, userMessage]);
+    setChatHistoryByNode(prev => ({
+      ...prev,
+      [selectedNodeId]: [...(prev[selectedNodeId] || []), userMessage]
+    }));
+    
     setChatInput('');
     updateLoadingState('aiChat', true);
   
@@ -210,7 +178,8 @@ export default function RoadmapDetailPage() {
         toast.error('Please select a phase/step to ask AI.');
         updateLoadingState('aiChat', false);
         return;
-      }  
+      }
+      
       const response = await roadmapService.askInsight(roadmapId, requestBody);
       const aiMessage: IChatMessage = {
         id: (Date.now() + 1).toString(),
@@ -219,7 +188,10 @@ export default function RoadmapDetailPage() {
         timestamp: new Date()
       };
   
-      setChatMessages(prev => [...prev, aiMessage]);
+      setChatHistoryByNode(prev => ({
+        ...prev,
+        [selectedNodeId]: [...(prev[selectedNodeId] || []), aiMessage]
+      }));
     } catch (error) {
       toast.error('Failed to get AI response. Please try again.');
       console.error('AI insight error:', error);
@@ -229,7 +201,12 @@ export default function RoadmapDetailPage() {
   };
 
   const handleClearChat = () => {
-    setChatMessages([]);
+    if (!selectedNodeId) return;
+    
+    setChatHistoryByNode(prev => ({
+      ...prev,
+      [selectedNodeId]: []
+    }));
     setChatInput('');
   };
 
@@ -275,58 +252,60 @@ export default function RoadmapDetailPage() {
             </div>
           </div>
         </div>
+        
+        <Button
+          variant="outline"
+          size="lg"
+          className="flex items-center gap-2 !h-12 !text-[1.1rem]"
+          onClick={() => {
+            const shareUrl = `${window.location.origin}/roadmap/${roadmapId}`;
+            navigator.clipboard.writeText(shareUrl);
+            toast.success('Link copied to clipboard!');
+          }}
+        >
+          Share
+          <Share2 className="size-4.5" />
+        </Button>
       </div>
-
       {roadmap.summary && (
-        <Collapsible
-          open={isSummaryOpen}
-          onOpenChange={setIsSummaryOpen}
+        <Accordion 
+          type="single" 
+          collapsible
           className="bg-neutral-900/50 border border-neutral-800 rounded-lg"
         >
-          <div className="flex items-center justify-between p-6 pb-3">
-            <h2 className="text-2xl font-semibold">Summary</h2>
-            <CollapsibleTrigger asChild>
-              <Button 
-                variant="ghost" 
-                size="sm"
-                className="p-2 h-auto hover:bg-neutral-800"
-              >
-                <ChevronDown 
-                  className={`size-5 transition-transform duration-200 ${
-                    isSummaryOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </Button>
-            </CollapsibleTrigger>
-          </div>
-
-          <CollapsibleContent className="px-6 pb-6">
-            <div className="space-y-3 text-base text-neutral-300">
-              <p>
-                <strong>Recommended cadence:</strong> {roadmap.summary.recommendedCadence}
-              </p>
-              <p>
-                <strong>Recommended duration:</strong> {roadmap.summary.recommendedDuration}
-              </p>
-              {roadmap.summary.additionalNotes && (
+          <AccordionItem value="summary" className="border-0">
+            <AccordionTrigger className="px-6 pt-6 pb-3 hover:no-underline">
+              <h2 className="text-2xl font-semibold">Summary</h2>
+            </AccordionTrigger>
+            
+            <AccordionContent className="px-6 pb-6">
+              <div className="space-y-3 text-base text-neutral-300">
                 <p>
-                  <strong>Additional notes:</strong> {roadmap.summary.additionalNotes}
+                  <strong>Recommended cadence:</strong> {roadmap.summary.recommendedCadence}
                 </p>
-              )}
-            </div>
-
-            {roadmap.summary.successTips && roadmap.summary.successTips.length > 0 && (
-              <div className="mt-4">
-                <strong className="block mb-2 text-base">Success tips:</strong>
-                <ul className="list-disc list-inside space-y-2 text-base text-neutral-300">
-                  {roadmap.summary.successTips.map((tip, index) => (
-                    <li key={index}>{tip}</li>
-                  ))}
-                </ul>
+                <p>
+                  <strong>Recommended duration:</strong> {roadmap.summary.recommendedDuration}
+                </p>
+                {roadmap.summary.additionalNotes && (
+                  <p>
+                    <strong>Additional notes:</strong> {roadmap.summary.additionalNotes}
+                  </p>
+                )}
               </div>
-            )}
-          </CollapsibleContent>
-        </Collapsible>
+
+              {roadmap.summary.successTips && roadmap.summary.successTips.length > 0 && (
+                <div className="mt-4">
+                  <strong className="block mb-2 text-base">Success tips:</strong>
+                  <ul className="list-disc list-inside space-y-2 text-base text-neutral-300">
+                    {roadmap.summary.successTips.map((tip, index) => (
+                      <li key={index}>{tip}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       )}
 
       <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg overflow-hidden">
@@ -406,7 +385,6 @@ export default function RoadmapDetailPage() {
         setIsDetailOpen(open);
         if (!open) {
           setIsChatMode(false);
-          setChatMessages([]);
           setChatInput('');
         }
       }}>
@@ -468,197 +446,20 @@ export default function RoadmapDetailPage() {
                   </div>
                 </div>
               </SheetHeader>
-
               {!isChatMode ? (
-                <ScrollArea className="h-[calc(100vh-140px)] px-6">
-                  <div className="space-y-6 py-6">
-                    <div className="-mt-4">
-                      <h3 className="text-lg font-semibold mb-1.5">
-                        {selectedNode.isPhase ? 'Expected Outcome' : 'Description'}
-                      </h3>
-                      <p className="text-base text-neutral-300 leading-relaxed">
-                        {selectedNode.description}
-                      </p>
-                    </div>
-
-                    {!selectedNode.isPhase && selectedNode.keyActivities && selectedNode.keyActivities.length > 0 && (
-                      <div className="border-t border-neutral-800 pt-6">
-                        <h3 className="text-lg font-semibold mb-2">Key Activities</h3>
-                        <ul className="space-y-3">
-                          {selectedNode.keyActivities.map((activity, idx) => (
-                            <li key={idx} className="flex items-center gap-3">
-                              <span className="flex-shrink-0 size-6 rounded-full bg-white text-black flex items-center justify-center text-sm font-bold">
-                                {idx + 1}
-                              </span>
-                              <span className="text-base text-neutral-300 leading-relaxed">
-                                {activity}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {!selectedNode.isPhase && selectedNode.resources && selectedNode.resources.length > 0 && (
-                      <div className="border-t border-neutral-800 pt-6">
-                        <h3 className="text-lg font-semibold mb-2">Academic Resources</h3>
-                        <div className="space-y-4">
-                          {selectedNode.resources.map((resource, idx) => (
-                            <a
-                              key={idx}
-                              href={resource.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="block p-4 bg-neutral-900/50 border border-neutral-800 rounded-lg hover:border-neutral-700 hover:bg-neutral-900 transition-all group"
-                            >
-                              <div className="flex items-start justify-between gap-3 mb-2">
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-2.5">
-                                    <span className="text-xs font-semibold px-2 py-1 bg-neutral-800 text-neutral-300 rounded">
-                                      {resource.type}
-                                    </span>
-                                  </div>
-                                  <h4 className="text-base font-semibold text-white group-hover:text-neutral-200 transition-colors">
-                                    {resource.title}
-                                  </h4>
-                                </div>
-                                <ExternalLink className="size-5 text-neutral-500 group-hover:text-white transition-colors flex-shrink-0" />
-                              </div>
-                              <p className="text-sm text-neutral-400 leading-relaxed">
-                                {resource.description}
-                              </p>
-                            </a>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </ScrollArea>
+                <RoadmapNodeDetail 
+                  node={selectedNode}
+                />
               ) : (
-                <div className="flex flex-col h-[calc(100vh-85px)]">
-                  {chatMessages.length === 0 && (
-                    <div className="-mt-4 p-6 border-b border-neutral-800 bg-neutral-900/30">
-                      <p className="text-md text-neutral-400 mb-3">Suggested questions:</p>
-                      <div className="space-y-2">
-                        {getSuggestedQuestions().map((question, idx) => (
-                          <button
-                            key={idx}
-                            onClick={() => setChatInput(question)}
-                            className="cursor-pointer w-full text-left p-3 text-sm bg-neutral-900/50 hover:bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-lg transition-all"
-                          >
-                            {question}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  <ScrollArea className="h-[calc(100vh-165px)] p-6">
-                    <div className="space-y-4">
-                      {chatMessages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                        >
-                          {message.role === 'assistant' && (
-                            <div className="flex-shrink-0 size-8 rounded-full bg-white flex items-center justify-center mt-1">
-                              <Bot className="size-5 text-black" />
-                            </div>
-                          )}
-                          
-                          <div
-                            className={`max-w-[75%] rounded-lg p-4 ${
-                              message.role === 'user'
-                                ? 'bg-white text-black'
-                                : 'bg-neutral-900 border border-neutral-800 text-neutral-200'
-                            }`}
-                          >
-                            {message.role === 'assistant' ? (
-                              <div className="prose prose-invert prose-sm max-w-none [&_p]:mb-3 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:mt-3 [&_h3]:mb-2 [&_ul]:space-y-1 [&_strong]:text-white [&_strong]:font-bold">
-                                <ReactMarkdown
-                                  remarkPlugins={[remarkGfm]}
-                                  components={{
-                                    h1: ({node, ...props}) => <h1 className="text-2xl font-bold mt-4 mb-2" {...props} />,
-                                    h2: ({node, ...props}) => <h2 className="text-xl font-bold mt-3 mb-2" {...props} />,
-                                    h3: ({node, ...props}) => <h3 className="text-lg font-semibold mt-2 mb-1" {...props} />,
-                                    p: ({node, ...props}) => <p className="mb-3 leading-relaxed" {...props} />,
-                                    ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-3 space-y-1" {...props} />,
-                                    ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-3 space-y-1" {...props} />,
-                                    li: ({node, ...props}) => <li className="leading-relaxed" {...props} />,
-                                    strong: ({node, ...props}) => <strong className="font-bold text-white" {...props} />,
-                                    em: ({node, ...props}) => <em className="italic" {...props} />,
-                                    code: ({node, inline, ...props}: any) => 
-                                      inline ? (
-                                        <code className="bg-neutral-800 px-1.5 py-0.5 rounded text-sm" {...props} />
-                                      ) : (
-                                        <code className="block bg-neutral-800 p-2 rounded text-sm overflow-x-auto" {...props} />
-                                      ),
-                                    a: ({node, ...props}) => <a className="text-blue-400 hover:underline" {...props} />,
-                                  }}
-                                >
-                                  {message.content}
-                                </ReactMarkdown>
-                              </div>
-                            ) : (
-                              <p className="text-[.95rem] leading-relaxed whitespace-pre-wrap">{message.content}</p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-
-                      {loadingStates.aiChat && (
-                        <div className="flex gap-3 justify-start">
-                          <div className="flex-shrink-0 size-8 rounded-full bg-white flex items-center justify-center mt-1">
-                            <Bot className="size-5 text-black" />
-                          </div>
-                          <div className="max-w-[75%] rounded-lg p-4 bg-neutral-900 border border-neutral-800">
-                            <TextShimmer
-                              as="span"
-                              className="text-[.95rem]"
-                              duration={1}
-                              spread={4}
-                            >
-                              AI is thinking...
-                            </TextShimmer>
-                          </div>
-                        </div>
-                      )}
-
-                      <div ref={chatEndRef} />
-                    </div>
-                  </ScrollArea>
-
-
-                  <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
-                    <div className="flex items-start gap-2 mb-3">
-                      <Textarea
-                        value={chatInput}
-                        onChange={(e) => setChatInput(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSendMessage();
-                          }
-                        }}
-                        placeholder="Ask a question about this step..."
-                        rows={2}
-                        className="flex-1 min-h-[3rem] max-h-[3rem] resize-none bg-neutral-900 border-neutral-800 !text-base"
-                        disabled={loadingStates.aiChat}
-                      />
-                      <Button
-                        onClick={handleSendMessage}
-                        disabled={!chatInput.trim() || loadingStates.aiChat}
-                        size="icon"
-                        className="size-[3rem] bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                      >
-                        <Send className="size-5 text-white" />
-                      </Button>
-                    </div>
-                    <p className="text-md text-neutral-500 flex items-center gap-1.5">
-                      Press <Kbd>Enter</Kbd> to send, <KbdGroup><Kbd>Shift</Kbd> + <Kbd>Enter</Kbd></KbdGroup> for new line
-                    </p>
-                  </div>
-                </div>
+                <AIChatInterface
+                  chatMessages={selectedNodeId ? (chatHistoryByNode[selectedNodeId] || []) : []} // ✅ Pass messages của node hiện tại
+                  chatInput={chatInput}
+                  isLoading={loadingStates.aiChat}
+                  suggestedQuestions={getSuggestedQuestions()}
+                  onInputChange={setChatInput}
+                  onSendMessage={handleSendMessage}
+                  onSuggestedQuestionClick={setChatInput}
+                />
               )}
             </>
           )}
