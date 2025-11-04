@@ -21,6 +21,7 @@ export interface IUser {
 export interface IUserStore {
   user: IUser | null;
   isAuthenticated: boolean;
+  isInitialized: boolean;
   setUser: (user: IUser) => void;
   clearUser: () => void;
   initializeUser: () => void;

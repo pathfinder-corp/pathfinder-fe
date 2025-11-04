@@ -8,6 +8,7 @@ import { useUserStore } from '@/stores';
 import DotGrid from '@/components/ui/dot-grid';
 import { Button } from '@/components/ui/button';
 import { UserMenu } from '@/components/UserMenu';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
 export default function Home() {
   const pathname = usePathname();
   const isAuthenticated = useUserStore((state) => state.isAuthenticated);
+  const isInitialized = useUserStore((state) => state.isInitialized);
   const initializeUser = useUserStore((state) => state.initializeUser);
 
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
@@ -67,7 +69,9 @@ export default function Home() {
           </nav>
 
           <div className="flex items-center gap-3 justify-end-safe">
-            {isAuthenticated ? (
+            {!isInitialized ? (
+              <Skeleton className="size-12 rounded-full" />
+            ) : isAuthenticated ? (
               <UserMenu />
             ) : (
               <>

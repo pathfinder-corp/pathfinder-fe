@@ -13,6 +13,7 @@ import { useUserStore } from '@/stores';
 import { UserMenu } from '@/components/UserMenu';
 import { Button } from '@/components/ui/button';
 import { USER_ROLES } from '@/constants';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const STUDENT_NAV = [
   { label: 'Create Roadmap', href: '/roadmap', icon: Map, exact: false },
@@ -25,7 +26,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { user, isAuthenticated, initializeUser } = useUserStore();
+  const { user, isAuthenticated, isInitialized, initializeUser } = useUserStore();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
@@ -79,7 +80,9 @@ export default function MainLayout({
           </div>
 
           <div className="flex items-center gap-3">
-            {isAuthenticated ? (
+            {!isInitialized ? (
+              <Skeleton className="size-12 rounded-full" />
+            ) : isAuthenticated ? (
               <UserMenu />
             ) : (
               <>
@@ -105,7 +108,7 @@ export default function MainLayout({
         </div>
       </header>
 
-      {isAuthenticated && user && (
+      {isInitialized && isAuthenticated && user && (
         <aside className="hidden lg:block fixed left-0 top-24 bottom-0 w-[18rem] border-r border-neutral-800 bg-neutral-950/50 backdrop-blur-sm overflow-y-auto">
           <nav className="p-4 space-y-1">
             {navItems.map((item) => {
@@ -131,7 +134,7 @@ export default function MainLayout({
         </aside>
       )}
 
-      {isSidebarOpen && isAuthenticated && user && (
+      {isSidebarOpen && isInitialized && isAuthenticated && user && (
         <>
           <div
             className="lg:hidden fixed inset-0 bg-black/50 z-40 top-24"
@@ -164,7 +167,7 @@ export default function MainLayout({
         </>
       )}
 
-      <main className={`${isAuthenticated && user ? 'lg:ml-[18rem]' : ''} pt-24 min-h-screen`}>
+      <main className={`${isInitialized && isAuthenticated && user ? 'lg:ml-[18rem]' : ''} pt-24 min-h-screen`}>
         <div className="p-6 lg:p-8">
           {children}
         </div>

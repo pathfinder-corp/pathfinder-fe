@@ -72,15 +72,15 @@ interface Preset {
 
 // Define presets
 const PRESETS: Preset[] = [
-  { name: 'today', label: 'Hôm nay' },
-  { name: 'yesterday', label: 'Hôm qua' },
-  { name: 'last7', label: '7 ngày qua' },
-  { name: 'last14', label: '14 ngày qua' },
-  { name: 'last30', label: '30 ngày qua' },
-  { name: 'thisWeek', label: 'Tuần này' },
-  { name: 'lastWeek', label: 'Tuần trước' },
-  { name: 'thisMonth', label: 'Tháng này' },
-  { name: 'lastMonth', label: 'Tháng trước' }
+  { name: 'today', label: 'Today' },
+  { name: 'yesterday', label: 'Yesterday' },
+  { name: 'last7', label: 'Last 7 days' },
+  { name: 'last14', label: 'Last 14 days' },
+  { name: 'last30', label: 'Last 30 days' },
+  { name: 'thisWeek', label: 'This week' },
+  { name: 'lastWeek', label: 'Last week' },
+  { name: 'thisMonth', label: 'This month' },
+  { name: 'lastMonth', label: 'Last month' }
 ]
 
 /** The DateRangePicker component allows a user to select a range of dates */
@@ -410,7 +410,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                       }}
                       id="compare-mode"
                     />
-                    <Label htmlFor="compare-mode">So sánh</Label>
+                    <Label htmlFor="compare-mode">Compare</Label>
                   </div>
                 )}
                 <div className="flex flex-col gap-2">
@@ -515,6 +515,12 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
                       )
                     )
                   }
+                  disabled={(date) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return date < today;
+                  }}
+                  fromDate={new Date()}
                 />
               </div>
             </div>
@@ -542,7 +548,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
             }}
             variant="ghost"
           >
-            Hủy bỏ
+            Cancel
           </Button>
           <Button
             onClick={() => {
@@ -555,7 +561,7 @@ export const DateRangePicker: FC<DateRangePickerProps> & {
               }
             }}
           >
-            Cập nhật
+            Update
           </Button>
         </div>
       </PopoverContent>

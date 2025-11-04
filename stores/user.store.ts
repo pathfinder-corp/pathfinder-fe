@@ -7,6 +7,7 @@ export const useUserStore = create<IUserStore>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
+      isInitialized: false, // ✅ Thêm state này
 
       setUser: (user) => {
         set({ user, isAuthenticated: true });
@@ -30,11 +31,13 @@ export const useUserStore = create<IUserStore>()(
           if (userStr && token) {
             try {
               const user = JSON.parse(userStr);
-              set({ user, isAuthenticated: true });
+              set({ user, isAuthenticated: true, isInitialized: true });
             } catch (error) {
               console.error('Failed to parse user data:', error);
-              set({ user: null, isAuthenticated: false });
+              set({ user: null, isAuthenticated: false, isInitialized: true });
             }
+          } else {
+            set({ isInitialized: true });
           }
         }
       },
