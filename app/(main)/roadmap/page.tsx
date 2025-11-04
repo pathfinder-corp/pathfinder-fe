@@ -201,7 +201,7 @@ export default function RoadmapPage() {
           {isLoading ? (
             <>
               Đang tạo lộ trình...
-              <Loader2 className="size-6 animate-spin" />
+              <Loader2 className="size-5.5 animate-spin" />
             </>
           ) : (
             <>

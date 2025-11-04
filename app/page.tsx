@@ -138,7 +138,7 @@ export default function Home() {
                 size="lg"
                 className="w-full sm:w-auto rounded-full bg-white text-neutral-950 hover:bg-neutral-200 text-[1.2rem] px-10 py-8"
               >
-                <Link href="/register">
+                <Link href="/login">
                   Discover your roadmap
                 </Link>
               </Button>

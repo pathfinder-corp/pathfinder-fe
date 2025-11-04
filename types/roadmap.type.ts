@@ -61,3 +61,13 @@ export interface IRoadmapListResponse {
   page: number;
   limit: number;
 }
+
+export interface IAskInsightRequest {
+  question: string;
+  phaseTitle?: string;
+  stepTitle?: string;
+}
+
+export interface IAskInsightResponse {
+  answer: string;
+}

@@ -20,3 +20,33 @@ export function cleanObject<T extends Record<string, any>>(obj: T): Partial<T> {
     return acc;
   }, {} as Partial<T>);
 }
+
+export function removeVietnameseTones(str: string): string {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase()
+    .trim();
+}
+
+export function searchVietnamese(text: string, query: string): boolean {
+  const normalizedText = removeVietnameseTones(text);
+  const normalizedQuery = removeVietnameseTones(query);
+  return normalizedText.includes(normalizedQuery);
+}
+
+export function extractTitle(title: string): string {
+  if (!title || typeof title !== 'string') return '';
+  
+  const trimmed = title.trim();
+  const parts = trimmed.split(':');
+  
+  if (parts.length > 1) {
+    const extracted = parts.slice(1).join(':').trim();
+    return extracted || trimmed;
+  }
+  
+  return trimmed;
+}

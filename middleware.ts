@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('auth-token')?.value;
   const { pathname } = request.nextUrl;
 
-  const publicRoutePrefixes = ['/', '/contact'];
+  const publicRoutePrefixes = ['/', '/contact', '/about-ai'];
   const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
   
   const isPublicRoute = publicRoutePrefixes.some(route => {

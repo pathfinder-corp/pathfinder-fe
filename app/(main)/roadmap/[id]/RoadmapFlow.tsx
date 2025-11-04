@@ -26,11 +26,12 @@ const nodeTypes = {
 interface RoadmapFlowProps {
   nodes: Node<any>[];
   edges: Edge[];
+  resetTrigger?: number;
   onNodeClick?: (nodeId: string) => void;
 }
 
-function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, onNodeClick }: RoadmapFlowProps) {
-  const [nodes, setNodes, onNodesChange] = useNodesState<Node<any>>(initialNodes);
+function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigger, onNodeClick }: RoadmapFlowProps) {
+  const [nodes, _setNodes, onNodesChange] = useNodesState<Node<any>>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initialEdges);
   const { setCenter } = useReactFlow();
 
@@ -48,23 +49,33 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, onNodeClic
     [onNodeClick]
   );
 
+  const centerToStartNode = useCallback(() => {
+    const startNode = nodes.find(node => node.id === 'start');
+    if (startNode && startNode.position) {
+      setCenter(
+        startNode.position.x + 135, 
+        startNode.position.y + 370, 
+        { 
+          zoom: 0.8,
+          duration: 800
+        }
+      );
+    }
+  }, [nodes, setCenter]);
+
   useEffect(() => {
     if (nodes.length > 0) {
-      const startNode = nodes[0];
-      
       setTimeout(() => {
-        setCenter(
-          startNode.position.x + 135, 
-          startNode.position.y + 180, 
-          { 
-            zoom: 0.8,
-            duration: 800
-          }
-        );
+        centerToStartNode();
       }, 100);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [nodes.length, centerToStartNode]);
+
+  useEffect(() => {
+    if (resetTrigger && resetTrigger > 0) {
+      centerToStartNode();
+    }
+  }, [resetTrigger, centerToStartNode]);
 
   return (
     <ReactFlow
