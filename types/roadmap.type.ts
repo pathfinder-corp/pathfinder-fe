@@ -71,3 +71,22 @@ export interface IAskInsightRequest {
 export interface IAskInsightResponse {
   answer: string;
 }
+
+export interface ISharedUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  status: 'pending' | 'accepted';
+  sharedAt: string;
+}
+
+export interface IShareSettings {
+  isSharedWithAll: boolean;
+  sharedUsers: ISharedUser[];
+}
+
+export interface IShareRoadmapRequest {
+  shareWithAll?: boolean;
+  userIds?: string[];
+}

@@ -1,4 +1,11 @@
-import type { IRoadmapRequest, IRoadmapResponse, IAskInsightRequest, IAskInsightResponse } from '@/types';
+import type { 
+  IRoadmapRequest, 
+  IRoadmapResponse, 
+  IAskInsightRequest, 
+  IAskInsightResponse,
+  IShareSettings,
+  IShareRoadmapRequest
+} from '@/types';
 import { api } from '@/lib';
 
 export const roadmapService = {
@@ -67,6 +74,34 @@ export const roadmapService = {
       return response.data;
     } catch (error) {
       console.error('Ask AI insight failed:', error);
+      throw error;
+    }
+  },
+
+  getShareSettings: async (id: string): Promise<IShareSettings> => {
+    try {
+      const response = await api.get<IShareSettings>(`/roadmaps/${id}/share`);
+      return response.data;
+    } catch (error) {
+      console.error('Get share settings failed:', error);
+      throw error;
+    }
+  },
+
+  shareRoadmap: async (id: string, data: IShareRoadmapRequest): Promise<void> => {
+    try {
+      await api.post(`/roadmaps/${id}/share`, data);
+    } catch (error) {
+      console.error('Share roadmap failed:', error);
+      throw error;
+    }
+  },
+
+  revokeAccess: async (id: string, userId: string): Promise<void> => {
+    try {
+      await api.delete(`/roadmaps/${id}/share/${userId}`);
+    } catch (error) {
+      console.error('Revoke access failed:', error);
       throw error;
     }
   }

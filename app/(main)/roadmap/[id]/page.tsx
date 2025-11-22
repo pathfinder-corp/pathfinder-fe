@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/accordion';
 import RoadmapFlow from './RoadmapFlow';
 import DetailLoading from './loading';
-import { AIChatInterface, RoadmapNodeDetail } from './components';
+import { AIChatInterface, RoadmapNodeDetail, ShareRoadmapDialog } from './components';
 import type { INodeDetail, IChatMessage, LoadingStates } from './types';
 
 export default function RoadmapDetailPage() {
@@ -49,6 +49,7 @@ export default function RoadmapDetailPage() {
   const [chatMessages, setChatMessages] = useState<IChatMessage[]>([]);
   const [chatHistoryByNode, setChatHistoryByNode] = useState<Record<string, IChatMessage[]>>({});
   const [chatInput, setChatInput] = useState<string>('');
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState<boolean>(false);
 
   const updateLoadingState = useCallback((key: keyof LoadingStates, value: boolean) => {
     setLoadingStates(prev => ({ ...prev, [key]: value }));
@@ -257,11 +258,7 @@ export default function RoadmapDetailPage() {
           variant="outline"
           size="lg"
           className="flex items-center gap-2 !h-12 !text-[1.1rem]"
-          onClick={() => {
-            const shareUrl = `${window.location.origin}/roadmap/${roadmapId}`;
-            navigator.clipboard.writeText(shareUrl);
-            toast.success('Link copied to clipboard!');
-          }}
+          onClick={() => setIsShareDialogOpen(true)}
         >
           Share
           <Share2 className="size-4.5" />
@@ -465,6 +462,13 @@ export default function RoadmapDetailPage() {
           )}
         </SheetContent>
       </Sheet>
+
+      <ShareRoadmapDialog
+        open={isShareDialogOpen}
+        onOpenChange={setIsShareDialogOpen}
+        roadmapId={roadmapId}
+        roadmapTitle={roadmap.topic}
+      />
     </div>
   );
 }
