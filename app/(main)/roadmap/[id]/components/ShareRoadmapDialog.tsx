@@ -2,17 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { useDebounceValue } from 'usehooks-ts';
 import { 
   Users, 
   Globe, 
   Loader2, 
-  Check, 
-  Clock,
   Trash2,
-  Copy
+  Copy,
+  Search,
+  UserPlus,
+  Mail
 } from 'lucide-react';
-import { roadmapService } from '@/services';
-import type { IShareSettings, ISharedUser } from '@/types';
+import { roadmapService, userService } from '@/services';
+import type { IShareSettings, ISharedUser, ISearchUserResult } from '@/types';
 
 import {
   Dialog,
@@ -53,13 +55,46 @@ export function ShareRoadmapDialog({
   const [shareSettings, setShareSettings] = useState<IShareSettings | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [userToRevoke, setUserToRevoke] = useState<ISharedUser | null>(null);
+  const [searchEmail, setSearchEmail] = useState<string>('');
+  const [debouncedSearchEmail] = useDebounceValue(searchEmail, 300);
+  const [searchResults, setSearchResults] = useState<ISearchUserResult[]>([]);
+  const [isSearching, setIsSearching] = useState<boolean>(false);
+  const [isInviting, setIsInviting] = useState<boolean>(false);
 
   useEffect(() => {
     if (open) {
       fetchShareSettings();
+    } else {
+      setSearchEmail('');
+      setSearchResults([]);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, roadmapId]);
+
+  useEffect(() => {
+    const searchUsers = async () => {
+      if (!debouncedSearchEmail || debouncedSearchEmail.length < 3) {
+        setSearchResults([]);
+        return;
+      }
+
+      try {
+        setIsSearching(true);
+        const results = await userService.searchUsers(debouncedSearchEmail);
+        const filteredResults = results.filter(
+          user => !shareSettings?.sharedUsers?.some(shared => shared.id === user.id)
+        );
+        setSearchResults(filteredResults);
+      } catch (error) {
+        console.error('Search users error:', error);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    };
+
+    searchUsers();
+  }, [debouncedSearchEmail, shareSettings?.sharedUsers]);
 
   const fetchShareSettings = async () => {
     try {
@@ -119,21 +154,23 @@ export function ShareRoadmapDialog({
     toast.success('Link copied to clipboard!');
   };
 
-  const getStatusBadge = (status: 'pending' | 'accepted') => {
-    if (status === 'pending') {
-      return (
-        <span className="flex items-center gap-2 px-3 py-1.5 bg-yellow-500/10 text-yellow-500 text-sm font-medium rounded-full">
-          <Clock className="size-3.5" />
-          Pending
-        </span>
-      );
+  const handleInviteUser = async (user: ISearchUserResult) => {
+    try {
+      setIsInviting(true);
+      await roadmapService.shareRoadmap(roadmapId, {
+        userIds: [user.id]
+      });
+      toast.success(`Invitation sent to ${user.email}`);
+      
+      setSearchEmail('');
+      setSearchResults([]);
+      refreshShareSettings();
+    } catch (error) {
+      toast.error('Failed to send invitation');
+      console.error('Invite user error:', error);
+    } finally {
+      setIsInviting(false);
     }
-    return (
-      <span className="flex items-center gap-2 px-3 py-1.5 bg-green-500/10 text-green-500 text-sm font-medium rounded-full">
-        <Check className="size-3.5" />
-        Accepted
-      </span>
-    );
   };
 
   return (
@@ -156,7 +193,7 @@ export function ShareRoadmapDialog({
               <div className="px-6 pb-6 space-y-6">
                 <div className="space-y-3">
                   <label className="text-sm font-semibold flex items-center gap-2">
-                    <Copy className="size-4.5" />
+                    <Copy className="size-4" />
                     Share Link
                   </label>
                   <div className="flex gap-2">
@@ -200,7 +237,66 @@ export function ShareRoadmapDialog({
 
                 <div className="space-y-3">
                   <label className="text-sm font-semibold flex items-center gap-2">
-                    <Users className="size-4.5" />
+                    <Mail className="size-4" />
+                    Invite by Email
+                  </label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-500" />
+                    <Input
+                      placeholder="Search user by email..."
+                      value={searchEmail}
+                      onChange={(e) => setSearchEmail(e.target.value)}
+                      className="!h-11 text-sm bg-neutral-900/50 border-neutral-800 pl-10"
+                    />
+                    {isSearching && (
+                      <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 size-4 animate-spin text-neutral-500" />
+                    )}
+                  </div>
+
+                  {searchResults.length > 0 && (
+                    <div className="border border-neutral-800 rounded-lg overflow-hidden bg-neutral-900/30">
+                      {searchResults.map((user) => (
+                        <div
+                          key={user.id}
+                          className="flex items-center justify-between p-3 hover:bg-neutral-800/50 transition-colors border-b border-neutral-800/50 last:border-b-0"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-sm truncate">
+                              {user.firstName} {user.lastName}
+                            </p>
+                            <p className="text-xs text-neutral-400 truncate">{user.email}</p>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="!h-8 gap-1.5 ml-3 flex-shrink-0"
+                            onClick={() => handleInviteUser(user)}
+                            disabled={isInviting}
+                          >
+                            {isInviting ? (
+                              <Loader2 className="size-3.5 animate-spin" />
+                            ) : (
+                              <UserPlus className="size-3.5" />
+                            )}
+                            Invite
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {searchEmail.length >= 3 && !isSearching && searchResults.length === 0 && (
+                    <p className="text-sm text-neutral-500 text-center py-3">
+                      No users found with that email
+                    </p>
+                  )}
+                </div>
+
+                <Separator className="bg-neutral-800" />
+
+                <div className="space-y-3">
+                  <label className="text-sm font-semibold flex items-center gap-2">
+                    <Users className="size-4" />
                     Shared with ({shareSettings?.sharedUsers?.length || 0})
                   </label>
 
@@ -220,17 +316,14 @@ export function ShareRoadmapDialog({
                               </p>
                               <p className="text-xs text-neutral-400 mt-0.5 truncate">{user.email}</p>
                             </div>
-                            <div className="flex items-center gap-2.5 ml-3">
-                              {getStatusBadge(user.status)}
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="size-9 hover:bg-red-500/10 hover:text-red-500 transition-colors flex-shrink-0"
-                                onClick={() => setUserToRevoke(user)}
-                              >
-                                <Trash2 className="size-4.5" />
-                              </Button>
-                            </div>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="size-9 hover:bg-red-500/10 hover:text-red-500 transition-colors flex-shrink-0 ml-3"
+                              onClick={() => setUserToRevoke(user)}
+                            >
+                              <Trash2 className="size-4" />
+                            </Button>
                           </div>
                         ))}
                       </ScrollArea>
@@ -239,7 +332,7 @@ export function ShareRoadmapDialog({
                     <div className="text-center py-10 text-neutral-400 text-sm border border-dashed border-neutral-800 rounded-lg bg-neutral-900/20">
                       <Users className="size-10 mx-auto mb-2.5 text-neutral-600" />
                       <p className="font-medium">No users shared yet</p>
-                      <p className="text-xs mt-1 text-neutral-500">Enable public access to share with everyone</p>
+                      <p className="text-xs mt-1 text-neutral-500">Invite users by searching their email above</p>
                     </div>
                   )}
                 </div>

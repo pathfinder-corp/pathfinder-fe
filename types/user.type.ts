@@ -26,3 +26,10 @@ export interface IUserStore {
   clearUser: () => void;
   initializeUser: () => void;
 }
+
+export interface ISearchUserResult {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}

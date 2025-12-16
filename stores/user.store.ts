@@ -7,7 +7,7 @@ export const useUserStore = create<IUserStore>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      isInitialized: false, // ✅ Thêm state này
+      isInitialized: false,
 
       setUser: (user) => {
         set({ user, isAuthenticated: true });

@@ -53,6 +53,7 @@ export interface IRoadmapResponse {
   milestones: IMilestone[];
   createdAt: string;
   updatedAt: string;
+  accessType?: 'owner' | 'shared' | 'public';
 }
 
 export interface IRoadmapListResponse {
@@ -77,7 +78,6 @@ export interface ISharedUser {
   email: string;
   firstName: string;
   lastName: string;
-  status: 'pending' | 'accepted';
   sharedAt: string;
 }
 
@@ -89,4 +89,10 @@ export interface IShareSettings {
 export interface IShareRoadmapRequest {
   shareWithAll?: boolean;
   userIds?: string[];
+}
+
+export interface IRoadmapStore {
+  isViewMode: boolean;
+  setIsViewMode: (isViewMode: boolean) => void;
+  reset: () => void;
 }

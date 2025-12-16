@@ -2,13 +2,15 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Calendar, Zap, Maximize2, Clock, RotateCcw, ArrowLeft, Sparkles, Share2 } from 'lucide-react';
+import { Eye, Calendar, Zap, Maximize2, Clock, RotateCcw, ArrowLeft, Sparkles, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { IRoadmapResponse } from '@/types';
 import type { Node, Edge } from '@xyflow/react';
 import { roadmapService } from '@/services';
 import { convertRoadmapToFlow, extractTitle } from '@/lib';
+import { useRoadmapStore } from '@/stores';
 
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   Sheet,
@@ -32,6 +34,7 @@ import type { INodeDetail, IChatMessage, LoadingStates } from './types';
 export default function RoadmapDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { setIsViewMode, reset: resetRoadmapStore } = useRoadmapStore();
   const roadmapId = params.id as string;
 
   const [roadmap, setRoadmap] = useState<IRoadmapResponse | null>(null);
@@ -62,6 +65,9 @@ export default function RoadmapDetailPage() {
         const data = await roadmapService.getRoadmap(roadmapId);
         setRoadmap(data);
 
+        const isOwnerAccess = data.accessType === 'owner' || data.accessType === undefined;
+        setIsViewMode(!isOwnerAccess);
+
         const { nodes: flowNodes, edges: flowEdges } = convertRoadmapToFlow(data);
         setNodes(flowNodes);
         setEdges(flowEdges);
@@ -76,7 +82,13 @@ export default function RoadmapDetailPage() {
     if (roadmapId) {
       fetchRoadmap();
     }
-  }, [roadmapId, router, updateLoadingState]);
+
+    return () => {
+      resetRoadmapStore();
+    };
+  }, [roadmapId, router, updateLoadingState, setIsViewMode, resetRoadmapStore]);
+
+  const isViewer = roadmap?.accessType === 'shared' || roadmap?.accessType === 'public';
 
   const handleNodeClick = (nodeId: string) => {
     if (!roadmap) return;
@@ -240,7 +252,15 @@ export default function RoadmapDetailPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <h1 className="text-5xl font-bold mb-3">{roadmap.topic}</h1>
+          <div className="flex items-center gap-3 mb-3">
+            <h1 className="text-5xl font-bold">{roadmap.topic}</h1>
+            {isViewer && (
+              <Badge variant="secondary" className="text-sm px-3 py-1.5">
+                <Eye className="size-3.5 mr-1.5" />
+                View Only
+              </Badge>
+            )}
+          </div>
           
           <div className="flex items-center gap-6 text-neutral-400">
             <div className="flex items-center gap-2">
@@ -254,15 +274,17 @@ export default function RoadmapDetailPage() {
           </div>
         </div>
         
-        <Button
-          variant="outline"
-          size="lg"
-          className="flex items-center gap-2 !h-12 !text-[1.1rem]"
-          onClick={() => setIsShareDialogOpen(true)}
-        >
-          Share
-          <Share2 className="size-4.5" />
-        </Button>
+        {!isViewer && (
+          <Button
+            variant="outline"
+            size="lg"
+            className="flex items-center gap-2 !h-12 !text-[1.1rem]"
+            onClick={() => setIsShareDialogOpen(true)}
+          >
+            Share
+            <Share2 className="size-4.5" />
+          </Button>
+        )}
       </div>
       {roadmap.summary && (
         <Accordion 

@@ -7,17 +7,19 @@ import {
   Map,
   Menu,
   X,
-  History
+  History,
+  ClipboardList
 } from 'lucide-react';
-import { useUserStore } from '@/stores';
+import { useUserStore, useRoadmapStore } from '@/stores';
 import { UserMenu } from '@/components/UserMenu';
 import { Button } from '@/components/ui/button';
 import { USER_ROLES } from '@/constants';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const STUDENT_NAV = [
-  { label: 'Create Roadmap', href: '/roadmap', icon: Map, exact: false },
-  { label: 'History', href: '/roadmap/history', icon: History, exact: true }
+  { label: 'Create Roadmap', href: '/roadmap', icon: Map, exact: true },
+  { label: 'Assessment', href: '/assessment', icon: ClipboardList, exact: true },
+  { label: 'History', href: '/history', icon: History, exact: false }
 ];
 
 export default function MainLayout({
@@ -27,6 +29,7 @@ export default function MainLayout({
 }) {
   const pathname = usePathname();
   const { user, isAuthenticated, isInitialized, initializeUser } = useUserStore();
+  const { isViewMode } = useRoadmapStore();
 
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(false);
 
@@ -47,29 +50,38 @@ export default function MainLayout({
   const navItems = getNavItems();
 
   const isItemActive = (item: (typeof STUDENT_NAV)[0]) => {
-    if (item.exact) return pathname === item.href;
-    
-    if (item.href === '/roadmap') {
-      return pathname === '/roadmap' || 
-             (pathname.startsWith('/roadmap/') && !pathname.startsWith('/roadmap/history'));
+    if (item.exact) {
+      if (item.href === '/roadmap') {
+        return pathname === '/roadmap' || 
+               (pathname.startsWith('/roadmap/') && !pathname.startsWith('/roadmap/history'));
+      }
+      if (item.href === '/assessment') {
+        return pathname === '/assessment' || 
+               (pathname.startsWith('/assessment/') && !pathname.startsWith('/assessment/history'));
+      }
+      return pathname === item.href;
     }
     
     return pathname.startsWith(item.href);
   };
+
+  const shouldShowSidebar = isInitialized && isAuthenticated && user && !isViewMode;
 
   return (
     <div className="min-h-screen bg-neutral-950">
       <header className="fixed top-0 left-0 right-0 h-22 z-50 bg-neutral-950/80 backdrop-blur-xl border-b border-neutral-800/50">
         <div className="h-full px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden"
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            >
-              {isSidebarOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-            </Button>
+            {shouldShowSidebar && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden"
+                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              >
+                {isSidebarOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+              </Button>
+            )}
 
             <Link 
               href="/"
@@ -108,7 +120,7 @@ export default function MainLayout({
         </div>
       </header>
 
-      {isInitialized && isAuthenticated && user && (
+      {shouldShowSidebar && (
         <aside className="hidden lg:block fixed left-0 top-24 bottom-0 w-[18rem] border-r border-neutral-800 bg-neutral-950/50 backdrop-blur-sm overflow-y-auto">
           <nav className="p-4 space-y-1">
             {navItems.map((item) => {
@@ -134,7 +146,7 @@ export default function MainLayout({
         </aside>
       )}
 
-      {isSidebarOpen && isInitialized && isAuthenticated && user && (
+      {isSidebarOpen && shouldShowSidebar && (
         <>
           <div
             className="lg:hidden fixed inset-0 bg-black/50 z-40 top-24"
@@ -167,8 +179,8 @@ export default function MainLayout({
         </>
       )}
 
-      <main className={`${isInitialized && isAuthenticated && user ? 'lg:ml-[18rem]' : ''} pt-24 min-h-screen`}>
-        <div className="p-6 lg:p-8">
+      <main className={`${shouldShowSidebar ? 'lg:ml-[18rem]' : ''} pt-24 min-h-screen`}>
+        <div className={`p-6 lg:p-8 ${!shouldShowSidebar ? 'max-w-7xl mx-auto' : ''}`}>
           {children}
         </div>
       </main>

@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -31,6 +31,7 @@ type RoadmapFormData = z.infer<typeof roadmapSchema>;
 
 export default function RoadmapPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [dateRange, setDateRange] = useState<{from: Date | undefined; to: Date | undefined}>({
     from: undefined,
@@ -45,6 +46,15 @@ export default function RoadmapPage() {
   } = useForm<RoadmapFormData>({
     resolver: zodResolver(roadmapSchema),
   });
+
+  const fromAssessment = searchParams.get('from') === 'assessment';
+  const suggestedTopic = searchParams.get('topic');
+
+  useEffect(() => {
+    if (suggestedTopic) {
+      setValue('topic', suggestedTopic);
+    }
+  }, [suggestedTopic, setValue]);
 
   const onSubmit = async (data: RoadmapFormData) => {
     try {
@@ -74,11 +84,26 @@ export default function RoadmapPage() {
   };
   
   return (
-    <div className="pt-10 flex flex-col items-center justify-center">
-      <h1 className="text-5xl font-bold mb-6">What do you want to learn today?</h1>
-      <p className="text-xl text-neutral-500">
-        Enter any topic below to automatically create a roadmap you want
-      </p>
+    <div className={`${fromAssessment && suggestedTopic ? 'pb-12' : ''} pt-10 flex flex-col items-center justify-center`}>
+      {fromAssessment && suggestedTopic ? (
+        <>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-800 text-neutral-300 text-base mb-6">
+            <span>Suggested from your assessment results</span>
+          </div>
+          <h1 className="text-5xl font-bold mb-6">Create Your Learning Roadmap</h1>
+          <p className="text-xl text-neutral-500 text-center max-w-2xl">
+            Based on your assessment, we recommend learning <span className="text-white font-medium">{suggestedTopic}</span>. 
+            Customize the options below to personalize your roadmap.
+          </p>
+        </>
+      ) : (
+        <>
+          <h1 className="text-5xl font-bold mb-6">What do you want to learn today?</h1>
+          <p className="text-xl text-neutral-500">
+            Enter any topic below to automatically create a roadmap you want
+          </p>
+        </>
+      )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-7 mt-6">
         <div className="space-y-[.65rem]">
