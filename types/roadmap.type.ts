@@ -42,6 +42,14 @@ interface IMilestone {
   successCriteria: string;
 }
 
+interface IRoadmapOwner {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar: string | null;
+}
+
 export interface IRoadmapResponse {
   id: string;
   topic: string;
@@ -53,7 +61,8 @@ export interface IRoadmapResponse {
   milestones: IMilestone[];
   createdAt: string;
   updatedAt: string;
-  accessType?: 'owner' | 'shared' | 'public';
+  owner: IRoadmapOwner;
+  accessType: 'owner' | 'shared' | 'public';
 }
 
 export interface IRoadmapListResponse {
@@ -78,6 +87,7 @@ export interface ISharedUser {
   email: string;
   firstName: string;
   lastName: string;
+  avatar: string | null;
   sharedAt: string;
 }
 

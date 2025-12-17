@@ -10,7 +10,6 @@ import { toast } from 'sonner';
 import Link from 'next/link';
 import { authService } from '@/services';
 import type { IRegisterRequest } from '@/types';
-import { USER_ROLES } from '@/constants';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -58,7 +57,6 @@ const registerSchema = z.object({
     .min(1, { message: 'Last name is required' })
     .min(2, { message: 'Last name must be at least 2 characters' })
     .max(50, { message: 'Last name is too long' }),
-  role: z.enum(['student', 'counselor']),
 }).refine((data) => data.password === data.confirmPassword, {
   message: 'Confirm password does not match',
   path: ['confirmPassword'],
@@ -87,8 +85,7 @@ export default function RegisterPage() {
       password: '',
       confirmPassword: '',
       firstName: '',
-      lastName: '',
-      role: 'student'
+      lastName: ''
     },
   });
 
@@ -100,8 +97,7 @@ export default function RegisterPage() {
         email: data.email,
         password: data.password,
         firstName: data.firstName,
-        lastName: data.lastName,
-        role: data.role
+        lastName: data.lastName
       };
 
       await registerService?.(registerPayload);
@@ -148,7 +144,7 @@ export default function RegisterPage() {
               <Input
                 id="firstName"
                 type="text"
-                placeholder="John Doe"
+                placeholder="John"
                 autoComplete="off"
                 disabled={isLoading}
                 className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
@@ -267,42 +263,6 @@ export default function RegisterPage() {
             </div>
             {errors.confirmPassword && (
               <p className="text-lg text-red-500">{errors.confirmPassword.message}</p>
-            )}
-          </div>
-  
-          <div className="space-y-2">
-            <Label htmlFor="role" className="text-lg">
-              Role <span className="text-red-500">*</span>
-            </Label>
-            <Controller
-              name="role"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  disabled={isLoading}
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger 
-                    className={`!h-12 !text-lg w-full bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
-                      errors.role ? 'border-red-500 focus:border-red-500' : ''
-                    }`}
-                  >
-                    <SelectValue placeholder="Select role" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-neutral-900 border-neutral-800">
-                    <SelectItem value={USER_ROLES.STUDENT} className="!text-lg focus:bg-neutral-800 focus:text-white">
-                      Student
-                    </SelectItem>
-                    <SelectItem value={USER_ROLES.COUNSELOR} className="!text-lg focus:bg-neutral-800 focus:text-white">
-                      Counselor
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              )}
-            />
-            {errors.role && (
-              <p className="text-lg text-red-500">{errors.role.message}</p>
             )}
           </div>
         </CardContent>

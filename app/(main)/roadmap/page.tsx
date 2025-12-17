@@ -32,7 +32,8 @@ type RoadmapFormData = z.infer<typeof roadmapSchema>;
 export default function RoadmapPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isLoading, setIsLoading] = useState(false);
+  
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [dateRange, setDateRange] = useState<{from: Date | undefined; to: Date | undefined}>({
     from: undefined,
     to: undefined,

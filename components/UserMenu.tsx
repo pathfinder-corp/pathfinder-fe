@@ -4,10 +4,11 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { LogOut, User, Settings } from 'lucide-react';
+import { LogOut, Settings, LayoutDashboard, MessageCircle, GraduationCap, FileText } from 'lucide-react';
 import { useUserStore } from '@/stores';
 import { authService } from '@/services';
 import { toast } from 'sonner';
+import { USER_ROLES } from '@/constants';
 
 export function UserMenu() {
   const router = useRouter();
@@ -51,13 +52,13 @@ export function UserMenu() {
         {user.avatar ? (
           <div className="relative size-11 rounded-full overflow-hidden border-2 border-neutral-700">
             <Image
-              src={user.avatar}
-              alt={`${user.firstName} ${user.lastName}`}
+            src={user.avatar}
+            alt={`${user.firstName} ${user.lastName}`}
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover"
               priority
-            />
+          />
           </div>
         ) : (
           <div className="size-11 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 border-2 border-neutral-600 flex items-center justify-center text-sm font-bold">
@@ -78,31 +79,66 @@ export function UserMenu() {
               <p className="text-base text-neutral-400">{user.email}</p>
             </div>
 
-            <Link
-              href="/profile"
-              className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
-              onClick={() => setIsOpen(false)}
-            >
-              <User className="size-5" />
-              My profile
-            </Link>
+            {user.role === USER_ROLES.ADMIN && (
+              <Link
+                href="/admin/dashboard"
+                className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
+                onClick={() => setIsOpen(false)}
+              >
+                <LayoutDashboard className="size-5" />
+                Dashboard
+              </Link>
+            )}
 
             <Link
-              href="/settings"
+              href="/messages"
               className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
               onClick={() => setIsOpen(false)}
             >
+              <MessageCircle className="size-5" />
+              Messages
+            </Link>
+
+            {user.role === USER_ROLES.MENTOR && (
+              <Link
+                href="/mentor/profile"
+                className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
+                onClick={() => setIsOpen(false)}
+              >
+                <GraduationCap className="size-5" />
+                Mentor Profile
+              </Link>
+            )}
+
+            {user.role === USER_ROLES.STUDENT && (
+              <>
+                <Link
+                  href="/mentor/applications"
+                  className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FileText className="size-5" />
+                  My Applications
+                </Link>
+              </>
+            )}
+
+              <Link
+                href="/settings"
+              className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
+                onClick={() => setIsOpen(false)}
+              >
               <Settings className="size-5" />
               Settings
-            </Link>
+              </Link>
 
-            <button
-              onClick={handleLogout}
+              <button
+                onClick={handleLogout}
               className="w-full flex items-center gap-3 px-4 py-3 text-base text-red-400 hover:bg-neutral-800 hover:text-red-300 transition-colors cursor-pointer"
-            >
+              >
               <LogOut className="size-5" />
               Logout
-            </button>
+              </button>
           </div>
         </>
       )}

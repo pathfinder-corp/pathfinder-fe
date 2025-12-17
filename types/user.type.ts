@@ -24,7 +24,8 @@ export interface IUserStore {
   isInitialized: boolean;
   setUser: (user: IUser) => void;
   clearUser: () => void;
-  initializeUser: () => void;
+  initializeUser: () => Promise<void>;
+  refreshUser: () => Promise<void>;
 }
 
 export interface ISearchUserResult {
@@ -32,4 +33,23 @@ export interface ISearchUserResult {
   email: string;
   firstName: string;
   lastName: string;
+}
+
+export interface IUpdateProfileRequest {
+  firstName: string;
+  lastName: string;
+}
+
+export interface IChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface IUserProfile extends IUser {
+  emailVerified: boolean;
+  emailVerificationToken: string | null;
+  emailVerificationSentAt: string | null;
+  emailVerifiedAt: string | null;
+  lastLoginAt: string | null;
+  lastLogoutAt: string | null;
 }

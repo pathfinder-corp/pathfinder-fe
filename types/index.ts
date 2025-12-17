@@ -3,3 +3,7 @@ export * from './user.type';
 export * from './api.type';
 export * from './roadmap.type';
 export * from './assessment.type';
+export * from './admin.type';
+export * from './table.type';
+export * from './message.type';
+export * from './mentor.type';

@@ -1,4 +1,4 @@
-import { IUser, UserRole } from "./user.type";
+import { IUser } from "./user.type";
 
 export interface ILoginRequest {
   email: string;
@@ -17,7 +17,6 @@ export interface IRegisterRequest {
   password: string;
   firstName: string;
   lastName: string;
-  role: UserRole;
 }
 
 export interface IRegisterResponse {

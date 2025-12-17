@@ -19,7 +19,8 @@ import {
   TrendingDown,
   BookOpen,
   ExternalLink,
-  Target
+  Target,
+  Map
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { assessmentService } from '@/services';
@@ -43,6 +44,7 @@ type AnswerState = {
     selectedIndex: number;
     isSubmitted: boolean;
     isCorrect?: boolean;
+    correctAnswerIndex?: number;
     timeSpent: number;
   };
 };
@@ -132,6 +134,7 @@ export default function AssessmentDetailPage() {
           selectedIndex: selectedOption,
           isSubmitted: true,
           isCorrect: response.isCorrect,
+          correctAnswerIndex: response.correctAnswerIndex,
           timeSpent
         }
       }));
@@ -213,9 +216,15 @@ export default function AssessmentDetailPage() {
     if (currentAnswer.isCorrect && currentAnswer.selectedIndex === index) {
       return `${baseStyle} border-green-500 bg-green-500/10`;
     }
+    
     if (!currentAnswer.isCorrect && currentAnswer.selectedIndex === index) {
       return `${baseStyle} border-red-500 bg-red-500/10`;
     }
+    
+    if (!currentAnswer.isCorrect && currentAnswer.correctAnswerIndex === index) {
+      return `${baseStyle} border-green-500 bg-green-500/10`;
+    }
+    
     return `${baseStyle} border-neutral-800 bg-neutral-900/30 opacity-50`;
   };
 
@@ -440,7 +449,7 @@ export default function AssessmentDetailPage() {
                   className="cursor-pointer flex items-start gap-4 p-5 bg-neutral-800/50 border border-neutral-700 rounded-xl hover:border-neutral-500 hover:bg-neutral-800 transition-all text-left group"
                 >
                   <div className="flex-shrink-0 size-10 rounded-lg bg-neutral-700 flex items-center justify-center">
-                    <BookOpen className="size-5 text-white" />
+                    <Map className="size-5 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="text-base font-semibold text-white group-hover:text-neutral-300 transition-colors">
@@ -668,7 +677,11 @@ export default function AssessmentDetailPage() {
                     ? 'border-red-500 bg-red-500'
                     : ''
                   }
-                  ${currentAnswer?.isSubmitted && currentAnswer.selectedIndex !== index
+                  ${currentAnswer?.isSubmitted && !currentAnswer.isCorrect && currentAnswer.correctAnswerIndex === index
+                    ? 'border-green-500 bg-green-500'
+                    : ''
+                  }
+                  ${currentAnswer?.isSubmitted && currentAnswer.selectedIndex !== index && currentAnswer.correctAnswerIndex !== index
                     ? 'border-neutral-700'
                     : ''
                   }
@@ -679,6 +692,8 @@ export default function AssessmentDetailPage() {
                     ) : (
                       <X className="size-5 text-white" />
                     )
+                  ) : currentAnswer?.isSubmitted && !currentAnswer.isCorrect && currentAnswer.correctAnswerIndex === index ? (
+                    <Check className="size-5 text-white" />
                   ) : (
                     !currentAnswer?.isSubmitted && selectedOption === index && (
                       <div className="size-3 rounded-full bg-neutral-900" />

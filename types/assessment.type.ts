@@ -1,4 +1,5 @@
 export type AssessmentDifficulty = 'easy' | 'medium' | 'hard';
+export type AssessmentStatus = 'pending' | 'in_progress' | 'completed';
 
 export interface IAssessmentQuestion {
   id: string;
@@ -13,7 +14,7 @@ export interface IAssessment {
   domain: string;
   difficulty: AssessmentDifficulty;
   questionCount: number;
-  status: 'pending' | 'in_progress' | 'completed';
+  status: AssessmentStatus;
   isSharedWithAll: boolean;
   answeredCount: number;
   questions: IAssessmentQuestion[];
@@ -35,7 +36,7 @@ export interface ISubmitAnswerRequest {
 
 export interface ISubmitAnswerResponse {
   isCorrect: boolean;
-  correctAnswerIndex?: number;
+  correctAnswerIndex: number;
 }
 
 export interface IQuestionBreakdown {

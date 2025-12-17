@@ -4,7 +4,8 @@ import type {
   IAskInsightRequest, 
   IAskInsightResponse,
   IShareSettings,
-  IShareRoadmapRequest
+  IShareRoadmapRequest,
+  ISharedUser
 } from '@/types';
 import { api } from '@/lib';
 
@@ -84,6 +85,16 @@ export const roadmapService = {
       return response.data;
     } catch (error) {
       console.error('Get share settings failed:', error);
+      throw error;
+    }
+  },
+
+  getSharedUsers: async (id: string): Promise<ISharedUser[]> => {
+    try {
+      const response = await api.get<ISharedUser[]>(`/roadmaps/${id}/shared-users`);
+      return response.data;
+    } catch (error) {
+      console.error('Get shared users failed:', error);
       throw error;
     }
   },

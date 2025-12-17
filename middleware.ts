@@ -6,7 +6,8 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const publicRoutePrefixes = ['/', '/contact', '/about-ai'];
-  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email'];
+  const adminRoutes = ['/admin'];
   
   const isPublicRoute = publicRoutePrefixes.some(route => {
     if (route === '/') {
@@ -16,6 +17,7 @@ export function middleware(request: NextRequest) {
   });
   
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
+  const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
 
   if (!token && !isPublicRoute && !isAuthRoute) {
     const url = new URL('/login', request.url);
@@ -25,6 +27,12 @@ export function middleware(request: NextRequest) {
 
   if (token && isAuthRoute) {
     return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  if (isAdminRoute && !token) {
+    const url = new URL('/login', request.url);
+    url.searchParams.set('from', pathname);
+    return NextResponse.redirect(url);
   }
 
   return NextResponse.next();

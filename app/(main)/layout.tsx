@@ -8,7 +8,8 @@ import {
   Menu,
   X,
   History,
-  ClipboardList
+  ClipboardList,
+  GraduationCap
 } from 'lucide-react';
 import { useUserStore, useRoadmapStore } from '@/stores';
 import { UserMenu } from '@/components/UserMenu';
@@ -19,7 +20,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 const STUDENT_NAV = [
   { label: 'Create Roadmap', href: '/roadmap', icon: Map, exact: true },
   { label: 'Assessment', href: '/assessment', icon: ClipboardList, exact: true },
-  { label: 'History', href: '/history', icon: History, exact: false }
+  { label: 'History', href: '/history', icon: History, exact: false },
+  { label: 'Become a Mentor', href: '/mentor', icon: GraduationCap, exact: false }
 ];
 
 export default function MainLayout({
@@ -65,7 +67,9 @@ export default function MainLayout({
     return pathname.startsWith(item.href);
   };
 
-  const shouldShowSidebar = isInitialized && isAuthenticated && user && !isViewMode;
+  const isMessagesPage = pathname.startsWith('/messages');
+  const isSettingsPage = pathname.startsWith('/settings');
+  const shouldShowSidebar = isInitialized && isAuthenticated && user && !isViewMode && !isMessagesPage && !isSettingsPage;
 
   return (
     <div className="min-h-screen bg-neutral-950">
@@ -179,8 +183,8 @@ export default function MainLayout({
         </>
       )}
 
-      <main className={`${shouldShowSidebar ? 'lg:ml-[18rem]' : ''} pt-24 min-h-screen`}>
-        <div className={`p-6 lg:p-8 ${!shouldShowSidebar ? 'max-w-7xl mx-auto' : ''}`}>
+      <main className={`${shouldShowSidebar ? 'lg:ml-[18rem]' : ''} ${isMessagesPage ? 'pt-[5.5rem]' : 'pt-24'} min-h-screen`}>
+        <div className={`${isMessagesPage ? 'h-[calc(100vh-5.5rem)]' : 'p-6 lg:p-8'} ${!shouldShowSidebar && !isMessagesPage && !isSettingsPage ? 'max-w-7xl mx-auto' : ''}`}>
           {children}
         </div>
       </main>

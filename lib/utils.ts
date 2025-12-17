@@ -50,3 +50,8 @@ export function extractTitle(title: string): string {
   
   return trimmed;
 }
+
+export function isValidEmailFormat(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
