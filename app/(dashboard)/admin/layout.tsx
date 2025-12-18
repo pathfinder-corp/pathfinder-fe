@@ -34,27 +34,27 @@ const NAV_ITEMS: NavItem[] = [
   {
     label: 'Overview',
     href: '/admin/dashboard',
-    icon: <LayoutDashboard className="size-5" />
+    icon: <LayoutDashboard className="size-6" />
   },
   {
     label: 'Users',
     href: '/admin/users',
-    icon: <Users className="size-5" />
+    icon: <Users className="size-6" />
   },
   {
     label: 'Roadmaps',
     href: '/admin/roadmaps',
-    icon: <Map className="size-5" />
+    icon: <Map className="size-6" />
   },
   {
     label: 'Assessments',
     href: '/admin/assessments',
-    icon: <ClipboardList className="size-5" />
+    icon: <ClipboardList className="size-6" />
   },
   {
     label: 'Mentorship',
     href: '/admin/mentorship',
-    icon: <Book className="size-5" />
+    icon: <Book className="size-6" />
   }
 ];
 
@@ -107,23 +107,23 @@ export default function AdminLayout({
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-72 border-r border-neutral-800 bg-neutral-950 flex flex-col fixed inset-y-0 left-0">
-        <div className="p-5 border-b border-neutral-800">
+      <aside className="w-80 border-r border-neutral-800 bg-neutral-950 flex flex-col fixed inset-y-0 left-0">
+        <div className="p-6 border-b border-neutral-800">
           <Link 
             href="/" 
-            className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors text-base"
+            className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors text-lg"
           >
-            <ChevronLeft className="size-5" />
+            <ChevronLeft className="size-6" />
             Back to Home
           </Link>
         </div>
 
-        <div className="p-5 border-b border-neutral-800">
-          <h2 className="text-xl font-semibold">Admin Panel</h2>
-          <p className="text-base text-neutral-500">Manage your platform</p>
+        <div className="p-6 border-b border-neutral-800">
+          <h2 className="text-2xl font-semibold">Admin Panel</h2>
+          <p className="text-lg text-neutral-500">Manage your platform</p>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1">
+        <nav className="flex-1 p-5 space-y-2">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -131,7 +131,7 @@ export default function AdminLayout({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-[.65rem] px-4 py-3 rounded-lg text-base font-medium transition-colors',
+                  'flex items-center gap-3 px-5 py-4 rounded-lg text-lg font-medium transition-colors',
                   isActive 
                     ? 'bg-white text-black' 
                     : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
@@ -144,24 +144,24 @@ export default function AdminLayout({
           })}
         </nav>
 
-        <div className="p-5 border-t border-neutral-800">
+        <div className="p-6 border-t border-neutral-800">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold">
+            <div className="size-12 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold">
               {user.firstName[0]}{user.lastName[0]}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-base font-medium truncate">
+              <p className="text-lg font-medium truncate">
                 {user.firstName} {user.lastName}
               </p>
-              <p className="text-sm text-neutral-500 truncate">{user.email}</p>
+              <p className="text-base text-neutral-500 truncate">{user.email}</p>
             </div>
           </div>
         </div>
       </aside>
 
-      <main className="flex-1 ml-72 p-8 overflow-auto min-h-screen">
-        <Breadcrumb className="mb-5">
-          <BreadcrumbList className="text-base">
+      <main className="flex-1 ml-80 p-8 overflow-auto min-h-screen">
+        <Breadcrumb className="mb-6">
+          <BreadcrumbList className="text-xl">
             <BreadcrumbItem>
               <BreadcrumbLink asChild className="flex items-center gap-1.5">
                 <Link href="/">
@@ -191,4 +191,3 @@ export default function AdminLayout({
     </div>
   );
 }
-

@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, MoreVertical, Calendar, Trash2 } from 'lucide-react';
+import { Search, MoreVertical, Calendar, Trash2, FileText, Map } from 'lucide-react';
+import { motion } from 'motion/react';
 import { toast } from 'sonner';
 import { roadmapService, assessmentService } from '@/services';
 import type { IRoadmapResponse, IAssessment } from '@/types';
@@ -13,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InfiniteScroll } from '@/components/ui/infinite-scroll';
 import { Badge } from '@/components/ui/badge';
+import { TransitionPanel } from '@/components/motion-primitives/transition-panel';
 import HistoryLoading from './loading';
 import {
   DropdownMenu,
@@ -34,6 +36,12 @@ import {
 const ITEMS_PER_PAGE = 12;
 
 type FilterType = 'all' | 'roadmap' | 'assessment';
+
+const TABS = [
+  { id: 'all' as const, label: 'All', icon: Calendar },
+  { id: 'roadmap' as const, label: 'Roadmaps', icon: Map },
+  { id: 'assessment' as const, label: 'Assessments', icon: FileText },
+];
 
 type LoadingStates = {
   initial: boolean;
@@ -241,16 +249,16 @@ export default function HistoryPage() {
     return (
       <div
         key={`${item.type}-${item.id}`}
-        className="group relative bg-neutral-900/50 border border-neutral-800 rounded-xl p-6 hover:border-neutral-700 transition-all duration-300 cursor-pointer h-full flex flex-col"
+        className="group relative bg-neutral-900/50 border border-neutral-800 rounded-xl p-7 hover:border-neutral-700 transition-all duration-300 cursor-pointer h-full flex flex-col"
         onClick={() => router.push(isRoadmap ? `/roadmap/${item.id}` : `/assessment/${item.id}`)}
       >
         <div className="flex items-start justify-between mb-4">
           <div className="flex-1 min-w-0">
-            <h3 className="text-xl font-semibold mb-2 line-clamp-2">
+            <h3 className="text-2xl font-semibold mb-2 line-clamp-2">
               {item.title}
             </h3>
-            <div className="flex items-center gap-2 text-md text-neutral-500">
-              <Calendar className="size-4" />
+            <div className="flex items-center gap-2 text-lg text-neutral-500">
+              <Calendar className="size-5" />
               <span>{formatTimeAgo(item.createdAt)}</span>
             </div>
           </div>
@@ -260,18 +268,18 @@ export default function HistoryPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 size-10"
               >
-                <MoreVertical className="size-5" />
+                <MoreVertical className="size-6" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuContent align="end" className="w-52">
               <DropdownMenuItem
                 onClick={(e: React.MouseEvent<HTMLDivElement>) => {
                   e.stopPropagation();
                   router.push(isRoadmap ? `/roadmap/${item.id}` : `/assessment/${item.id}`);
                 }}
-                className="text-base"
+                className="text-lg py-3"
               >
                 View {item.type}
               </DropdownMenuItem>
@@ -280,7 +288,7 @@ export default function HistoryPage() {
                   e.stopPropagation();
                   setDeleteItem(item);
                 }}
-                className="text-base text-red-500 focus:text-red-500"
+                className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
               >
                 Delete {item.type}
               </DropdownMenuItem>
@@ -290,27 +298,27 @@ export default function HistoryPage() {
     
         {isRoadmap && roadmapData && (
           <>
-            <div className="space-y-2 flex-1">
+            <div className="space-y-2.5 flex-1">
               {roadmapData.experienceLevel && (
                 <div className="flex items-center gap-2">
-                  <span className="text-base text-neutral-500">Level:</span>
-                  <span className="text-base capitalize text-neutral-300">
+                  <span className="text-lg text-neutral-500">Level:</span>
+                  <span className="text-lg capitalize text-neutral-300">
                     {roadmapData.experienceLevel}
                   </span>
                 </div>
               )}
               {roadmapData.learningPace && (
                 <div className="flex items-center gap-2">
-                  <span className="text-base text-neutral-500">Pace:</span>
-                  <span className="text-base capitalize text-neutral-300">
+                  <span className="text-lg text-neutral-500">Pace:</span>
+                  <span className="text-lg capitalize text-neutral-300">
                     {roadmapData.learningPace}
                   </span>
                 </div>
               )}
               {roadmapData.timeframe && (
                 <div className="flex items-center gap-2">
-                  <span className="text-base text-neutral-500">Timeframe:</span>
-                  <span className="text-base text-neutral-300">
+                  <span className="text-lg text-neutral-500">Timeframe:</span>
+                  <span className="text-lg text-neutral-300">
                     {roadmapData.timeframe}
                   </span>
                 </div>
@@ -319,7 +327,7 @@ export default function HistoryPage() {
     
             {roadmapData.phases && (
               <div className="mt-4 pt-4 border-t border-neutral-800">
-                <span className="text-base text-neutral-400">
+                <span className="text-lg text-neutral-400">
                   {roadmapData.phases.length} phases • {' '}
                   {roadmapData.phases.reduce((acc, phase) => acc + (phase.steps?.length || 0), 0)} steps
                 </span>
@@ -332,31 +340,31 @@ export default function HistoryPage() {
           <>
             <div className="space-y-3 flex-1">
               <div className="flex items-center gap-2">
-                <Badge variant="outline" className={`capitalize ${getDifficultyColor(assessmentData.difficulty)}`}>
+                <Badge variant="outline" className={`capitalize py-2 px-3 text-base ${getDifficultyColor(assessmentData.difficulty)}`}>
                   {assessmentData.difficulty}
                 </Badge>
-                <Badge variant="outline" className={`capitalize ${getStatusColor(assessmentData.status)}`}>
+                <Badge variant="outline" className={`capitalize py-2 px-3 text-base ${getStatusColor(assessmentData.status)}`}>
                   {assessmentData.status.replace('_', ' ')}
                 </Badge>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-base text-neutral-500">Questions:</span>
-                <span className="text-base text-neutral-300">
+                <span className="text-lg text-neutral-500">Questions:</span>
+                <span className="text-lg text-neutral-300">
                   {assessmentData.questionCount}
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-base text-neutral-500">Answered:</span>
-                <span className="text-base text-neutral-300">
+                <span className="text-lg text-neutral-500">Answered:</span>
+                <span className="text-lg text-neutral-300">
                   {assessmentData.answeredCount} / {assessmentData.questionCount}
                 </span>
               </div>
             </div>
 
             <div className="mt-4 pt-4 border-t border-neutral-800">
-              <div className="w-full bg-neutral-800 rounded-full h-2">
+              <div className="w-full bg-neutral-800 rounded-full h-2.5">
                 <div 
-                  className="bg-white h-2 rounded-full transition-all"
+                  className="bg-white h-2.5 rounded-full transition-all"
                   style={{ width: `${(assessmentData.answeredCount / assessmentData.questionCount) * 100}%` }}
                 />
               </div>
@@ -374,12 +382,14 @@ export default function HistoryPage() {
       ? roadmaps.length 
       : assessments.length;
 
+  const activeIndex = TABS.findIndex(tab => tab.id === filterType);
+
   return (
     <div className="max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-5xl font-bold mb-3">History</h1>
-          <p className="text-xl text-neutral-400">
+          <h1 className="text-6xl font-bold mb-3">History</h1>
+          <p className="text-2xl text-neutral-400">
             View all your roadmaps and assessments
           </p>
         </div>
@@ -390,116 +400,142 @@ export default function HistoryPage() {
             size="lg"
             variant="outline"
             disabled={loadingStates.initial || loadingStates.deleteAll}
-            className="!h-12 rounded-full text-base !border-red-500 text-red-500 hover:text-red-500"
+            className="!h-14 rounded-full text-lg !border-red-500 text-red-500 hover:text-red-500"
           >
             Delete All
-            <Trash2 className="size-5" />
+            <Trash2 className="size-6" />
           </Button>
         )}
       </div>
 
-      <div className="relative flex-1 mb-4">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-neutral-400" />
+      <div className="relative flex-1 mb-6">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-6 text-neutral-400" />
         <Input
           placeholder="Search..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           disabled={loadingStates.initial}
-          className="pl-12 !h-14 !text-base bg-neutral-900/50 border-neutral-800"
+          className="pl-14 !h-16 !text-lg bg-neutral-900/50 border-neutral-800"
         />
       </div>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-2">
         {loadingStates.initial ? (
-          <Skeleton className="h-6 w-48 bg-neutral-800" />
+          <Skeleton className="h-7 w-52 bg-neutral-800" />
         ) : (
-          <p className="text-base text-neutral-400">
+          <p className="text-lg text-neutral-400">
             {searchQuery ? (
-              <>Found <span className="font-semibold text-white">{filteredItems.length}</span> items</>
+              <>Found <span className="font-semibold text-white">{filteredItems.length}</span> item{filteredItems.length > 1 ? 's' : ''}</>
             ) : (
-              <>You have <span className="font-semibold text-white">{displayCount}</span> {filterType === 'all' ? 'items' : filterType + 's'}</>
+              <>You have <span className="font-semibold text-white">{displayCount}</span> {filterType === 'all' ? (displayCount > 1 ? 'items' : 'item') : (displayCount > 1 ? filterType + 's' : filterType)}</>
             )}
           </p>
         )}
-        <div className="flex items-center">
-          {(['all', 'roadmap', 'assessment'] as FilterType[]).map((type) => (
+      </div>
+
+      <div className="flex items-center gap-1 border-b border-neutral-800 mb-6">
+        {TABS.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = filterType === tab.id;
+          return (
             <button
-              key={type}
-              onClick={() => setFilterType(type)}
-              className={`cursor-pointer px-4 py-2 text-base font-medium transition-colors ${
-                filterType === type
-                  ? 'text-white bg-neutral-800 rounded-lg'
+              key={tab.id}
+              onClick={() => setFilterType(tab.id)}
+              className={`cursor-pointer relative flex items-center gap-2 px-5 py-4 text-lg font-medium transition-colors ${
+                isActive
+                  ? 'text-white'
                   : 'text-neutral-500 hover:text-neutral-300'
               }`}
             >
-              {type === 'all' ? 'All' : type === 'roadmap' ? 'Roadmaps' : 'Assessments'}
+              <Icon className="size-5" />
+              {tab.label}
+              {isActive && (
+                <motion.span 
+                  layoutId="activeHistoryTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" 
+                />
+              )}
             </button>
-          ))}
-        </div>
+          );
+        })}
       </div>
 
-      {loadingStates.initial && <HistoryLoading />}
+      <TransitionPanel
+        activeIndex={activeIndex}
+        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        variants={{
+          enter: { opacity: 0, y: -20, filter: 'blur(4px)' },
+          center: { opacity: 1, y: 0, filter: 'blur(0px)' },
+          exit: { opacity: 0, y: 20, filter: 'blur(4px)' },
+        }}
+      >
+        {TABS.map((tab) => (
+          <div key={tab.id}>
+            {loadingStates.initial && <HistoryLoading />}
 
-      {!loadingStates.initial && filteredItems.length === 0 && !searchQuery && (
-        <div className="flex flex-col items-center justify-center h-[40vh] text-center">
-          <div className="size-20 rounded-full bg-neutral-900 flex items-center justify-center mb-4">
-            <Calendar className="size-10 text-neutral-500" />
-          </div>
-          <h3 className="text-2xl font-semibold mb-2">
-            {filterType === 'all' ? 'No items created yet' : `No ${filterType}s created yet`}
-          </h3>
-          <p className="text-neutral-400 mb-6">
-            Start creating your first {filterType === 'all' ? 'learning content' : filterType}
-          </p>
-        </div>
-      )}
-
-      {!loadingStates.initial && searchQuery && filteredItems.length === 0 && (
-        <div className="flex flex-col items-center justify-center h-[40vh] text-center">
-          <div className="size-20 rounded-full bg-neutral-900/50 flex items-center justify-center mb-4">
-            <Search className="size-10 text-neutral-500" />
-          </div>
-          <h3 className="text-2xl font-semibold mb-2">No results found</h3>
-          <p className="text-neutral-400">Try searching with a different keyword</p>
-        </div>
-      )}
-
-      {!loadingStates.initial && filteredItems.length > 0 && (
-        <InfiniteScroll
-          items={filteredItems}
-          hasNextPage={!searchQuery && hasNextPage && filterType !== 'assessment'}
-          isLoading={loadingStates.loadMore}
-          onLoadMore={loadMoreRoadmaps}
-          threshold={200}
-          initialLoad={false}
-          renderItem={renderHistoryCard}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          loader={() => (
-            <div className="col-span-full flex justify-center py-8">
-              <div className="flex flex-col items-center gap-3">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white" />
-                <p className="text-sm text-neutral-400">Loading more...</p>
+            {!loadingStates.initial && filteredItems.length === 0 && !searchQuery && (
+              <div className="flex flex-col items-center justify-center h-[40vh] text-center">
+                <div className="size-24 rounded-full bg-neutral-900 flex items-center justify-center mb-4">
+                  <Calendar className="size-12 text-neutral-500" />
+                </div>
+                <h3 className="text-3xl font-semibold mb-2">
+                  {filterType === 'all' ? 'No items created yet' : `No ${filterType}s created yet`}
+                </h3>
+                <p className="text-lg text-neutral-400 mb-6">
+                  Start creating your first {filterType === 'all' ? 'learning content' : filterType}
+                </p>
               </div>
-            </div>
-          )}
-          endMessage={null}
-        />
-      )}
+            )}
+
+            {!loadingStates.initial && searchQuery && filteredItems.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-[40vh] text-center">
+                <div className="size-24 rounded-full bg-neutral-900/50 flex items-center justify-center mb-4">
+                  <Search className="size-12 text-neutral-500" />
+                </div>
+                <h3 className="text-3xl font-semibold mb-2">No results found</h3>
+                <p className="text-lg text-neutral-400">Try searching with a different keyword</p>
+              </div>
+            )}
+
+            {!loadingStates.initial && filteredItems.length > 0 && (
+              <InfiniteScroll
+                items={filteredItems}
+                hasNextPage={!searchQuery && hasNextPage && filterType !== 'assessment'}
+                isLoading={loadingStates.loadMore}
+                onLoadMore={loadMoreRoadmaps}
+                threshold={200}
+                initialLoad={false}
+                renderItem={renderHistoryCard}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                loader={() => (
+                  <div className="col-span-full flex justify-center py-8">
+                    <div className="flex flex-col items-center gap-3">
+                      <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-white" />
+                      <p className="text-base text-neutral-400">Loading more...</p>
+                    </div>
+                  </div>
+                )}
+                endMessage={null}
+              />
+            )}
+          </div>
+        ))}
+      </TransitionPanel>
 
       <AlertDialog open={!!deleteItem} onOpenChange={() => setDeleteItem(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm delete {deleteItem?.type}</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-2xl">Confirm delete {deleteItem?.type}</AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
               Are you sure you want to delete this {deleteItem?.type}? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="!h-11 text-base">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteItem && handleDelete(deleteItem)}
               disabled={loadingStates.delete}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-white !h-11 text-base"
             >
               {loadingStates.delete ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
@@ -510,17 +546,17 @@ export default function HistoryPage() {
       <AlertDialog open={isDeleteAllOpen} onOpenChange={setIsDeleteAllOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Confirm delete all roadmaps</AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogTitle className="text-2xl">Confirm delete all roadmaps</AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
               Are you sure you want to delete <strong>all {roadmaps.length} roadmaps</strong>? This action cannot be undone and all your learning roadmaps will be permanently removed.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={loadingStates.deleteAll}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={loadingStates.deleteAll} className="!h-11 text-base">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAll}
               disabled={loadingStates.deleteAll}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 hover:bg-red-600 text-white !h-11 text-base"
             >
               {loadingStates.deleteAll ? 'Deleting...' : 'Delete All'}
             </AlertDialogAction>

@@ -40,8 +40,8 @@ const LEARNING_NAV: NavItem[] = [
 ];
 
 const STUDENT_MENTORSHIP_NAV: NavItem[] = [
-  { label: 'My Requests', href: '/mentorship/requests', icon: UserPlus, exact: false },
   { label: 'Become a Mentor', href: '/mentor', icon: GraduationCap, exact: true },
+  { label: 'My Requests', href: '/mentorship/requests', icon: UserPlus, exact: false },
   { label: 'My Application', href: '/mentor/applications', icon: FileText, exact: false },
 ];
 
@@ -116,23 +116,23 @@ export default function MainLayout({
 
   return (
     <div className="min-h-screen bg-neutral-950">
-      <header className="fixed top-0 left-0 right-0 h-22 z-50 bg-neutral-950/80 backdrop-blur-xl border-b border-neutral-800/50">
+      <header className="fixed top-0 left-0 right-0 h-24 z-50 bg-neutral-950/80 backdrop-blur-xl border-b border-neutral-800/50">
         <div className="h-full px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             {shouldShowSidebar && (
               <Button
                 variant="ghost"
                 size="icon"
-                className="lg:hidden"
+                className="lg:hidden size-12"
                 onClick={() => setIsSidebarOpen(!isSidebarOpen)}
               >
-                {isSidebarOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+                {isSidebarOpen ? <X className="size-6" /> : <Menu className="size-6" />}
               </Button>
             )}
 
             <Link 
               href="/"
-              className="text-3xl font-bold tracking-tight hover:text-neutral-300 transition-colors"
+              className="text-4xl font-bold tracking-tight hover:text-neutral-300 transition-colors"
             >
               Pathfinder. AI
             </Link>
@@ -140,7 +140,7 @@ export default function MainLayout({
 
           <div className="flex items-center gap-3">
             {!isInitialized ? (
-              <Skeleton className="size-12 rounded-full" />
+              <Skeleton className="size-14 rounded-full" />
             ) : isAuthenticated ? (
               <>
                 <NotificationDropdown />
@@ -153,7 +153,7 @@ export default function MainLayout({
                   asChild
                   variant="ghost"
                   size="lg"
-                  className="!h-12 rounded-full text-base border border-neutral-700 hover:border-white hover:bg-white/5 transition-all duration-300"
+                  className="!h-14 rounded-full text-lg border border-neutral-700 hover:border-white hover:bg-white/5 transition-all duration-300"
                 >
                   <Link href="/login">Login</Link>
                 </Button>
@@ -161,7 +161,7 @@ export default function MainLayout({
                 <Button
                   asChild
                   size="lg"
-                  className="!h-12 rounded-full text-base bg-white text-neutral-950 hover:bg-neutral-200 transition-all duration-300"
+                  className="!h-14 rounded-full text-lg bg-white text-neutral-950 hover:bg-neutral-200 transition-all duration-300"
                 >
                   <Link href="/register">Register</Link>
                 </Button>
@@ -172,17 +172,17 @@ export default function MainLayout({
       </header>
 
       {shouldShowSidebar && (
-        <aside className="hidden lg:block fixed left-0 top-24 bottom-0 w-[18rem] border-r border-neutral-800 bg-neutral-950/50 backdrop-blur-sm overflow-y-auto">
-          <nav className="p-4">
+        <aside className="hidden lg:block fixed left-0 top-24 bottom-0 w-[20rem] border-r border-neutral-800 bg-neutral-950/50 backdrop-blur-sm overflow-y-auto">
+          <nav className="p-5">
             {navSections.map((section, index) => (
               <div key={section.title}>
                 {index > 0 && (
-                  <div className="my-4 mx-3 border-t border-neutral-800" />
+                  <div className="my-5 mx-3 border-t border-neutral-800" />
                 )}
-                <h3 className="px-5 mb-3 text-sm font-semibold text-neutral-500 uppercase tracking-wider">
+                <h3 className="px-5 mb-4 text-base font-semibold text-neutral-500 uppercase tracking-wider">
                   {section.title}
                 </h3>
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   {section.items.map((item) => {
                     const Icon = item.icon;
                     const isActive = isItemActive(item);
@@ -191,14 +191,14 @@ export default function MainLayout({
                       <Link
                         key={item.href}
                         href={item.href}
-                        className={`flex items-center gap-[.75rem] px-5 py-3.5 rounded-lg transition-all ${
+                        className={`flex items-center gap-3 px-5 py-4 rounded-lg transition-all ${
                           isActive
                             ? 'bg-white text-neutral-950 font-medium'
                             : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                         }`}
                       >
-                        <Icon className="size-5" />
-                        <span className="text-[1.1rem]">{item.label}</span>
+                        <Icon className="size-6" />
+                        <span className="text-lg">{item.label}</span>
                       </Link>
                     );
                   })}
@@ -215,17 +215,17 @@ export default function MainLayout({
             className="lg:hidden fixed inset-0 bg-black/50 z-40 top-24"
             onClick={() => setIsSidebarOpen(false)}
           />
-          <aside className="lg:hidden fixed left-0 top-20 bottom-0 w-64 border-r border-neutral-800 bg-neutral-950 z-40 overflow-y-auto">
-            <nav className="p-4">
+          <aside className="lg:hidden fixed left-0 top-24 bottom-0 w-72 border-r border-neutral-800 bg-neutral-950 z-40 overflow-y-auto">
+            <nav className="p-5">
               {navSections.map((section, index) => (
                 <div key={section.title}>
                   {index > 0 && (
-                    <div className="my-4 mx-2 border-t border-neutral-800" />
+                    <div className="my-5 mx-3 border-t border-neutral-800" />
                   )}
-                  <h3 className="px-4 mb-3 text-sm font-semibold text-neutral-500 uppercase tracking-wider">
+                  <h3 className="px-5 mb-4 text-base font-semibold text-neutral-500 uppercase tracking-wider">
                     {section.title}
                   </h3>
-                  <div className="space-y-1">
+                  <div className="space-y-1.5">
                     {section.items.map((item) => {
                       const Icon = item.icon;
                       const isActive = isItemActive(item);
@@ -235,14 +235,14 @@ export default function MainLayout({
                           key={item.href}
                           href={item.href}
                           onClick={() => setIsSidebarOpen(false)}
-                          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                          className={`flex items-center gap-3 px-5 py-4 rounded-lg transition-all ${
                             isActive
                               ? 'bg-white text-neutral-950 font-medium'
                               : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                           }`}
                         >
-                          <Icon className="size-5" />
-                          <span className="text-base">{item.label}</span>
+                          <Icon className="size-6" />
+                          <span className="text-lg">{item.label}</span>
                         </Link>
                       );
                     })}
@@ -254,8 +254,8 @@ export default function MainLayout({
         </>
       )}
 
-      <main className={`${shouldShowSidebar ? 'lg:ml-[18rem]' : ''} ${isMessagesPage ? 'pt-[5.5rem]' : 'pt-24'} min-h-screen`}>
-        <div className={`${isMessagesPage ? 'h-[calc(100vh-5.5rem)]' : 'p-6 lg:p-8'} ${!shouldShowSidebar && !isMessagesPage && !isSettingsPage && !isNotificationsPage ? 'max-w-7xl mx-auto' : ''}`}>
+      <main className={`${shouldShowSidebar ? 'lg:ml-[20rem]' : ''} ${isMessagesPage ? 'pt-24' : 'pt-24'} min-h-screen`}>
+        <div className={`${isMessagesPage ? 'h-[calc(100vh-6rem)]' : 'p-6 lg:p-8'} ${!shouldShowSidebar && !isMessagesPage && !isSettingsPage && !isNotificationsPage ? 'max-w-7xl mx-auto' : ''}`}>
           {children}
         </div>
       </main>

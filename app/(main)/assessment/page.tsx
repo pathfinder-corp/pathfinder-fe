@@ -75,86 +75,86 @@ export default function AssessmentPage() {
 
   return (
     <div className="pt-10 flex flex-col items-center justify-center">
-      <h1 className="text-5xl font-bold mb-6">Test your Knowledge</h1>
-      <p className="text-xl text-neutral-500">
+      <h1 className="text-6xl font-bold mb-6">Test your Knowledge</h1>
+      <p className="text-2xl text-neutral-500">
         Create a personalized assessment to evaluate your understanding of any topic
       </p>
 
       <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-8 mt-8">
-        <div className="space-y-[.65rem]">
-          <Label htmlFor="domain" className="text-[1.35rem]">
+        <div className="space-y-3">
+          <Label htmlFor="domain" className="text-xl">
             What topic would you like to assess? <span className="text-red-500">*</span>
           </Label>
           <Input
             {...register('domain')}
             placeholder="e.g., JavaScript Variables, Go Routines, System Design"
-            className="w-full !h-18 !text-[1.25rem] !px-5"
+            className="w-full !h-20 !text-xl !px-6"
           />
           {errors.domain && (
-            <p className="text-red-500 text-[1rem]">{errors.domain.message}</p>
+            <p className="text-red-500 text-lg">{errors.domain.message}</p>
           )}
         </div>
 
-        <div className="space-y-[.65rem]">
-          <Label className="text-[1.35rem]">Choose the difficulty</Label>
+        <div className="space-y-3">
+          <Label className="text-xl">Choose the difficulty</Label>
           <div className="grid grid-cols-3 gap-4">
             {DIFFICULTY_OPTIONS.map((option) => (
               <button
                 key={option.value}
                 type="button"
                 onClick={() => setValue('difficulty', option.value as 'easy' | 'medium' | 'hard')}
-                className={`cursor-pointer p-5 rounded-xl border transition-all text-left ${
+                className={`cursor-pointer p-6 rounded-xl border transition-all text-left ${
                   selectedDifficulty === option.value
                     ? 'border-neutral-700 bg-white/10'
                     : 'border-neutral-800 hover:border-neutral-700 bg-neutral-900/50'
                 }`}
               >
-                <p className="text-[1.2rem] font-semibold mb-1">{option.label}</p>
-                <p className="text-base text-neutral-500">{option.description}</p>
+                <p className="text-xl font-semibold mb-2">{option.label}</p>
+                <p className="text-lg text-neutral-500">{option.description}</p>
               </button>
             ))}
           </div>
           {errors.difficulty && (
-            <p className="text-red-500 text-[1rem]">{errors.difficulty.message}</p>
+            <p className="text-red-500 text-lg">{errors.difficulty.message}</p>
           )}
         </div>
 
-        <div className="space-y-[.65rem]">
-          <Label className="text-[1.35rem]">Number of questions</Label>
+        <div className="space-y-3">
+          <Label className="text-xl">Number of questions</Label>
           <Select 
             value={String(selectedQuestionCount)} 
             onValueChange={(value) => setValue('questionCount', Number(value))}
           >
-            <SelectTrigger className="w-full !h-18 !text-[1.25rem] !px-5">
+            <SelectTrigger className="w-full !h-20 !text-xl !px-6">
               <SelectValue placeholder="Select number of questions" />
             </SelectTrigger>
             <SelectContent>
               {QUESTION_COUNT_OPTIONS.map((count) => (
-                <SelectItem key={count} value={String(count)} className="!text-[1.25rem]">
+                <SelectItem key={count} value={String(count)} className="!text-xl">
                   {count} questions
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
           {errors.questionCount && (
-            <p className="text-red-500 text-[1rem]">{errors.questionCount.message}</p>
+            <p className="text-red-500 text-lg">{errors.questionCount.message}</p>
           )}
         </div>
 
         <Button 
           type="submit" 
           disabled={isLoading}
-          className="w-full !h-14 !text-[1.3rem]"
+          className="w-full !h-16 !text-xl"
         >
           {isLoading ? (
             <>
               Generating assessment...
-              <Loader2 className="size-5.5 animate-spin" />
+              <Loader2 className="size-6 animate-spin" />
             </>
           ) : (
             <>
               Generate Assessment
-              <Sparkles className="size-5.5" />
+              <Sparkles className="size-6" />
             </>
           )}
         </Button>

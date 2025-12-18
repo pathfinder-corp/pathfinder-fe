@@ -137,19 +137,19 @@ export default function MyApplicationsPage() {
 
   if (isLoading) {
     return (
-      <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-        <h1 className="text-5xl font-bold mb-6">My Application</h1>
-        <p className="text-xl text-neutral-500 mb-8">Track the status of your mentor applications</p>
-        <div className="w-[58rem] space-y-4">
+      <div className="pt-12 pb-16 flex flex-col items-center justify-center">
+        <h1 className="text-6xl font-bold mb-8">My Application</h1>
+        <p className="text-2xl text-neutral-500 mb-10">Track the status of your mentor applications</p>
+        <div className="w-[58rem] space-y-5">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
-              <div className="flex items-start gap-4">
-                <Skeleton className="size-14 rounded-full bg-neutral-800" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="h-6 w-96 bg-neutral-800" />
-                  <Skeleton className="h-5 w-64 bg-neutral-800" />
+            <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+              <div className="flex items-start gap-5">
+                <Skeleton className="size-16 rounded-full bg-neutral-800" />
+                <div className="flex-1 space-y-3">
+                  <Skeleton className="h-8 w-[28rem] bg-neutral-800" />
+                  <Skeleton className="h-6 w-72 bg-neutral-800" />
                 </div>
-                <Skeleton className="h-8 w-28 bg-neutral-800 rounded-full" />
+                <Skeleton className="h-10 w-32 bg-neutral-800 rounded-full" />
               </div>
             </div>
           ))}
@@ -159,25 +159,25 @@ export default function MyApplicationsPage() {
   }
 
   return (
-    <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-      <h1 className="text-5xl font-bold mb-6">My Application</h1>
-      <p className="text-xl text-neutral-500 mb-8">Track the status of your mentor applications</p>
+    <div className="pt-12 pb-16 flex flex-col items-center justify-center">
+      <h1 className="text-6xl font-bold mb-8">My Application</h1>
+      <p className="text-2xl text-neutral-500 mb-10">Track the status of your mentor applications</p>
 
       {applications.length === 0 ? (
-        <div className="w-[58rem] text-center py-16">
-          <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-6">
-            <GraduationCap className="size-10 text-neutral-500" />
+        <div className="w-[58rem] text-center py-20">
+          <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+            <GraduationCap className="size-12 text-neutral-500" />
           </div>
-          <h2 className="text-2xl font-semibold mb-3">No application yet</h2>
-          <p className="text-lg text-neutral-400 mb-8">
+          <h2 className="text-3xl font-semibold mb-4">No application yet</h2>
+          <p className="text-xl text-neutral-400 mb-10">
             You haven&apos;t submitted any mentor application. Start your journey to become a mentor today!
           </p>
           <Button 
             onClick={() => router.push('/mentor')}
-            className="!h-14 !text-[1.3rem] !px-8"
+            className="!h-16 !text-xl !px-10"
           >
             Apply to Become a Mentor
-            <Plus className="size-6" />
+            <Plus className="size-7" />
           </Button>
         </div>
       ) : (
@@ -187,24 +187,24 @@ export default function MyApplicationsPage() {
               key={application.id}
               className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden"
             >
-              <div className="p-6 border-b border-neutral-800">
-                <div className="flex items-start gap-4">
-                  <div className="size-16 rounded-xl bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold flex-shrink-0">
-                    <GraduationCap className="size-8 text-neutral-300" />
+              <div className="p-7 border-b border-neutral-800">
+                <div className="flex items-start gap-5">
+                  <div className="size-20 rounded-xl bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
+                    <GraduationCap className="size-10 text-neutral-300" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-2xl font-semibold mb-1">
+                        <h3 className="text-3xl font-semibold mb-2">
                           {application.applicationData?.headline || 'Mentor Application'}
                         </h3>
-                        <p className="text-base text-neutral-400">
+                        <p className="text-lg text-neutral-400">
                           Submitted on {formatDate(application.createdAt)}
                         </p>
                       </div>
                       <Badge 
                         variant="outline" 
-                        className={`py-2 px-4 text-base flex items-center ${getStatusBadgeColor(application.status)}`}
+                        className={`py-2.5 px-5 text-lg flex items-center ${getStatusBadgeColor(application.status)}`}
                       >
                         {formatStatus(application.status)}
                       </Badge>
@@ -213,11 +213,11 @@ export default function MyApplicationsPage() {
                 </div>
               </div>
 
-              <div className="p-6 space-y-6">
+              <div className="p-7 space-y-7">
                 {application.applicationData?.bio && (
                   <div>
-                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-2">Bio</h4>
-                    <p className="text-base text-neutral-300 leading-relaxed">
+                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-3">Bio</h4>
+                    <p className="text-lg text-neutral-300 leading-relaxed">
                       {application.applicationData.bio}
                     </p>
                   </div>
@@ -225,8 +225,8 @@ export default function MyApplicationsPage() {
 
                 {application.applicationData?.motivation && (
                   <div>
-                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-2">Motivation</h4>
-                    <p className="text-base text-neutral-300 leading-relaxed">
+                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-3">Motivation</h4>
+                    <p className="text-lg text-neutral-300 leading-relaxed">
                       {application.applicationData.motivation}
                     </p>
                   </div>
@@ -234,49 +234,49 @@ export default function MyApplicationsPage() {
 
                 <Separator className="bg-neutral-800" />
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-7">
                   <div>
-                    <div className="flex items-center gap-2 text-neutral-400 mb-1">
-                      <Briefcase className="size-4" />
-                      <span className="text-sm">Experience</span>
+                    <div className="flex items-center gap-2 text-neutral-400 mb-2">
+                      <Briefcase className="size-5" />
+                      <span className="text-base">Experience</span>
                     </div>
-                    <p className="text-lg font-semibold">
+                    <p className="text-xl font-semibold">
                       {application.applicationData?.yearsExperience || 0} years
                     </p>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 text-neutral-400 mb-1">
-                      <Globe className="size-4" />
-                      <span className="text-sm">Languages</span>
+                    <div className="flex items-center gap-2 text-neutral-400 mb-2">
+                      <Globe className="size-5" />
+                      <span className="text-base">Languages</span>
                     </div>
-                    <p className="text-base">
+                    <p className="text-lg">
                       {application.applicationData?.languages?.join(', ') || 'N/A'}
                     </p>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 text-neutral-400 mb-1">
-                      <Calendar className="size-4" />
-                      <span className="text-sm">Submitted</span>
+                    <div className="flex items-center gap-2 text-neutral-400 mb-2">
+                      <Calendar className="size-5" />
+                      <span className="text-base">Submitted</span>
                     </div>
-                    <p className="text-base">{formatDateTime(application.createdAt)}</p>
+                    <p className="text-lg">{formatDateTime(application.createdAt)}</p>
                   </div>
                   {application.decidedAt && (
                     <div>
-                      <div className="flex items-center gap-2 text-neutral-400 mb-1">
-                        <CheckCircle className="size-4" />
-                        <span className="text-sm">Decided</span>
+                      <div className="flex items-center gap-2 text-neutral-400 mb-2">
+                        <CheckCircle className="size-5" />
+                        <span className="text-base">Decided</span>
                       </div>
-                      <p className="text-base">{formatDateTime(application.decidedAt)}</p>
+                      <p className="text-lg">{formatDateTime(application.decidedAt)}</p>
                     </div>
                   )}
                 </div>
 
                 {application.applicationData?.expertise && application.applicationData.expertise.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-3">Expertise</h4>
-                    <div className="flex flex-wrap gap-2">
+                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-4">Expertise</h4>
+                    <div className="flex flex-wrap gap-2.5">
                       {application.applicationData.expertise.map((exp, i) => (
-                        <Badge key={i} variant="outline" className="py-1.5 px-3 text-sm bg-neutral-800/50">
+                        <Badge key={i} variant="outline" className="py-2 px-4 text-base bg-neutral-800/50">
                           {exp}
                         </Badge>
                       ))}
@@ -286,10 +286,10 @@ export default function MyApplicationsPage() {
 
                 {application.applicationData?.skills && application.applicationData.skills.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-3">Skills</h4>
-                    <div className="flex flex-wrap gap-2">
+                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-4">Skills</h4>
+                    <div className="flex flex-wrap gap-2.5">
                       {application.applicationData.skills.map((skill, i) => (
-                        <Badge key={i} variant="outline" className="py-1.5 px-3 text-sm bg-neutral-800/50">
+                        <Badge key={i} variant="outline" className="py-2 px-4 text-base bg-neutral-800/50">
                           {skill}
                         </Badge>
                       ))}
@@ -299,10 +299,10 @@ export default function MyApplicationsPage() {
 
                 {application.applicationData?.industries && application.applicationData.industries.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-3">Industries</h4>
-                    <div className="flex flex-wrap gap-2">
+                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-4">Industries</h4>
+                    <div className="flex flex-wrap gap-2.5">
                       {application.applicationData.industries.map((industry, i) => (
-                        <Badge key={i} variant="outline" className="py-1.5 px-3 text-sm bg-neutral-800/50">
+                        <Badge key={i} variant="outline" className="py-2 px-4 text-base bg-neutral-800/50">
                           {industry}
                         </Badge>
                       ))}
@@ -311,17 +311,17 @@ export default function MyApplicationsPage() {
                 )}
 
                 {(application.applicationData?.linkedinUrl || application.applicationData?.portfolioUrl) && (
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-5">
                     {application.applicationData?.linkedinUrl && (
                       <a 
                         href={application.applicationData.linkedinUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-base text-blue-400 hover:text-blue-300 transition-colors"
+                        className="flex items-center gap-2 text-lg text-blue-400 hover:text-blue-300 transition-colors"
                       >
-                        <Linkedin className="size-5" />
+                        <Linkedin className="size-6" />
                         LinkedIn Profile
-                        <ExternalLink className="size-4" />
+                        <ExternalLink className="size-5" />
                       </a>
                     )}
                     {application.applicationData?.portfolioUrl && (
@@ -329,36 +329,36 @@ export default function MyApplicationsPage() {
                         href={application.applicationData.portfolioUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-base text-purple-400 hover:text-purple-300 transition-colors"
+                        className="flex items-center gap-2 text-lg text-purple-400 hover:text-purple-300 transition-colors"
                       >
-                        <Globe className="size-5" />
+                        <Globe className="size-6" />
                         Portfolio
-                        <ExternalLink className="size-4" />
+                        <ExternalLink className="size-5" />
                       </a>
                     )}
                   </div>
                 )}
 
                 {application.status === 'declined' && application.declineReason && (
-                  <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-                    <p className="text-sm font-medium text-red-400 mb-1">Decline Reason:</p>
-                    <p className="text-base text-neutral-300">{application.declineReason}</p>
+                  <div className="p-5 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <p className="text-base font-medium text-red-400 mb-2">Decline Reason:</p>
+                    <p className="text-lg text-neutral-300">{application.declineReason}</p>
                   </div>
                 )}
 
                 {application.status === 'approved' && (
-                  <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                    <p className="text-base text-green-400 flex items-center gap-2">
-                      <CheckCircle className="size-5" />
+                  <div className="p-5 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <p className="text-lg text-green-400 flex items-center gap-2">
+                      <CheckCircle className="size-6" />
                       Congratulations! Your application has been approved. You are now a mentor!
                     </p>
                   </div>
                 )}
               </div>
 
-              <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
+              <div className="p-7 border-t border-neutral-800 bg-neutral-900/30">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm text-neutral-500">
+                  <p className="text-base text-neutral-500">
                     {canWithdraw(application.status) 
                       ? 'You can withdraw this application if you want to submit a new one'
                       : application.status === 'approved' 
@@ -369,7 +369,7 @@ export default function MyApplicationsPage() {
                     {application.status === 'approved' && (
                       <Button
                         onClick={() => router.push('/mentor/profile')}
-                        className="!h-11 text-base"
+                        className="!h-12 !text-base"
                       >
                         Go to Mentor Profile
                       </Button>
@@ -377,22 +377,22 @@ export default function MyApplicationsPage() {
                     {canWithdraw(application.status) && (
                       <Button
                         variant="outline"
-                        className="dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10 !h-11"
+                        className="dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10 !h-12 !text-base"
                         onClick={() => {
                           setApplicationToWithdraw(application);
                           setIsWithdrawDialogOpen(true);
                         }}
                       >
-                        <Trash2 className="size-4 mr-2" />
+                        <Trash2 className="size-5 mr-2" />
                         Withdraw Application
                       </Button>
                     )}
                     {(application.status === 'declined' || application.status === 'withdrawn') && (
                       <Button
                         onClick={() => router.push('/mentor')}
-                        className="!h-11"
+                        className="!h-12 !text-base"
                       >
-                        <Plus className="size-4 mr-2" />
+                        <Plus className="size-5 mr-2" />
                         Submit New Application
                       </Button>
                     )}
@@ -407,26 +407,26 @@ export default function MyApplicationsPage() {
       <AlertDialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl flex items-center gap-2">
-              <Trash2 className="size-6 text-red-500" />
+            <AlertDialogTitle className="text-2xl flex items-center gap-2.5">
+              <Trash2 className="size-7 text-red-500" />
               Withdraw Application
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-base">
               Are you sure you want to withdraw this application? This action cannot be undone.
               You will need to submit a new application if you change your mind.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isWithdrawing} className="!h-11">
+            <AlertDialogCancel disabled={isWithdrawing} className="!h-12 !text-base">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleWithdraw}
               disabled={isWithdrawing}
-              className="bg-red-600 hover:bg-red-700 text-white !h-11"
+              className="bg-red-600 hover:bg-red-700 text-white !h-12 !text-base"
             >
-              {isWithdrawing && <Loader2 className="size-4 mr-2 animate-spin" />}
+              {isWithdrawing && <Loader2 className="size-5 mr-2 animate-spin" />}
               Withdraw Application
             </AlertDialogAction>
           </AlertDialogFooter>

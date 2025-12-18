@@ -204,7 +204,7 @@ export default function AssessmentDetailPage() {
   };
 
   const getOptionStyle = (index: number) => {
-    const baseStyle = 'w-full p-6 rounded-xl border text-left transition-all duration-200 flex items-start gap-5';
+    const baseStyle = 'w-full p-7 rounded-xl border text-left transition-all duration-200 flex items-start gap-6';
     
     if (!currentAnswer?.isSubmitted) {
       if (selectedOption === index) {
@@ -231,8 +231,8 @@ export default function AssessmentDetailPage() {
   if (loadingStates.initial) {
     return (
       <div className="max-w-4xl mx-auto py-8">
-        <Skeleton className="h-8 w-64 mb-4 bg-neutral-800" />
-        <Skeleton className="h-4 w-96 mb-8 bg-neutral-800" />
+        <Skeleton className="h-10 w-72 mb-4 bg-neutral-800" />
+        <Skeleton className="h-6 w-96 mb-8 bg-neutral-800" />
         <Skeleton className="h-[500px] w-full rounded-xl bg-neutral-800" />
       </div>
       );
@@ -241,11 +241,11 @@ export default function AssessmentDetailPage() {
   if (!assessment) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <AlertCircle className="size-16 text-neutral-500 mb-4" />
-        <h2 className="text-2xl font-bold mb-2">Assessment not found</h2>
-        <p className="text-neutral-400 mb-6">The assessment you&apos;re looking for doesn&apos;t exist.</p>
-        <Button onClick={() => router.push('/history')}>
-          <Home className="size-4 mr-2" />
+        <AlertCircle className="size-20 text-neutral-500 mb-6" />
+        <h2 className="text-3xl font-bold mb-3">Assessment not found</h2>
+        <p className="text-lg text-neutral-400 mb-8">The assessment you&apos;re looking for doesn&apos;t exist.</p>
+        <Button onClick={() => router.push('/history')} className="!h-14 !text-lg">
+          <Home className="size-5" />
           Back to History
         </Button>
       </div>
@@ -280,17 +280,17 @@ export default function AssessmentDetailPage() {
 
     return (
       <div className="max-w-5xl mx-auto py-10 px-4">
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-8 mb-8">
-          <div className="flex flex-col md:flex-row items-center gap-8">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-10 mb-8">
+          <div className="flex flex-col md:flex-row items-center gap-10">
             <div className="flex-shrink-0">
               <CircularProgress
                 value={scorePercent}
-                size={120}
-                strokeWidth={10}
+                size={140}
+                strokeWidth={12}
                 progressColor={getProgressColor()}
               >
                 <div className="text-center">
-                  <p className={`text-3xl font-bold ${getScoreColor()}`}>
+                  <p className={`text-4xl font-bold ${getScoreColor()}`}>
                     {scorePercent}%
                   </p>
                 </div>
@@ -298,13 +298,13 @@ export default function AssessmentDetailPage() {
             </div>
 
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-4xl font-bold mb-2">Assessment Complete!</h1>
-              <p className={`text-2xl font-semibold mb-3 ${performance.color}`}>
+              <h1 className="text-5xl font-bold mb-3">Assessment Complete!</h1>
+              <p className={`text-3xl font-semibold mb-4 ${performance.color}`}>
                 {performance.text}
               </p>
-              <p className="text-lg text-neutral-400 mb-4">{assessment.domain}</p>
+              <p className="text-2xl text-neutral-400 mb-5">{assessment.domain}</p>
               
-              <p className="text-base text-neutral-300">
+              <p className="text-lg text-neutral-300">
                 You scored <span className="font-semibold text-white">{result.correctCount}</span> out of{' '}
                 <span className="font-semibold text-white">{result.totalQuestions}</span> questions correctly
               </p>
@@ -312,17 +312,17 @@ export default function AssessmentDetailPage() {
           </div>
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-6 mb-8">
-          <h2 className="text-xl font-bold mb-5">Results Breakdown</h2>
-          <div className="space-y-4">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
+          <h2 className="text-2xl font-bold mb-6">Results Breakdown</h2>
+          <div className="space-y-5">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="size-5 text-green-400" />
-                <span className="text-base text-neutral-300">Correct</span>
-              </div>
               <div className="flex items-center gap-3">
-                <span className="text-base font-semibold">{result.correctCount} ({Math.round((result.correctCount / result.totalQuestions) * 100)}%)</span>
-                <div className="w-52 h-2 bg-neutral-800 rounded-full overflow-hidden">
+                <CheckCircle2 className="size-6 text-green-400" />
+                <span className="text-lg text-neutral-300">Correct</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-lg font-semibold">{result.correctCount} ({Math.round((result.correctCount / result.totalQuestions) * 100)}%)</span>
+                <div className="w-56 h-2.5 bg-neutral-800 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-green-500 rounded-full"
                     style={{ width: `${(result.correctCount / result.totalQuestions) * 100}%` }}
@@ -331,13 +331,13 @@ export default function AssessmentDetailPage() {
               </div>
             </div>
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <XCircle className="size-5 text-red-400" />
-                <span className="text-base text-neutral-300">Incorrect</span>
-              </div>
               <div className="flex items-center gap-3">
-                <span className="text-base font-semibold">{incorrectCount} ({Math.round((incorrectCount / result.totalQuestions) * 100)}%)</span>
-                <div className="w-52 h-2 bg-neutral-800 rounded-full overflow-hidden">
+                <XCircle className="size-6 text-red-400" />
+                <span className="text-lg text-neutral-300">Incorrect</span>
+              </div>
+              <div className="flex items-center gap-4">
+                <span className="text-lg font-semibold">{incorrectCount} ({Math.round((incorrectCount / result.totalQuestions) * 100)}%)</span>
+                <div className="w-56 h-2.5 bg-neutral-800 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-red-500 rounded-full"
                     style={{ width: `${(incorrectCount / result.totalQuestions) * 100}%` }}
@@ -349,25 +349,25 @@ export default function AssessmentDetailPage() {
         </div>
 
         {result.summary && (
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-6 mb-8">
-            <h2 className="text-xl font-bold mb-5">Summary of your Assessment</h2>
-            <div className="space-y-6">
+          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
+            <h2 className="text-2xl font-bold mb-6">Summary of your Assessment</h2>
+            <div className="space-y-7">
               {result.summary.overallAssessment && (
-                <p className="text-base text-neutral-300 leading-relaxed">
+                <p className="text-lg text-neutral-300 leading-relaxed">
                   {result.summary.overallAssessment}
                 </p>
               )}
 
               {result.summary.strengths && result.summary.strengths.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <TrendingUp className="size-5 text-white" />
-                    <h3 className="text-lg font-semibold text-white">Strengths</h3>
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <TrendingUp className="size-6 text-white" />
+                    <h3 className="text-xl font-semibold text-white">Strengths</h3>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2.5">
                     {result.summary.strengths.map((strength, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-base text-neutral-300">
-                        <CheckCircle2 className="size-4 text-neutral-400 mt-1 flex-shrink-0" />
+                      <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
+                        <CheckCircle2 className="size-5 text-neutral-400 mt-1 flex-shrink-0" />
                         <span>{strength}</span>
                       </li>
                     ))}
@@ -377,14 +377,14 @@ export default function AssessmentDetailPage() {
 
               {result.summary.weaknesses && result.summary.weaknesses.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <TrendingDown className="size-5 text-white" />
-                    <h3 className="text-lg font-semibold text-white">Weaknesses</h3>
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <TrendingDown className="size-6 text-white" />
+                    <h3 className="text-xl font-semibold text-white">Weaknesses</h3>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2.5">
                     {result.summary.weaknesses.map((weakness, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-base text-neutral-300">
-                        <XCircle className="size-4 text-neutral-400 mt-1 flex-shrink-0" />
+                      <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
+                        <XCircle className="size-5 text-neutral-400 mt-1 flex-shrink-0" />
                         <span>{weakness}</span>
                       </li>
                     ))}
@@ -394,14 +394,14 @@ export default function AssessmentDetailPage() {
 
               {result.summary.topicsToReview && result.summary.topicsToReview.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Target className="size-5 text-white" />
-                    <h3 className="text-lg font-semibold text-white">Topics to Review</h3>
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <Target className="size-6 text-white" />
+                    <h3 className="text-xl font-semibold text-white">Topics to Review</h3>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2.5">
                     {result.summary.topicsToReview.map((topic, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-base text-neutral-300">
-                        <BookOpen className="size-4 text-neutral-400 mt-1 flex-shrink-0" />
+                      <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
+                        <BookOpen className="size-5 text-neutral-400 mt-1 flex-shrink-0" />
                         <span>{topic}</span>
                       </li>
                     ))}
@@ -411,14 +411,14 @@ export default function AssessmentDetailPage() {
 
               {result.summary.studyRecommendations && result.summary.studyRecommendations.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 mb-3">
-                    <Sparkles className="size-5 text-white" />
-                    <h3 className="text-lg font-semibold text-white">Study Recommendations</h3>
+                  <div className="flex items-center gap-2.5 mb-4">
+                    <Sparkles className="size-6 text-white" />
+                    <h3 className="text-xl font-semibold text-white">Study Recommendations</h3>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2.5">
                     {result.summary.studyRecommendations.map((recommendation, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-base text-neutral-300">
-                        <span className="flex-shrink-0 size-6 pt-0.5 rounded-full bg-neutral-700 text-white flex items-center justify-center text-xs font-bold mt-0.5">
+                      <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
+                        <span className="flex-shrink-0 size-7 rounded-full bg-neutral-700 text-white flex items-center justify-center text-sm font-bold mt-0.5">
                           {idx + 1}
                         </span>
                         <span>{recommendation}</span>
@@ -432,10 +432,10 @@ export default function AssessmentDetailPage() {
         )}
 
         {result.suggestedRoadmaps && result.suggestedRoadmaps.length > 0 && (
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-6 mb-8">
-            <div className="mb-5">
-              <h2 className="text-xl font-bold">Suggested Roadmaps</h2>
-              <p className="text-sm text-neutral-400">
+          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold">Suggested Roadmaps</h2>
+              <p className="text-base text-neutral-400">
                 Explore these roadmaps to improve your understanding
               </p>
             </div>
@@ -446,52 +446,52 @@ export default function AssessmentDetailPage() {
                   onClick={() => {
                     router.push(`/roadmap?topic=${encodeURIComponent(roadmap.topic)}&from=assessment`);
                   }}
-                  className="cursor-pointer flex items-start gap-4 p-5 bg-neutral-800/50 border border-neutral-700 rounded-xl hover:border-neutral-500 hover:bg-neutral-800 transition-all text-left group"
+                  className="cursor-pointer flex items-start gap-4 p-6 bg-neutral-800/50 border border-neutral-700 rounded-xl hover:border-neutral-500 hover:bg-neutral-800 transition-all text-left group"
                 >
-                  <div className="flex-shrink-0 size-10 rounded-lg bg-neutral-700 flex items-center justify-center">
-                    <Map className="size-5 text-white" />
+                  <div className="flex-shrink-0 size-11 rounded-lg bg-neutral-700 flex items-center justify-center">
+                    <Map className="size-6 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h4 className="text-base font-semibold text-white group-hover:text-neutral-300 transition-colors">
+                    <h4 className="text-lg font-semibold text-white group-hover:text-neutral-300 transition-colors">
                       {roadmap.topic}
                     </h4>
                   </div>
-                  <ExternalLink className="size-4 text-neutral-500 group-hover:text-white transition-colors flex-shrink-0 mt-1" />
+                  <ExternalLink className="size-5 text-neutral-500 group-hover:text-white transition-colors flex-shrink-0 mt-1" />
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-6 mb-8">
-          <h2 className="text-xl font-bold mb-6">Question Breakdown</h2>
-          <div className="max-h-[500px] overflow-y-auto pr-2 space-y-5 custom-scrollbar">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
+          <h2 className="text-2xl font-bold mb-7">Question Breakdown</h2>
+          <div className="max-h-[500px] overflow-y-auto pr-2 space-y-6 custom-scrollbar">
             {result.questionBreakdown.map((q, index) => (
               <div 
                 key={q.questionId}
-                className={`p-6 rounded-xl border ${
+                className={`p-7 rounded-xl border ${
                   q.isCorrect 
                     ? 'border-green-500/30 bg-green-500/5' 
                     : 'border-red-500/30 bg-red-500/5'
                 }`}
               >
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <p className="text-lg font-medium">
+                <div className="flex items-start justify-between gap-4 mb-5">
+                  <p className="text-xl font-medium">
                     <span className="text-neutral-500 mr-2">Q{index + 1}.</span>
                     {q.questionText}
                   </p>
                   {q.isCorrect ? (
-                    <CheckCircle2 className="size-6 text-green-400 flex-shrink-0" />
+                    <CheckCircle2 className="size-7 text-green-400 flex-shrink-0" />
                   ) : (
-                    <XCircle className="size-6 text-red-400 flex-shrink-0" />
+                    <XCircle className="size-7 text-red-400 flex-shrink-0" />
                   )}
                 </div>
                 
-                <div className="space-y-2 mb-4">
+                <div className="space-y-2.5 mb-5">
                   {q.options.map((opt, optIndex) => (
                     <div 
                       key={optIndex}
-                      className={`text-base px-4 py-2.5 rounded-lg ${
+                      className={`text-lg px-5 py-3 rounded-lg ${
                         optIndex === q.correctAnswerIndex
                           ? 'bg-green-500/20 text-green-300'
                           : optIndex === q.selectedAnswerIndex && !q.isCorrect
@@ -505,8 +505,8 @@ export default function AssessmentDetailPage() {
                 </div>
 
                 {q.explanation && (
-                  <div className="mt-4 pt-4 border-t border-neutral-800">
-                    <p className="text-base text-neutral-400">
+                  <div className="mt-5 pt-5 border-t border-neutral-800">
+                    <p className="text-lg text-neutral-400">
                       <span className="text-neutral-300 font-medium">Explanation: </span>
                       {q.explanation}
                     </p>
@@ -522,22 +522,22 @@ export default function AssessmentDetailPage() {
             variant="outline" 
             size="lg"
             onClick={() => router.push('/assessment')}
-            className="!h-14 !text-[1.2rem]"
+            className="!h-16 !text-xl"
           >
             Try Again
-            <RotateCcw className="size-5" />
+            <RotateCcw className="size-6" />
           </Button>
           <Button 
             size="lg"
             onClick={() => router.push('/history')}
-            className="!h-14 !text-[1.2rem]"
+            className="!h-16 !text-xl"
           >
             View All History
-            <ChevronRight className="size-5" />
+            <ChevronRight className="size-6" />
           </Button>
         </div>
 
-        <p className="text-center text-base text-neutral-500 mt-8">
+        <p className="text-center text-lg text-neutral-500 mt-10">
           AI can make mistakes, make sure to verify important information
         </p>
       </div>
@@ -548,39 +548,39 @@ export default function AssessmentDetailPage() {
     return (
       <div className="w-[58rem] mx-auto py-12">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center size-24 rounded-full bg-neutral-900/50 border border-neutral-800 mb-8">
-            <Sparkles className="size-12 text-white" />
+          <div className="inline-flex items-center justify-center size-28 rounded-full bg-neutral-900/50 border border-neutral-800 mb-10">
+            <Sparkles className="size-14 text-white" />
           </div>
           
-          <h1 className="text-5xl font-bold mb-5">{assessment.domain}</h1>
+          <h1 className="text-6xl font-bold mb-6">{assessment.domain}</h1>
           
-          <div className="flex items-center justify-center gap-3 mb-10">
-            <Badge variant="outline" className={`capitalize text-base px-4 py-1.5 ${getDifficultyColor(assessment.difficulty)}`}>
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <Badge variant="outline" className={`capitalize text-lg px-5 py-2 ${getDifficultyColor(assessment.difficulty)}`}>
               {assessment.difficulty}
             </Badge>
-            <Badge variant="outline" className="capitalize text-base px-4 py-1.5 border-neutral-700 text-neutral-300">
+            <Badge variant="outline" className="capitalize text-lg px-5 py-2 border-neutral-700 text-neutral-300">
               {assessment.questionCount} questions
             </Badge>
           </div>
 
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-10 mb-10">
-            <h2 className="text-2xl font-semibold mb-6">Before you begin</h2>
-            <ul className="text-left space-y-4 text-neutral-400 max-w-lg mx-auto">
-              <li className="flex items-start gap-3">
-                <CheckCircle2 className="size-6 text-green-400 mt-0.5 flex-shrink-0" />
-                <span className="text-lg">Read each question carefully before selecting an answer</span>
+          <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-12 mb-12">
+            <h2 className="text-3xl font-semibold mb-8">Before you begin</h2>
+            <ul className="text-left space-y-5 text-neutral-400 max-w-lg mx-auto">
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="size-7 text-green-400 mt-0.5 flex-shrink-0" />
+                <span className="text-xl">Read each question carefully before selecting an answer</span>
               </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle2 className="size-6 text-green-400 mt-0.5 flex-shrink-0" />
-                <span className="text-lg">You can navigate between questions using the arrows</span>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="size-7 text-green-400 mt-0.5 flex-shrink-0" />
+                <span className="text-xl">You can navigate between questions using the arrows</span>
               </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle2 className="size-6 text-green-400 mt-0.5 flex-shrink-0" />
-                <span className="text-lg">Click &quot;Check Answer&quot; to submit your response</span>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="size-7 text-green-400 mt-0.5 flex-shrink-0" />
+                <span className="text-xl">Click &quot;Check Answer&quot; to submit your response</span>
               </li>
-              <li className="flex items-start gap-3">
-                <CheckCircle2 className="size-6 text-green-400 mt-0.5 flex-shrink-0" />
-                <span className="text-lg">Complete all questions to see your final results</span>
+              <li className="flex items-start gap-4">
+                <CheckCircle2 className="size-7 text-green-400 mt-0.5 flex-shrink-0" />
+                <span className="text-xl">Complete all questions to see your final results</span>
               </li>
             </ul>
           </div>
@@ -589,17 +589,17 @@ export default function AssessmentDetailPage() {
             size="lg"
             onClick={handleStartAssessment}
             disabled={loadingStates.starting}
-            className="!h-14 !px-12 !text-[1.2rem]"
+            className="!h-16 !px-14 !text-xl"
           >
             {loadingStates.starting ? (
               <>
                 Starting...
-                <Loader2 className="size-5.5 animate-spin" />
+                <Loader2 className="size-6 animate-spin" />
               </>
             ) : (
               <>
                 Start Assessment
-                <ChevronRight className="size-5.5" />
+                <ChevronRight className="size-6" />
               </>
             )}
           </Button>
@@ -610,18 +610,18 @@ export default function AssessmentDetailPage() {
 
   return (
     <div className="w-[58rem] mx-auto py-8">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-5">
           <Button 
             variant="ghost" 
             size="icon"
             onClick={handlePrevQuestion}
             disabled={currentQuestionIndex === 0}
-            className="size-12"
+            className="size-14"
           >
-            <ChevronLeft className="size-6" />
+            <ChevronLeft className="size-7" />
           </Button>
-          <span className="text-xl font-medium">
+          <span className="text-2xl font-medium">
             Question <span className="text-white">{currentQuestionIndex + 1}</span> of {assessment.questionCount}
           </span>
           <Button 
@@ -629,29 +629,29 @@ export default function AssessmentDetailPage() {
             size="icon"
             onClick={handleNextQuestion}
             disabled={currentQuestionIndex >= assessment.questionCount - 1}
-            className="size-12"
+            className="size-14"
           >
-            <ChevronRight className="size-6" />
+            <ChevronRight className="size-7" />
           </Button>
         </div>
 
-        <div className="flex items-center gap-4">
-          <span className="text-lg text-neutral-400">{Math.round(progressPercent)}% complete</span>
-          <Badge variant="outline" className={`capitalize text-base px-3 py-1 ${getDifficultyColor(assessment.difficulty)}`}>
+        <div className="flex items-center gap-5">
+          <span className="text-xl text-neutral-400">{Math.round(progressPercent)}% complete</span>
+          <Badge variant="outline" className={`capitalize text-lg px-4 py-1.5 ${getDifficultyColor(assessment.difficulty)}`}>
             {assessment.difficulty}
           </Badge>
         </div>
       </div>
 
-      <Progress value={progressPercent} className="h-2.5 mb-10" />
+      <Progress value={progressPercent} className="h-3 mb-12" />
 
       {currentQuestion && (
-        <div className="bg-neutral-900/30 border border-neutral-800 rounded-2xl p-10 mb-8">
-          <h2 className="text-[1.75rem] font-bold mb-10 leading-relaxed">
+        <div className="bg-neutral-900/30 border border-neutral-800 rounded-2xl p-12 mb-10">
+          <h2 className="text-2xl font-bold mb-12 leading-relaxed">
             {currentQuestion.questionText}
           </h2>
 
-          <div className="space-y-5">
+          <div className="space-y-6">
             {currentQuestion.options.map((option, index) => (
               <button
                 key={index}
@@ -660,7 +660,7 @@ export default function AssessmentDetailPage() {
                 className={getOptionStyle(index)}
               >
                 <div className={`
-                  size-8 rounded-full border-2 flex items-center justify-center flex-shrink-0
+                  size-9 rounded-full border-2 flex items-center justify-center flex-shrink-0
                   ${!currentAnswer?.isSubmitted && selectedOption === index
                     ? 'border-white bg-white'
                     : ''
@@ -688,19 +688,19 @@ export default function AssessmentDetailPage() {
                 `}>
                   {currentAnswer?.isSubmitted && currentAnswer.selectedIndex === index ? (
                     currentAnswer.isCorrect ? (
-                      <Check className="size-5 text-white" />
+                      <Check className="size-6 text-white" />
                     ) : (
-                      <X className="size-5 text-white" />
+                      <X className="size-6 text-white" />
                     )
                   ) : currentAnswer?.isSubmitted && !currentAnswer.isCorrect && currentAnswer.correctAnswerIndex === index ? (
-                    <Check className="size-5 text-white" />
+                    <Check className="size-6 text-white" />
                   ) : (
                     !currentAnswer?.isSubmitted && selectedOption === index && (
-                      <div className="size-3 rounded-full bg-neutral-900" />
+                      <div className="size-3.5 rounded-full bg-neutral-900" />
                     )
                   )}
                 </div>
-                <span className="text-[1.15rem]">{option}</span>
+                <span className="text-xl">{option}</span>
               </button>
             ))}
           </div>
@@ -713,7 +713,7 @@ export default function AssessmentDetailPage() {
           size="lg"
           onClick={handleSkipQuestion}
           disabled={currentQuestionIndex >= assessment.questionCount - 1 || loadingStates.submitting}
-          className="!h-14 !text-[1.2rem]"
+          className="!h-16 !text-xl"
         >
           Skip Question
         </Button>
@@ -724,12 +724,12 @@ export default function AssessmentDetailPage() {
               size="lg"
               onClick={handleSubmitAnswer}
               disabled={selectedOption === null || loadingStates.submitting}
-              className="!h-14 !text-[1.2rem]"
+              className="!h-16 !text-xl"
             >
               {loadingStates.submitting ? (
                 <>
                   Checking...
-                  <Loader2 className="size-5 animate-spin" />
+                  <Loader2 className="size-6 animate-spin" />
                 </>
               ) : (
                 'Check Answer'
@@ -740,10 +740,10 @@ export default function AssessmentDetailPage() {
               <Button 
                 size="lg"
                 onClick={handleNextQuestion}
-                className="!h-14 !text-[1.2rem]"
+                className="!h-16 !text-xl"
               >
                 Next Question
-                <ChevronRight className="size-5" />
+                <ChevronRight className="size-6" />
               </Button>
             )
           )}
@@ -754,17 +754,17 @@ export default function AssessmentDetailPage() {
               variant="outline"
               onClick={handleCompleteAssessment}
               disabled={loadingStates.completing}
-              className="!h-14 !text-[1.2rem] !border-green-500/50 text-green-400 hover:text-green-400 hover:bg-green-500/10"
+              className="!h-16 !text-xl !border-green-500/50 text-green-400 hover:text-green-400 hover:bg-green-500/10"
             >
               {loadingStates.completing ? (
                 <>
                   Completing...
-                  <Loader2 className="size-5 animate-spin" />
+                  <Loader2 className="size-6 animate-spin" />
                 </>
               ) : (
                 <>
                   Complete Assessment
-                  <Trophy className="size-5" />
+                  <Trophy className="size-6" />
                 </>
               )}
             </Button>
@@ -772,7 +772,7 @@ export default function AssessmentDetailPage() {
         </div>
       </div>
 
-      <p className="text-center text-[1.2rem] text-neutral-500 mt-12">
+      <p className="text-center text-xl text-neutral-500 mt-14">
         AI can make mistakes, make sure to verify important information
       </p>
     </div>

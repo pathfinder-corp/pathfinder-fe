@@ -25,16 +25,16 @@ export function PublicHeader() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   return (
-    <header className="fixed top-0 w-full h-24 z-50 bg-black/40 backdrop-blur-2xl border-b border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
+    <header className="fixed top-0 w-full h-30 z-50 bg-black/40 backdrop-blur-2xl border-b border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
       <div className="size-full px-8 lg:px-16 grid grid-cols-3 items-center">
         <Link 
           href="/"
-          className="text-3xl lg:text-4xl font-bold tracking-tight hover:text-neutral-300 transition-colors justify-start-safe"
+          className="text-5xl font-bold tracking-tight hover:text-neutral-300 transition-colors justify-start-safe"
         >
           Pathfinder.
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-10 justify-center-safe">
+        <nav className="hidden lg:flex items-center gap-18 justify-center-safe">
           {NAV_ITEMS.map((item, index) => {
             const isActive = pathname === item.href || 
                            (item.href !== '/' && pathname.startsWith(item.href));
@@ -43,7 +43,7 @@ export function PublicHeader() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative py-2 text-lg font-medium transition-colors group ${
+                className={`relative py-2 text-2xl font-medium transition-colors group ${
                   isActive 
                     ? 'text-white'
                     : 'text-neutral-300 hover:text-white'
@@ -78,7 +78,7 @@ export function PublicHeader() {
                 asChild
                 variant="ghost"
                 size="lg"
-                className="!h-12 rounded-full text-base border border-neutral-700 hover:border-white hover:bg-white/5 transition-all duration-300"
+                className="!h-16 rounded-full text-xl border border-neutral-700 hover:border-white hover:bg-white/5 transition-all duration-300"
               >
                 <Link href="/login">Login</Link>
               </Button>
@@ -86,7 +86,7 @@ export function PublicHeader() {
               <Button
                 asChild
                 size="lg"
-                className="!h-12 rounded-full text-base bg-white text-neutral-950 hover:bg-neutral-200 transition-all duration-300"
+                className="!h-16 rounded-full text-xl bg-white text-neutral-950 hover:bg-neutral-200 transition-all duration-300"
               >
                 <Link href="/register">Register</Link>
               </Button>

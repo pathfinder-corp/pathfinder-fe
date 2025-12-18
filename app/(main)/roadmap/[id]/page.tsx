@@ -258,9 +258,9 @@ export default function RoadmapDetailPage() {
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-4 mb-3">
-            <h1 className="text-5xl font-bold">{roadmap.topic}</h1>
+            <h1 className="text-6xl font-bold">{roadmap.topic}</h1>
             {isViewer && (
-              <Badge variant="secondary" className="text-sm px-3 py-1.5">
+              <Badge variant="secondary" className="text-base px-4 py-2">
                 View Only
               </Badge>
             )}
@@ -268,12 +268,12 @@ export default function RoadmapDetailPage() {
           
           <div className="flex items-center gap-6 text-neutral-400">
             <div className="flex items-center gap-2">
-              <Zap className="size-5" />
-              <span className="text-base capitalize">{roadmap.learningPace || 'N/A'}</span>
+              <Zap className="size-6" />
+              <span className="text-lg capitalize">{roadmap.learningPace || 'N/A'}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="size-5" />
-              <span className="text-base">{roadmap.timeframe || 'N/A'}</span>
+              <Calendar className="size-6" />
+              <span className="text-lg">{roadmap.timeframe || 'N/A'}</span>
             </div>
           </div>
         </div>
@@ -282,11 +282,11 @@ export default function RoadmapDetailPage() {
           <Button
             variant="outline"
             size="lg"
-            className="flex items-center gap-2 !h-12 !text-[1.1rem]"
+            className="flex items-center gap-2 !h-14 !text-lg"
             onClick={() => setIsShareDialogOpen(true)}
           >
             Share
-            <Share2 className="size-4.5" />
+            <Share2 className="size-5" />
           </Button>
         )}
       </div>
@@ -298,11 +298,11 @@ export default function RoadmapDetailPage() {
         >
           <AccordionItem value="summary" className="border-0">
             <AccordionTrigger className="px-6 pt-6 pb-3 hover:no-underline">
-              <h2 className="text-2xl font-semibold">Summary</h2>
+              <h2 className="text-3xl font-semibold">Summary</h2>
             </AccordionTrigger>
             
             <AccordionContent className="px-6 pb-6">
-              <div className="space-y-3 text-base text-neutral-300">
+              <div className="space-y-3 text-lg text-neutral-300">
                 <p>
                   <strong>Recommended cadence:</strong> {roadmap.summary.recommendedCadence}
                 </p>
@@ -318,8 +318,8 @@ export default function RoadmapDetailPage() {
 
               {roadmap.summary.successTips && roadmap.summary.successTips.length > 0 && (
                 <div className="mt-4">
-                  <strong className="block mb-2 text-base">Success tips:</strong>
-                  <ul className="list-disc list-inside space-y-2 text-base text-neutral-300">
+                  <strong className="block mb-2 text-lg">Success tips:</strong>
+                  <ul className="list-disc list-inside space-y-2 text-lg text-neutral-300">
                     {roadmap.summary.successTips.map((tip, index) => (
                       <li key={index}>{tip}</li>
                     ))}
@@ -332,30 +332,30 @@ export default function RoadmapDetailPage() {
       )}
 
       <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-neutral-800">
-          <h2 className="text-xl font-semibold">Learning Roadmap</h2>
+        <div className="flex items-center justify-between p-5 border-b border-neutral-800">
+          <h2 className="text-2xl font-semibold">Learning Roadmap</h2>
           
           <div className="flex items-center gap-2">
             <Button 
               variant="outline" 
               size="sm" 
-              className="!h-9"
+              className="!h-10"
               onClick={handleResetView}
               title="Reset view to initial position"
             >
-              <RotateCcw className="size-4" />
+              <RotateCcw className="size-5" />
             </Button>
             
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="!h-9">
-                  <Maximize2 className="size-4" />
+                <Button variant="outline" size="sm" className="!h-10">
+                  <Maximize2 className="size-5" />
                 </Button>
               </SheetTrigger>
               <SheetContent side="bottom" className="h-[95vh] w-full">
                 <SheetHeader>
-                  <SheetTitle className="text-2xl">{roadmap.topic}</SheetTitle>
-                  <SheetDescription className="text-base">
+                  <SheetTitle className="text-3xl">{roadmap.topic}</SheetTitle>
+                  <SheetDescription className="text-lg">
                     Detailed learning roadmap - Move with mouse, zoom with scroll
                   </SheetDescription>
                 </SheetHeader>
@@ -383,20 +383,20 @@ export default function RoadmapDetailPage() {
       </div>
 
       {roadmap.milestones && roadmap.milestones.length > 0 && (
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
-          <h2 className="text-2xl font-semibold mb-4">Important milestones</h2>
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-7">
+          <h2 className="text-3xl font-semibold mb-5">Important milestones</h2>
           <div className="grid gap-4">
             {roadmap.milestones.map((milestone, index) => (
               <div
                 key={index}
-                className="flex items-start gap-4 p-4 bg-neutral-800/50 rounded-lg border border-neutral-700"
+                className="flex items-start gap-4 p-5 bg-neutral-800/50 rounded-lg border border-neutral-700"
               >
-                <div className="flex-shrink-0 size-7 rounded-full bg-white flex items-center justify-center text-black font-bold text-[.9rem]">
+                <div className="flex-shrink-0 size-8 rounded-full bg-white flex items-center justify-center text-black font-bold text-base">
                   {index + 1}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold mb-1">{milestone.title}</h3>
-                  <p className="text-base text-neutral-400">{milestone.successCriteria}</p>
+                  <h3 className="text-xl font-semibold mb-2">{milestone.title}</h3>
+                  <p className="text-lg text-neutral-400">{milestone.successCriteria}</p>
                 </div>
               </div>
             ))}
@@ -426,19 +426,19 @@ export default function RoadmapDetailPage() {
                         variant="ghost"
                         size="sm"
                         onClick={handleBackToDetail}
-                        className="mb-2 -ml-2"
+                        className="mb-2 -ml-2 !h-10 !text-base"
                       >
-                        <ArrowLeft className="size-4 mr-2" />
+                        <ArrowLeft className="size-5 mr-2" />
                         Back to details
                       </Button>
                     )}
-                    <SheetTitle className="text-2xl font-bold mb-2">
+                    <SheetTitle className="text-3xl font-bold mb-2">
                       {isChatMode ? 'Ask AI Assistant' : selectedNode.title}
                     </SheetTitle>
                     {!isChatMode && (
                       <div className="flex items-center gap-2 text-neutral-400">
-                        <Clock className="size-4" />
-                        <span className="text-base">{selectedNode.duration}</span>
+                        <Clock className="size-5" />
+                        <span className="text-lg">{selectedNode.duration}</span>
                       </div>
                     )}
                   </div>
@@ -450,7 +450,7 @@ export default function RoadmapDetailPage() {
                         size="sm"
                         onClick={handleClearChat}
                         disabled={loadingStates.aiChat}
-                        className="text-sm"
+                        className="!h-10 !text-base"
                       >
                         Clear Chat
                       </Button>
@@ -460,10 +460,10 @@ export default function RoadmapDetailPage() {
                       <Button
                         onClick={handleAskAI}
                         size="lg"
-                        className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 !text-base"
+                        className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 !h-12 !text-lg"
                       >
                         Ask AI
-                        <Sparkles className="size-4" />
+                        <Sparkles className="size-5" />
                       </Button>
                     )}
                   </div>

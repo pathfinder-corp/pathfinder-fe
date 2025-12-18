@@ -88,66 +88,66 @@ export default function RoadmapPage() {
     <div className={`${fromAssessment && suggestedTopic ? 'pb-12' : ''} pt-10 flex flex-col items-center justify-center`}>
       {fromAssessment && suggestedTopic ? (
         <>
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-neutral-800 text-neutral-300 text-base mb-6">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-neutral-800 text-neutral-300 text-lg mb-6">
             <span>Suggested from your assessment results</span>
           </div>
-          <h1 className="text-5xl font-bold mb-6">Create Your Learning Roadmap</h1>
-          <p className="text-xl text-neutral-500 text-center max-w-2xl">
+          <h1 className="text-6xl font-bold mb-6">Create Your Learning Roadmap</h1>
+          <p className="text-2xl text-neutral-500 text-center max-w-2xl">
             Based on your assessment, we recommend learning <span className="text-white font-medium">{suggestedTopic}</span>. 
             Customize the options below to personalize your roadmap.
           </p>
         </>
       ) : (
         <>
-          <h1 className="text-5xl font-bold mb-6">What do you want to learn today?</h1>
-          <p className="text-xl text-neutral-500">
+          <h1 className="text-6xl font-bold mb-6">What do you want to learn today?</h1>
+          <p className="text-2xl text-neutral-500">
             Enter any topic below to automatically create a roadmap you want
           </p>
         </>
       )}
 
       <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-7 mt-6">
-        <div className="space-y-[.65rem]">
-          <Label htmlFor="topic" className="text-[1.35rem]">
+        <div className="space-y-3">
+          <Label htmlFor="topic" className="text-xl">
             Topic <span className="text-red-500">*</span>
           </Label>
           <Input
             {...register('topic')}
             placeholder="Enter any topic..."
-            className="w-full !h-18 !text-[1.25rem] !px-5"
+            className="w-full !h-20 !text-xl !px-6"
           />
           {errors.topic && (
-            <p className="text-red-500 text-[1rem]">{errors.topic.message}</p>
+            <p className="text-red-500 text-lg">{errors.topic.message}</p>
           )}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-[.65rem]">
-            <Label htmlFor="background" className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label htmlFor="background" className="text-xl">
               Background
             </Label>
             <Input
               {...register('background')}
               placeholder="Enter background..."
-              className="w-full !h-18 !text-[1.25rem] !px-5"
+              className="w-full !h-20 !text-xl !px-6"
             />
           </div>
-          <div className="space-y-[.65rem]">
-            <Label htmlFor="experienceLevel" className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label htmlFor="experienceLevel" className="text-xl">
               Experience
             </Label>
             <Select onValueChange={(value) => setValue('experienceLevel', value as any)}>
-              <SelectTrigger className="w-full !h-18 !text-[1.25rem] !px-5">
+              <SelectTrigger className="w-full !h-20 !text-xl !px-6">
                 <SelectValue placeholder="Select experience" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="beginner" className="!text-[1.25rem]">
+                <SelectItem value="beginner" className="!text-xl">
                   Beginner
                 </SelectItem>
-                <SelectItem value="intermediate" className="!text-[1.25rem]">
+                <SelectItem value="intermediate" className="!text-xl">
                   Intermediate
                 </SelectItem>
-                <SelectItem value="advanced" className="!text-[1.25rem]">
+                <SelectItem value="advanced" className="!text-xl">
                   Advanced
                 </SelectItem>
               </SelectContent>
@@ -156,32 +156,32 @@ export default function RoadmapPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-[.65rem]">
-            <Label htmlFor="targetOutcome" className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label htmlFor="targetOutcome" className="text-xl">
               Target Outcome
             </Label>
             <Input
               {...register('targetOutcome')}
               placeholder="Enter target outcome..."
-              className="w-full !h-18 !text-[1.25rem] !px-5"
+              className="w-full !h-20 !text-xl !px-6"
             />
           </div>
-          <div className="space-y-[.65rem]">
-            <Label htmlFor="learningPace" className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label htmlFor="learningPace" className="text-xl">
               Learning Pace
             </Label>
             <Select onValueChange={(value) => setValue('learningPace', value as any)}>
-              <SelectTrigger className="w-full !h-18 !text-[1.25rem] !px-5">
+              <SelectTrigger className="w-full !h-20 !text-xl !px-6">
                 <SelectValue placeholder="Select learning pace" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="flexible" className="!text-[1.25rem]">
+                <SelectItem value="flexible" className="!text-xl">
                   Flexible
                 </SelectItem>
-                <SelectItem value="balanced" className="!text-[1.25rem]">
+                <SelectItem value="balanced" className="!text-xl">
                   Balanced
                 </SelectItem>
-                <SelectItem value="intensive" className="!text-[1.25rem]">
+                <SelectItem value="intensive" className="!text-xl">
                   Intensive
                 </SelectItem>
               </SelectContent>
@@ -190,8 +190,8 @@ export default function RoadmapPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-[.65rem]">
-            <Label htmlFor="timeframe" className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label htmlFor="timeframe" className="text-xl">
               Timeframe
             </Label>
             <DateRangePicker
@@ -204,17 +204,17 @@ export default function RoadmapPage() {
               align="start"
               locale="vi-VN"
               showCompare={false}
-              className="w-full !h-18 !text-[1.25rem] !px-5"
+              className="w-full !h-20 !text-xl !px-6"
             />
           </div>
-          <div className="space-y-[.65rem]">
-            <Label htmlFor="preferences" className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label htmlFor="preferences" className="text-xl">
               Personalization
             </Label>
             <Input
               {...register('preferences')}
               placeholder="Enter preferences..."
-              className="w-full !h-18 !text-[1.25rem] !px-5"
+              className="w-full !h-20 !text-xl !px-6"
             />
           </div>
         </div>
@@ -222,17 +222,17 @@ export default function RoadmapPage() {
         <Button 
           type="submit" 
           disabled={isLoading}
-          className="w-full !h-14 !text-[1.3rem]"
+          className="w-full !h-16 !text-xl"
         >
           {isLoading ? (
             <>
               Creating roadmap...
-              <Loader2 className="size-5.5 animate-spin" />
+              <Loader2 className="size-6 animate-spin" />
             </>
           ) : (
             <>
               Create roadmap
-              <Send className="size-6" />
+              <Send className="size-7" />
             </>
           )}
         </Button>

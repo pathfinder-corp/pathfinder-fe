@@ -139,7 +139,7 @@ export default function MentorDetailPage() {
     return (
       <div className="min-h-screen bg-neutral-950">
         <PublicHeader />
-        <main className="pt-24">
+        <main className="pt-36">
           <div className="max-w-6xl mx-auto px-6 py-8">
             <Skeleton className="h-10 w-40 mb-8 bg-neutral-800" />
             
@@ -180,17 +180,17 @@ export default function MentorDetailPage() {
     return (
       <div className="min-h-screen bg-neutral-950">
         <PublicHeader />
-        <main className="pt-24">
-          <div className="max-w-6xl mx-auto px-6 py-16 text-center">
-            <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-6">
-              <Users className="size-10 text-neutral-500" />
+        <main className="pt-36">
+          <div className="max-w-6xl mx-auto px-6 py-20 text-center">
+            <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+              <Users className="size-12 text-neutral-500" />
             </div>
-            <h2 className="text-3xl font-bold mb-4">Mentor not found</h2>
-            <p className="text-lg text-neutral-400 mb-8">
+            <h2 className="text-4xl font-bold mb-5">Mentor not found</h2>
+            <p className="text-xl text-neutral-400 mb-10">
               The mentor profile you&apos;re looking for doesn&apos;t exist or has been removed.
             </p>
-            <Button size="lg" onClick={() => router.push('/mentors')} className="!h-12 !px-8">
-              <ArrowLeft className="size-5 mr-2" />
+            <Button size="lg" onClick={() => router.push('/mentors')} className="!h-14 !text-lg !px-10">
+              <ArrowLeft className="size-6 mr-2" />
               Back to Mentors
             </Button>
           </div>
@@ -203,7 +203,7 @@ export default function MentorDetailPage() {
     <div className="min-h-screen bg-neutral-950">
       <PublicHeader />
       
-      <main className="pt-36 pb-16">
+      <main className="pt-40 pb-16">
         <div className="max-w-6xl mx-auto px-6">
 
           <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
@@ -225,25 +225,25 @@ export default function MentorDetailPage() {
             )}
 
             <div className="flex-1">
-              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-3">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
                 <div>
-                  <h1 className="text-4xl font-bold mb-1">
+                  <h1 className="text-5xl font-bold mb-2">
                     {mentor.user?.firstName} {mentor.user?.lastName}
                   </h1>
-                  <p className="text-xl text-neutral-400">
+                  <p className="text-2xl text-neutral-400">
                     {mentor.headline || 'Professional Mentor'}
                   </p>
                 </div>
                 {mentor.isActive && (
-                  <Badge variant="outline" className="py-1.5 px-3 border-green-500/50 text-green-500 w-fit">
+                  <Badge variant="outline" className="py-2 px-4 text-base border-green-500/50 text-green-500 w-fit">
                     Verified Mentor
                   </Badge>
                 )}
               </div>
 
               {mentor.languages && mentor.languages.length > 0 && (
-                <div className="flex items-center gap-2 text-base text-neutral-400 mb-4">
-                  <Globe className="size-4" />
+                <div className="flex items-center gap-2.5 text-lg text-neutral-400 mb-5">
+                  <Globe className="size-5" />
                   <span>Speaks:</span>
                   <span className="text-white">{mentor.languages[0]}</span>
                   {mentor.languages.length > 1 && (
@@ -254,17 +254,17 @@ export default function MentorDetailPage() {
 
               <div className="flex flex-wrap gap-3">
                 {mentor.yearsExperience >= 5 && (
-                  <Badge variant="outline" className="border-neutral-700 text-neutral-300 py-1.5 px-3">
+                  <Badge variant="outline" className="border-neutral-700 text-neutral-300 py-2 px-4 text-base">
                     {mentor.yearsExperience}+ years experience
                   </Badge>
                 )}
                 {mentor.isAcceptingMentees && (
-                  <Badge variant="outline" className="py-1.5 px-3 border-green-500/50 text-green-400">
+                  <Badge variant="outline" className="py-2 px-4 text-base border-green-500/50 text-green-400">
                     Accepting mentees
                   </Badge>
                 )}
                 {!mentor.isAcceptingMentees && (
-                  <Badge variant="outline" className="py-1.5 px-3 border-neutral-600 text-neutral-400">
+                  <Badge variant="outline" className="py-2 px-4 text-base border-neutral-600 text-neutral-400">
                     Not accepting
                   </Badge>
                 )}
@@ -272,14 +272,14 @@ export default function MentorDetailPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 border-b border-neutral-800 mb-8">
+          <div className="flex items-center gap-1 border-b border-neutral-800 mb-10">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`cursor-pointer relative px-4 py-3 text-base font-medium transition-colors ${
+                  className={`cursor-pointer relative px-5 py-4 text-lg font-medium transition-colors ${
                     isActive
                       ? 'text-white'
                       : 'text-neutral-500 hover:text-neutral-300'
@@ -308,24 +308,24 @@ export default function MentorDetailPage() {
                   exit: { opacity: 0, y: 20, filter: 'blur(4px)' },
                 }}
               >
-                <div className="space-y-6">
+                <div className="space-y-8">
                   <div>
-                    <h2 className="text-xl font-semibold mb-4">About Me</h2>
-                    <p className="text-base text-neutral-300 leading-relaxed whitespace-pre-line">
+                    <h2 className="text-2xl font-semibold mb-5">About Me</h2>
+                    <p className="text-lg text-neutral-300 leading-relaxed whitespace-pre-line">
                       {mentor.bio || 'This mentor hasn\'t added a bio yet.'}
                     </p>
                   </div>
 
                   {(mentor.linkedinUrl || mentor.portfolioUrl) && (
-                    <div className="flex items-center gap-4 pt-2">
+                    <div className="flex items-center gap-5 pt-2">
                       {mentor.linkedinUrl && (
                         <a
                           href={mentor.linkedinUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-base text-neutral-400 hover:text-white transition-colors"
+                          className="flex items-center gap-2 text-lg text-neutral-400 hover:text-white transition-colors"
                         >
-                          <Linkedin className="size-5" />
+                          <Linkedin className="size-6" />
                         </a>
                       )}
                       {mentor.portfolioUrl && (
@@ -333,9 +333,9 @@ export default function MentorDetailPage() {
                           href={mentor.portfolioUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-base text-neutral-400 hover:text-white transition-colors"
+                          className="flex items-center gap-2 text-lg text-neutral-400 hover:text-white transition-colors"
                         >
-                          <Globe className="size-5" />
+                          <Globe className="size-6" />
                         </a>
                       )}
                     </div>
@@ -343,7 +343,7 @@ export default function MentorDetailPage() {
 
                   {mentor.skills && mentor.skills.length > 0 && (
                     <div className="pt-4">
-                      <h3 className="text-sm font-medium text-neutral-500 uppercase tracking-wider mb-3">
+                      <h3 className="text-base font-medium text-neutral-500 uppercase tracking-wider mb-4">
                         Skills
                       </h3>
                       <div className="flex flex-wrap gap-2">
@@ -351,7 +351,7 @@ export default function MentorDetailPage() {
                           <Badge 
                             key={i} 
                             variant="outline" 
-                            className="border-neutral-700 text-neutral-300 py-1 px-3"
+                            className="border-neutral-700 text-neutral-300 py-1.5 px-4 text-base"
                           >
                             {skill}
                           </Badge>
@@ -361,18 +361,18 @@ export default function MentorDetailPage() {
                   )}
                 </div>
 
-                <div className="space-y-8">
+                <div className="space-y-10">
                   {mentor.expertise && mentor.expertise.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-neutral-500 uppercase tracking-wider mb-3">
+                      <h3 className="text-base font-medium text-neutral-500 uppercase tracking-wider mb-4">
                         Expertise
                       </h3>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2.5">
                         {mentor.expertise.map((exp, i) => (
                           <Badge 
                             key={i} 
                             variant="secondary" 
-                            className="py-1.5 px-3 text-base"
+                            className="py-2 px-4 text-lg"
                           >
                             {exp}
                           </Badge>
@@ -383,15 +383,15 @@ export default function MentorDetailPage() {
 
                   {mentor.industries && mentor.industries.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-medium text-neutral-500 uppercase tracking-wider mb-3">
+                      <h3 className="text-base font-medium text-neutral-500 uppercase tracking-wider mb-4">
                         Industries
                       </h3>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2.5">
                         {mentor.industries.map((industry, i) => (
                           <Badge 
                             key={i} 
                             variant="outline" 
-                            className="border-neutral-700 text-neutral-300 py-1 px-3"
+                            className="border-neutral-700 text-neutral-300 py-1.5 px-4 text-base"
                           >
                             {industry}
                           </Badge>
@@ -401,31 +401,31 @@ export default function MentorDetailPage() {
                   )}
 
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-500 uppercase tracking-wider mb-3">
+                    <h3 className="text-base font-medium text-neutral-500 uppercase tracking-wider mb-4">
                       Experience
                     </h3>
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-lg bg-neutral-800 flex items-center justify-center">
-                        <Briefcase className="size-5 text-neutral-400" />
+                    <div className="flex items-center gap-4">
+                      <div className="size-12 rounded-lg bg-neutral-800 flex items-center justify-center">
+                        <Briefcase className="size-6 text-neutral-400" />
                       </div>
                       <div>
-                        <p className="text-base font-medium">{mentor.yearsExperience || 0} years</p>
-                        <p className="text-sm text-neutral-500">Professional experience</p>
+                        <p className="text-lg font-medium">{mentor.yearsExperience || 0} years</p>
+                        <p className="text-base text-neutral-500">Professional experience</p>
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-sm font-medium text-neutral-500 uppercase tracking-wider mb-3">
+                    <h3 className="text-base font-medium text-neutral-500 uppercase tracking-wider mb-4">
                       Member Since
                     </h3>
-                    <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-lg bg-neutral-800 flex items-center justify-center">
-                        <Calendar className="size-5 text-neutral-400" />
+                    <div className="flex items-center gap-4">
+                      <div className="size-12 rounded-lg bg-neutral-800 flex items-center justify-center">
+                        <Calendar className="size-6 text-neutral-400" />
                       </div>
                       <div>
-                        <p className="text-base font-medium">{formatDate(mentor.createdAt)}</p>
-                        <p className="text-sm text-neutral-500">Joined as mentor</p>
+                        <p className="text-lg font-medium">{formatDate(mentor.createdAt)}</p>
+                        <p className="text-base text-neutral-500">Joined as mentor</p>
                       </div>
                     </div>
                   </div>
@@ -433,13 +433,13 @@ export default function MentorDetailPage() {
               </TransitionPanel>
             </div>
 
-            <div className="space-y-6">
-              <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-5">
-                <h3 className="text-base font-semibold mb-4">Contact</h3>
+            <div className="space-y-7">
+              <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
+                <h3 className="text-lg font-semibold mb-5">Contact</h3>
                 
                 <Button
                   size="lg"
-                  className="w-full !h-12 text-[1.1rem] bg-white text-neutral-950 hover:bg-neutral-200 mb-4"
+                  className="w-full !h-14 !text-lg bg-white text-neutral-950 hover:bg-neutral-200 mb-5"
                   disabled={!canConnect}
                   onClick={() => setIsConnectDialogOpen(true)}
                 >
@@ -447,47 +447,47 @@ export default function MentorDetailPage() {
                 </Button>
 
                 {!user && (
-                  <p className="text-sm text-neutral-500 text-center">
+                  <p className="text-base text-neutral-500 text-center">
                     Please login to connect with this mentor
                   </p>
                 )}
 
                 {user && user.role !== USER_ROLES.STUDENT && (
-                  <p className="text-sm text-neutral-500 text-center">
+                  <p className="text-base text-neutral-500 text-center">
                     Only students can send connection requests
                   </p>
                 )}
 
                 {user && user.id === mentor.userId && (
-                  <p className="text-sm text-neutral-500 text-center">
+                  <p className="text-base text-neutral-500 text-center">
                     This is your own profile
                   </p>
                 )}
 
                 {user && user.role === USER_ROLES.STUDENT && !mentor.isAcceptingMentees && (
-                  <p className="text-sm text-neutral-500 text-center">
+                  <p className="text-base text-neutral-500 text-center">
                     This mentor is currently not accepting new mentees
                   </p>
                 )}
 
                 {(mentor.linkedinUrl || mentor.portfolioUrl) && (
                   <>
-                    <Separator className="my-4 bg-neutral-800" />
-                    <div className="space-y-3">
-                      <p className="text-sm font-medium text-neutral-500 uppercase tracking-wider">
+                    <Separator className="my-5 bg-neutral-800" />
+                    <div className="space-y-4">
+                      <p className="text-base font-medium text-neutral-500 uppercase tracking-wider">
                         Social Links
                       </p>
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {mentor.linkedinUrl && (
                           <a
                             href={mentor.linkedinUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 text-base text-neutral-300 hover:text-white transition-colors"
+                            className="flex items-center gap-3 text-lg text-neutral-300 hover:text-white transition-colors"
                           >
-                            <Linkedin className="size-4" />
+                            <Linkedin className="size-5" />
                             LinkedIn
-                            <ExternalLink className="size-3 ml-auto text-neutral-500" />
+                            <ExternalLink className="size-4 ml-auto text-neutral-500" />
                           </a>
                         )}
                         {mentor.portfolioUrl && (
@@ -495,11 +495,11 @@ export default function MentorDetailPage() {
                             href={mentor.portfolioUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 text-base text-neutral-300 hover:text-white transition-colors"
+                            className="flex items-center gap-3 text-lg text-neutral-300 hover:text-white transition-colors"
                           >
-                            <Globe className="size-4" />
+                            <Globe className="size-5" />
                             Portfolio
-                            <ExternalLink className="size-3 ml-auto text-neutral-500" />
+                            <ExternalLink className="size-4 ml-auto text-neutral-500" />
                           </a>
                         )}
                       </div>
@@ -508,32 +508,32 @@ export default function MentorDetailPage() {
                 )}
               </div>
 
-              <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-5">
-                <h3 className="text-base font-semibold mb-4">Quick Info</h3>
-                <div className="space-y-4">
+              <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
+                <h3 className="text-lg font-semibold mb-5">Quick Info</h3>
+                <div className="space-y-5">
                   <div className="flex items-center justify-between">
-                    <span className="text-neutral-400">Experience</span>
-                    <span className="font-medium">{mentor.yearsExperience || 0} years</span>
+                    <span className="text-lg text-neutral-400">Experience</span>
+                    <span className="text-lg font-medium">{mentor.yearsExperience || 0} years</span>
                   </div>
                   <Separator className="bg-neutral-800" />
                   <div className="flex items-center justify-between">
-                    <span className="text-neutral-400">Languages</span>
-                    <span className="font-medium">{mentor.languages?.length || 0}</span>
+                    <span className="text-lg text-neutral-400">Languages</span>
+                    <span className="text-lg font-medium">{mentor.languages?.length || 0}</span>
                   </div>
                   <Separator className="bg-neutral-800" />
                   <div className="flex items-center justify-between">
-                    <span className="text-neutral-400">Max Mentees</span>
-                    <span className="font-medium">{mentor.maxMentees || 'N/A'}</span>
+                    <span className="text-lg text-neutral-400">Max Mentees</span>
+                    <span className="text-lg font-medium">{mentor.maxMentees || 'N/A'}</span>
                   </div>
                   <Separator className="bg-neutral-800" />
                   <div className="flex items-center justify-between">
-                    <span className="text-neutral-400">Status</span>
+                    <span className="text-lg text-neutral-400">Status</span>
                     <Badge 
                       variant="outline"
-                      className={mentor.isAcceptingMentees 
+                      className={`text-base py-1.5 px-3 ${mentor.isAcceptingMentees 
                         ? 'border-green-500/50 text-green-400' 
                         : 'border-neutral-600 text-neutral-400'
-                      }
+                      }`}
                     >
                       {mentor.isAcceptingMentees ? 'Available' : 'Unavailable'}
                     </Badge>
@@ -548,10 +548,10 @@ export default function MentorDetailPage() {
       <Dialog open={isConnectDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-xl">
+            <DialogTitle className="text-2xl">
               {requestSent ? 'Request Sent!' : `Connect with ${mentor.user?.firstName}`}
             </DialogTitle>
-            <DialogDescription>
+            <DialogDescription className="text-base">
               {requestSent 
                 ? 'Your connection request has been sent successfully.'
                 : 'Send a message introducing yourself and explaining why you\'d like to connect.'
@@ -560,40 +560,40 @@ export default function MentorDetailPage() {
           </DialogHeader>
 
           {requestSent ? (
-            <div className="py-6 text-center">
-              <div className="size-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="size-8 text-green-500" />
+            <div className="py-8 text-center">
+              <div className="size-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+                <CheckCircle className="size-10 text-green-500" />
               </div>
-              <p className="text-base text-neutral-400 mb-6">
+              <p className="text-lg text-neutral-400 mb-8">
                 {mentor.user?.firstName} will review your request and respond soon.
               </p>
               <div className="flex gap-3 justify-center">
                 <Button
                   variant="outline"
                   onClick={handleCloseDialog}
-                  className="!h-11"
+                  className="!h-12 !text-base"
                 >
                   Close
                 </Button>
                 <Button
                   onClick={() => router.push('/mentorship/requests')}
-                  className="!h-11"
+                  className="!h-12 !text-base"
                 >
                   View My Requests
                 </Button>
               </div>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               <Textarea
                 value={connectMessage}
                 onChange={(e) => setConnectMessage(e.target.value)}
                 placeholder="Hi! I'm interested in learning from you because..."
-                className="min-h-[120px] !text-base"
+                className="min-h-[140px] !text-lg"
                 disabled={isSendingRequest}
               />
 
-              <p className="text-sm text-neutral-500">
+              <p className="text-base text-neutral-500">
                 Tip: Mention your goals, what you hope to learn, and why you think this mentor would be a good fit.
               </p>
 
@@ -602,24 +602,24 @@ export default function MentorDetailPage() {
                   variant="outline"
                   onClick={handleCloseDialog}
                   disabled={isSendingRequest}
-                  className="!h-11"
+                  className="!h-12 !text-base"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSendRequest}
                   disabled={isSendingRequest || !connectMessage.trim()}
-                  className="!h-11"
+                  className="!h-12 !text-base"
                 >
                   {isSendingRequest ? (
                     <>
                       Sending...
-                      <Loader2 className="size-4 animate-spin" />
+                      <Loader2 className="size-5 animate-spin" />
                     </>
                   ) : (
                     <>
                       Send Request
-                      <Send className="size-4" />
+                      <Send className="size-5" />
                     </>
                   )}
                 </Button>

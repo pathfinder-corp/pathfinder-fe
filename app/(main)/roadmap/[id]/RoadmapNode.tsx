@@ -65,10 +65,10 @@ function RoadmapNode({ data }: NodeProps<any>) {
       <TooltipProvider>
         <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
-            <div
+              <div
               className={cn(
-                'px-4 py-4 rounded-xl border-2 transition-all duration-300 backdrop-blur-sm',
-                'w-[280px] max-w-[280px]',
+                'p-5 rounded-xl border-2 transition-all duration-300 backdrop-blur-sm',
+                'w-[300px] max-w-[300px]',
                 config.bg,
                 'hover:scale-105 cursor-pointer hover:shadow-2xl'
               )}
@@ -79,17 +79,17 @@ function RoadmapNode({ data }: NodeProps<any>) {
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-lg mb-1 line-clamp-2">
+                  <h3 className="font-bold text-xl mb-1.5 line-clamp-2">
                     {label}
                   </h3>
                   
-                  <p className="text-sm text-neutral-400 leading-6 mb-2 line-clamp-2">
+                  <p className="text-base text-neutral-400 leading-6 mb-2 line-clamp-2">
                     {description}
                   </p>
                   
-                  <div className="flex items-center gap-2 text-xs text-neutral-500">
-                    <Clock className="size-3 flex-shrink-0" />
-                    <span className="truncate text-[.95rem]">{duration}</span>
+                  <div className="flex items-center gap-2 text-sm text-neutral-500">
+                    <Clock className="size-4 flex-shrink-0" />
+                    <span className="truncate text-base">{duration}</span>
                   </div>
                 </div>
               </div>
@@ -98,13 +98,13 @@ function RoadmapNode({ data }: NodeProps<any>) {
           
           <TooltipContent 
             side="right" 
-            className="max-w-sm px-4 py-4 bg-[#272727] border-neutral-700"
+            className="max-w-sm p-5 bg-[#272727] border-neutral-700"
           >
             <div className="space-y-2">
-              <h4 className="font-bold text-base text-white">{label}</h4>
-              <p className="text-[1rem] text-neutral-300">{description}</p>
-              <div className="flex items-center gap-2 text-[.95rem] text-neutral-400 pt-2 border-t border-neutral-700">
-                <Clock className="size-3" />
+              <h4 className="font-bold text-lg text-white">{label}</h4>
+              <p className="text-base text-neutral-300">{description}</p>
+              <div className="flex items-center gap-2 text-base text-neutral-400 pt-2 border-t border-neutral-700">
+                <Clock className="size-4" />
                 <span>{duration}</span>
               </div>
             </div>

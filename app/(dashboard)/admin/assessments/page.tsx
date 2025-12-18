@@ -153,11 +153,11 @@ export default function AdminAssessmentsPage() {
 
   const getSortIcon = (field: AssessmentSortField) => {
     if (sortBy !== field) {
-      return <ArrowUpDown className="size-4 ml-1 opacity-50" />;
+      return <ArrowUpDown className="size-5 ml-2 opacity-50" />;
     }
     return sortOrder === SORT_ORDER.ASC 
-      ? <ArrowUp className="size-4 ml-1" />
-      : <ArrowDown className="size-4 ml-1" />;
+      ? <ArrowUp className="size-5 ml-2" />
+      : <ArrowDown className="size-5 ml-2" />;
   };
 
   useEffect(() => {
@@ -281,46 +281,46 @@ export default function AdminAssessmentsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-bold mb-2">Assessments</h1>
-        <p className="text-lg text-neutral-400">
+        <h1 className="text-5xl font-bold mb-3">Assessments</h1>
+        <p className="text-xl text-neutral-400">
           Manage all assessments on the platform
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+      <div className="flex flex-col sm:flex-row gap-5 sm:items-center justify-between">
         <div className="relative flex-1 max-w-xl">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-neutral-400" />
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-6 text-neutral-400" />
           <Input
             placeholder="Search by domain..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-12 text-base bg-neutral-900/50 border-neutral-800"
+            className="pl-14 !h-14 !text-lg bg-neutral-900/50 border-neutral-800"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+              className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
             >
-              <X className="size-4" />
+              <X className="size-5" />
             </button>
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <Select 
             value={statusFilter} 
             onValueChange={(value) => setStatusFilter(value as StatusFilter)}
           >
-            <SelectTrigger className="w-[160px] !h-12 text-base bg-neutral-900/50 border-neutral-800">
+            <SelectTrigger className="w-[180px] !h-14 text-lg bg-neutral-900/50 border-neutral-800">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all" className="text-base">All Status</SelectItem>
-              <SelectItem value="pending" className="text-base">Pending</SelectItem>
-              <SelectItem value="in_progress" className="text-base">In Progress</SelectItem>
-              <SelectItem value="completed" className="text-base">Completed</SelectItem>
+              <SelectItem value="all" className="text-lg">All Status</SelectItem>
+              <SelectItem value="pending" className="text-lg">Pending</SelectItem>
+              <SelectItem value="in_progress" className="text-lg">In Progress</SelectItem>
+              <SelectItem value="completed" className="text-lg">Completed</SelectItem>
             </SelectContent>
           </Select>
 
@@ -328,14 +328,14 @@ export default function AdminAssessmentsPage() {
             value={difficultyFilter} 
             onValueChange={(value) => setDifficultyFilter(value as DifficultyFilter)}
           >
-            <SelectTrigger className="w-[150px] !h-12 text-base bg-neutral-900/50 border-neutral-800">
+            <SelectTrigger className="w-[170px] !h-14 text-lg bg-neutral-900/50 border-neutral-800">
               <SelectValue placeholder="Difficulty" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all" className="text-base">All Levels</SelectItem>
-              <SelectItem value="easy" className="text-base">Easy</SelectItem>
-              <SelectItem value="medium" className="text-base">Medium</SelectItem>
-              <SelectItem value="hard" className="text-base">Hard</SelectItem>
+              <SelectItem value="all" className="text-lg">All Levels</SelectItem>
+              <SelectItem value="easy" className="text-lg">Easy</SelectItem>
+              <SelectItem value="medium" className="text-lg">Medium</SelectItem>
+              <SelectItem value="hard" className="text-lg">Hard</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -346,7 +346,7 @@ export default function AdminAssessmentsPage() {
           <TableHeader>
             <TableRow className="border-neutral-800 hover:bg-transparent">
               <TableHead 
-                className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 pl-6 cursor-pointer hover:text-white transition-colors w-[280px]"
+                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pl-7 cursor-pointer hover:text-white transition-colors w-[300px]"
                 onClick={() => handleSort('domain')}
               >
                 <div className="flex items-center">
@@ -354,11 +354,11 @@ export default function AdminAssessmentsPage() {
                   {getSortIcon('domain')}
                 </div>
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[180px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[200px]">
                 Owner
               </TableHead>
               <TableHead 
-                className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 cursor-pointer hover:text-white transition-colors w-[110px]"
+                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[130px]"
                 onClick={() => handleSort('difficulty')}
               >
                 <div className="flex items-center">
@@ -366,11 +366,11 @@ export default function AdminAssessmentsPage() {
                   {getSortIcon('difficulty')}
                 </div>
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[100px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[120px]">
                 Questions
               </TableHead>
               <TableHead 
-                className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 cursor-pointer hover:text-white transition-colors w-[120px]"
+                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[140px]"
                 onClick={() => handleSort('status')}
               >
                 <div className="flex items-center">
@@ -379,7 +379,7 @@ export default function AdminAssessmentsPage() {
                 </div>
               </TableHead>
               <TableHead 
-                className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 cursor-pointer hover:text-white transition-colors w-[130px]"
+                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[150px]"
                 onClick={() => handleSort('createdAt')}
               >
                 <div className="flex items-center">
@@ -387,7 +387,7 @@ export default function AdminAssessmentsPage() {
                   {getSortIcon('createdAt')}
                 </div>
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 pr-6 text-right w-[80px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pr-7 text-right w-[100px]">
                 Actions
               </TableHead>
             </TableRow>
@@ -433,66 +433,66 @@ export default function AdminAssessmentsPage() {
                   key={assessment.id} 
                   className="border-neutral-800 hover:bg-neutral-800/30 transition-colors"
                 >
-                  <TableCell className="py-4 pl-6">
+                  <TableCell className="py-5 pl-7">
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-lg bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center flex-shrink-0">
-                        <ClipboardList className="size-5 text-neutral-400" />
+                      <div className="size-12 rounded-lg bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center flex-shrink-0">
+                        <ClipboardList className="size-6 text-neutral-400" />
                       </div>
-                      <p className="font-medium text-base text-neutral-100 truncate max-w-[200px]">
+                      <p className="font-medium text-lg text-neutral-100 truncate max-w-[220px]">
                         {assessment.domain}
                       </p>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <div className="size-8 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xs font-bold flex-shrink-0">
+                    <div className="flex items-center gap-3">
+                      <div className="size-10 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold flex-shrink-0">
                         {assessment.owner.firstName[0]}{assessment.owner.lastName[0]}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-base text-neutral-300 truncate max-w-[120px]">
+                        <p className="text-lg text-neutral-300 truncate max-w-[140px]">
                           {assessment.owner.firstName} {assessment.owner.lastName}
                         </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={`py-1.5 px-3 capitalize text-sm ${getDifficultyBadgeColor(assessment.difficulty)}`}>
+                    <Badge variant="outline" className={`py-2 px-4 capitalize text-base ${getDifficultyBadgeColor(assessment.difficulty)}`}>
                       {assessment.difficulty}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-base">
+                  <TableCell className="text-neutral-300 text-lg">
                     {assessment.questionCount}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={`py-1.5 px-3 text-sm ${getStatusBadgeColor(assessment.status)}`}>
+                    <Badge variant="outline" className={`py-2 px-4 text-base ${getStatusBadgeColor(assessment.status)}`}>
                       {formatStatus(assessment.status)}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-base">
+                  <TableCell className="text-neutral-300 text-lg">
                     {formatDate(assessment.createdAt)}
                   </TableCell>
-                  <TableCell className="pr-6 text-right">
+                  <TableCell className="pr-7 text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-9">
-                          <MoreVertical className="size-5" />
+                        <Button variant="ghost" size="icon" className="size-10">
+                          <MoreVertical className="size-6" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem 
                           onClick={() => handleViewAssessment(assessment)}
-                          className="text-base py-2"
+                          className="text-lg py-3"
                         >
-                          <Eye className="size-4" />
+                          <Eye className="size-5" />
                           View details
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
                           <Link 
                             href={`/assessment/${assessment.id}`} 
                             target="_blank"
-                            className="text-base py-2"
+                            className="text-lg py-3"
                           >
-                            <ExternalLink className="size-4" />
+                            <ExternalLink className="size-5" />
                             Open assessment
                           </Link>
                         </DropdownMenuItem>
@@ -502,9 +502,9 @@ export default function AdminAssessmentsPage() {
                             setAssessmentToDelete(assessment);
                             setIsDeleteDialogOpen(true);
                           }}
-                          className="dark:hover:bg-red-500/10 transition-colors text-base py-2 text-red-500 focus:text-red-500"
+                          className="dark:hover:bg-red-500/10 transition-colors text-lg py-3 text-red-500 focus:text-red-500"
                         >
-                          <Trash2 className="size-4 text-red-500" />
+                          <Trash2 className="size-5 text-red-500" />
                           Delete assessment
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -517,8 +517,8 @@ export default function AdminAssessmentsPage() {
         </Table>
 
         {!isLoading && totalAssessments > 0 && (
-          <div className="px-6 py-4 border-t border-neutral-800 flex items-center justify-between">
-            <span className="text-base text-neutral-400">
+          <div className="px-7 py-5 border-t border-neutral-800 flex items-center justify-between">
+            <span className="text-lg text-neutral-400">
               Showing {startIndex} to {endIndex} of {totalAssessments} assessment{totalAssessments > 1 ? 's' : ''}
             </span>
             
@@ -686,4 +686,3 @@ export default function AdminAssessmentsPage() {
     </div>
   );
 }
-

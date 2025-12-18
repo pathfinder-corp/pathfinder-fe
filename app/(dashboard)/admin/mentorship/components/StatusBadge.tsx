@@ -19,8 +19,8 @@ interface StatusBadgeProps {
 
 export function StatusBadge({ status, size = 'md' }: StatusBadgeProps) {
   const sizeClasses = size === 'sm' 
-    ? 'py-1 px-2 text-xs' 
-    : 'py-1.5 px-3 text-sm';
+    ? 'py-1 px-2.5 text-sm' 
+    : 'py-2 px-4 text-base';
 
   return (
     <Badge 

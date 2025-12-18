@@ -6,13 +6,11 @@ import Image from 'next/image';
 import { motion } from 'motion/react';
 import { 
   Users,
-  Clock,
   CheckCircle,
   XCircle,
   Loader2,
   MessageCircle,
   Calendar,
-  AlertCircle,
   Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -165,7 +163,7 @@ export default function MentorshipRequestsPage() {
   };
 
   const getStatusBadge = (status: MentorshipRequestStatus) => {
-    const baseClasses = 'px-3 py-2';
+    const baseClasses = 'px-4 py-2 text-base';
     
     switch (status) {
       case 'pending':
@@ -215,43 +213,34 @@ export default function MentorshipRequestsPage() {
     }
   };
 
-  const formatFullDate = (dateStr: string | null) => {
-    if (!dateStr) return 'N/A';
-    try {
-      return format(parseISO(dateStr), 'MMM dd, yyyy HH:mm');
-    } catch {
-      return 'Invalid date';
-    }
-  };
-
   if (!isInitialized) {
     return (
-      <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-neutral-400" />
+      <div className="pt-12 pb-16 flex flex-col items-center justify-center">
+        <Loader2 className="size-10 animate-spin text-neutral-400" />
       </div>
     );
   }
 
   return (
-    <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-      <h1 className="text-5xl font-bold mb-6">
+    <div className="pt-12 pb-16 flex flex-col items-center justify-center">
+      <h1 className="text-6xl font-bold mb-8">
         {userRole === 'as_mentor' ? 'Mentorship Requests' : 'My Requests'}
       </h1>
-      <p className="text-xl text-neutral-500 mb-8">
+      <p className="text-2xl text-neutral-500 mb-10">
         {userRole === 'as_mentor' 
           ? 'Review and manage connection requests from students'
           : 'Track your connection requests to mentors'
         }
       </p>
 
-      <div className="flex items-center gap-1 mb-8 border-b border-neutral-800">
+      <div className="w-[58rem] flex items-center gap-1 mb-10 border-b border-neutral-800">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`cursor-pointer relative px-5 py-3 text-base font-medium transition-colors ${
+              className={`cursor-pointer relative px-6 py-4 text-lg font-medium transition-colors ${
                 isActive
                   ? 'text-white'
                   : 'text-neutral-500 hover:text-neutral-300'
@@ -281,27 +270,27 @@ export default function MentorshipRequestsPage() {
         {TABS.map((tab) => (
           <div key={tab.id}>
             {isLoading ? (
-              <div className="w-[58rem] space-y-4">
+              <div className="w-[58rem] space-y-5">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
-                    <div className="flex items-start gap-4">
-                      <Skeleton className="size-14 rounded-full bg-neutral-800" />
-                      <div className="flex-1 space-y-2">
-                        <Skeleton className="h-6 w-48 bg-neutral-800" />
-                        <Skeleton className="h-5 w-full bg-neutral-800" />
+                  <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+                    <div className="flex items-start gap-5">
+                      <Skeleton className="size-16 rounded-full bg-neutral-800" />
+                      <div className="flex-1 space-y-3">
+                        <Skeleton className="h-7 w-52 bg-neutral-800" />
+                        <Skeleton className="h-6 w-full bg-neutral-800" />
                       </div>
-                      <Skeleton className="h-8 w-24 bg-neutral-800 rounded-full" />
+                      <Skeleton className="h-9 w-28 bg-neutral-800 rounded-full" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : requests.length === 0 ? (
-              <div className="w-[58rem] text-center py-16">
-                <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-6">
-                  <Users className="size-10 text-neutral-500" />
+              <div className="w-[58rem] text-center py-20">
+                <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+                  <Users className="size-12 text-neutral-500" />
                 </div>
-                <h2 className="text-2xl font-semibold mb-3">No requests found</h2>
-                <p className="text-lg text-neutral-400 mb-8">
+                <h2 className="text-3xl font-semibold mb-4">No requests found</h2>
+                <p className="text-xl text-neutral-400 mb-10">
                   {userRole === 'as_mentor' 
                     ? 'You don\'t have any mentorship requests yet.'
                     : 'You haven\'t sent any connection requests yet.'
@@ -310,25 +299,25 @@ export default function MentorshipRequestsPage() {
                 {userRole === 'as_student' && (
                   <Button 
                     onClick={() => router.push('/mentors')}
-                    className="!h-12 !text-[1.15rem]"
+                    className="!h-14 !text-lg"
                   >
                     Browse Mentors
                   </Button>
                 )}
               </div>
             ) : (
-              <div className="w-[58rem] space-y-4">
+              <div className="w-[58rem] space-y-5">
                 {requests.map((request) => {
                   const otherUser = userRole === 'as_mentor' ? request.student : request.mentor;
                   
                   return (
                     <div 
                       key={request.id}
-                      className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6"
+                      className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7"
                     >
-                      <div className="flex items-start gap-4">
+                      <div className="flex items-start gap-5">
                         {otherUser.avatar ? (
-                          <div className="relative size-14 rounded-full overflow-hidden flex-shrink-0">
+                          <div className="relative size-16 rounded-full overflow-hidden flex-shrink-0">
                             <Image
                               src={otherUser.avatar}
                               alt={`${otherUser.firstName} ${otherUser.lastName}`}
@@ -337,31 +326,31 @@ export default function MentorshipRequestsPage() {
                             />
                           </div>
                         ) : (
-                          <div className="size-14 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold flex-shrink-0">
+                          <div className="size-16 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
                             {getInitials(otherUser.firstName, otherUser.lastName)}
                           </div>
                         )}
 
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-4 mb-2">
+                          <div className="flex items-start justify-between gap-4 mb-3">
                             <div>
-                              <h3 className="text-xl font-semibold">
+                              <h3 className="text-2xl font-semibold">
                                 {otherUser.firstName} {otherUser.lastName}
                               </h3>
-                              <p className="text-sm text-neutral-500">
+                              <p className="text-base text-neutral-500">
                                 {userRole === 'as_mentor' ? 'Student' : 'Mentor'} • {formatRelativeTime(request.createdAt)}
                               </p>
                             </div>
                             {getStatusBadge(request.status)}
                           </div>
 
-                          <p className="text-base text-neutral-300 mb-4 line-clamp-2">
+                          <p className="text-lg text-neutral-300 mb-5 line-clamp-2">
                             {request.message}
                           </p>
 
                           {request.status === 'declined' && request.declineReason && (
-                            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg mb-4">
-                              <p className="text-sm text-red-400">
+                            <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg mb-5">
+                              <p className="text-base text-red-400">
                                 <span className="font-medium">Reason:</span> {request.declineReason}
                               </p>
                             </div>
@@ -376,22 +365,22 @@ export default function MentorshipRequestsPage() {
                                     setSelectedRequest(request);
                                     setIsAcceptDialogOpen(true);
                                   }}
-                                  className="!h-9 bg-green-500/20 text-green-400 border-green-500/30 dark:hover:bg-green-500/30"
+                                  className="!h-10 !text-base bg-green-500/20 text-green-400 border-green-500/30 dark:hover:bg-green-500/30"
                                 >
                                   Accept
-                                  <CheckCircle className="size-4" />
+                                  <CheckCircle className="size-5" />
                                 </Button>
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="!h-9 dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10"
+                                  className="!h-10 !text-base dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10"
                                   onClick={() => {
                                     setSelectedRequest(request);
                                     setIsDeclineDialogOpen(true);
                                   }}
                                 >
                                   Decline
-                                  <XCircle className="size-4" />
+                                  <XCircle className="size-5" />
                                 </Button>
                               </>
                             )}
@@ -400,14 +389,14 @@ export default function MentorshipRequestsPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="!h-9 dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10"
+                                className="!h-10 !text-base dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10"
                                 onClick={() => {
                                   setSelectedRequest(request);
                                   setIsCancelDialogOpen(true);
                                 }}
                               >
                                 Cancel Request
-                                <Trash2 className="size-4" />
+                                <Trash2 className="size-5" />
                               </Button>
                             )}
 
@@ -415,10 +404,10 @@ export default function MentorshipRequestsPage() {
                               <Button
                                 size="sm"
                                 onClick={() => router.push('/messages')}
-                                className="!h-9"
+                                className="!h-10 !text-base"
                               >
                                 Message
-                                <MessageCircle className="size-4" />
+                                <MessageCircle className="size-5" />
                               </Button>
                             )}
 
@@ -427,15 +416,15 @@ export default function MentorshipRequestsPage() {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => router.push(`/mentors/${request.mentorProfileId}`)}
-                                className="!h-9"
+                                className="!h-10 !text-base"
                               >
                                 View Profile
                               </Button>
                             )}
 
                             {request.status === 'pending' && request.expiresAt && (
-                              <span className="text-sm text-neutral-500 ml-auto flex items-center gap-1">
-                                <Calendar className="size-3" />
+                              <span className="text-base text-neutral-500 ml-auto flex items-center gap-1.5">
+                                <Calendar className="size-4" />
                                 Expires {formatRelativeTime(request.expiresAt)}
                               </span>
                             )}
@@ -454,18 +443,18 @@ export default function MentorshipRequestsPage() {
       <Dialog open={isAcceptDialogOpen} onOpenChange={setIsAcceptDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl">Accept Request</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-2xl">Accept Request</DialogTitle>
+            <DialogDescription className="text-base">
               Accept this mentorship request from {selectedRequest?.student.firstName}?
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             <Textarea
               value={acceptMessage}
               onChange={(e) => setAcceptMessage(e.target.value)}
               placeholder="Add a welcome message (optional)..."
-              className="min-h-[100px]"
+              className="min-h-[120px] !text-base"
               disabled={isProcessing}
             />
 
@@ -474,24 +463,24 @@ export default function MentorshipRequestsPage() {
                 variant="outline"
                 onClick={() => setIsAcceptDialogOpen(false)}
                 disabled={isProcessing}
-                className="!h-11"
+                className="!h-12 !text-base"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleAccept}
                 disabled={isProcessing}
-                className="!h-11"
+                className="!h-12 !text-base"
               >
                 {isProcessing ? (
                   <>
                     Accepting...
-                    <Loader2 className="size-4 animate-spin" />
+                    <Loader2 className="size-5 animate-spin" />
                   </>
                 ) : (
                   <>
                     Accept Request
-                    <CheckCircle className="size-4" />
+                    <CheckCircle className="size-5" />
                   </>
                 )}
               </Button>
@@ -503,18 +492,18 @@ export default function MentorshipRequestsPage() {
       <Dialog open={isDeclineDialogOpen} onOpenChange={setIsDeclineDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl">Decline Request</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-2xl">Decline Request</DialogTitle>
+            <DialogDescription className="text-base">
               Please provide a reason for declining this request.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
+          <div className="space-y-5">
             <Textarea
               value={declineReason}
               onChange={(e) => setDeclineReason(e.target.value)}
               placeholder="Explain why you're declining this request..."
-              className="min-h-[100px]"
+              className="min-h-[120px] !text-base"
               disabled={isProcessing}
             />
 
@@ -523,7 +512,7 @@ export default function MentorshipRequestsPage() {
                 variant="outline"
                 onClick={() => setIsDeclineDialogOpen(false)}
                 disabled={isProcessing}
-                className="!h-11"
+                className="!h-12 !text-base"
               >
                 Cancel
               </Button>
@@ -531,17 +520,17 @@ export default function MentorshipRequestsPage() {
                 variant="destructive"
                 onClick={handleDecline}
                 disabled={isProcessing || !declineReason.trim()}
-                className="!h-11"
+                className="!h-12 !text-base"
               >
                 {isProcessing ? (
                   <>
                     Declining...
-                    <Loader2 className="size-4 animate-spin" />
+                    <Loader2 className="size-5 animate-spin" />
                   </>
                 ) : (
                   <>
                     Decline Request
-                    <XCircle className="size-4" />
+                    <XCircle className="size-5" />
                   </>
                 )}
               </Button>
@@ -553,33 +542,33 @@ export default function MentorshipRequestsPage() {
       <AlertDialog open={isCancelDialogOpen} onOpenChange={setIsCancelDialogOpen}>
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl flex items-center gap-2">
-              <Trash2 className="size-6" />
+            <AlertDialogTitle className="text-2xl flex items-center gap-2.5">
+              <Trash2 className="size-7" />
               Cancel Request
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-base">
               Are you sure you want to cancel this connection request? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isProcessing} className="!h-11">
+            <AlertDialogCancel disabled={isProcessing} className="!h-12 !text-base">
               Keep Request
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancel}
               disabled={isProcessing}
-              className="bg-red-600 hover:bg-red-700 text-white !h-11"
+              className="bg-red-600 hover:bg-red-700 text-white !h-12 !text-base"
             >
               {isProcessing ? (
                 <>
                   Cancelling...
-                  <Loader2 className="size-4 animate-spin" />
+                  <Loader2 className="size-5 animate-spin" />
                 </>
               ) : (
                 <>
                   Cancel Request
-                  <Trash2 className="size-4" />
+                  <Trash2 className="size-5" />
                 </>
               )}
             </AlertDialogAction>

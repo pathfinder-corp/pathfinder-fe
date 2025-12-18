@@ -49,13 +49,13 @@ export function AIChatInterface({
     <div className="flex flex-col h-[calc(100vh-81.5px)]">
       {chatMessages.length === 0 && (
         <div className="p-6 border-b border-neutral-800 bg-neutral-900/30">
-          <p className="-mt-4 text-md text-neutral-400 mb-3">Suggested questions:</p>
+          <p className="-mt-4 text-lg text-neutral-400 mb-4">Suggested questions:</p>
           <div className="space-y-2">
             {suggestedQuestions.map((question, idx) => (
               <button
                 key={idx}
                 onClick={() => onSuggestedQuestionClick(question)}
-                className="cursor-pointer w-full text-left p-3 text-sm bg-neutral-900/50 hover:bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-lg transition-all"
+                className="cursor-pointer w-full text-left p-4 text-base bg-neutral-900/50 hover:bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-lg transition-all"
               >
                 {question}
               </button>
@@ -72,13 +72,13 @@ export function AIChatInterface({
 
           {isLoading && (
             <div className="flex gap-3 justify-start">
-              <div className="flex-shrink-0 size-8 rounded-full bg-white flex items-center justify-center mt-1">
-                <Bot className="size-5 text-black" />
+              <div className="flex-shrink-0 size-10 rounded-full bg-white flex items-center justify-center mt-1">
+                <Bot className="size-6 text-black" />
               </div>
-              <div className="max-w-[75%] rounded-lg p-4 bg-neutral-900 border border-neutral-800">
+              <div className="max-w-[75%] rounded-lg p-5 bg-neutral-900 border border-neutral-800">
                 <TextShimmer
                   as="span"
-                  className="text-[.95rem]"
+                  className="text-base"
                   duration={1}
                   spread={4}
                 >
@@ -93,26 +93,26 @@ export function AIChatInterface({
       </ScrollArea>
 
       <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
-        <div className="flex items-start gap-2 mb-3">
+        <div className="flex items-start gap-3 mb-3">
           <Textarea
             value={chatInput}
             onChange={(e) => onInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask a question about this step..."
             rows={2}
-            className="flex-1 min-h-[3rem] max-h-[3rem] resize-none bg-neutral-900 border-neutral-800 !text-base"
+            className="custom-scrollbar flex-1 min-h-[3.5rem] max-h-[3.5rem] resize-none bg-neutral-900 border-neutral-800 !text-lg"
             disabled={isLoading}
           />
           <Button
             onClick={onSendMessage}
             disabled={!chatInput.trim() || isLoading}
             size="icon"
-            className="size-[3rem] bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            className="size-[3.5rem] bg-white text-neutral-950 hover:bg-neutral-200"
           >
-            <Send className="size-5 text-white" />
+            <Send className="size-6" />
           </Button>
         </div>
-        <p className="text-md text-neutral-500 flex items-center gap-1.5">
+        <p className="text-base text-neutral-500 flex items-center gap-1.5">
           Press <Kbd>Enter</Kbd> to send, <KbdGroup><Kbd>Shift</Kbd> + <Kbd>Enter</Kbd></KbdGroup> for new line
         </p>
       </div>

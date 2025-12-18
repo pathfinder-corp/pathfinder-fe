@@ -34,10 +34,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 function CustomTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-neutral-800 border border-neutral-700 rounded-lg px-4 py-2 shadow-lg">
-        <p className="text-sm text-neutral-300 mb-1">{label}</p>
+      <div className="bg-neutral-800 border border-neutral-700 rounded-lg px-5 py-3 shadow-lg">
+        <p className="text-base text-neutral-300 mb-1">{label}</p>
         {payload.map((entry: any, index: number) => (
-          <p key={index} className="text-sm font-semibold" style={{ color: entry.color }}>
+          <p key={index} className="text-base font-semibold" style={{ color: entry.color }}>
             {entry.name}: {entry.value}
           </p>
         ))}
@@ -60,14 +60,14 @@ interface IStatCardProps {
 function StatCard({ title, value, change, changeLabel, icon, iconBg = 'bg-neutral-800', loading }: IStatCardProps) {
   if (loading) {
     return (
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
+      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <Skeleton className="h-5 w-28 mb-3 bg-neutral-800" />
-            <Skeleton className="h-10 w-24 mb-2 bg-neutral-800" />
-            <Skeleton className="h-5 w-36 bg-neutral-800" />
+            <Skeleton className="h-6 w-32 mb-4 bg-neutral-800" />
+            <Skeleton className="h-12 w-28 mb-3 bg-neutral-800" />
+            <Skeleton className="h-6 w-40 bg-neutral-800" />
           </div>
-          <Skeleton className="size-12 rounded-lg bg-neutral-800" />
+          <Skeleton className="size-14 rounded-lg bg-neutral-800" />
         </div>
       </div>
     );
@@ -76,26 +76,26 @@ function StatCard({ title, value, change, changeLabel, icon, iconBg = 'bg-neutra
   const isPositive = change !== undefined && change >= 0;
 
   return (
-    <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6 hover:border-neutral-700 transition-colors">
+    <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7 hover:border-neutral-700 transition-colors">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-base text-neutral-400 mb-1">{title}</p>
-          <p className="text-4xl font-bold mb-2">{value.toLocaleString()}</p>
+          <p className="text-lg text-neutral-400 mb-2">{title}</p>
+          <p className="text-5xl font-bold mb-3">{value.toLocaleString()}</p>
           {change !== undefined && (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               {isPositive ? (
-                <TrendingUp className="size-4 text-green-400" />
+                <TrendingUp className="size-5 text-green-400" />
               ) : (
-                <TrendingDown className="size-4 text-red-400" />
+                <TrendingDown className="size-5 text-red-400" />
               )}
-              <span className={`text-base font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
+              <span className={`text-lg font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                 {isPositive ? '+' : ''}{change}
               </span>
-              <span className="text-base text-neutral-500">{changeLabel}</span>
+              <span className="text-lg text-neutral-500">{changeLabel}</span>
             </div>
           )}
         </div>
-        <div className={`p-3 ${iconBg} rounded-lg`}>
+        <div className={`p-4 ${iconBg} rounded-lg`}>
           {icon}
         </div>
       </div>
@@ -168,21 +168,21 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-bold mb-2">Overview</h1>
-        <p className="text-lg text-neutral-400">
+        <h1 className="text-5xl font-bold mb-3">Overview</h1>
+        <p className="text-xl text-neutral-400">
           Platform statistics and performance metrics
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
         <StatCard
           title="Total Users"
           value={overview?.totalUsers || 0}
           change={overview?.newUsersLast7Days}
           changeLabel="this week"
-          icon={<Users className="size-6 text-white" />}
+          icon={<Users className="size-7 text-white" />}
           loading={isLoading}
         />
         <StatCard
@@ -190,7 +190,7 @@ export default function AdminDashboardPage() {
           value={overview?.totalRoadmaps || 0}
           change={overview?.newRoadmapsLast7Days}
           changeLabel="this week"
-          icon={<Map className="size-6 text-white" />}
+          icon={<Map className="size-7 text-white" />}
           loading={isLoading}
         />
         <StatCard
@@ -198,22 +198,22 @@ export default function AdminDashboardPage() {
           value={overview?.totalAssessments || 0}
           change={overview?.newAssessmentsLast7Days}
           changeLabel="this week"
-          icon={<ClipboardList className="size-6 text-white" />}
+          icon={<ClipboardList className="size-7 text-white" />}
           loading={isLoading}
         />
         <StatCard
           title="Shared Roadmaps"
           value={roadmapsData?.sharedCount || 0}
-          icon={<Share2 className="size-6 text-white" />}
+          icon={<Share2 className="size-7 text-white" />}
           loading={isLoading}
         />
       </div>
 
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
           <div>
-            <h3 className="text-2xl font-semibold">Activity Trends</h3>
-            <p className="text-base text-neutral-400">Data for the last 7 days</p>
+            <h3 className="text-3xl font-semibold">Activity Trends</h3>
+            <p className="text-lg text-neutral-400">Data for the last 7 days</p>
           </div>
           
           <div className="flex items-center">
@@ -221,7 +221,7 @@ export default function AdminDashboardPage() {
               <button
                 key={type}
                 onClick={() => setActiveChart(type)}
-                className={`cursor-pointer px-4 py-2 text-base font-medium transition-colors capitalize ${
+                className={`cursor-pointer px-5 py-3 text-lg font-medium transition-colors capitalize ${
                   activeChart === type
                     ? 'text-white bg-neutral-800 rounded-lg'
                     : 'text-neutral-500 hover:text-neutral-300'
@@ -234,9 +234,9 @@ export default function AdminDashboardPage() {
         </div>
 
         {isLoading ? (
-          <Skeleton className="h-[300px] w-full bg-neutral-800 rounded-lg" />
+          <Skeleton className="h-[350px] w-full bg-neutral-800 rounded-lg" />
         ) : (
-          <div className="h-[300px]">
+          <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartDataMap[activeChart]}>
                 <defs>
@@ -249,13 +249,13 @@ export default function AdminDashboardPage() {
                 <XAxis 
                   dataKey="date" 
                   stroke="#737373" 
-                  fontSize={12} 
+                  fontSize={14} 
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis 
                   stroke="#737373" 
-                  fontSize={12} 
+                  fontSize={14} 
                   tickLine={false}
                   axisLine={false}
                 />
@@ -275,81 +275,81 @@ export default function AdminDashboardPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
-          <h3 className="text-xl font-semibold mb-4">Users by Role</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+          <h3 className="text-2xl font-semibold mb-5">Users by Role</h3>
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <Skeleton className="h-5 w-24 bg-neutral-800" />
-                  <Skeleton className="h-5 w-14 bg-neutral-800" />
+                  <Skeleton className="h-6 w-28 bg-neutral-800" />
+                  <Skeleton className="h-6 w-16 bg-neutral-800" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {usersData?.byRole.map((item) => (
                 <div key={item.role} className="flex items-center justify-between">
-                  <span className="text-base text-neutral-300 capitalize">{item.role}</span>
-                  <span className="text-base font-semibold">{item.count}</span>
+                  <span className="text-lg text-neutral-300 capitalize">{item.role}</span>
+                  <span className="text-lg font-semibold">{item.count}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
-          <h3 className="text-xl font-semibold mb-4">Users by Status</h3>
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+          <h3 className="text-2xl font-semibold mb-5">Users by Status</h3>
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {[...Array(2)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <Skeleton className="h-5 w-24 bg-neutral-800" />
-                  <Skeleton className="h-5 w-14 bg-neutral-800" />
+                  <Skeleton className="h-6 w-28 bg-neutral-800" />
+                  <Skeleton className="h-6 w-16 bg-neutral-800" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {usersData?.byStatus.map((item) => (
                 <div key={item.status} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className={`size-2.5 rounded-full ${
+                  <div className="flex items-center gap-3">
+                    <div className={`size-3 rounded-full ${
                       item.status === 'active' ? 'bg-green-400' : 'bg-red-400'
                     }`} />
-                    <span className="text-base text-neutral-300 capitalize">{item.status}</span>
+                    <span className="text-lg text-neutral-300 capitalize">{item.status}</span>
                   </div>
-                  <span className="text-base font-semibold">{item.count}</span>
+                  <span className="text-lg font-semibold">{item.count}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
-          <h3 className="text-xl font-semibold mb-4">Assessments by Difficulty</h3>
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+          <h3 className="text-2xl font-semibold mb-5">Assessments by Difficulty</h3>
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {[...Array(3)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <Skeleton className="h-5 w-24 bg-neutral-800" />
-                  <Skeleton className="h-5 w-14 bg-neutral-800" />
+                  <Skeleton className="h-6 w-28 bg-neutral-800" />
+                  <Skeleton className="h-6 w-16 bg-neutral-800" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {assessmentsData?.byDifficulty.map((item) => (
                 <div key={item.difficulty} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className={`size-2.5 rounded-full ${
+                  <div className="flex items-center gap-3">
+                    <div className={`size-3 rounded-full ${
                       item.difficulty === 'easy' ? 'bg-green-400' :
                       item.difficulty === 'medium' ? 'bg-yellow-400' : 'bg-red-400'
                     }`} />
-                    <span className="text-base text-neutral-300 capitalize">{item.difficulty}</span>
+                    <span className="text-lg text-neutral-300 capitalize">{item.difficulty}</span>
                   </div>
-                  <span className="text-base font-semibold">{item.count}</span>
+                  <span className="text-lg font-semibold">{item.count}</span>
                 </div>
               ))}
             </div>
@@ -357,57 +357,57 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
-          <h3 className="text-xl font-semibold mb-4">Popular Roadmap Topics</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+          <h3 className="text-2xl font-semibold mb-5">Popular Roadmap Topics</h3>
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <Skeleton className="h-5 w-40 bg-neutral-800" />
-                  <Skeleton className="h-5 w-10 bg-neutral-800" />
+                  <Skeleton className="h-6 w-48 bg-neutral-800" />
+                  <Skeleton className="h-6 w-12 bg-neutral-800" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {roadmapsData?.popularTopics.slice(0, 5).map((item, index) => (
                 <div key={item.topic} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-neutral-500 w-5">{index + 1}.</span>
-                    <span className="text-base text-neutral-300 truncate max-w-[250px]">
+                  <div className="flex items-center gap-4">
+                    <span className="text-base text-neutral-500 w-6">{index + 1}.</span>
+                    <span className="text-lg text-neutral-300 truncate max-w-[300px]">
                       {item.topic}
                     </span>
                   </div>
-                  <span className="text-base font-semibold">{item.count}</span>
+                  <span className="text-lg font-semibold">{item.count}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
-          <h3 className="text-xl font-semibold mb-4">Popular Assessment Domains</h3>
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+          <h3 className="text-2xl font-semibold mb-5">Popular Assessment Domains</h3>
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between">
-                  <Skeleton className="h-5 w-40 bg-neutral-800" />
-                  <Skeleton className="h-5 w-10 bg-neutral-800" />
+                  <Skeleton className="h-6 w-48 bg-neutral-800" />
+                  <Skeleton className="h-6 w-12 bg-neutral-800" />
                 </div>
               ))}
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {assessmentsData?.popularDomains.slice(0, 5).map((item, index) => (
                 <div key={item.domain} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-neutral-500 w-5">{index + 1}.</span>
-                    <span className="text-base text-neutral-300 truncate max-w-[250px]">
+                  <div className="flex items-center gap-4">
+                    <span className="text-base text-neutral-500 w-6">{index + 1}.</span>
+                    <span className="text-lg text-neutral-300 truncate max-w-[300px]">
                       {item.domain}
                     </span>
                   </div>
-                  <span className="text-base font-semibold">{item.count}</span>
+                  <span className="text-lg font-semibold">{item.count}</span>
                 </div>
               ))}
             </div>

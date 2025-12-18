@@ -191,23 +191,23 @@ export default function MentorApplicationPage() {
     switch (status) {
       case 'pending':
         return (
-          <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
-            <Clock className="size-3 mr-1" />
+          <Badge className="px-4 py-2 text-base bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
             Pending Review
+            <Clock className="size-4" />
           </Badge>
         );
       case 'under_review':
         return (
-          <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-            <FileText className="size-3 mr-1" />
+          <Badge className="px-4 py-2 text-base bg-blue-500/20 text-blue-400 border-blue-500/30">
             Under Review
+            <FileText className="size-4" />
           </Badge>
         );
       case 'flagged':
         return (
-          <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
-            <AlertCircle className="size-3 mr-1" />
+          <Badge className="px-4 py-2 text-base bg-orange-500/20 text-orange-400 border-orange-500/30">
             Under Review
+            <AlertCircle className="size-4" />
           </Badge>
         );
       default:
@@ -217,34 +217,34 @@ export default function MentorApplicationPage() {
 
   if (isCheckingApplication || !isInitialized || user?.role === USER_ROLES.MENTOR) {
     return (
-      <div className="pt-10 flex flex-col items-center justify-center">
-        <Loader2 className="size-8 animate-spin text-neutral-400" />
-        <p className="mt-4 text-neutral-400">Checking application status...</p>
+      <div className="pt-12 flex flex-col items-center justify-center">
+        <Loader2 className="size-10 animate-spin text-neutral-400" />
+        <p className="mt-5 text-lg text-neutral-400">Checking application status...</p>
       </div>
     );
   }
 
   if (existingApplication) {
     return (
-      <div className="pt-10 flex flex-col items-center justify-center">
-        <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mb-6">
-          <GraduationCap className="size-10 text-neutral-400" />
+      <div className="pt-12 flex flex-col items-center justify-center">
+        <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mb-8">
+          <GraduationCap className="size-12 text-neutral-400" />
         </div>
-        <h1 className="text-4xl font-bold mb-4">Application In Progress</h1>
-        <p className="text-xl text-neutral-500 text-center max-w-xl mb-6">
+        <h1 className="text-5xl font-bold mb-5">Application In Progress</h1>
+        <p className="text-2xl text-neutral-500 text-center max-w-2xl mb-8">
           You already have a mentor application that is currently being reviewed. 
           You cannot submit a new application until the current one is processed.
         </p>
-        <div className="mb-8">
+        <div className="mb-10">
           {getStatusBadge(existingApplication.status)}
         </div>
         <div className="flex gap-4">
           <Button
             variant="outline"
             onClick={() => router.push('/mentor/applications')}
-            className="!h-12 !text-base"
+            className="!h-14 !text-lg"
           >
-            <FileText className="size-5 mr-2" />
+            <FileText className="size-6 mr-2" />
             View My Application
           </Button>
         </div>
@@ -253,94 +253,94 @@ export default function MentorApplicationPage() {
   }
 
   return (
-    <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-      <h1 className="text-5xl font-bold mb-6">Become a Mentor</h1>
-      <p className="text-xl text-neutral-500 text-center max-w-2xl">
+    <div className="pt-12 pb-16 flex flex-col items-center justify-center">
+      <h1 className="text-6xl font-bold mb-8">Become a Mentor</h1>
+      <p className="text-2xl text-neutral-500 text-center max-w-2xl">
         Share your expertise and help others grow. Fill out the application below to join our mentor community.
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-7 mt-8">
-        <div className="space-y-[.65rem]">
-          <Label htmlFor="headline" className="text-[1.35rem]">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-8 mt-10">
+        <div className="space-y-3">
+          <Label htmlFor="headline" className="text-xl">
             Professional Headline <span className="text-red-500">*</span>
           </Label>
           <Input
             {...register('headline')}
             placeholder="e.g., Senior Software Engineer at Google | 8+ Years in Cloud Architecture"
-            className="w-full !h-18 !text-[1.25rem] !px-5"
+            className="w-full !h-20 !text-xl !px-6"
           />
           {errors.headline && (
-            <p className="text-red-500 text-[1rem]">{errors.headline.message}</p>
+            <p className="text-red-500 text-lg">{errors.headline.message}</p>
           )}
         </div>
 
-        <div className="space-y-[.65rem]">
-          <Label htmlFor="bio" className="text-[1.35rem]">
+        <div className="space-y-3">
+          <Label htmlFor="bio" className="text-xl">
             Bio <span className="text-red-500">*</span>
           </Label>
           <Textarea
             {...register('bio')}
             placeholder="Tell us about yourself, your background, and what makes you a great mentor..."
-            className="w-full min-h-[140px] !text-[1.15rem] !px-5 !py-4"
+            className="w-full min-h-[160px] !text-lg !px-6 !py-5"
           />
           {errors.bio && (
-            <p className="text-red-500 text-[1rem]">{errors.bio.message}</p>
+            <p className="text-red-500 text-lg">{errors.bio.message}</p>
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-[.65rem]">
-            <Label className="text-[1.35rem]">
+        <div className="grid grid-cols-2 gap-7">
+          <div className="space-y-3">
+            <Label className="text-xl">
               Years of Experience <span className="text-red-500">*</span>
             </Label>
             <Select 
               value={String(selectedExperience)} 
               onValueChange={(value) => setValue('yearsExperience', Number(value))}
             >
-              <SelectTrigger className="w-full !h-18 !text-[1.25rem] !px-5">
+              <SelectTrigger className="w-full !h-20 !text-xl !px-6">
                 <SelectValue placeholder="Select experience" />
               </SelectTrigger>
               <SelectContent>
                 {EXPERIENCE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={String(option.value)} className="!text-[1.25rem]">
+                  <SelectItem key={option.value} value={String(option.value)} className="!text-xl">
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {errors.yearsExperience && (
-              <p className="text-red-500 text-[1rem]">{errors.yearsExperience.message}</p>
+              <p className="text-red-500 text-lg">{errors.yearsExperience.message}</p>
             )}
           </div>
 
-          <div className="space-y-[.65rem]">
-            <Label className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label className="text-xl">
               Languages <span className="text-red-500">*</span>
             </Label>
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               <Input
                 value={newLanguage}
                 onChange={(e) => setNewLanguage(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, newLanguage, setNewLanguage, languages, setLanguages)}
                 placeholder="Add language..."
-                className="flex-1 !h-18 !text-[1.25rem] !px-5"
+                className="flex-1 !h-20 !text-xl !px-6"
               />
               <Button 
                 type="button"
                 variant="outline"
                 onClick={() => addItem(newLanguage, setNewLanguage, languages, setLanguages)}
-                className="!h-18 !w-18"
+                className="!h-20 !w-20"
               >
-                <Plus className="size-6" />
+                <Plus className="size-7" />
               </Button>
             </div>
             {languages.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {languages.map((lang) => (
-                  <Badge key={lang} variant="secondary" className="py-1.5 px-3 text-base">
+                  <Badge key={lang} variant="secondary" className="py-2 px-4 text-lg">
                     {lang}
                     <button type="button" onClick={() => removeItem(lang, languages, setLanguages)} className="ml-2 cursor-pointer">
-                      <X className="size-3" />
+                      <X className="size-4" />
                     </button>
                   </Badge>
                 ))}
@@ -349,34 +349,34 @@ export default function MentorApplicationPage() {
           </div>
         </div>
 
-        <div className="space-y-[.65rem]">
-          <Label className="text-[1.35rem]">
+        <div className="space-y-3">
+          <Label className="text-xl">
             Areas of Expertise <span className="text-red-500">*</span>
           </Label>
-          <div className="flex gap-2">
+          <div className="flex gap-2.5">
             <Input
               value={newExpertise}
               onChange={(e) => setNewExpertise(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, newExpertise, setNewExpertise, expertise, setExpertise)}
               placeholder="e.g., Software Engineering, Cloud Architecture, Data Science..."
-              className="flex-1 !h-18 !text-[1.25rem] !px-5"
+              className="flex-1 !h-20 !text-xl !px-6"
             />
             <Button 
               type="button"
               variant="outline"
               onClick={() => addItem(newExpertise, setNewExpertise, expertise, setExpertise)}
-              className="!h-18 !w-18"
+              className="!h-20 !w-20"
             >
-              <Plus className="size-6" />
+              <Plus className="size-7" />
             </Button>
           </div>
           {expertise.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {expertise.map((item) => (
-                <Badge key={item} variant="secondary" className="py-1.5 px-3 text-base">
+                <Badge key={item} variant="secondary" className="py-2 px-4 text-lg">
                   {item}
                   <button type="button" onClick={() => removeItem(item, expertise, setExpertise)} className="ml-2 cursor-pointer">
-                    <X className="size-3" />
+                    <X className="size-4" />
                   </button>
                 </Badge>
               ))}
@@ -384,34 +384,34 @@ export default function MentorApplicationPage() {
           )}
         </div>
 
-        <div className="space-y-[.65rem]">
-          <Label className="text-[1.35rem]">
+        <div className="space-y-3">
+          <Label className="text-xl">
             Skills <span className="text-red-500">*</span>
           </Label>
-          <div className="flex gap-2">
+          <div className="flex gap-2.5">
             <Input
               value={newSkill}
               onChange={(e) => setNewSkill(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, newSkill, setNewSkill, skills, setSkills)}
               placeholder="e.g., JavaScript, Python, Leadership, System Design..."
-              className="flex-1 !h-18 !text-[1.25rem] !px-5"
+              className="flex-1 !h-20 !text-xl !px-6"
             />
             <Button 
               type="button"
               variant="outline"
               onClick={() => addItem(newSkill, setNewSkill, skills, setSkills)}
-              className="!h-18 !w-18"
+              className="!h-20 !w-20"
             >
-              <Plus className="size-6" />
+              <Plus className="size-7" />
             </Button>
           </div>
           {skills.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {skills.map((skill) => (
-                <Badge key={skill} variant="secondary" className="py-1.5 px-3 text-base">
+                <Badge key={skill} variant="secondary" className="py-2 px-4 text-lg">
                   {skill}
                   <button type="button" onClick={() => removeItem(skill, skills, setSkills)} className="ml-2 cursor-pointer">
-                    <X className="size-3" />
+                    <X className="size-4" />
                   </button>
                 </Badge>
               ))}
@@ -419,32 +419,32 @@ export default function MentorApplicationPage() {
           )}
         </div>
 
-        <div className="space-y-[.65rem]">
-          <Label className="text-[1.35rem]">Industries</Label>
-          <div className="flex gap-2">
+        <div className="space-y-3">
+          <Label className="text-xl">Industries</Label>
+          <div className="flex gap-2.5">
             <Input
               value={newIndustry}
               onChange={(e) => setNewIndustry(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, newIndustry, setNewIndustry, industries, setIndustries)}
               placeholder="e.g., FinTech, Healthcare, E-commerce..."
-              className="flex-1 !h-18 !text-[1.25rem] !px-5"
+              className="flex-1 !h-20 !text-xl !px-6"
             />
             <Button 
               type="button"
               variant="outline"
               onClick={() => addItem(newIndustry, setNewIndustry, industries, setIndustries)}
-              className="!h-18 !w-18"
+              className="!h-20 !w-20"
             >
-              <Plus className="size-6" />
+              <Plus className="size-7" />
             </Button>
           </div>
           {industries.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {industries.map((industry) => (
-                <Badge key={industry} variant="secondary" className="py-1.5 px-3 text-base">
+                <Badge key={industry} variant="secondary" className="py-2 px-4 text-lg">
                   {industry}
                   <button type="button" onClick={() => removeItem(industry, industries, setIndustries)} className="ml-2 cursor-pointer">
-                    <X className="size-3" />
+                    <X className="size-4" />
                   </button>
                 </Badge>
               ))}
@@ -452,64 +452,64 @@ export default function MentorApplicationPage() {
           )}
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-[.65rem]">
-            <Label htmlFor="linkedinUrl" className="text-[1.35rem]">
+        <div className="grid grid-cols-2 gap-7">
+          <div className="space-y-3">
+            <Label htmlFor="linkedinUrl" className="text-xl">
               LinkedIn Profile
             </Label>
             <Input
               {...register('linkedinUrl')}
               placeholder="https://linkedin.com/in/yourprofile"
-              className="w-full !h-18 !text-[1.25rem] !px-5"
+              className="w-full !h-20 !text-xl !px-6"
             />
             {errors.linkedinUrl && (
-              <p className="text-red-500 text-[1rem]">{errors.linkedinUrl.message}</p>
+              <p className="text-red-500 text-lg">{errors.linkedinUrl.message}</p>
             )}
           </div>
 
-          <div className="space-y-[.65rem]">
-            <Label htmlFor="portfolioUrl" className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label htmlFor="portfolioUrl" className="text-xl">
               Portfolio / Website
             </Label>
             <Input
               {...register('portfolioUrl')}
               placeholder="https://yourportfolio.com"
-              className="w-full !h-18 !text-[1.25rem] !px-5"
+              className="w-full !h-20 !text-xl !px-6"
             />
             {errors.portfolioUrl && (
-              <p className="text-red-500 text-[1rem]">{errors.portfolioUrl.message}</p>
+              <p className="text-red-500 text-lg">{errors.portfolioUrl.message}</p>
             )}
           </div>
         </div>
 
-        <div className="space-y-[.65rem]">
-          <Label htmlFor="motivation" className="text-[1.35rem]">
+        <div className="space-y-3">
+          <Label htmlFor="motivation" className="text-xl">
             Why do you want to become a mentor? <span className="text-red-500">*</span>
           </Label>
           <Textarea
             {...register('motivation')}
             placeholder="Share your motivation for becoming a mentor and how you plan to help mentees..."
-            className="w-full min-h-[140px] !text-[1.15rem] !px-5 !py-4"
+            className="w-full min-h-[160px] !text-lg !px-6 !py-5"
           />
           {errors.motivation && (
-            <p className="text-red-500 text-[1rem]">{errors.motivation.message}</p>
+            <p className="text-red-500 text-lg">{errors.motivation.message}</p>
           )}
         </div>
 
         <Button 
           type="submit" 
           disabled={isLoading}
-          className="w-full !h-14 !text-[1.3rem]"
+          className="w-full !h-16 !text-xl"
         >
           {isLoading ? (
             <>
               Submitting application...
-              <Loader2 className="size-5.5 animate-spin" />
+              <Loader2 className="size-6 animate-spin" />
             </>
           ) : (
             <>
               Submit Application
-              <Send className="size-6" />
+              <Send className="size-7" />
             </>
           )}
         </Button>

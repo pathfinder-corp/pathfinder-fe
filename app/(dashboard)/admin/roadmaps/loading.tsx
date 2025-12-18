@@ -2,15 +2,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function RoadmapsLoading() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <Skeleton className="h-11 w-40 mb-3 bg-neutral-800" />
-        <Skeleton className="h-7 w-72 bg-neutral-800" />
+        <Skeleton className="h-14 w-48 mb-4 bg-neutral-800" />
+        <Skeleton className="h-7 w-80 bg-neutral-800" />
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
-        <Skeleton className="h-12 flex-1 max-w-xl bg-neutral-800 rounded-lg" />
-        <Skeleton className="h-12 w-[140px] bg-neutral-800 rounded-lg" />
+      <div className="flex flex-col sm:flex-row gap-5 sm:items-center justify-between">
+        <Skeleton className="h-14 flex-1 max-w-xl bg-neutral-800 rounded-lg" />
+        <Skeleton className="h-14 w-[160px] bg-neutral-800 rounded-lg" />
       </div>
 
       <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden">
@@ -56,4 +56,3 @@ export default function RoadmapsLoading() {
     </div>
   );
 }
-

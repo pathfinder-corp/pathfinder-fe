@@ -222,14 +222,14 @@ export default function MentorProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-        <Skeleton className="h-14 w-72 mb-6 bg-neutral-800" />
-        <Skeleton className="h-7 w-[28rem] bg-neutral-800" />
-        <div className="w-[58rem] space-y-7 mt-8">
+      <div className="pt-12 pb-16 flex flex-col items-center justify-center">
+        <Skeleton className="h-16 w-80 mb-8 bg-neutral-800" />
+        <Skeleton className="h-8 w-[32rem] bg-neutral-800" />
+        <div className="w-[58rem] space-y-8 mt-10">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="space-y-3">
-              <Skeleton className="h-8 w-40 bg-neutral-800" />
-              <Skeleton className="h-18 w-full bg-neutral-800 rounded-lg" />
+              <Skeleton className="h-8 w-44 bg-neutral-800" />
+              <Skeleton className="h-20 w-full bg-neutral-800 rounded-lg" />
             </div>
           ))}
         </div>
@@ -239,27 +239,27 @@ export default function MentorProfilePage() {
 
   if (!hasProfile) {
     return (
-      <div className="pt-10 flex flex-col items-center justify-center">
-        <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mb-6">
-          <AlertCircle className="size-10 text-neutral-400" />
+      <div className="pt-12 flex flex-col items-center justify-center">
+        <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mb-8">
+          <AlertCircle className="size-12 text-neutral-400" />
         </div>
-        <h1 className="text-4xl font-bold mb-4">No Mentor Profile</h1>
-        <p className="text-xl text-neutral-500 text-center max-w-xl mb-8">
+        <h1 className="text-5xl font-bold mb-5">No Mentor Profile</h1>
+        <p className="text-2xl text-neutral-500 text-center max-w-2xl mb-10">
           You don&apos;t have a mentor profile yet. To become a mentor, you need to submit an application first.
         </p>
         <div className="flex gap-4">
           <Button
             variant="outline"
             onClick={() => router.push('/mentor/applications')}
-            className="!h-12 !text-base"
+            className="!h-14 !text-lg"
           >
             View My Application
           </Button>
           <Button
             onClick={() => router.push('/mentor')}
-            className="!h-12 !text-base"
+            className="!h-14 !text-lg"
           >
-            <GraduationCap className="size-5 mr-2" />
+            <GraduationCap className="size-6 mr-2" />
             Apply to Become a Mentor
           </Button>
         </div>
@@ -268,29 +268,29 @@ export default function MentorProfilePage() {
   }
 
   return (
-    <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="size-16 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
-          <GraduationCap className="size-8 text-neutral-300" />
+    <div className="pt-12 pb-16 flex flex-col items-center justify-center">
+      <div className="flex items-center gap-5 mb-8">
+        <div className="size-20 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
+          <GraduationCap className="size-10 text-neutral-300" />
         </div>
         <div>
-          <h1 className="text-4xl font-bold">Mentor Profile</h1>
-          <p className="text-lg text-neutral-500">Manage your public mentor profile</p>
+          <h1 className="text-5xl font-bold">Mentor Profile</h1>
+          <p className="text-xl text-neutral-500">Manage your public mentor profile</p>
         </div>
       </div>
 
-      <div className="w-[58rem] flex items-center justify-between mb-6 p-4 bg-neutral-900/50 border border-neutral-800 rounded-xl">
-        <div className="flex items-center gap-3">
+      <div className="w-[58rem] flex items-center justify-between mb-8 p-5 bg-neutral-900/50 border border-neutral-800 rounded-xl">
+        <div className="flex items-center gap-4">
           {isAcceptingMentees ? (
-            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 py-1.5 px-3">
+            <Badge className="bg-green-500/20 text-green-400 border-green-500/30 py-2 px-4 text-base">
               Accepting Mentees
             </Badge>
           ) : (
-            <Badge className="bg-neutral-500/20 text-neutral-400 border-neutral-500/30 py-1.5 px-3">
+            <Badge className="bg-neutral-500/20 text-neutral-400 border-neutral-500/30 py-2 px-4 text-base">
               Not Accepting
             </Badge>
           )}
-          <span className="text-neutral-400">Toggle to change availability</span>
+          <span className="text-lg text-neutral-400">Toggle to change availability</span>
         </div>
         <div className="flex items-center gap-4">
           <Switch
@@ -300,119 +300,120 @@ export default function MentorProfilePage() {
           <Button
             variant="outline"
             onClick={() => router.push(`/mentors/${profile?.id}`)}
-            className="!h-10"
+            className="!h-11 !text-base"
           >
-            View Public Profile
+            View Public
+            <Eye className="size-5" />
           </Button>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-7">
-        <div className="space-y-[.65rem]">
-          <Label htmlFor="headline" className="text-[1.35rem]">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-8">
+        <div className="space-y-3">
+          <Label htmlFor="headline" className="text-xl">
             Professional Headline <span className="text-red-500">*</span>
           </Label>
           <Input
             {...register('headline')}
             placeholder="e.g., Senior Software Engineer at Google | 8+ Years in Cloud Architecture"
-            className="w-full !h-18 !text-[1.25rem] !px-5"
+            className="w-full !h-20 !text-xl !px-6"
           />
           {errors.headline && (
-            <p className="text-red-500 text-[1rem]">{errors.headline.message}</p>
+            <p className="text-red-500 text-lg">{errors.headline.message}</p>
           )}
         </div>
 
-        <div className="space-y-[.65rem]">
-          <Label htmlFor="bio" className="text-[1.35rem]">
+        <div className="space-y-3">
+          <Label htmlFor="bio" className="text-xl">
             Bio <span className="text-red-500">*</span>
           </Label>
           <Textarea
             {...register('bio')}
             placeholder="Tell potential mentees about yourself, your background, and mentoring style..."
-            className="w-full min-h-[140px] !text-[1.15rem] !px-5 !py-4"
+            className="w-full min-h-[160px] !text-lg !px-6 !py-5"
           />
           {errors.bio && (
-            <p className="text-red-500 text-[1rem]">{errors.bio.message}</p>
+            <p className="text-red-500 text-lg">{errors.bio.message}</p>
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-6">
-          <div className="space-y-[.65rem]">
-            <Label className="text-[1.35rem]">
+        <div className="grid grid-cols-3 gap-7">
+          <div className="space-y-3">
+            <Label className="text-xl">
               Years of Experience <span className="text-red-500">*</span>
             </Label>
             <Select 
               value={String(selectedExperience)} 
               onValueChange={(value) => setValue('yearsExperience', Number(value))}
             >
-              <SelectTrigger className="w-full !h-18 !text-[1.25rem] !px-5">
+              <SelectTrigger className="w-full !h-20 !text-xl !px-6">
                 <SelectValue placeholder="Select experience" />
               </SelectTrigger>
               <SelectContent>
                 {EXPERIENCE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={String(option.value)} className="!text-[1.25rem]">
+                  <SelectItem key={option.value} value={String(option.value)} className="!text-xl">
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {errors.yearsExperience && (
-              <p className="text-red-500 text-[1rem]">{errors.yearsExperience.message}</p>
+              <p className="text-red-500 text-lg">{errors.yearsExperience.message}</p>
             )}
           </div>
 
-          <div className="space-y-[.65rem]">
-            <Label className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label className="text-xl">
               Max Mentees <span className="text-red-500">*</span>
             </Label>
             <Select 
               value={String(selectedMaxMentees)} 
               onValueChange={(value) => setValue('maxMentees', Number(value))}
             >
-              <SelectTrigger className="w-full !h-18 !text-[1.25rem] !px-5">
+              <SelectTrigger className="w-full !h-20 !text-xl !px-6">
                 <SelectValue placeholder="Select max mentees" />
               </SelectTrigger>
               <SelectContent>
                 {MAX_MENTEES_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={String(option.value)} className="!text-[1.25rem]">
+                  <SelectItem key={option.value} value={String(option.value)} className="!text-xl">
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {errors.maxMentees && (
-              <p className="text-red-500 text-[1rem]">{errors.maxMentees.message}</p>
+              <p className="text-red-500 text-lg">{errors.maxMentees.message}</p>
             )}
           </div>
 
-          <div className="space-y-[.65rem]">
-            <Label className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label className="text-xl">
               Languages <span className="text-red-500">*</span>
             </Label>
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               <Input
                 value={newLanguage}
                 onChange={(e) => setNewLanguage(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, newLanguage, setNewLanguage, languages, setLanguages)}
                 placeholder="Add language..."
-                className="flex-1 !h-18 !text-[1.25rem] !px-5"
+                className="flex-1 !h-20 !text-xl !px-6"
               />
               <Button 
                 type="button"
                 variant="outline"
                 onClick={() => addItem(newLanguage, setNewLanguage, languages, setLanguages)}
-                className="!h-18 !w-18"
+                className="!h-20 !w-20"
               >
-                <Plus className="size-6" />
+                <Plus className="size-7" />
               </Button>
             </div>
             {languages.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-2">
                 {languages.map((lang) => (
-                  <Badge key={lang} variant="secondary" className="py-1.5 px-3 text-base">
+                  <Badge key={lang} variant="secondary" className="py-2 px-4 text-lg">
                     {lang}
                     <button type="button" onClick={() => removeItem(lang, languages, setLanguages)} className="ml-2">
-                      <X className="size-3" />
+                      <X className="size-4" />
                     </button>
                   </Badge>
                 ))}
@@ -423,34 +424,34 @@ export default function MentorProfilePage() {
 
         <Separator className="bg-neutral-800" />
 
-        <div className="space-y-[.65rem]">
-          <Label className="text-[1.35rem]">
+        <div className="space-y-3">
+          <Label className="text-xl">
             Areas of Expertise <span className="text-red-500">*</span>
           </Label>
-          <div className="flex gap-2">
+          <div className="flex gap-2.5">
             <Input
               value={newExpertise}
               onChange={(e) => setNewExpertise(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, newExpertise, setNewExpertise, expertise, setExpertise)}
               placeholder="e.g., Software Engineering, Cloud Architecture, Data Science..."
-              className="flex-1 !h-18 !text-[1.25rem] !px-5"
+              className="flex-1 !h-20 !text-xl !px-6"
             />
             <Button 
               type="button"
               variant="outline"
               onClick={() => addItem(newExpertise, setNewExpertise, expertise, setExpertise)}
-              className="!h-18 !w-18"
+              className="!h-20 !w-20"
             >
-              <Plus className="size-6" />
+              <Plus className="size-7" />
             </Button>
           </div>
           {expertise.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {expertise.map((item) => (
-                <Badge key={item} variant="secondary" className="py-1.5 px-3 text-base">
+                <Badge key={item} variant="secondary" className="py-2 px-4 text-lg">
                   {item}
                   <button type="button" onClick={() => removeItem(item, expertise, setExpertise)} className="ml-2">
-                    <X className="size-3" />
+                    <X className="size-4" />
                   </button>
                 </Badge>
               ))}
@@ -458,34 +459,34 @@ export default function MentorProfilePage() {
           )}
         </div>
 
-        <div className="space-y-[.65rem]">
-          <Label className="text-[1.35rem]">
+        <div className="space-y-3">
+          <Label className="text-xl">
             Skills <span className="text-red-500">*</span>
           </Label>
-          <div className="flex gap-2">
+          <div className="flex gap-2.5">
             <Input
               value={newSkill}
               onChange={(e) => setNewSkill(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, newSkill, setNewSkill, skills, setSkills)}
               placeholder="e.g., JavaScript, Python, Leadership, System Design..."
-              className="flex-1 !h-18 !text-[1.25rem] !px-5"
+              className="flex-1 !h-20 !text-xl !px-6"
             />
             <Button 
               type="button"
               variant="outline"
               onClick={() => addItem(newSkill, setNewSkill, skills, setSkills)}
-              className="!h-18 !w-18"
+              className="!h-20 !w-20"
             >
-              <Plus className="size-6" />
+              <Plus className="size-7" />
             </Button>
           </div>
           {skills.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {skills.map((skill) => (
-                <Badge key={skill} variant="secondary" className="py-1.5 px-3 text-base">
+                <Badge key={skill} variant="secondary" className="py-2 px-4 text-lg">
                   {skill}
                   <button type="button" onClick={() => removeItem(skill, skills, setSkills)} className="ml-2">
-                    <X className="size-3" />
+                    <X className="size-4" />
                   </button>
                 </Badge>
               ))}
@@ -493,32 +494,32 @@ export default function MentorProfilePage() {
           )}
         </div>
 
-        <div className="space-y-[.65rem]">
-          <Label className="text-[1.35rem]">Industries</Label>
-          <div className="flex gap-2">
+        <div className="space-y-3">
+          <Label className="text-xl">Industries</Label>
+          <div className="flex gap-2.5">
             <Input
               value={newIndustry}
               onChange={(e) => setNewIndustry(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, newIndustry, setNewIndustry, industries, setIndustries)}
               placeholder="e.g., FinTech, Healthcare, E-commerce..."
-              className="flex-1 !h-18 !text-[1.25rem] !px-5"
+              className="flex-1 !h-20 !text-xl !px-6"
             />
             <Button 
               type="button"
               variant="outline"
               onClick={() => addItem(newIndustry, setNewIndustry, industries, setIndustries)}
-              className="!h-18 !w-18"
+              className="!h-20 !w-20"
             >
-              <Plus className="size-6" />
+              <Plus className="size-7" />
             </Button>
           </div>
           {industries.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {industries.map((industry) => (
-                <Badge key={industry} variant="secondary" className="py-1.5 px-3 text-base">
+                <Badge key={industry} variant="secondary" className="py-2 px-4 text-lg">
                   {industry}
                   <button type="button" onClick={() => removeItem(industry, industries, setIndustries)} className="ml-2">
-                    <X className="size-3" />
+                    <X className="size-4" />
                   </button>
                 </Badge>
               ))}
@@ -528,32 +529,32 @@ export default function MentorProfilePage() {
 
         <Separator className="bg-neutral-800" />
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-[.65rem]">
-            <Label htmlFor="linkedinUrl" className="text-[1.35rem]">
+        <div className="grid grid-cols-2 gap-7">
+          <div className="space-y-3">
+            <Label htmlFor="linkedinUrl" className="text-xl">
               LinkedIn Profile
             </Label>
             <Input
               {...register('linkedinUrl')}
               placeholder="https://linkedin.com/in/yourprofile"
-              className="w-full !h-18 !text-[1.25rem] !px-5"
+              className="w-full !h-20 !text-xl !px-6"
             />
             {errors.linkedinUrl && (
-              <p className="text-red-500 text-[1rem]">{errors.linkedinUrl.message}</p>
+              <p className="text-red-500 text-lg">{errors.linkedinUrl.message}</p>
             )}
           </div>
 
-          <div className="space-y-[.65rem]">
-            <Label htmlFor="portfolioUrl" className="text-[1.35rem]">
+          <div className="space-y-3">
+            <Label htmlFor="portfolioUrl" className="text-xl">
               Portfolio / Website
             </Label>
             <Input
               {...register('portfolioUrl')}
               placeholder="https://yourportfolio.com"
-              className="w-full !h-18 !text-[1.25rem] !px-5"
+              className="w-full !h-20 !text-xl !px-6"
             />
             {errors.portfolioUrl && (
-              <p className="text-red-500 text-[1rem]">{errors.portfolioUrl.message}</p>
+              <p className="text-red-500 text-lg">{errors.portfolioUrl.message}</p>
             )}
           </div>
         </div>
@@ -561,17 +562,17 @@ export default function MentorProfilePage() {
         <Button 
           type="submit" 
           disabled={isSaving}
-          className="w-full !h-14 !text-[1.3rem]"
+          className="w-full !h-16 !text-xl"
         >
           {isSaving ? (
             <>
               Saving changes...
-              <Loader2 className="size-5.5 animate-spin" />
+              <Loader2 className="size-6 animate-spin" />
             </>
           ) : (
             <>
               Save Profile
-              <Save className="size-6" />
+              <Save className="size-7" />
             </>
           )}
         </Button>

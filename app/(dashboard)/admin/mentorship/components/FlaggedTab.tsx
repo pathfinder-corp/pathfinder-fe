@@ -72,19 +72,19 @@ export function FlaggedTab({ onViewApplication, onUnflagApplication }: FlaggedTa
         <Table>
           <TableHeader>
             <TableRow className="border-neutral-800 hover:bg-transparent">
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 pl-6 w-[280px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pl-6 w-[280px]">
                 Applicant
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[200px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[200px]">
                 Headline
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[140px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[140px]">
                 Status
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[140px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[140px]">
                 Applied
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 pr-6 text-right w-[80px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pr-6 text-right w-[80px]">
                 Actions
               </TableHead>
             </TableRow>
@@ -93,29 +93,29 @@ export function FlaggedTab({ onViewApplication, onUnflagApplication }: FlaggedTa
             {isLoading ? (
               [...Array(5)].map((_, i) => (
                 <TableRow key={i} className="border-neutral-800">
-                  <TableCell className="py-4 pl-6">
+                  <TableCell className="py-5 pl-6">
                     <div className="flex items-center gap-3">
-                      <Skeleton className="size-10 rounded-full bg-neutral-800" />
-                      <div className="space-y-1.5">
-                        <Skeleton className="h-5 w-32 bg-neutral-800" />
-                        <Skeleton className="h-4 w-40 bg-neutral-800" />
+                      <Skeleton className="size-12 rounded-full bg-neutral-800" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-6 w-36 bg-neutral-800" />
+                        <Skeleton className="h-5 w-44 bg-neutral-800" />
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell><Skeleton className="h-5 w-36 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-7 w-24 rounded-full bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-28 bg-neutral-800" /></TableCell>
-                  <TableCell className="pr-6"><Skeleton className="size-9 rounded-lg bg-neutral-800 ml-auto" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-40 bg-neutral-800" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-28 rounded-full bg-neutral-800" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-32 bg-neutral-800" /></TableCell>
+                  <TableCell className="pr-6"><Skeleton className="size-10 rounded-lg bg-neutral-800 ml-auto" /></TableCell>
                 </TableRow>
               ))
             ) : flaggedApplications.length === 0 ? (
               <TableRow className="border-neutral-800 hover:bg-transparent">
                 <TableCell colSpan={5} className="py-16 text-center">
-                  <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle className="size-8 text-neutral-500" />
+                  <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle className="size-10 text-neutral-500" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">No flagged applications</h3>
-                  <p className="text-neutral-400">All applications look clean!</p>
+                  <h3 className="text-2xl font-semibold mb-2">No flagged applications</h3>
+                  <p className="text-lg text-neutral-400">All applications look clean!</p>
                 </TableCell>
               </TableRow>
             ) : (
@@ -124,53 +124,53 @@ export function FlaggedTab({ onViewApplication, onUnflagApplication }: FlaggedTa
                   key={app.id} 
                   className="border-neutral-800 hover:bg-neutral-800/30 transition-colors"
                 >
-                  <TableCell className="py-4 pl-6">
+                  <TableCell className="py-5 pl-6">
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      <div className="size-12 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold flex-shrink-0">
                         {app.user?.firstName?.[0] || ''}{app.user?.lastName?.[0] || ''}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-medium text-base text-neutral-100 truncate">
+                        <p className="font-medium text-lg text-neutral-100 truncate">
                           {app.user?.firstName || ''} {app.user?.lastName || ''}
                         </p>
-                        <p className="text-sm text-neutral-400 truncate">
+                        <p className="text-base text-neutral-400 truncate">
                           {app.user?.email || 'N/A'}
                         </p>
                       </div>
-                      <ShieldAlert className="size-4 text-neutral-400 flex-shrink-0" />
+                      <ShieldAlert className="size-5 text-neutral-400 flex-shrink-0" />
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p className="text-base text-neutral-300 truncate max-w-[180px]">
+                    <p className="text-lg text-neutral-300 truncate max-w-[180px]">
                       {app.applicationData?.headline || 'No headline'}
                     </p>
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={app.status} />
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-base">
+                  <TableCell className="text-neutral-300 text-lg">
                     {formatDate(app.createdAt)}
                   </TableCell>
                   <TableCell className="pr-6 text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-9">
-                          <MoreVertical className="size-5" />
+                        <Button variant="ghost" size="icon" className="size-10">
+                          <MoreVertical className="size-6" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
+                      <DropdownMenuContent align="end" className="w-52">
                         <DropdownMenuItem 
                           onClick={() => onViewApplication(app)}
-                          className="text-base py-2"
+                          className="text-lg py-3"
                         >
-                          <Eye className="size-4" />
+                          <Eye className="size-5" />
                           View details
                         </DropdownMenuItem>
                         <DropdownMenuItem 
                           onClick={() => handleUnflag(app)}
-                          className="text-base py-2"
+                          className="text-lg py-3"
                         >
-                          <FlagOff className="size-4" />
+                          <FlagOff className="size-5" />
                           Unflag application
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -183,8 +183,8 @@ export function FlaggedTab({ onViewApplication, onUnflagApplication }: FlaggedTa
         </Table>
 
         {!isLoading && flaggedApplications.length > 0 && (
-          <div className="px-6 py-4 border-t border-neutral-800">
-            <span className="text-base text-neutral-400">
+          <div className="px-6 py-5 border-t border-neutral-800">
+            <span className="text-lg text-neutral-400">
               {flaggedApplications.length} flagged application{flaggedApplications.length !== 1 ? 's' : ''}
             </span>
           </div>

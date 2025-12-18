@@ -107,37 +107,37 @@ export default function LoginPage() {
 
   return (
     <Card className="border-neutral-800 bg-neutral-950/50 backdrop-blur-sm">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-3xl font-bold tracking-tight">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-4xl font-bold tracking-tight">
           Login
         </CardTitle>
-        <CardDescription className="text-xl text-neutral-400">
+        <CardDescription className="text-2xl text-neutral-400">
           Enter your email and password to login
         </CardDescription>
       </CardHeader>
   
       <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-lg">Email address</Label>
+        <CardContent className="space-y-6">
+          <div className="space-y-3">
+            <Label htmlFor="email" className="text-xl">Email address</Label>
             <Input
               id="email"
               type="email"
               placeholder="user@example.com"
               autoComplete="off"
               disabled={isLoading}
-              className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
+              className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
                 errors.email ? 'border-red-500 focus:border-red-500' : ''
               }`}
               {...register('email')}
             />
             {errors.email && (
-              <p className="text-lg text-red-500">{errors.email.message}</p>
+              <p className="text-xl text-red-500">{errors.email.message}</p>
             )}
           </div>
   
-          <div className="space-y-2">
-            <Label htmlFor="password" className="text-lg">Password</Label>
+          <div className="space-y-3">
+            <Label htmlFor="password" className="text-xl">Password</Label>
             <div className="relative">
               <Input
                 id="password"
@@ -145,7 +145,7 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 autoComplete="current-password"
                 disabled={isLoading}
-                className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-12 ${
+                className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
                   errors.password ? 'border-red-500 focus:border-red-500' : ''
                 }`}
                 {...register('password')}
@@ -153,23 +153,23 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
                 disabled={isLoading}
               >
                 {showPassword ? (
-                  <EyeOff className="size-6" />
+                  <EyeOff className="size-7" />
                 ) : (
-                  <Eye className="size-6" />
+                  <Eye className="size-7" />
                 )}
               </button>
             </div>
             {errors.password && (
-              <p className="text-lg text-red-500">{errors.password.message}</p>
+              <p className="text-xl text-red-500">{errors.password.message}</p>
             )}
             <div className="text-right">
               <Link
                 href="/forgot-password"
-                className="text-lg text-neutral-400 hover:text-neutral-200 transition-colors"
+                className="text-xl text-neutral-400 hover:text-neutral-200 transition-colors"
               >
                 Forgot password?
               </Link>
@@ -177,23 +177,23 @@ export default function LoginPage() {
           </div>
         </CardContent>
   
-        <CardFooter className="flex flex-col space-y-4 mt-6">
+        <CardFooter className="flex flex-col space-y-5 mt-8">
           <Button
             type="submit"
-            className="w-full h-12 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+            className="w-full h-14 text-2xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
             disabled={isLoading}
           >
             {isLoading ? (
               <>
                 Logging in...
-                <Loader2 className="ml-2 size-6 animate-spin" />
+                <Loader2 className="ml-2 size-7 animate-spin" />
               </>
             ) : (
               'Login'
             )}
           </Button>
   
-          <p className="text-center text-lg text-neutral-400 mb-2">
+          <p className="text-center text-xl text-neutral-400 mb-2">
             Don&apos;t have an account?{' '}
             <Link
               href="/register"
@@ -203,7 +203,7 @@ export default function LoginPage() {
             </Link>
           </p>
 
-          <Link href="/" className="text-center text-lg hover:underline text-neutral-400 hover:text-neutral-200 transition-colors">
+          <Link href="/" className="text-center text-xl hover:underline text-neutral-400 hover:text-neutral-200 transition-colors">
             Back to home
           </Link>
         </CardFooter>

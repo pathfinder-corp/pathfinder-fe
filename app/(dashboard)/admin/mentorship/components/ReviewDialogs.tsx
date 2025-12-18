@@ -43,39 +43,39 @@ export function ApproveDialog({
     <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-xl flex items-center gap-2">
-            <CheckCircle className="size-6" />
+          <AlertDialogTitle className="text-2xl flex items-center gap-2">
+            <CheckCircle className="size-7" />
             Approve Application
           </AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="text-base">
             Are you sure you want to approve this mentor application? 
             The applicant will be granted mentor privileges.
           </AlertDialogDescription>
         </AlertDialogHeader>
         
-        <div className="space-y-4 py-2">
+        <div className="space-y-5 py-2">
           <div>
-            <Label htmlFor="admin-notes" className="text-base">Admin Notes (optional)</Label>
+            <Label htmlFor="admin-notes" className="text-lg">Admin Notes (optional)</Label>
             <Textarea
               id="admin-notes"
               placeholder="Add any internal notes..."
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
-              className="mt-2 min-h-[100px] text-base bg-neutral-900/50 border-neutral-800"
+              className="mt-2 min-h-[100px] text-lg bg-neutral-900/50 border-neutral-800"
             />
           </div>
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading} className="!h-11">
+          <AlertDialogCancel disabled={isLoading} className="!h-12 text-base">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading}
-            className="bg-green-600 hover:bg-green-700 text-white !h-11"
+            className="bg-green-600 hover:bg-green-700 text-white !h-12 text-base"
           >
-            {isLoading && <Loader2 className="size-4 mr-2 animate-spin" />}
+            {isLoading && <Loader2 className="size-5 mr-2 animate-spin" />}
             Approve Application
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -112,19 +112,19 @@ export function DeclineDialog({
     <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-xl flex items-center gap-2">
-            <XCircle className="size-6 text-red-500" />
+          <AlertDialogTitle className="text-2xl flex items-center gap-2">
+            <XCircle className="size-7 text-red-500" />
             Decline Application
           </AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription className="text-base">
             Please provide a reason for declining this application. 
             This will be visible to the applicant.
           </AlertDialogDescription>
         </AlertDialogHeader>
         
-        <div className="space-y-4 py-2">
+        <div className="space-y-5 py-2">
           <div>
-            <Label htmlFor="decline-reason" className="text-base">
+            <Label htmlFor="decline-reason" className="text-lg">
               Decline Reason <span className="text-red-500">*</span>
             </Label>
             <Textarea
@@ -132,31 +132,31 @@ export function DeclineDialog({
               placeholder="Enter the reason for declining..."
               value={declineReason}
               onChange={(e) => setDeclineReason(e.target.value)}
-              className="mt-2 min-h-[100px] text-base bg-neutral-900/50 border-neutral-800"
+              className="mt-2 min-h-[100px] text-lg bg-neutral-900/50 border-neutral-800"
             />
           </div>
           <div>
-            <Label htmlFor="admin-notes-decline" className="text-base">Admin Notes (optional)</Label>
+            <Label htmlFor="admin-notes-decline" className="text-lg">Admin Notes (optional)</Label>
             <Textarea
               id="admin-notes-decline"
               placeholder="Add any internal notes..."
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
-              className="mt-2 min-h-[80px] text-base bg-neutral-900/50 border-neutral-800"
+              className="mt-2 min-h-[80px] text-lg bg-neutral-900/50 border-neutral-800"
             />
           </div>
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading} className="!h-11">
+          <AlertDialogCancel disabled={isLoading} className="!h-12 text-base">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading || !declineReason.trim()}
-            className="bg-red-600 hover:bg-red-700 text-white !h-11"
+            className="bg-red-600 hover:bg-red-700 text-white !h-12 text-base"
           >
-            {isLoading && <Loader2 className="size-4 mr-2 animate-spin" />}
+            {isLoading && <Loader2 className="size-5 mr-2 animate-spin" />}
             Decline Application
           </AlertDialogAction>
         </AlertDialogFooter>

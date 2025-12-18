@@ -154,7 +154,7 @@ export default function NotificationsPage() {
   };
 
   const getNotificationIcon = (type: NotificationType) => {
-    const className = 'size-5 text-neutral-400';
+    const className = 'size-6 text-neutral-400';
     switch (type) {
       case 'request_received':
       case 'request_accepted':
@@ -180,7 +180,7 @@ export default function NotificationsPage() {
   };
 
   const getNotificationTypeBadge = (type: NotificationType) => {
-    const baseClasses = 'px-3 py-2';
+    const baseClasses = 'px-4 py-2 text-base';
     switch (type) {
       case 'request_received':
         return <Badge className={`${baseClasses} bg-blue-500/20 text-blue-400 border-blue-500/30`}>Request Received</Badge>;
@@ -233,19 +233,19 @@ export default function NotificationsPage() {
 
   return (
     <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-      <div className="flex items-center gap-4 mb-6">
-        <div className="size-16 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
-          <Bell className="size-8 text-neutral-300" />
+      <div className="flex items-center gap-5 mb-8">
+        <div className="size-20 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
+          <Bell className="size-10 text-neutral-300" />
         </div>
         <div>
-          <h1 className="text-4xl font-bold">Notifications</h1>
-          <p className="text-lg text-neutral-500">
+          <h1 className="text-5xl font-bold">Notifications</h1>
+          <p className="text-xl text-neutral-500">
             {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}` : 'All caught up!'}
           </p>
         </div>
       </div>
 
-      <div className="w-[58rem] mb-6">
+      <div className="w-[58rem] mb-8">
         <div className="flex items-center justify-between border-b border-neutral-800">
           <div className="flex items-center">
             {FILTERS.map((filter) => {
@@ -254,7 +254,7 @@ export default function NotificationsPage() {
                 <button
                   key={filter.id}
                   onClick={() => setActiveFilter(filter.id)}
-                  className={`cursor-pointer relative px-6 py-4 text-base font-medium transition-colors ${
+                  className={`cursor-pointer relative px-6 py-4 text-lg font-medium transition-colors ${
                     isActive
                       ? 'text-white'
                       : 'text-neutral-500 hover:text-neutral-300'
@@ -262,7 +262,7 @@ export default function NotificationsPage() {
                 >
                   {filter.label}
                   {filter.id === 'unread' && unreadCount > 0 && (
-                    <span className="ml-2 px-2 py-0.5 text-xs bg-neutral-800 rounded-full text-neutral-300">
+                    <span className="ml-2 px-2.5 py-1 text-sm bg-neutral-800 rounded-full text-neutral-300">
                       {unreadCount}
                     </span>
                   )}
@@ -282,17 +282,17 @@ export default function NotificationsPage() {
               variant="outline"
               onClick={handleMarkAllAsRead}
               disabled={isMarkingAll}
-              className="!h-10"
+              className="!h-12 !text-base"
             >
               {isMarkingAll ? (
                 <>
                   Marking...
-                  <Loader2 className="size-4 animate-spin" />
+                  <Loader2 className="size-5 animate-spin" />
                 </>
               ) : (
                 <>
                   Mark all as read
-                  <CheckCheck className="size-4" />
+                  <CheckCheck className="size-5" />
                 </>
               )}
             </Button>
@@ -312,27 +312,27 @@ export default function NotificationsPage() {
         {FILTERS.map((filter) => (
           <div key={filter.id} className="w-[58rem]">
             {isLoading ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-5">
-                    <div className="flex items-start gap-4">
-                      <Skeleton className="size-12 rounded-full bg-neutral-800" />
-                      <div className="flex-1 space-y-2">
-                        <Skeleton className="h-5 w-48 bg-neutral-800" />
-                        <Skeleton className="h-4 w-full bg-neutral-800" />
-                        <Skeleton className="h-3 w-24 bg-neutral-800" />
+                  <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
+                    <div className="flex items-start gap-5">
+                      <Skeleton className="size-14 rounded-full bg-neutral-800" />
+                      <div className="flex-1 space-y-3">
+                        <Skeleton className="h-6 w-52 bg-neutral-800" />
+                        <Skeleton className="h-5 w-full bg-neutral-800" />
+                        <Skeleton className="h-4 w-28 bg-neutral-800" />
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : notifications.length === 0 ? (
-              <div className="text-center py-20">
-                <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-6">
-                  <Inbox className="size-10 text-neutral-500" />
+              <div className="text-center py-24">
+                <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+                  <Inbox className="size-12 text-neutral-500" />
                 </div>
-                <h2 className="text-2xl font-semibold mb-3">No notifications</h2>
-                <p className="text-lg text-neutral-400">
+                <h2 className="text-3xl font-semibold mb-4">No notifications</h2>
+                <p className="text-xl text-neutral-400">
                   {activeFilter === 'unread' 
                     ? "You've read all your notifications!"
                     : activeFilter === 'read'
@@ -341,42 +341,42 @@ export default function NotificationsPage() {
                 </p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {notifications.map((notification) => (
                   <button
                     key={notification.id}
                     onClick={() => handleNotificationClick(notification)}
-                    className={`w-full text-left bg-neutral-900/50 border rounded-xl p-5 hover:bg-neutral-800/50 transition-all cursor-pointer ${
+                    className={`w-full text-left bg-neutral-900/50 border rounded-xl p-6 hover:bg-neutral-800/50 transition-all cursor-pointer ${
                       !notification.isRead 
                         ? 'border-neutral-700 bg-white/[0.02]' 
                         : 'border-neutral-800'
                     }`}
                   >
-                    <div className="flex items-start gap-4">
-                      <div className="size-12 rounded-full bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                    <div className="flex items-start gap-5">
+                      <div className="size-14 rounded-full bg-neutral-800 flex items-center justify-center flex-shrink-0">
                         {getNotificationIcon(notification.type)}
                       </div>
                       
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-4 mb-1">
+                        <div className="flex items-start justify-between gap-4 mb-2">
                           <div className="flex items-center gap-3">
-                            <h3 className={`text-lg font-medium ${
+                            <h3 className={`text-xl font-medium ${
                               !notification.isRead ? 'text-white' : 'text-neutral-300'
                             }`}>
                               {notification.title}
                             </h3>
                             {!notification.isRead && (
-                              <span className="size-2 rounded-full bg-green-500 animate-pulse" />
+                              <span className="size-2.5 rounded-full bg-green-500 animate-pulse" />
                             )}
                           </div>
                           {getNotificationTypeBadge(notification.type)}
                         </div>
                         
-                        <p className="text-base text-neutral-400 mb-2">
+                        <p className="text-lg text-neutral-400 mb-3">
                           {notification.message}
                         </p>
                         
-                        <p className="capitalize text-sm text-neutral-500" title={formatFullDate(notification.createdAt)}>
+                        <p className="capitalize text-base text-neutral-500" title={formatFullDate(notification.createdAt)}>
                           {formatTime(notification.createdAt)}
                         </p>
                       </div>
@@ -385,23 +385,23 @@ export default function NotificationsPage() {
                 ))}
 
                 {totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 pt-6">
+                  <div className="flex items-center justify-center gap-3 pt-8">
                     <Button
                       variant="outline"
                       onClick={() => setPage(p => Math.max(1, p - 1))}
                       disabled={page === 1 || isLoading}
-                      className="!h-10"
+                      className="!h-12 !text-base"
                     >
                       Previous
                     </Button>
-                    <span className="px-4 text-neutral-400">
+                    <span className="px-5 text-lg text-neutral-400">
                       Page {page} of {totalPages}
                     </span>
                     <Button
                       variant="outline"
                       onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                       disabled={page === totalPages || isLoading}
-                      className="!h-10"
+                      className="!h-12 !text-base"
                     >
                       Next
                     </Button>

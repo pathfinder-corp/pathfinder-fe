@@ -2,17 +2,17 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function AssessmentsLoading() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <Skeleton className="h-11 w-48 mb-3 bg-neutral-800" />
-        <Skeleton className="h-7 w-80 bg-neutral-800" />
+        <Skeleton className="h-14 w-56 mb-4 bg-neutral-800" />
+        <Skeleton className="h-7 w-96 bg-neutral-800" />
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
-        <Skeleton className="h-12 flex-1 max-w-xl bg-neutral-800 rounded-lg" />
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-12 w-[160px] bg-neutral-800 rounded-lg" />
-          <Skeleton className="h-12 w-[150px] bg-neutral-800 rounded-lg" />
+      <div className="flex flex-col sm:flex-row gap-5 sm:items-center justify-between">
+        <Skeleton className="h-14 flex-1 max-w-xl bg-neutral-800 rounded-lg" />
+        <div className="flex items-center gap-4">
+          <Skeleton className="h-14 w-[180px] bg-neutral-800 rounded-lg" />
+          <Skeleton className="h-14 w-[170px] bg-neutral-800 rounded-lg" />
         </div>
       </div>
 
@@ -59,4 +59,3 @@ export default function AssessmentsLoading() {
     </div>
   );
 }
-

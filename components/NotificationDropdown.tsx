@@ -138,7 +138,7 @@ export function NotificationDropdown() {
   };
 
   const getNotificationIcon = (type: NotificationType) => {
-    const className = `size-4 mt-0.5 flex-shrink-0 text-neutral-400`;
+    const className = `size-5 mt-1 flex-shrink-0 text-neutral-400`;
     switch (type) {
       case 'request_received':
       case 'request_accepted':
@@ -177,11 +177,11 @@ export function NotificationDropdown() {
         <Button
           variant="ghost"
           size="icon"
-          className="relative size-12 rounded-full"
+          className="relative size-14 rounded-full"
         >
-          <Bell className="size-5" />
+          <Bell className="size-6" />
           {unreadCount > 0 && (
-            <span className="absolute top-1 right-1 size-5 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">
+            <span className="absolute top-1.5 right-1.5 size-6 rounded-full bg-red-500 text-white text-sm font-bold flex items-center justify-center">
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
@@ -190,39 +190,39 @@ export function NotificationDropdown() {
 
       <DropdownMenuContent 
         align="end" 
-        className="w-96 p-0 bg-neutral-900 border-neutral-800"
+        className="w-[28rem] p-0 bg-neutral-900 border-neutral-800"
       >
-        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-800">
-          <h3 className="font-semibold text-lg">Notifications</h3>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-800">
+          <h3 className="font-semibold text-2xl">Notifications</h3>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleMarkAllAsRead}
               disabled={isMarkingRead}
-              className="text-sm text-neutral-400 hover:text-white h-8"
+              className="text-base text-neutral-400 hover:text-white h-10"
             >
               {isMarkingRead ? (
-                <Loader2 className="size-4 animate-spin" />
+                <Loader2 className="size-5 animate-spin" />
               ) : (
                 <>
                   Mark all read
-                  <CheckCheck className="size-4" />
+                  <CheckCheck className="size-5" />
                 </>
               )}
             </Button>
           )}
         </div>
 
-        <ScrollArea className="h-80">
+        <ScrollArea className="h-96">
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
-              <Loader2 className="size-5 animate-spin text-neutral-400" />
+              <Loader2 className="size-7 animate-spin text-neutral-400" />
             </div>
           ) : notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-10 text-neutral-500">
-              <Bell className="size-8 mb-2 opacity-40" />
-              <p className="text-sm">No notifications yet</p>
+            <div className="flex flex-col items-center justify-center absolute inset-0 text-neutral-500">
+              <Bell className="size-10 mb-3 opacity-40" />
+              <p className="text-lg">No notifications yet</p>
             </div>
           ) : (
             <div className="divide-y divide-neutral-800/50">
@@ -230,30 +230,30 @@ export function NotificationDropdown() {
                 <button
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
-                  className={`w-full text-left px-4 py-3 hover:bg-neutral-800/50 transition-colors cursor-pointer ${
+                  className={`w-full text-left px-5 py-4 hover:bg-neutral-800/50 transition-colors cursor-pointer ${
                     !notification.isRead ? 'bg-white/[0.02]' : ''
                   }`}
                 >
-                  <div className="flex items-start gap-2.5">
+                  <div className="flex items-start gap-3">
                     {getNotificationIcon(notification.type)}
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
-                        <p className={`text-sm font-medium line-clamp-1 ${
+                        <p className={`text-base font-medium line-clamp-1 ${
                           !notification.isRead ? 'text-white' : 'text-neutral-300'
                         }`}>
                           {notification.title}
                         </p>
                         {!notification.isRead && (
-                          <span className="size-1.5 rounded-full bg-green-500 animate-pulse flex-shrink-0 mt-1.5" />
+                          <span className="size-2 rounded-full bg-green-500 animate-pulse flex-shrink-0 mt-2" />
                         )}
                       </div>
                       
-                      <p className="text-sm text-neutral-400 line-clamp-2 mt-0.5">
+                      <p className="text-base text-neutral-400 line-clamp-2 mt-1">
                         {notification.message}
                       </p>
                       
-                      <p className="text-xs text-neutral-500 mt-1 capitalize">
+                      <p className="text-sm text-neutral-500 mt-1.5 capitalize">
                         {formatTime(notification.createdAt)}
                       </p>
                     </div>
@@ -264,10 +264,10 @@ export function NotificationDropdown() {
           )}
         </ScrollArea>
 
-        <div className="border-t border-neutral-800 p-2">
+        <div className="border-t border-neutral-800 p-3">
           <Button
             variant="ghost"
-            className="w-full h-9 text-sm text-neutral-400 hover:text-white"
+            className="w-full h-11 text-base text-neutral-400 hover:text-white"
             onClick={() => {
               router.push('/notifications');
               setIsOpen(false);

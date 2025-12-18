@@ -183,10 +183,10 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-8">
       <div>
-        <h1 className="text-4xl font-bold tracking-tight">Settings</h1>
-        <p className="text-xl text-neutral-400 mt-2">
+        <h1 className="text-5xl font-bold tracking-tight">Settings</h1>
+        <p className="text-2xl text-neutral-400 mt-3">
           Manage your account settings and preferences
         </p>
       </div>
@@ -199,13 +199,13 @@ export default function SettingsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`cursor-pointer relative flex items-center gap-2 px-4 py-3 text-base font-medium transition-colors ${
+              className={`cursor-pointer relative flex items-center gap-2.5 px-5 py-4 text-lg font-medium transition-colors ${
                 isActive
                   ? 'text-white'
                   : 'text-neutral-500 hover:text-neutral-300'
               }`}
             >
-              <Icon className="size-4" />
+              <Icon className="size-5" />
               {tab.label}
               {isActive && (
                 <motion.span 
@@ -227,50 +227,50 @@ export default function SettingsPage() {
           exit: { opacity: 0, y: 20, filter: 'blur(4px)' },
         }}
       >
-        <div className="space-y-6">
+        <div className="space-y-8">
           {isLoadingProfile ? (
             <Card className="border-neutral-800 bg-neutral-900/50">
-              <CardContent className="p-8 flex items-center justify-center">
-                <Loader2 className="size-8 animate-spin text-neutral-400" />
+              <CardContent className="p-10 flex items-center justify-center">
+                <Loader2 className="size-10 animate-spin text-neutral-400" />
               </CardContent>
             </Card>
           ) : (
             <>
               <Card className="border-neutral-800 bg-neutral-900/50">
                 <CardHeader>
-                  <CardTitle className="text-2xl">Account Information</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-3xl">Account Information</CardTitle>
+                  <CardDescription className="text-lg">
                     View your account details
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="space-y-5">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
-                      <Label className="text-neutral-400">Email</Label>
-                      <p className="text-lg font-medium">{profile?.email}</p>
+                      <Label className="text-neutral-400 text-base">Email</Label>
+                      <p className="text-xl font-medium">{profile?.email}</p>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-neutral-400">Role</Label>
+                      <Label className="text-neutral-400 text-base">Role</Label>
                       <Badge 
                         variant="outline" 
-                        className="text-base capitalize border-neutral-700"
+                        className="text-lg capitalize border-neutral-700 px-3 py-1"
                       >
                         {profile?.role}
                       </Badge>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-neutral-400">Email Verified</Label>
+                      <Label className="text-neutral-400 text-base">Email Verified</Label>
                       <div className="flex items-center gap-3">
                         {profile?.emailVerified ? (
                           <>
-                            <CheckCircle className="size-5 text-green-500" />
-                            <span className="text-green-500">Verified</span>
+                            <CheckCircle className="size-6 text-green-500" />
+                            <span className="text-lg text-green-500">Verified</span>
                           </>
                         ) : (
                           <>
                             <div className="flex items-center gap-2">
-                              <AlertCircle className="size-5 text-yellow-500" />
-                              <span className="text-yellow-500">Not verified</span>
+                              <AlertCircle className="size-6 text-yellow-500" />
+                              <span className="text-lg text-yellow-500">Not verified</span>
                             </div>
                             <Button
                               type="button"
@@ -278,17 +278,17 @@ export default function SettingsPage() {
                               size="sm"
                               disabled={isResendingVerification}
                               onClick={handleResendVerification}
-                              className="h-8 text-sm dark:border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400"
+                              className="h-9 text-base dark:border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400"
                             >
                               {isResendingVerification ? (
                                 <>
                                   Sending...
-                                  <Loader2 className="size-4 animate-spin" />
+                                  <Loader2 className="size-5 animate-spin" />
                                 </>
                               ) : (
                                 <>
                                   Resend
-                                  <Mail className="size-4" />
+                                  <Mail className="size-5" />
                                 </>
                               )}
                             </Button>
@@ -297,10 +297,10 @@ export default function SettingsPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-neutral-400">Status</Label>
+                      <Label className="text-neutral-400 text-base">Status</Label>
                       <Badge 
                         variant="outline" 
-                        className={`text-base capitalize ${
+                        className={`text-lg capitalize px-3 py-1 ${
                           profile?.status === 'active' 
                             ? 'border-green-500 text-green-500' 
                             : 'border-red-500 text-red-500'
@@ -310,12 +310,12 @@ export default function SettingsPage() {
                       </Badge>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-neutral-400">Last Login</Label>
-                      <p className="text-base">{formatDate(profile?.lastLoginAt ?? null)}</p>
+                      <Label className="text-neutral-400 text-base">Last Login</Label>
+                      <p className="text-lg">{formatDate(profile?.lastLoginAt ?? null)}</p>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-neutral-400">Member Since</Label>
-                      <p className="text-base">{formatDate(profile?.createdAt ?? null)}</p>
+                      <Label className="text-neutral-400 text-base">Member Since</Label>
+                      <p className="text-lg">{formatDate(profile?.createdAt ?? null)}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -323,42 +323,42 @@ export default function SettingsPage() {
 
               <Card className="border-neutral-800 bg-neutral-900/50">
                 <CardHeader>
-                  <CardTitle className="text-2xl">Personal Information</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-3xl">Personal Information</CardTitle>
+                  <CardDescription className="text-lg">
                     Update your personal details
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-7">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                       <div className="space-y-2">
-                        <Label htmlFor="firstName" className="text-base">
+                        <Label htmlFor="firstName" className="text-lg">
                           First Name <span className="text-red-500">*</span>
                         </Label>
                         <Input
                           id="firstName"
                           placeholder="Enter your first name"
-                          className="h-12 text-base bg-neutral-900/50 border-neutral-800"
+                          className="h-14 !text-lg bg-neutral-900/50 border-neutral-800"
                           {...profileForm.register('firstName')}
                         />
                         {profileForm.formState.errors.firstName && (
-                          <p className="text-sm text-red-500">
+                          <p className="text-base text-red-500">
                             {profileForm.formState.errors.firstName.message}
                           </p>
                         )}
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="lastName" className="text-base">
+                        <Label htmlFor="lastName" className="text-lg">
                           Last Name <span className="text-red-500">*</span>
                         </Label>
                         <Input
                           id="lastName"
                           placeholder="Enter your last name"
-                          className="h-12 text-base bg-neutral-900/50 border-neutral-800"
+                          className="h-14 !text-lg bg-neutral-900/50 border-neutral-800"
                           {...profileForm.register('lastName')}
                         />
                         {profileForm.formState.errors.lastName && (
-                          <p className="text-sm text-red-500">
+                          <p className="text-base text-red-500">
                             {profileForm.formState.errors.lastName.message}
                           </p>
                         )}
@@ -368,17 +368,17 @@ export default function SettingsPage() {
                     <Button
                       type="submit"
                       disabled={isSavingProfile || !profileForm.formState.isDirty}
-                      className="w-full !h-14 !text-[1.15rem] bg-white text-neutral-950 hover:bg-neutral-200"
+                      className="w-full !h-16 !text-xl bg-white text-neutral-950 hover:bg-neutral-200"
                     >
                       {isSavingProfile ? (
                         <>
                           Saving...
-                          <Loader2 className="size-5 animate-spin" />
+                          <Loader2 className="size-6 animate-spin" />
                         </>
                       ) : (
                         <>
                           Save Changes
-                          <Save className="size-5" />
+                          <Save className="size-6" />
                         </>
                       )}
                     </Button>
@@ -389,18 +389,18 @@ export default function SettingsPage() {
           )}
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-8">
           <Card className="border-neutral-800 bg-neutral-900/50">
             <CardHeader>
-              <CardTitle className="text-2xl">Change Password</CardTitle>
-              <CardDescription className="text-base">
+              <CardTitle className="text-3xl">Change Password</CardTitle>
+              <CardDescription className="text-lg">
                 Update your password to keep your account secure
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-6">
+              <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-7">
                 <div className="space-y-2">
-                  <Label htmlFor="currentPassword" className="text-base">
+                  <Label htmlFor="currentPassword" className="text-lg">
                     Current Password <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
@@ -408,7 +408,7 @@ export default function SettingsPage() {
                       id="currentPassword"
                       type={showCurrentPassword ? 'text' : 'password'}
                       placeholder="Enter your current password"
-                      className="h-12 text-base bg-neutral-900/50 border-neutral-800 pr-12"
+                      className="h-14 !text-lg bg-neutral-900/50 border-neutral-800 pr-14"
                       {...passwordForm.register('currentPassword')}
                     />
                     <button
@@ -416,18 +416,18 @@ export default function SettingsPage() {
                       onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
                     >
-                      {showCurrentPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                      {showCurrentPassword ? <EyeOff className="size-6" /> : <Eye className="size-6" />}
                     </button>
                   </div>
                   {passwordForm.formState.errors.currentPassword && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-base text-red-500">
                       {passwordForm.formState.errors.currentPassword.message}
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword" className="text-base">
+                  <Label htmlFor="newPassword" className="text-lg">
                     New Password <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
@@ -435,7 +435,7 @@ export default function SettingsPage() {
                       id="newPassword"
                       type={showNewPassword ? 'text' : 'password'}
                       placeholder="Enter your new password"
-                      className="h-12 text-base bg-neutral-900/50 border-neutral-800 pr-12"
+                      className="h-14 !text-lg bg-neutral-900/50 border-neutral-800 pr-14"
                       {...passwordForm.register('newPassword')}
                     />
                     <button
@@ -443,17 +443,17 @@ export default function SettingsPage() {
                       onClick={() => setShowNewPassword(!showNewPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
                     >
-                      {showNewPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                      {showNewPassword ? <EyeOff className="size-6" /> : <Eye className="size-6" />}
                     </button>
                   </div>
                   {passwordForm.formState.errors.newPassword && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-base text-red-500">
                       {passwordForm.formState.errors.newPassword.message}
                     </p>
                   )}
-                  <div className="text-sm text-neutral-500 space-y-1 mt-2">
+                  <div className="text-base text-neutral-500 space-y-1.5 mt-3">
                     <p>Password must contain:</p>
-                    <ul className="list-disc list-inside space-y-0.5">
+                    <ul className="list-disc list-inside space-y-1">
                       <li>At least 8 characters</li>
                       <li>At least one uppercase letter</li>
                       <li>At least one lowercase letter</li>
@@ -464,7 +464,7 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-base">
+                  <Label htmlFor="confirmPassword" className="text-lg">
                     Confirm New Password <span className="text-red-500">*</span>
                   </Label>
                   <div className="relative">
@@ -472,7 +472,7 @@ export default function SettingsPage() {
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Confirm your new password"
-                      className="h-12 text-base bg-neutral-900/50 border-neutral-800 pr-12"
+                      className="h-14 !text-lg bg-neutral-900/50 border-neutral-800 pr-14"
                       {...passwordForm.register('confirmPassword')}
                     />
                     <button
@@ -480,11 +480,11 @@ export default function SettingsPage() {
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                       className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
                     >
-                      {showConfirmPassword ? <EyeOff className="size-5" /> : <Eye className="size-5" />}
+                      {showConfirmPassword ? <EyeOff className="size-6" /> : <Eye className="size-6" />}
                     </button>
                   </div>
                   {passwordForm.formState.errors.confirmPassword && (
-                    <p className="text-sm text-red-500">
+                    <p className="text-base text-red-500">
                       {passwordForm.formState.errors.confirmPassword.message}
                     </p>
                   )}
@@ -493,17 +493,17 @@ export default function SettingsPage() {
                 <Button
                   type="submit"
                   disabled={isChangingPassword}
-                  className="w-full !h-14 !text-[1.15rem] bg-white text-neutral-950 hover:bg-neutral-200"
+                  className="w-full !h-16 !text-xl bg-white text-neutral-950 hover:bg-neutral-200"
                 >
                   {isChangingPassword ? (
                     <>
                       Changing password...
-                      <Loader2 className="size-5 animate-spin" />
+                      <Loader2 className="size-6 animate-spin" />
                     </>
                   ) : (
                     <>
                       Change Password
-                      <Lock className="size-5" />
+                      <Lock className="size-6" />
                     </>
                   )}
                 </Button>

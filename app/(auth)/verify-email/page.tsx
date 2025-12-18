@@ -73,14 +73,14 @@ export default function VerifyEmailPage() {
 
   return (
     <Card className="border-neutral-800 bg-neutral-950/50 backdrop-blur-sm">
-      <CardHeader className="space-y-1 text-center">
-        <CardTitle className="text-3xl font-bold tracking-tight">
+      <CardHeader className="space-y-2 text-center">
+        <CardTitle className="text-4xl font-bold tracking-tight">
           {status === 'loading' && 'Verifying Email...'}
           {status === 'success' && 'Email Verified!'}
           {status === 'error' && 'Verification Failed'}
           {status === 'no-token' && 'Invalid Link'}
         </CardTitle>
-        <CardDescription className="text-lg text-neutral-400">
+        <CardDescription className="text-2xl text-neutral-400">
           {status === 'loading' && 'Please wait while we verify your email address'}
           {status === 'success' && 'Your email has been successfully verified'}
           {status === 'error' && 'We could not verify your email address'}
@@ -91,37 +91,37 @@ export default function VerifyEmailPage() {
       <CardContent className="space-y-6">
         <div className="flex flex-col items-center justify-center py-8 space-y-4">
           {status === 'loading' && (
-            <div className="size-16 rounded-full bg-neutral-800/50 flex items-center justify-center">
-              <Loader2 className="size-8 text-neutral-400 animate-spin" />
+            <div className="size-20 rounded-full bg-neutral-800/50 flex items-center justify-center">
+              <Loader2 className="size-10 text-neutral-400 animate-spin" />
             </div>
           )}
 
           {status === 'success' && (
-            <div className="size-16 rounded-full bg-green-500/10 flex items-center justify-center">
-              <CheckCircle2 className="size-8 text-green-500" />
+            <div className="size-20 rounded-full bg-green-500/10 flex items-center justify-center">
+              <CheckCircle2 className="size-10 text-green-500" />
             </div>
           )}
 
           {(status === 'error' || status === 'no-token') && (
-            <div className="size-16 rounded-full bg-red-500/10 flex items-center justify-center">
-              <XCircle className="size-8 text-red-500" />
+            <div className="size-20 rounded-full bg-red-500/10 flex items-center justify-center">
+              <XCircle className="size-10 text-red-500" />
             </div>
           )}
 
-          <p className="text-center text-lg text-neutral-300 max-w-sm">
+          <p className="text-center text-xl text-neutral-300 max-w-sm">
             {message}
           </p>
         </div>
 
         {status === 'success' && (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {isAuthenticated ? (
               <Button
                 asChild
-                className="w-full h-12 text-lg bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+                className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
               >
                 <Link href="/settings">
-                  <ArrowLeft className="size-5" />
+                  <ArrowLeft className="size-6" />
                   Back to Settings
                 </Link>
               </Button>
@@ -129,7 +129,7 @@ export default function VerifyEmailPage() {
               <>
                 <Button
                   asChild
-                  className="w-full h-12 text-lg bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+                  className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
                 >
                   <Link href="/login">
                     Continue to Login
@@ -138,7 +138,7 @@ export default function VerifyEmailPage() {
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full h-12 text-lg border-neutral-700 hover:bg-neutral-800"
+                  className="w-full h-14 text-xl border-neutral-700 hover:bg-neutral-800"
                 >
                   <Link href="/">
                     Go to Home
@@ -150,28 +150,28 @@ export default function VerifyEmailPage() {
         )}
 
         {(status === 'error' || status === 'no-token') && (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <Button
               onClick={handleResendVerification}
               disabled={isResending}
-              className="w-full h-12 text-lg bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+              className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
             >
               {isResending ? (
                 <>
                   Sending...
-                  <Loader2 className="size-5 animate-spin" />
+                  <Loader2 className="size-6 animate-spin" />
                 </>
               ) : (
                 <>
                   Resend Verification Email
-                  <Mail className="size-5" />
+                  <Mail className="size-6" />
                 </>
               )}
             </Button>
             <Button
               asChild
               variant="outline"
-              className="w-full h-12 text-lg border-neutral-700 hover:bg-neutral-800"
+              className="w-full h-14 text-xl border-neutral-700 hover:bg-neutral-800"
             >
               <Link href="/login">
                 Back to Login

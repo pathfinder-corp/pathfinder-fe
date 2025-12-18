@@ -118,13 +118,13 @@ export default function ResetPasswordPage() {
   if (!token) {
     return (
       <Card className="border-neutral-800 bg-neutral-950/50 backdrop-blur-sm">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-3xl font-bold tracking-tight">
+        <CardHeader className="space-y-2">
+          <CardTitle className="text-4xl font-bold tracking-tight">
             Verifying...
           </CardTitle>
         </CardHeader>
         <CardContent className="flex justify-center py-8">
-          <Loader2 className="size-8 animate-spin text-neutral-400" />
+          <Loader2 className="size-10 animate-spin text-neutral-400" />
         </CardContent>
       </Card>
     );
@@ -132,11 +132,11 @@ export default function ResetPasswordPage() {
 
   return (
     <Card className="border-neutral-800 bg-neutral-950/50 backdrop-blur-sm">
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-3xl font-bold tracking-tight">
+      <CardHeader className="space-y-2">
+        <CardTitle className="text-4xl font-bold tracking-tight">
           {resetSuccess ? 'Success!' : 'Reset password'}
         </CardTitle>
-        <CardDescription className="text-xl text-neutral-400">
+        <CardDescription className="text-2xl text-neutral-400">
           {resetSuccess 
             ? 'Your password has been reset successfully'
             : 'Enter your new password'
@@ -146,9 +146,9 @@ export default function ResetPasswordPage() {
 
       {!resetSuccess ? (
         <form onSubmit={handleSubmit(onSubmit)}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="newPassword" className="text-lg">
+          <CardContent className="space-y-6">
+            <div className="space-y-3">
+              <Label htmlFor="newPassword" className="text-xl">
                 New password <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
@@ -158,7 +158,7 @@ export default function ResetPasswordPage() {
                   placeholder="••••••••"
                   autoComplete="new-password"
                   disabled={isLoading}
-                  className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-12 ${
+                  className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
                     errors.newPassword ? 'border-red-500 focus:border-red-500' : ''
                   }`}
                   {...register('newPassword')}
@@ -166,23 +166,23 @@ export default function ResetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                  className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
                   disabled={isLoading}
                 >
                   {showPassword ? (
-                    <EyeOff className="size-6" />
+                    <EyeOff className="size-7" />
                   ) : (
-                    <Eye className="size-6" />
+                    <Eye className="size-7" />
                   )}
                 </button>
               </div>
               {errors.newPassword && (
-                <p className="text-lg text-red-500">{errors.newPassword.message}</p>
+                <p className="text-xl text-red-500">{errors.newPassword.message}</p>
               )}
               
-              <div className="mt-2 space-y-1">
-                <p className="text-base text-neutral-500">Password must contain:</p>
-                <ul className="text-base text-neutral-500 space-y-1 ml-4">
+              <div className="mt-3 space-y-2">
+                <p className="text-lg text-neutral-500">Password must contain:</p>
+                <ul className="text-lg text-neutral-500 space-y-1 ml-4">
                   <li>• At least 8 characters</li>
                   <li>• At least 1 uppercase letter</li>
                   <li>• At least 1 lowercase letter</li>
@@ -192,8 +192,8 @@ export default function ResetPasswordPage() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-lg">
+            <div className="space-y-3">
+              <Label htmlFor="confirmPassword" className="text-xl">
                 Confirm new password <span className="text-red-500">*</span>
               </Label>
               <div className="relative">
@@ -203,7 +203,7 @@ export default function ResetPasswordPage() {
                   placeholder="••••••••"
                   autoComplete="new-password"
                   disabled={isLoading}
-                  className={`!text-lg h-12 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-12 ${
+                  className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
                     errors.confirmPassword ? 'border-red-500 focus:border-red-500' : ''
                   }`}
                   {...register('confirmPassword')}
@@ -211,39 +211,39 @@ export default function ResetPasswordPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                  className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
                   disabled={isLoading}
                 >
                   {showConfirmPassword ? (
-                    <EyeOff className="size-6" />
+                    <EyeOff className="size-7" />
                   ) : (
-                    <Eye className="size-6" />
+                    <Eye className="size-7" />
                   )}
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="text-lg text-red-500">{errors.confirmPassword.message}</p>
+                <p className="text-xl text-red-500">{errors.confirmPassword.message}</p>
               )}
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-4 mt-6">
+          <CardFooter className="flex flex-col space-y-5 mt-8">
             <Button
               type="submit"
-              className="w-full h-12 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+              className="w-full h-14 text-2xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
               disabled={isLoading}
             >
               {isLoading ? (
                 <>
                   Processing...
-                  <Loader2 className="ml-2 size-6 animate-spin" />
+                  <Loader2 className="ml-2 size-7 animate-spin" />
                 </>
               ) : (
                 'Reset password'
               )}
             </Button>
 
-            <p className="text-center text-lg text-neutral-400">
+            <p className="text-center text-xl text-neutral-400">
               Remember your password?{' '}
               <Link
                 href="/login"
@@ -257,15 +257,15 @@ export default function ResetPasswordPage() {
       ) : (
         <CardContent className="space-y-6">
           <div className="flex flex-col items-center justify-center py-8 space-y-4">
-            <div className="size-16 rounded-full bg-green-500/10 flex items-center justify-center">
-              <CheckCircle2 className="size-8 text-green-500" />
+            <div className="size-20 rounded-full bg-green-500/10 flex items-center justify-center">
+              <CheckCircle2 className="size-10 text-green-500" />
             </div>
             
             <div className="text-center space-y-2">
-              <p className="text-xl text-neutral-300">
+              <p className="text-2xl text-neutral-300">
                 Your password has been reset successfully!
               </p>
-              <p className="text-base text-neutral-400">
+              <p className="text-lg text-neutral-400">
                 You can login with your new password.
               </p>
             </div>
@@ -273,7 +273,7 @@ export default function ResetPasswordPage() {
 
           <Button
             asChild
-            className="w-full h-12 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+            className="w-full h-14 text-2xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
           >
             <Link href="/login">
               Login now

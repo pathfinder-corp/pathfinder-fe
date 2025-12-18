@@ -20,7 +20,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           className="custom-rays"
         />
       </div>
-      <div className="w-full max-w-md z-10">
+      <div className="w-full max-w-lg z-10">
         {children}
       </div>
     </div>

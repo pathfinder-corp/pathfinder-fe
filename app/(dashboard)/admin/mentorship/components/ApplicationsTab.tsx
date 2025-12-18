@@ -144,19 +144,19 @@ export function ApplicationsTab({
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
         <div className="relative flex-1 max-w-xl">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-neutral-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-6 text-neutral-400" />
           <Input
             placeholder="Search by applicant name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-12 text-base bg-neutral-900/50 border-neutral-800"
+            className="pl-14 !h-14 !text-lg bg-neutral-900/50 border-neutral-800"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
             >
-              <X className="size-4" />
+              <X className="size-5" />
             </button>
           )}
         </div>
@@ -165,17 +165,17 @@ export function ApplicationsTab({
           value={statusFilter} 
           onValueChange={(value) => setStatusFilter(value as StatusFilter)}
         >
-          <SelectTrigger className="w-[180px] !h-12 text-base bg-neutral-900/50 border-neutral-800">
+          <SelectTrigger className="w-[200px] !h-14 text-lg bg-neutral-900/50 border-neutral-800">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all" className="text-base">All Status</SelectItem>
-            <SelectItem value="pending" className="text-base">Pending</SelectItem>
-            <SelectItem value="under_review" className="text-base">Under Review</SelectItem>
-            <SelectItem value="flagged" className="text-base">Flagged</SelectItem>
-            <SelectItem value="approved" className="text-base">Approved</SelectItem>
-            <SelectItem value="declined" className="text-base">Declined</SelectItem>
-            <SelectItem value="withdrawn" className="text-base">Withdrawn</SelectItem>
+            <SelectItem value="all" className="text-lg">All Status</SelectItem>
+            <SelectItem value="pending" className="text-lg">Pending</SelectItem>
+            <SelectItem value="under_review" className="text-lg">Under Review</SelectItem>
+            <SelectItem value="flagged" className="text-lg">Flagged</SelectItem>
+            <SelectItem value="approved" className="text-lg">Approved</SelectItem>
+            <SelectItem value="declined" className="text-lg">Declined</SelectItem>
+            <SelectItem value="withdrawn" className="text-lg">Withdrawn</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -184,22 +184,22 @@ export function ApplicationsTab({
         <Table>
           <TableHeader>
             <TableRow className="border-neutral-800 hover:bg-transparent">
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 pl-6 w-[220px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pl-6 w-[220px]">
                 Applicant
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[200px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[200px]">
                 Headline
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[100px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[100px]">
                 Experience
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[140px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[140px]">
                 Status
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[140px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[140px]">
                 Applied
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 pr-6 text-right w-[80px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pr-6 text-right w-[80px]">
                 Actions
               </TableHead>
             </TableRow>
@@ -208,30 +208,30 @@ export function ApplicationsTab({
             {isLoading ? (
               [...Array(10)].map((_, i) => (
                 <TableRow key={i} className="border-neutral-800">
-                  <TableCell className="py-4 pl-6">
+                  <TableCell className="py-5 pl-6">
                     <div className="flex items-center gap-3">
-                      <Skeleton className="size-10 rounded-full bg-neutral-800" />
-                      <div className="space-y-1.5">
-                        <Skeleton className="h-5 w-32 bg-neutral-800" />
-                        <Skeleton className="h-4 w-40 bg-neutral-800" />
+                      <Skeleton className="size-12 rounded-full bg-neutral-800" />
+                      <div className="space-y-2">
+                        <Skeleton className="h-6 w-36 bg-neutral-800" />
+                        <Skeleton className="h-5 w-44 bg-neutral-800" />
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell><Skeleton className="h-5 w-36 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-16 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-7 w-24 rounded-full bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-28 bg-neutral-800" /></TableCell>
-                  <TableCell className="pr-6"><Skeleton className="size-9 rounded-lg bg-neutral-800 ml-auto" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-40 bg-neutral-800" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-20 bg-neutral-800" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-28 rounded-full bg-neutral-800" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-32 bg-neutral-800" /></TableCell>
+                  <TableCell className="pr-6"><Skeleton className="size-10 rounded-lg bg-neutral-800 ml-auto" /></TableCell>
                 </TableRow>
               ))
             ) : applications.length === 0 ? (
               <TableRow className="border-neutral-800 hover:bg-transparent">
                 <TableCell colSpan={6} className="py-16 text-center">
-                  <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
-                    <GraduationCap className="size-8 text-neutral-500" />
+                  <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+                    <GraduationCap className="size-10 text-neutral-500" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">No applications found</h3>
-                  <p className="text-neutral-400">
+                  <h3 className="text-2xl font-semibold mb-2">No applications found</h3>
+                  <p className="text-lg text-neutral-400">
                     {statusFilter !== 'all' ? 'No applications match the selected filter' : 'No mentor applications yet'}
                   </p>
                 </TableCell>
@@ -242,60 +242,60 @@ export function ApplicationsTab({
                   key={application.id} 
                   className="border-neutral-800 hover:bg-neutral-800/30 transition-colors"
                 >
-                  <TableCell className="py-4 pl-6">
+                  <TableCell className="py-5 pl-6">
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      <div className="size-12 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold flex-shrink-0">
                         {application.user?.firstName?.[0] || ''}{application.user?.lastName?.[0] || ''}
                       </div>
                       <div className="min-w-0">
-                        <p className="font-medium text-base text-neutral-100 truncate">
+                        <p className="font-medium text-lg text-neutral-100 truncate">
                           {application.user?.firstName || ''} {application.user?.lastName || ''}
                         </p>
-                        <p className="text-sm text-neutral-400 truncate">
+                        <p className="text-base text-neutral-400 truncate">
                           {application.user?.email || 'N/A'}
                         </p>
                       </div>
                       {application.isFlagged && (
-                        <AlertTriangle className="size-4 text-orange-400 flex-shrink-0" />
+                        <AlertTriangle className="size-5 text-orange-400 flex-shrink-0" />
                       )}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p className="text-base text-neutral-300 truncate max-w-[180px]">
+                    <p className="text-lg text-neutral-300 truncate max-w-[180px]">
                       {application.applicationData?.headline || 'No headline'}
                     </p>
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-base">
+                  <TableCell className="text-neutral-300 text-lg">
                     {application.applicationData?.yearsExperience ?? 0} years
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={application.status} />
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-base">
+                  <TableCell className="text-neutral-300 text-lg">
                     {formatDate(application.createdAt)}
                   </TableCell>
                   <TableCell className="pr-6 text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="size-9">
-                          <MoreVertical className="size-5" />
+                        <Button variant="ghost" size="icon" className="size-10">
+                          <MoreVertical className="size-6" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-52">
+                      <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem 
                           onClick={() => onViewApplication(application)}
-                          className="text-base py-2"
+                          className="text-lg py-3"
                         >
-                          <Eye className="size-4" />
+                          <Eye className="size-5" />
                           View details
                         </DropdownMenuItem>
                         
                         {application.status === 'pending' && (
                           <DropdownMenuItem 
                             onClick={() => handleMarkUnderReview(application)}
-                            className="text-base py-2"
+                            className="text-lg py-3"
                           >
-                            <FileSearch className="size-4" />
+                            <FileSearch className="size-5" />
                             Mark under review
                           </DropdownMenuItem>
                         )}
@@ -303,9 +303,9 @@ export function ApplicationsTab({
                         {application.isFlagged && (
                           <DropdownMenuItem 
                             onClick={() => handleUnflag(application)}
-                            className="text-base py-2 text-orange-500 focus:text-orange-500"
+                            className="text-lg py-3 text-orange-500 focus:text-orange-500"
                           >
-                            <FlagOff className="size-4 text-orange-500" />
+                            <FlagOff className="size-5 text-orange-500" />
                             Unflag application
                           </DropdownMenuItem>
                         )}
@@ -315,16 +315,16 @@ export function ApplicationsTab({
                             <DropdownMenuSeparator />
                             <DropdownMenuItem 
                               onClick={() => onApprove(application)}
-                              className="text-base py-2 text-green-500 focus:text-green-500 dark:hover:bg-green-500/10"
+                              className="text-lg py-3 text-green-500 focus:text-green-500 dark:hover:bg-green-500/10"
                             >
-                              <CheckCircle className="size-4 text-green-500" />
+                              <CheckCircle className="size-5 text-green-500" />
                               Approve
                             </DropdownMenuItem>
                             <DropdownMenuItem 
                               onClick={() => onDecline(application)}
-                              className="text-base py-2 text-red-500 focus:text-red-500 dark:hover:bg-red-500/10"
+                              className="text-lg py-3 text-red-500 focus:text-red-500 dark:hover:bg-red-500/10"
                             >
-                              <XCircle className="size-4 text-red-500" />
+                              <XCircle className="size-5 text-red-500" />
                               Decline
                             </DropdownMenuItem>
                           </>
@@ -339,8 +339,8 @@ export function ApplicationsTab({
         </Table>
 
         {!isLoading && totalApplications > 0 && (
-          <div className="px-6 py-4 border-t border-neutral-800 flex items-center justify-between">
-            <span className="text-base text-neutral-400">
+          <div className="px-6 py-5 border-t border-neutral-800 flex items-center justify-between">
+            <span className="text-lg text-neutral-400">
               Showing {startIndex} to {endIndex} of {totalApplications} application{totalApplications > 1 ? 's' : ''}
             </span>
             

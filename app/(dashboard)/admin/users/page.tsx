@@ -151,11 +151,11 @@ export default function AdminUsersPage() {
 
   const getSortIcon = (field: SortField) => {
     if (sortBy !== field) {
-      return <ArrowUpDown className="size-4 ml-1 opacity-50" />;
+      return <ArrowUpDown className="size-5 ml-2 opacity-50" />;
     }
     return sortOrder === SORT_ORDER.ASC 
-      ? <ArrowUp className="size-4 ml-1" />
-      : <ArrowDown className="size-4 ml-1" />;
+      ? <ArrowUp className="size-5 ml-2" />
+      : <ArrowDown className="size-5 ml-2" />;
   };
 
   useEffect(() => {
@@ -291,29 +291,29 @@ export default function AdminUsersPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-bold mb-2">Users</h1>
-        <p className="text-lg text-neutral-400">
+        <h1 className="text-5xl font-bold mb-3">Users</h1>
+        <p className="text-xl text-neutral-400">
           Manage all users on the platform
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
+      <div className="flex flex-col sm:flex-row gap-5 sm:items-center justify-between">
         <div className="relative flex-1 max-w-xl">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-neutral-400" />
+          <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-6 text-neutral-400" />
           <Input
             placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-12 h-12 text-base bg-neutral-900/50 border-neutral-800"
+            className="pl-14 h-14 !text-lg bg-neutral-900/50 border-neutral-800"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+              className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
             >
-              <X className="size-4" />
+              <X className="size-5" />
             </button>
           )}
         </div>
@@ -322,14 +322,14 @@ export default function AdminUsersPage() {
           value={roleFilter} 
           onValueChange={(value) => setRoleFilter(value as RoleFilter)}
         >
-          <SelectTrigger className="w-[140px] !h-12 text-base bg-neutral-900/50 border-neutral-800">
+          <SelectTrigger className="w-[160px] !h-14 text-lg bg-neutral-900/50 border-neutral-800">
             <SelectValue placeholder="Role" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all" className="text-base">All Roles</SelectItem>
-            <SelectItem value="student" className="text-base">Student</SelectItem>
-            <SelectItem value="mentor" className="text-base">Mentor</SelectItem>
-            <SelectItem value="admin" className="text-base">Admin</SelectItem>
+            <SelectItem value="all" className="text-lg">All Roles</SelectItem>
+            <SelectItem value="student" className="text-lg">Student</SelectItem>
+            <SelectItem value="mentor" className="text-lg">Mentor</SelectItem>
+            <SelectItem value="admin" className="text-lg">Admin</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -339,7 +339,7 @@ export default function AdminUsersPage() {
           <TableHeader>
             <TableRow className="border-neutral-800 hover:bg-transparent">
               <TableHead 
-                className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 pl-6 cursor-pointer hover:text-white transition-colors w-[220px]"
+                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pl-7 cursor-pointer hover:text-white transition-colors w-[240px]"
                 onClick={() => handleSort('firstName')}
               >
                 <div className="flex items-center">
@@ -348,7 +348,7 @@ export default function AdminUsersPage() {
                 </div>
               </TableHead>
               <TableHead 
-                className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 cursor-pointer hover:text-white transition-colors"
+                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors"
                 onClick={() => handleSort('email')}
               >
                 <div className="flex items-center">
@@ -357,7 +357,7 @@ export default function AdminUsersPage() {
                 </div>
               </TableHead>
               <TableHead 
-                className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 cursor-pointer hover:text-white transition-colors w-[100px]"
+                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[120px]"
                 onClick={() => handleSort('role')}
               >
                 <div className="flex items-center">
@@ -366,7 +366,7 @@ export default function AdminUsersPage() {
                 </div>
               </TableHead>
               <TableHead 
-                className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 cursor-pointer hover:text-white transition-colors w-[100px]"
+                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[120px]"
                 onClick={() => handleSort('status')}
               >
                 <div className="flex items-center">
@@ -375,7 +375,7 @@ export default function AdminUsersPage() {
                 </div>
               </TableHead>
               <TableHead 
-                className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 cursor-pointer hover:text-white transition-colors w-[140px]"
+                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[160px]"
                 onClick={() => handleSort('createdAt')}
               >
                 <div className="flex items-center">
@@ -384,7 +384,7 @@ export default function AdminUsersPage() {
                 </div>
               </TableHead>
               <TableHead 
-                className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 cursor-pointer hover:text-white transition-colors w-[140px]"
+                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[160px]"
                 onClick={() => handleSort('lastLoginAt')}
               >
                 <div className="flex items-center">
@@ -392,7 +392,7 @@ export default function AdminUsersPage() {
                   {getSortIcon('lastLoginAt')}
                 </div>
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 pr-6 text-right w-[80px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pr-7 text-right w-[100px]">
                 Actions
               </TableHead>
             </TableRow>

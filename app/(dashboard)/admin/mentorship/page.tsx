@@ -7,6 +7,7 @@ import {
   Network,
   FileText
 } from 'lucide-react';
+import { motion } from 'motion/react';
 import { toast } from 'sonner';
 import { adminService } from '@/services';
 import type { 
@@ -116,10 +117,10 @@ export default function AdminMentorshipPage() {
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-4xl font-bold mb-2">Mentorship Management</h1>
-        <p className="text-lg text-neutral-400">
+        <h1 className="text-5xl font-bold mb-2">Mentorship Management</h1>
+        <p className="text-xl text-neutral-400">
           Review applications, monitor flagged content, and view system logs
         </p>
       </div>
@@ -132,16 +133,19 @@ export default function AdminMentorshipPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`cursor-pointer relative flex items-center gap-2 px-4 py-3 text-base font-medium transition-colors ${
+              className={`cursor-pointer relative flex items-center gap-2 px-5 py-4 text-lg font-medium transition-colors ${
                 isActive
                   ? 'text-white'
                   : 'text-neutral-500 hover:text-neutral-300'
               }`}
             >
-              <Icon className="size-4" />
+              <Icon className="size-5" />
               {tab.label}
               {isActive && (
-                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
+                <motion.span 
+                  layoutId="activeMentorshipTab"
+                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" 
+                />
               )}
             </button>
           );

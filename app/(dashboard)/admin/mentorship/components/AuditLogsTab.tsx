@@ -70,16 +70,16 @@ export function AuditLogsTab() {
         <Table>
           <TableHeader>
             <TableRow className="border-neutral-800 hover:bg-transparent">
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 pl-6 w-[160px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pl-6 w-[160px]">
                 Action
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[200px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[200px]">
                 Entity
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 w-[200px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[200px]">
                 Actor
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-sm uppercase tracking-wider py-4 pr-6 w-[180px]">
+              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pr-6 w-[180px]">
                 Date
               </TableHead>
             </TableRow>
@@ -88,48 +88,48 @@ export function AuditLogsTab() {
             {isLoading ? (
               [...Array(10)].map((_, i) => (
                 <TableRow key={i} className="border-neutral-800">
-                  <TableCell className="py-4 pl-6">
-                    <Skeleton className="h-6 w-24 bg-neutral-800 rounded-full" />
+                  <TableCell className="py-5 pl-6">
+                    <Skeleton className="h-7 w-28 bg-neutral-800 rounded-full" />
                   </TableCell>
-                  <TableCell><Skeleton className="h-5 w-40 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-32 bg-neutral-800" /></TableCell>
-                  <TableCell className="pr-6"><Skeleton className="h-5 w-36 bg-neutral-800" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-44 bg-neutral-800" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-36 bg-neutral-800" /></TableCell>
+                  <TableCell className="pr-6"><Skeleton className="h-6 w-40 bg-neutral-800" /></TableCell>
                 </TableRow>
               ))
             ) : auditLogs.length === 0 ? (
               <TableRow className="border-neutral-800 hover:bg-transparent">
                 <TableCell colSpan={4} className="py-16 text-center">
-                  <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
-                    <FileText className="size-8 text-neutral-500" />
+                  <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+                    <FileText className="size-10 text-neutral-500" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">No audit logs</h3>
-                  <p className="text-neutral-400">Activity logs will appear here</p>
+                  <h3 className="text-2xl font-semibold mb-2">No audit logs</h3>
+                  <p className="text-lg text-neutral-400">Activity logs will appear here</p>
                 </TableCell>
               </TableRow>
             ) : (
               auditLogs.map((log) => (
                 <TableRow key={log.id} className="border-neutral-800 hover:bg-neutral-800/30 transition-colors">
-                  <TableCell className="py-4 pl-6">
-                    <Badge variant="outline" className="px-3 py-2 uppercase bg-neutral-800/50 text-neutral-300 border-neutral-700">
+                  <TableCell className="py-5 pl-6">
+                    <Badge variant="outline" className="px-4 py-2 text-base uppercase bg-neutral-800/50 text-neutral-300 border-neutral-700">
                       {log.action || 'N/A'}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="text-neutral-300 text-base">{log.entityType || 'N/A'}</span>
-                    <span className="text-neutral-500 text-sm ml-2">
+                    <span className="text-neutral-300 text-lg">{log.entityType || 'N/A'}</span>
+                    <span className="text-neutral-500 text-base ml-2">
                       #{log.entityId?.substring(0, 8) || 'N/A'}
                     </span>
                   </TableCell>
                   <TableCell>
                     {log.actor ? (
-                      <span className="text-neutral-300 text-base">
+                      <span className="text-neutral-300 text-lg">
                         {log.actor.firstName} {log.actor.lastName}
                       </span>
                     ) : (
-                      <span className="text-neutral-500 text-base">System</span>
+                      <span className="text-neutral-500 text-lg">System</span>
                     )}
                   </TableCell>
-                  <TableCell className="pr-6 text-neutral-400 text-base">
+                  <TableCell className="pr-6 text-neutral-400 text-lg">
                     {formatDateTime(log.createdAt)}
                   </TableCell>
                 </TableRow>
@@ -139,8 +139,8 @@ export function AuditLogsTab() {
         </Table>
 
         {!isLoading && totalLogs > 0 && (
-          <div className="px-6 py-4 border-t border-neutral-800 flex items-center justify-between">
-            <span className="text-base text-neutral-400">
+          <div className="px-6 py-5 border-t border-neutral-800 flex items-center justify-between">
+            <span className="text-lg text-neutral-400">
               Showing {startIndex} to {endIndex} of {totalLogs} log{totalLogs > 1 ? 's' : ''}
             </span>
             
