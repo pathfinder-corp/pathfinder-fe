@@ -91,6 +91,8 @@ export default function MessagesPage() {
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const joinedConversationsRef = useRef<Set<string>>(new Set());
   const selectedConversationIdRef = useRef<string | null>(null);
+  const shouldScrollRef = useRef<boolean>(true);
+  const prevMessagesLengthRef = useRef<number>(0);
 
   const currentUserId = user?.id;
 
@@ -140,8 +142,11 @@ export default function MessagesPage() {
   const fetchMessages = useCallback(async (conversationId: string, cursor?: string) => {
     try {
       if (cursor) {
+        shouldScrollRef.current = false;
         setIsLoadingMore(true);
       } else {
+        shouldScrollRef.current = true;
+        prevMessagesLengthRef.current = 0;
         setIsLoadingMessages(true);
         setMessages([]);
       }
@@ -152,9 +157,13 @@ export default function MessagesPage() {
       });
       
       if (cursor) {
-        setMessages(prev => [...data.messages.reverse(), ...prev]);
+        setMessages(prev => [...data.messages, ...prev]);
+        prevMessagesLengthRef.current += data.messages.length;
       } else {
-        setMessages(data.messages.reverse());
+        setMessages(data.messages);
+        requestAnimationFrame(() => {
+          messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
+        });
       }
       
       setHasMore(data.hasMore);
@@ -165,6 +174,7 @@ export default function MessagesPage() {
     } finally {
       setIsLoadingMessages(false);
       setIsLoadingMore(false);
+      shouldScrollRef.current = true;
     }
   }, []);
 
@@ -325,7 +335,16 @@ export default function MessagesPage() {
   }, [currentUserId, selectedConversation?.id]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const currentLength = messages.length;
+    const prevLength = prevMessagesLengthRef.current;
+    
+    if (currentLength > prevLength && shouldScrollRef.current) {
+      requestAnimationFrame(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+    
+    prevMessagesLengthRef.current = currentLength;
   }, [messages]);
 
   useEffect(() => {
@@ -334,13 +353,14 @@ export default function MessagesPage() {
     const pollInterval = setInterval(async () => {
       try {
         const data = await chatService.getMessages(selectedConversation.id, { limit: 10 });
-        const newMessages = data.messages.reverse();
+        const newMessages = data.messages;
         
         setMessages(prev => {
-          const lastPrevId = prev[prev.length - 1]?.id;
           const hasNewMessages = newMessages.some(m => !prev.some(p => p.id === m.id));
           
           if (hasNewMessages) {
+            shouldScrollRef.current = true;
+            
             const merged = [...prev];
             for (const msg of newMessages) {
               if (!merged.some(m => m.id === msg.id)) {
@@ -352,8 +372,7 @@ export default function MessagesPage() {
           }
           return prev;
         });
-      } catch (error) {
-      }
+      } catch {}
     }, 3000);
 
     return () => clearInterval(pollInterval);
@@ -424,6 +443,8 @@ export default function MessagesPage() {
     socketService.sendTyping(selectedConversation.id, false);
 
     try {
+      shouldScrollRef.current = true;
+      
       const message = await chatService.sendMessage(selectedConversation.id, {
         content,
         parentMessageId: replyingTo?.id,
@@ -781,147 +802,140 @@ export default function MessagesPage() {
                   <div className="space-y-4">
                     {messages.map((message, index) => {
                       const isOwn = message.senderId === currentUserId;
-                      const showAvatar = index === 0 || 
-                        messages[index - 1].senderId !== message.senderId;
+                      const showAvatar = index === messages.length - 1 || 
+                        messages[index + 1]?.senderId !== message.senderId;
                       const other = getOtherParticipant(selectedConversation);
                       
                       return (
-                        <div
-                          key={message.id}
-                          className={`flex gap-3 ${isOwn ? 'justify-end' : 'justify-start'} group`}
-                        >
-                          {!isOwn && (
-                            <div className="flex-shrink-0 w-9">
-                              {showAvatar && other && (
-                                other.avatar ? (
-                                  <div className="relative size-9 rounded-full overflow-hidden">
-                                    <Image
-                                      src={other.avatar}
-                                      alt={`${other.firstName} ${other.lastName}`}
-                                      fill
-                                      className="object-cover"
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className="size-9 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-xs font-bold">
-                                    {other.firstName[0]}{other.lastName[0]}
-                                  </div>
-                                )
-                              )}
-                            </div>
-                          )}
-
-                          <div className={`max-w-[65%] ${isOwn ? 'order-first' : ''}`}>
-                            {message.parentMessage && (
-                              <div className={`text-xs text-neutral-500 mb-1 px-3 py-1.5 rounded-lg bg-neutral-800/50 ${isOwn ? 'ml-auto' : ''} max-w-fit`}>
-                                <span className="font-medium">
-                                  {typeof message.parentMessage === 'object' 
-                                    ? `${message.parentMessage.sender?.firstName || 'User'}`
-                                    : 'Reply'}
-                                </span>
-                                <p className="truncate">
-                                  {typeof message.parentMessage === 'object' 
-                                    ? message.parentMessage.content 
-                                    : message.parentMessage}
-                                </p>
-                              </div>
-                            )}
-                            
-                            <div className="relative">
-                              <div
-                                className={`px-4 py-3 rounded-2xl ${
-                                  message.isDeleted
-                                    ? 'bg-neutral-800/50 text-neutral-500 italic'
-                                    : isOwn
-                                      ? 'bg-white text-neutral-900 rounded-br-md'
-                                      : 'bg-neutral-800 text-neutral-100 rounded-bl-md'
-                                }`}
-                              >
-                                <p className="text-base leading-relaxed whitespace-pre-wrap">
-                                  {message.content}
-                                </p>
-                              </div>
-                              
-                              {isOwn && !message.isDeleted && (
-                                <div className="absolute -left-20 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="size-8 text-neutral-400 hover:text-white"
-                                    onClick={() => {
-                                      setEditingMessage(message);
-                                      setEditContent(message.content);
-                                      setIsEditDialogOpen(true);
-                                    }}
-                                  >
-                                    <Edit2 className="size-3.5" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="size-8 text-neutral-400 hover:text-red-500"
-                                    onClick={() => {
-                                      setDeletingMessage(message);
-                                      setIsDeleteDialogOpen(true);
-                                    }}
-                                  >
-                                    <Trash2 className="size-3.5" />
-                                  </Button>
-                                </div>
-                              )}
-                              
-                              {!isOwn && !message.isDeleted && (
-                                <div className="absolute -right-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="size-8 text-neutral-400 hover:text-white"
-                                    onClick={() => setReplyingTo(message)}
-                                  >
-                                    <Reply className="size-3.5" />
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                            
-                            <div className={`flex items-center gap-1.5 mt-1.5 ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                              <span className="text-sm text-neutral-500">
-                                {formatMessageTime(message.createdAt)}
-                              </span>
-                              {message.isEdited && (
-                                <span className="text-xs text-neutral-500">(edited)</span>
-                              )}
-                              {isOwn && !message.isDeleted && getStatusIcon(message)}
-                            </div>
-                          </div>
-
-                          {isOwn && (
+                        <div key={message.id} className="group">
+                          <div className={`flex gap-3 items-end ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
                             <div className="flex-shrink-0 w-9">
                               {showAvatar && (
-                                user?.avatar ? (
-                                  <div className="relative size-9 rounded-full overflow-hidden">
-                                    <Image
-                                      src={user.avatar}
-                                      alt={`${user.firstName} ${user.lastName}`}
-                                      fill
-                                      className="object-cover"
-                                    />
-                                  </div>
-                                ) : (
-                                  <div className="size-9 rounded-full bg-white text-neutral-900 flex items-center justify-center text-xs font-bold">
-                                    {user?.firstName[0]}{user?.lastName[0]}
-                                  </div>
+                                isOwn ? (
+                                  user?.avatar ? (
+                                    <div className="relative size-9 rounded-full overflow-hidden">
+                                      <Image
+                                        src={user.avatar}
+                                        alt={`${user.firstName} ${user.lastName}`}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div className="size-9 rounded-full bg-white text-neutral-900 flex items-center justify-center text-xs font-bold">
+                                      {user?.firstName[0]}{user?.lastName[0]}
+                                    </div>
+                                  )
+                                ) : other && (
+                                  other.avatar ? (
+                                    <div className="relative size-9 rounded-full overflow-hidden">
+                                      <Image
+                                        src={other.avatar}
+                                        alt={`${other.firstName} ${other.lastName}`}
+                                        fill
+                                        className="object-cover"
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div className="size-9 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-xs font-bold">
+                                      {other.firstName[0]}{other.lastName[0]}
+                                    </div>
+                                  )
                                 )
                               )}
                             </div>
-                          )}
+
+                            <div className="max-w-[65%]">
+                              {message.parentMessage && (
+                                <div className={`text-xs text-neutral-500 mb-1 px-3 py-1.5 rounded-lg bg-neutral-800/50 ${isOwn ? 'ml-auto' : ''} max-w-fit`}>
+                                  <span className="font-medium">
+                                    {typeof message.parentMessage === 'object' 
+                                      ? `${message.parentMessage.sender?.firstName || 'User'}`
+                                      : 'Reply'}
+                                  </span>
+                                  <p className="truncate">
+                                    {typeof message.parentMessage === 'object' 
+                                      ? message.parentMessage.content 
+                                      : message.parentMessage}
+                                  </p>
+                                </div>
+                              )}
+                              
+                              <div className="relative">
+                                <div
+                                  className={`px-4 py-3 rounded-2xl ${
+                                    message.isDeleted
+                                      ? 'bg-neutral-800/50 text-neutral-500 italic'
+                                      : isOwn
+                                        ? 'bg-white text-neutral-900 rounded-br-md'
+                                        : 'bg-neutral-800 text-neutral-100 rounded-bl-md'
+                                  }`}
+                                >
+                                  <p className="text-base leading-relaxed whitespace-pre-wrap">
+                                    {message.content}
+                                  </p>
+                                </div>
+                                
+                                {isOwn && !message.isDeleted && (
+                                  <div className="absolute -left-20 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="size-8 text-neutral-400 hover:text-white"
+                                      onClick={() => {
+                                        setEditingMessage(message);
+                                        setEditContent(message.content);
+                                        setIsEditDialogOpen(true);
+                                      }}
+                                    >
+                                      <Edit2 className="size-3.5" />
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="size-8 text-neutral-400 hover:text-red-500"
+                                      onClick={() => {
+                                        setDeletingMessage(message);
+                                        setIsDeleteDialogOpen(true);
+                                      }}
+                                    >
+                                      <Trash2 className="size-3.5" />
+                                    </Button>
+                                  </div>
+                                )}
+                                
+                                {!isOwn && !message.isDeleted && (
+                                  <div className="absolute -right-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="size-8 text-neutral-400 hover:text-white"
+                                      onClick={() => setReplyingTo(message)}
+                                    >
+                                      <Reply className="size-3.5" />
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className={`flex items-center gap-1.5 mt-1.5 ${isOwn ? 'justify-end mr-12' : 'justify-start ml-12'}`}>
+                            <span className="text-sm text-neutral-500">
+                              {formatMessageTime(message.createdAt)}
+                            </span>
+                            {message.isEdited && (
+                              <span className="text-xs text-neutral-500">(edited)</span>
+                            )}
+                            {isOwn && !message.isDeleted && getStatusIcon(message)}
+                          </div>
                         </div>
                       );
                     })}
                     
                     {isOtherTyping && (
-                      <div className="flex gap-3 justify-start">
-                        <div className="flex-shrink-0 w-9">
+                      <div className="flex gap-3 flex-row">
+                        <div className="flex-shrink-0 w-9 flex items-end">
                           {(() => {
                             const other = getOtherParticipant(selectedConversation);
                             if (!other) return null;
