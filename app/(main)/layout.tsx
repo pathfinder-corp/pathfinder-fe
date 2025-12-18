@@ -172,17 +172,17 @@ export default function MainLayout({
       </header>
 
       {shouldShowSidebar && (
-        <aside className="hidden lg:block fixed left-0 top-24 bottom-0 w-[20rem] border-r border-neutral-800 bg-neutral-950/50 backdrop-blur-sm overflow-y-auto">
-          <nav className="p-5">
+        <aside className="hidden lg:block fixed left-0 top-24 bottom-0 w-[22rem] border-r border-neutral-800 bg-neutral-950/50 backdrop-blur-sm overflow-y-auto">
+          <nav className="p-6">
             {navSections.map((section, index) => (
               <div key={section.title}>
                 {index > 0 && (
-                  <div className="my-5 mx-3 border-t border-neutral-800" />
+                  <div className="my-6 mx-4 border-t border-neutral-800" />
                 )}
-                <h3 className="px-5 mb-4 text-base font-semibold text-neutral-500 uppercase tracking-wider">
+                <h3 className="px-6 mb-5 text-lg font-semibold text-neutral-500 uppercase tracking-wider">
                   {section.title}
                 </h3>
-                <div className="space-y-1.5">
+                <div className="space-y-2">
                   {section.items.map((item) => {
                     const Icon = item.icon;
                     const isActive = isItemActive(item);
@@ -191,14 +191,14 @@ export default function MainLayout({
                       <Link
                         key={item.href}
                         href={item.href}
-                        className={`flex items-center gap-3 px-5 py-4 rounded-lg transition-all ${
+                        className={`flex items-center gap-4 px-6 py-5 rounded-lg transition-all ${
                           isActive
                             ? 'bg-white text-neutral-950 font-medium'
                             : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                         }`}
                       >
-                        <Icon className="size-6" />
-                        <span className="text-lg">{item.label}</span>
+                        <Icon className="size-7" />
+                        <span className="text-xl">{item.label}</span>
                       </Link>
                     );
                   })}
@@ -215,17 +215,17 @@ export default function MainLayout({
             className="lg:hidden fixed inset-0 bg-black/50 z-40 top-24"
             onClick={() => setIsSidebarOpen(false)}
           />
-          <aside className="lg:hidden fixed left-0 top-24 bottom-0 w-72 border-r border-neutral-800 bg-neutral-950 z-40 overflow-y-auto">
-            <nav className="p-5">
+          <aside className="lg:hidden fixed left-0 top-24 bottom-0 w-80 border-r border-neutral-800 bg-neutral-950 z-40 overflow-y-auto">
+            <nav className="p-6">
               {navSections.map((section, index) => (
                 <div key={section.title}>
                   {index > 0 && (
-                    <div className="my-5 mx-3 border-t border-neutral-800" />
+                    <div className="my-6 mx-4 border-t border-neutral-800" />
                   )}
-                  <h3 className="px-5 mb-4 text-base font-semibold text-neutral-500 uppercase tracking-wider">
+                  <h3 className="px-6 mb-5 text-lg font-semibold text-neutral-500 uppercase tracking-wider">
                     {section.title}
                   </h3>
-                  <div className="space-y-1.5">
+                  <div className="space-y-2">
                     {section.items.map((item) => {
                       const Icon = item.icon;
                       const isActive = isItemActive(item);
@@ -235,14 +235,14 @@ export default function MainLayout({
                           key={item.href}
                           href={item.href}
                           onClick={() => setIsSidebarOpen(false)}
-                          className={`flex items-center gap-3 px-5 py-4 rounded-lg transition-all ${
+                          className={`flex items-center gap-4 px-6 py-5 rounded-lg transition-all ${
                             isActive
                               ? 'bg-white text-neutral-950 font-medium'
                               : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                           }`}
                         >
-                          <Icon className="size-6" />
-                          <span className="text-lg">{item.label}</span>
+                          <Icon className="size-7" />
+                          <span className="text-xl">{item.label}</span>
                         </Link>
                       );
                     })}
@@ -254,7 +254,7 @@ export default function MainLayout({
         </>
       )}
 
-      <main className={`${shouldShowSidebar ? 'lg:ml-[20rem]' : ''} ${isMessagesPage ? 'pt-24' : 'pt-24'} min-h-screen`}>
+      <main className={`${shouldShowSidebar ? 'lg:ml-[22rem]' : ''} ${isMessagesPage ? 'pt-24' : 'pt-24'} min-h-screen`}>
         <div className={`${isMessagesPage ? 'h-[calc(100vh-6rem)]' : 'p-6 lg:p-8'} ${!shouldShowSidebar && !isMessagesPage && !isSettingsPage && !isNotificationsPage ? 'max-w-7xl mx-auto' : ''}`}>
           {children}
         </div>
