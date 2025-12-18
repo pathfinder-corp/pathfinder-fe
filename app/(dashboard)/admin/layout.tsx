@@ -34,27 +34,27 @@ const NAV_ITEMS: NavItem[] = [
   {
     label: 'Overview',
     href: '/admin/dashboard',
-    icon: <LayoutDashboard className="size-6" />
+    icon: <LayoutDashboard className="size-7" />
   },
   {
     label: 'Users',
     href: '/admin/users',
-    icon: <Users className="size-6" />
+    icon: <Users className="size-7" />
   },
   {
     label: 'Roadmaps',
     href: '/admin/roadmaps',
-    icon: <Map className="size-6" />
+    icon: <Map className="size-7" />
   },
   {
     label: 'Assessments',
     href: '/admin/assessments',
-    icon: <ClipboardList className="size-6" />
+    icon: <ClipboardList className="size-7" />
   },
   {
     label: 'Mentorship',
     href: '/admin/mentorship',
-    icon: <Book className="size-6" />
+    icon: <Book className="size-7" />
   }
 ];
 
@@ -107,23 +107,23 @@ export default function AdminLayout({
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-80 border-r border-neutral-800 bg-neutral-950 flex flex-col fixed inset-y-0 left-0">
-        <div className="p-6 border-b border-neutral-800">
+      <aside className="w-[22rem] border-r border-neutral-800 bg-neutral-950 flex flex-col fixed inset-y-0 left-0">
+        <div className="p-7 border-b border-neutral-800">
           <Link 
             href="/" 
-            className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors text-lg"
+            className="flex items-center gap-2.5 text-neutral-400 hover:text-white transition-colors text-xl"
           >
-            <ChevronLeft className="size-6" />
+            <ChevronLeft className="size-7" />
             Back to Home
           </Link>
         </div>
 
-        <div className="p-6 border-b border-neutral-800">
-          <h2 className="text-2xl font-semibold">Admin Panel</h2>
-          <p className="text-lg text-neutral-500">Manage your platform</p>
+        <div className="p-7 border-b border-neutral-800">
+          <h2 className="text-3xl font-semibold">Admin Panel</h2>
+          <p className="text-xl text-neutral-500 mt-1">Manage your platform</p>
         </div>
 
-        <nav className="flex-1 p-5 space-y-2">
+        <nav className="flex-1 p-6 space-y-2.5">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -131,7 +131,7 @@ export default function AdminLayout({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-3 px-5 py-4 rounded-lg text-lg font-medium transition-colors',
+                  'flex items-center gap-4 px-6 py-5 rounded-lg text-xl font-medium transition-colors',
                   isActive 
                     ? 'bg-white text-black' 
                     : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
@@ -144,22 +144,22 @@ export default function AdminLayout({
           })}
         </nav>
 
-        <div className="p-6 border-t border-neutral-800">
-          <div className="flex items-center gap-3">
-            <div className="size-12 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold">
+        <div className="p-7 border-t border-neutral-800">
+          <div className="flex items-center gap-4">
+            <div className="size-14 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold">
               {user.firstName[0]}{user.lastName[0]}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-lg font-medium truncate">
+              <p className="text-xl font-medium truncate">
                 {user.firstName} {user.lastName}
               </p>
-              <p className="text-base text-neutral-500 truncate">{user.email}</p>
+              <p className="text-lg text-neutral-500 truncate">{user.email}</p>
             </div>
           </div>
         </div>
       </aside>
 
-      <main className="flex-1 ml-80 p-8 overflow-auto min-h-screen">
+      <main className="flex-1 ml-[22rem] p-8 overflow-auto min-h-screen">
         <Breadcrumb className="mb-6">
           <BreadcrumbList className="text-xl">
             <BreadcrumbItem>
