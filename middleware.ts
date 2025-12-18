@@ -5,8 +5,9 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('auth-token')?.value;
   const { pathname } = request.nextUrl;
 
-  const publicRoutePrefixes = ['/', '/contact', '/about-ai'];
-  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email'];
+  const publicRoutePrefixes = ['/', '/contact', '/about-ai', '/mentors'];
+  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+  const publicAuthRoutes = ['/verify-email'];
   const adminRoutes = ['/admin'];
   
   const isPublicRoute = publicRoutePrefixes.some(route => {
@@ -17,7 +18,10 @@ export function middleware(request: NextRequest) {
   });
   
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
+  const isPublicAuthRoute = publicAuthRoutes.some(route => pathname.startsWith(route));
   const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
+
+  if (isPublicAuthRoute) return NextResponse.next();
 
   if (!token && !isPublicRoute && !isAuthRoute) {
     const url = new URL('/login', request.url);
@@ -25,9 +29,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (token && isAuthRoute) {
-    return NextResponse.redirect(new URL('/', request.url));
-  }
+  if (token && isAuthRoute) return NextResponse.redirect(new URL('/', request.url));
 
   if (isAdminRoute && !token) {
     const url = new URL('/login', request.url);
