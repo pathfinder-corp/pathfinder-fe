@@ -110,6 +110,26 @@ class SocketService {
       const globalCallbacks = this.readCallbacks.get('*') || [];
       globalCallbacks.forEach(cb => cb(data));
     });
+
+    // Handle typing:start event from backend
+    this.socket.on('typing:start', (data: { conversationId: string; userId: string }) => {
+      const typingData = { ...data, isTyping: true };
+      const callbacks = this.typingCallbacks.get(data.conversationId) || [];
+      callbacks.forEach(cb => cb(typingData));
+      
+      const globalCallbacks = this.typingCallbacks.get('*') || [];
+      globalCallbacks.forEach(cb => cb(typingData));
+    });
+
+    // Handle typing:stop event from backend
+    this.socket.on('typing:stop', (data: { conversationId: string; userId: string }) => {
+      const typingData = { ...data, isTyping: false };
+      const callbacks = this.typingCallbacks.get(data.conversationId) || [];
+      callbacks.forEach(cb => cb(typingData));
+      
+      const globalCallbacks = this.typingCallbacks.get('*') || [];
+      globalCallbacks.forEach(cb => cb(typingData));
+    });
   }
 
   disconnect(): void {

@@ -93,6 +93,7 @@ export default function MessagesPage() {
   const selectedConversationIdRef = useRef<string | null>(null);
   const shouldScrollRef = useRef<boolean>(true);
   const prevMessagesLengthRef = useRef<number>(0);
+  const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const currentUserId = user?.id;
 
@@ -378,19 +379,67 @@ export default function MessagesPage() {
     return () => clearInterval(pollInterval);
   }, [selectedConversation]);
 
-    const handleTyping = useCallback(() => {
+  const startTypingIndicator = useCallback(() => {
     if (!selectedConversation) return;
     
+    // Send initial typing event
     socketService.sendTyping(selectedConversation.id, true);
     
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
+    // Clear any existing interval
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
     }
     
-    typingTimeoutRef.current = setTimeout(() => {
-      socketService.sendTyping(selectedConversation.id, false);
-    }, 2000);
+    // Keep sending typing events every 3 seconds to prevent timeout
+    typingIntervalRef.current = setInterval(() => {
+      if (selectedConversation) {
+        socketService.sendTyping(selectedConversation.id, true);
+      }
+    }, 3000);
   }, [selectedConversation]);
+
+  const stopTypingIndicator = useCallback(() => {
+    if (!selectedConversation) return;
+    
+    // Clear the interval
+    if (typingIntervalRef.current) {
+      clearInterval(typingIntervalRef.current);
+      typingIntervalRef.current = null;
+    }
+    
+    // Clear the old timeout as well
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+      typingTimeoutRef.current = null;
+    }
+    
+    socketService.sendTyping(selectedConversation.id, false);
+  }, [selectedConversation]);
+
+  // Handle input changes - start/stop typing based on content
+  const handleInputChange = useCallback((value: string) => {
+    setMessageInput(value);
+    
+    if (value.trim()) {
+      // Start typing indicator if there's content and not already started
+      if (!typingIntervalRef.current) {
+        startTypingIndicator();
+      }
+    } else {
+      // Stop typing indicator if input is empty
+      stopTypingIndicator();
+    }
+  }, [startTypingIndicator, stopTypingIndicator]);
+
+  // Clean up typing indicator when conversation changes
+  useEffect(() => {
+    return () => {
+      if (typingIntervalRef.current) {
+        clearInterval(typingIntervalRef.current);
+        typingIntervalRef.current = null;
+      }
+    };
+  }, [selectedConversation?.id]);
 
   const getOtherParticipant = (conversation: IChatConversation): IChatParticipant | null => {
     if (conversation.participant1 && conversation.participant1.id !== currentUserId) {
@@ -437,10 +486,8 @@ export default function MessagesPage() {
     setMessageInput('');
     setIsSending(true);
     
-    if (typingTimeoutRef.current) {
-      clearTimeout(typingTimeoutRef.current);
-    }
-    socketService.sendTyping(selectedConversation.id, false);
+    // Stop typing indicator when sending
+    stopTypingIndicator();
 
     try {
       shouldScrollRef.current = true;
@@ -476,7 +523,7 @@ export default function MessagesPage() {
     } finally {
       setIsSending(false);
     }
-  }, [messageInput, selectedConversation, isSending, replyingTo]);
+  }, [messageInput, selectedConversation, isSending, replyingTo, stopTypingIndicator]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -996,11 +1043,14 @@ export default function MessagesPage() {
                   <Input
                     placeholder="Type a message..."
                     value={messageInput}
-                    onChange={(e) => {
-                      setMessageInput(e.target.value);
-                      handleTyping();
-                    }}
+                    onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyPress}
+                    onBlur={() => {
+                      // Stop typing when input loses focus and is empty
+                      if (!messageInput.trim()) {
+                        stopTypingIndicator();
+                      }
+                    }}
                     className="!h-14 pr-12 bg-neutral-800/50 border-neutral-700 !text-lg"
                     disabled={isSending}
                   />
