@@ -6,11 +6,7 @@ import {
   GraduationCap, 
   Loader2, 
   Plus, 
-  Clock, 
   CheckCircle, 
-  XCircle, 
-  FileSearch,
-  AlertTriangle,
   Trash2,
   ExternalLink,
   Linkedin,
@@ -38,14 +34,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function MyApplicationsPage() {
   const router = useRouter();
@@ -53,8 +41,6 @@ export default function MyApplicationsPage() {
   
   const [applications, setApplications] = useState<IMentorApplication[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [selectedApplication, setSelectedApplication] = useState<IMentorApplication | null>(null);
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState<boolean>(false);
   const [applicationToWithdraw, setApplicationToWithdraw] = useState<IMentorApplication | null>(null);
   const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
@@ -136,23 +122,6 @@ export default function MyApplicationsPage() {
     }
   };
 
-  const getStatusIcon = (status: MentorApplicationStatus) => {
-    switch (status) {
-      case 'approved':
-        return <CheckCircle className="size-4" />;
-      case 'declined':
-        return <XCircle className="size-4" />;
-      case 'pending':
-        return <Clock className="size-4" />;
-      case 'under_review':
-        return <FileSearch className="size-4" />;
-      case 'flagged':
-        return <AlertTriangle className="size-4" />;
-      default:
-        return null;
-    }
-  };
-
   const formatStatus = (status: MentorApplicationStatus) => {
     switch (status) {
       case 'under_review':
@@ -169,7 +138,7 @@ export default function MyApplicationsPage() {
   if (isLoading) {
     return (
       <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-        <h1 className="text-5xl font-bold mb-6">My Applications</h1>
+        <h1 className="text-5xl font-bold mb-6">My Application</h1>
         <p className="text-xl text-neutral-500 mb-8">Track the status of your mentor applications</p>
         <div className="w-[58rem] space-y-4">
           {[...Array(3)].map((_, i) => (
@@ -191,7 +160,7 @@ export default function MyApplicationsPage() {
 
   return (
     <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-      <h1 className="text-5xl font-bold mb-6">My Applications</h1>
+      <h1 className="text-5xl font-bold mb-6">My Application</h1>
       <p className="text-xl text-neutral-500 mb-8">Track the status of your mentor applications</p>
 
       {applications.length === 0 ? (
@@ -199,9 +168,9 @@ export default function MyApplicationsPage() {
           <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-6">
             <GraduationCap className="size-10 text-neutral-500" />
           </div>
-          <h2 className="text-2xl font-semibold mb-3">No applications yet</h2>
+          <h2 className="text-2xl font-semibold mb-3">No application yet</h2>
           <p className="text-lg text-neutral-400 mb-8">
-            You haven&apos;t submitted any mentor applications. Start your journey to become a mentor today!
+            You haven&apos;t submitted any mentor application. Start your journey to become a mentor today!
           </p>
           <Button 
             onClick={() => router.push('/mentor')}
@@ -212,165 +181,67 @@ export default function MyApplicationsPage() {
           </Button>
         </div>
       ) : (
-        <div className="w-[58rem] space-y-4">
+        <div className="w-[58rem]">
           {applications.map((application) => (
             <div 
               key={application.id}
-              className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6 hover:bg-neutral-900/70 transition-colors"
+              className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden"
             >
-              <div className="flex items-start gap-4">
-                <div className="size-14 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold flex-shrink-0">
-                  <GraduationCap className="size-7 text-neutral-300" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-xl font-semibold mb-1 truncate">
-                    {application.applicationData?.headline || 'Mentor Application'}
-                  </h3>
-                  <p className="text-base text-neutral-400">
-                    Submitted on {formatDate(application.createdAt)}
-                  </p>
-                  {application.applicationData?.expertise && application.applicationData.expertise.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {application.applicationData.expertise.slice(0, 3).map((exp, i) => (
-                        <Badge key={i} variant="outline" className="py-1 px-2 text-sm bg-neutral-800/50">
-                          {exp}
-                        </Badge>
-                      ))}
-                      {application.applicationData.expertise.length > 3 && (
-                        <Badge variant="outline" className="py-1 px-2 text-sm bg-neutral-800/50">
-                          +{application.applicationData.expertise.length - 3} more
-                        </Badge>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <div className="flex flex-col items-end gap-3">
-                  <Badge 
-                    variant="outline" 
-                    className={`py-1.5 px-3 text-sm flex items-center gap-1.5 ${getStatusBadgeColor(application.status)}`}
-                  >
-                    {getStatusIcon(application.status)}
-                    {formatStatus(application.status)}
-                  </Badge>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedApplication(application);
-                        setIsViewDialogOpen(true);
-                      }}
-                    >
-                      View Details
-                    </Button>
-                    {canWithdraw(application.status) && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10"
-                        onClick={() => {
-                          setApplicationToWithdraw(application);
-                          setIsWithdrawDialogOpen(true);
-                        }}
+              <div className="p-6 border-b border-neutral-800">
+                <div className="flex items-start gap-4">
+                  <div className="size-16 rounded-xl bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold flex-shrink-0">
+                    <GraduationCap className="size-8 text-neutral-300" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 className="text-2xl font-semibold mb-1">
+                          {application.applicationData?.headline || 'Mentor Application'}
+                        </h3>
+                        <p className="text-base text-neutral-400">
+                          Submitted on {formatDate(application.createdAt)}
+                        </p>
+                      </div>
+                      <Badge 
+                        variant="outline" 
+                        className={`py-2 px-4 text-base flex items-center ${getStatusBadgeColor(application.status)}`}
                       >
-                        <Trash2 className="size-4" />
-                      </Button>
-                    )}
+                        {formatStatus(application.status)}
+                      </Badge>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              {application.status === 'declined' && application.declineReason && (
-                <div className="mt-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-                  <p className="text-sm font-medium text-red-400 mb-1">Decline Reason:</p>
-                  <p className="text-base text-neutral-300">{application.declineReason}</p>
-                </div>
-              )}
-
-              {application.status === 'approved' && (
-                <div className="mt-4 p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
-                  <p className="text-base text-green-400 flex items-center gap-2">
-                    <CheckCircle className="size-5" />
-                    Congratulations! Your application has been approved. You are now a mentor!
-                  </p>
-                </div>
-              )}
-            </div>
-          ))}
-
-          {!applications.some(app => ['pending', 'under_review', 'flagged'].includes(app.status)) && (
-            <div className="text-center pt-6">
-              <Button 
-                onClick={() => router.push('/mentor')}
-                className="!h-12 !text-[1.15rem] !px-6"
-              >
-                Submit New Application
-                <Plus className="size-6" />
-              </Button>
-            </div>
-          )}
-        </div>
-      )}
-
-      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] p-0">
-          <DialogHeader className="p-6 pb-4 border-b border-neutral-800">
-            <DialogTitle className="text-xl">Application Details</DialogTitle>
-            <DialogDescription>
-              View your mentor application information
-            </DialogDescription>
-          </DialogHeader>
-          
-          {selectedApplication && (
-            <ScrollArea className="max-h-[calc(90vh-120px)]">
               <div className="p-6 space-y-6">
-                <div className="flex items-start gap-4">
-                  <div className="size-14 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold flex-shrink-0">
-                    <GraduationCap className="size-7 text-neutral-300" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xl font-semibold">
-                      {selectedApplication.applicationData?.headline || 'No headline'}
-                    </p>
-                    <p className="text-base text-neutral-400 mt-1">
-                      {selectedApplication.applicationData?.yearsExperience || 0} years of experience
+                {application.applicationData?.bio && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-2">Bio</h4>
+                    <p className="text-base text-neutral-300 leading-relaxed">
+                      {application.applicationData.bio}
                     </p>
                   </div>
-                  <Badge 
-                    variant="outline" 
-                    className={`py-1.5 px-3 text-sm flex items-center gap-1.5 ${getStatusBadgeColor(selectedApplication.status)}`}
-                  >
-                    {getStatusIcon(selectedApplication.status)}
-                    {formatStatus(selectedApplication.status)}
-                  </Badge>
-                </div>
+                )}
+
+                {application.applicationData?.motivation && (
+                  <div>
+                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-2">Motivation</h4>
+                    <p className="text-base text-neutral-300 leading-relaxed">
+                      {application.applicationData.motivation}
+                    </p>
+                  </div>
+                )}
 
                 <Separator className="bg-neutral-800" />
 
-                <div>
-                  <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-2">Bio</h4>
-                  <p className="text-base text-neutral-300 leading-relaxed">
-                    {selectedApplication.applicationData?.bio || 'No bio provided'}
-                  </p>
-                </div>
-
-                <div>
-                  <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-2">Motivation</h4>
-                  <p className="text-base text-neutral-300 leading-relaxed">
-                    {selectedApplication.applicationData?.motivation || 'No motivation provided'}
-                  </p>
-                </div>
-
-                <Separator className="bg-neutral-800" />
-
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
                   <div>
                     <div className="flex items-center gap-2 text-neutral-400 mb-1">
                       <Briefcase className="size-4" />
                       <span className="text-sm">Experience</span>
                     </div>
                     <p className="text-lg font-semibold">
-                      {selectedApplication.applicationData?.yearsExperience || 0} years
+                      {application.applicationData?.yearsExperience || 0} years
                     </p>
                   </div>
                   <div>
@@ -379,7 +250,7 @@ export default function MyApplicationsPage() {
                       <span className="text-sm">Languages</span>
                     </div>
                     <p className="text-base">
-                      {selectedApplication.applicationData?.languages?.join(', ') || 'N/A'}
+                      {application.applicationData?.languages?.join(', ') || 'N/A'}
                     </p>
                   </div>
                   <div>
@@ -387,37 +258,37 @@ export default function MyApplicationsPage() {
                       <Calendar className="size-4" />
                       <span className="text-sm">Submitted</span>
                     </div>
-                    <p className="text-base">{formatDateTime(selectedApplication.createdAt)}</p>
+                    <p className="text-base">{formatDateTime(application.createdAt)}</p>
                   </div>
-                  {selectedApplication.decidedAt && (
+                  {application.decidedAt && (
                     <div>
                       <div className="flex items-center gap-2 text-neutral-400 mb-1">
                         <CheckCircle className="size-4" />
                         <span className="text-sm">Decided</span>
                       </div>
-                      <p className="text-base">{formatDateTime(selectedApplication.decidedAt)}</p>
+                      <p className="text-base">{formatDateTime(application.decidedAt)}</p>
                     </div>
                   )}
                 </div>
 
-                {(selectedApplication.applicationData?.expertise?.length ?? 0) > 0 && (
+                {application.applicationData?.expertise && application.applicationData.expertise.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-2">Expertise</h4>
+                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-3">Expertise</h4>
                     <div className="flex flex-wrap gap-2">
-                      {selectedApplication.applicationData?.expertise?.map((item, i) => (
+                      {application.applicationData.expertise.map((exp, i) => (
                         <Badge key={i} variant="outline" className="py-1.5 px-3 text-sm bg-neutral-800/50">
-                          {item}
+                          {exp}
                         </Badge>
                       ))}
                     </div>
                   </div>
                 )}
 
-                {(selectedApplication.applicationData?.skills?.length ?? 0) > 0 && (
+                {application.applicationData?.skills && application.applicationData.skills.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-2">Skills</h4>
+                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-3">Skills</h4>
                     <div className="flex flex-wrap gap-2">
-                      {selectedApplication.applicationData?.skills?.map((skill, i) => (
+                      {application.applicationData.skills.map((skill, i) => (
                         <Badge key={i} variant="outline" className="py-1.5 px-3 text-sm bg-neutral-800/50">
                           {skill}
                         </Badge>
@@ -426,11 +297,11 @@ export default function MyApplicationsPage() {
                   </div>
                 )}
 
-                {(selectedApplication.applicationData?.industries?.length ?? 0) > 0 && (
+                {application.applicationData?.industries && application.applicationData.industries.length > 0 && (
                   <div>
-                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-2">Industries</h4>
+                    <h4 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-3">Industries</h4>
                     <div className="flex flex-wrap gap-2">
-                      {selectedApplication.applicationData?.industries?.map((industry, i) => (
+                      {application.applicationData.industries.map((industry, i) => (
                         <Badge key={i} variant="outline" className="py-1.5 px-3 text-sm bg-neutral-800/50">
                           {industry}
                         </Badge>
@@ -439,46 +310,99 @@ export default function MyApplicationsPage() {
                   </div>
                 )}
 
-                <div className="flex items-center gap-4">
-                  {selectedApplication.applicationData?.linkedinUrl && (
-                    <a 
-                      href={selectedApplication.applicationData.linkedinUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-base text-blue-400 hover:text-blue-300 transition-colors"
-                    >
-                      <Linkedin className="size-5" />
-                      LinkedIn Profile
-                      <ExternalLink className="size-4" />
-                    </a>
-                  )}
-                  {selectedApplication.applicationData?.portfolioUrl && (
-                    <a 
-                      href={selectedApplication.applicationData.portfolioUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-2 text-base text-purple-400 hover:text-purple-300 transition-colors"
-                    >
-                      <Globe className="size-5" />
-                      Portfolio
-                      <ExternalLink className="size-4" />
-                    </a>
-                  )}
-                </div>
+                {(application.applicationData?.linkedinUrl || application.applicationData?.portfolioUrl) && (
+                  <div className="flex items-center gap-4">
+                    {application.applicationData?.linkedinUrl && (
+                      <a 
+                        href={application.applicationData.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-base text-blue-400 hover:text-blue-300 transition-colors"
+                      >
+                        <Linkedin className="size-5" />
+                        LinkedIn Profile
+                        <ExternalLink className="size-4" />
+                      </a>
+                    )}
+                    {application.applicationData?.portfolioUrl && (
+                      <a 
+                        href={application.applicationData.portfolioUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-base text-purple-400 hover:text-purple-300 transition-colors"
+                      >
+                        <Globe className="size-5" />
+                        Portfolio
+                        <ExternalLink className="size-4" />
+                      </a>
+                    )}
+                  </div>
+                )}
 
-                {selectedApplication.status === 'declined' && selectedApplication.declineReason && (
-                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-                    <h4 className="text-sm font-semibold text-red-400 uppercase tracking-wider mb-2">
-                      Decline Reason
-                    </h4>
-                    <p className="text-base text-neutral-300">{selectedApplication.declineReason}</p>
+                {application.status === 'declined' && application.declineReason && (
+                  <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
+                    <p className="text-sm font-medium text-red-400 mb-1">Decline Reason:</p>
+                    <p className="text-base text-neutral-300">{application.declineReason}</p>
+                  </div>
+                )}
+
+                {application.status === 'approved' && (
+                  <div className="p-4 bg-green-500/10 border border-green-500/30 rounded-lg">
+                    <p className="text-base text-green-400 flex items-center gap-2">
+                      <CheckCircle className="size-5" />
+                      Congratulations! Your application has been approved. You are now a mentor!
+                    </p>
                   </div>
                 )}
               </div>
-            </ScrollArea>
-          )}
-        </DialogContent>
-      </Dialog>
+
+              <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-neutral-500">
+                    {canWithdraw(application.status) 
+                      ? 'You can withdraw this application if you want to submit a new one'
+                      : application.status === 'approved' 
+                        ? 'Visit your mentor profile to start accepting mentees'
+                        : 'This application has been processed'}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    {application.status === 'approved' && (
+                      <Button
+                        onClick={() => router.push('/mentor/profile')}
+                        className="!h-11 text-base"
+                      >
+                        Go to Mentor Profile
+                      </Button>
+                    )}
+                    {canWithdraw(application.status) && (
+                      <Button
+                        variant="outline"
+                        className="dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10 !h-11"
+                        onClick={() => {
+                          setApplicationToWithdraw(application);
+                          setIsWithdrawDialogOpen(true);
+                        }}
+                      >
+                        <Trash2 className="size-4 mr-2" />
+                        Withdraw Application
+                      </Button>
+                    )}
+                    {(application.status === 'declined' || application.status === 'withdrawn') && (
+                      <Button
+                        onClick={() => router.push('/mentor')}
+                        className="!h-11"
+                      >
+                        <Plus className="size-4 mr-2" />
+                        Submit New Application
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <AlertDialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
         <AlertDialogContent className="max-w-md">

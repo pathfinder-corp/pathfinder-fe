@@ -5,5 +5,7 @@ export * from './roadmap.type';
 export * from './assessment.type';
 export * from './admin.type';
 export * from './table.type';
-export * from './message.type';
 export * from './mentor.type';
+export * from './mentorship.type';
+export * from './notification.type';
+export * from './chat.type';

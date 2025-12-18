@@ -9,19 +9,46 @@ import {
   X,
   History,
   ClipboardList,
-  GraduationCap
+  GraduationCap,
+  FileText,
+  UserPlus
 } from 'lucide-react';
 import { useUserStore, useRoadmapStore } from '@/stores';
+
 import { UserMenu } from '@/components/UserMenu';
+import { NotificationDropdown } from '@/components/NotificationDropdown';
 import { Button } from '@/components/ui/button';
 import { USER_ROLES } from '@/constants';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const STUDENT_NAV = [
+interface NavItem {
+  label: string;
+  href: string;
+  icon: typeof Map;
+  exact: boolean;
+}
+
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
+
+const LEARNING_NAV: NavItem[] = [
   { label: 'Create Roadmap', href: '/roadmap', icon: Map, exact: true },
   { label: 'Assessment', href: '/assessment', icon: ClipboardList, exact: true },
   { label: 'History', href: '/history', icon: History, exact: false },
-  { label: 'Become a Mentor', href: '/mentor', icon: GraduationCap, exact: false }
+];
+
+const STUDENT_MENTORSHIP_NAV: NavItem[] = [
+  { label: 'My Requests', href: '/mentorship/requests', icon: UserPlus, exact: false },
+  { label: 'Become a Mentor', href: '/mentor', icon: GraduationCap, exact: true },
+  { label: 'My Application', href: '/mentor/applications', icon: FileText, exact: false },
+];
+
+const MENTOR_MENTORSHIP_NAV: NavItem[] = [
+  { label: 'My Requests', href: '/mentorship/requests', icon: UserPlus, exact: false },
+  { label: 'My Application', href: '/mentor/applications', icon: FileText, exact: false },
+  { label: 'My Profile', href: '/mentor/profile', icon: GraduationCap, exact: true },
 ];
 
 export default function MainLayout({
@@ -39,19 +66,31 @@ export default function MainLayout({
     initializeUser();
   }, [initializeUser]);
 
-  const getNavItems = () => {
+  const getNavSections = (): NavSection[] => {
     if (!user) return [];
-    switch (user.role) {
-      case USER_ROLES.STUDENT:
-        return STUDENT_NAV;
-      default:
-        return STUDENT_NAV;
+    
+    const sections: NavSection[] = [
+      { title: 'Learning', items: LEARNING_NAV }
+    ];
+
+    if (user.role === USER_ROLES.STUDENT) {
+      sections.push({ 
+        title: 'Mentorship', 
+        items: STUDENT_MENTORSHIP_NAV 
+      });
+    } else if (user.role === USER_ROLES.MENTOR) {
+      sections.push({ 
+        title: 'Mentorship', 
+        items: MENTOR_MENTORSHIP_NAV 
+      });
     }
+
+    return sections;
   };
 
-  const navItems = getNavItems();
+  const navSections = getNavSections();
 
-  const isItemActive = (item: (typeof STUDENT_NAV)[0]) => {
+  const isItemActive = (item: NavItem) => {
     if (item.exact) {
       if (item.href === '/roadmap') {
         return pathname === '/roadmap' || 
@@ -61,6 +100,9 @@ export default function MainLayout({
         return pathname === '/assessment' || 
                (pathname.startsWith('/assessment/') && !pathname.startsWith('/assessment/history'));
       }
+      if (item.href === '/mentor') {
+        return pathname === '/mentor';
+      }
       return pathname === item.href;
     }
     
@@ -69,7 +111,8 @@ export default function MainLayout({
 
   const isMessagesPage = pathname.startsWith('/messages');
   const isSettingsPage = pathname.startsWith('/settings');
-  const shouldShowSidebar = isInitialized && isAuthenticated && user && !isViewMode && !isMessagesPage && !isSettingsPage;
+  const isNotificationsPage = pathname.startsWith('/notifications');
+  const shouldShowSidebar = isInitialized && isAuthenticated && user && !isViewMode && !isMessagesPage && !isSettingsPage && !isNotificationsPage;
 
   return (
     <div className="min-h-screen bg-neutral-950">
@@ -99,7 +142,11 @@ export default function MainLayout({
             {!isInitialized ? (
               <Skeleton className="size-12 rounded-full" />
             ) : isAuthenticated ? (
-              <UserMenu />
+              <>
+                <NotificationDropdown />
+                <div className="w-px h-6 bg-neutral-700" />
+                <UserMenu />
+              </>
             ) : (
               <>
                 <Button
@@ -126,26 +173,38 @@ export default function MainLayout({
 
       {shouldShowSidebar && (
         <aside className="hidden lg:block fixed left-0 top-24 bottom-0 w-[18rem] border-r border-neutral-800 bg-neutral-950/50 backdrop-blur-sm overflow-y-auto">
-          <nav className="p-4 space-y-1">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              const isActive = isItemActive(item);
-              
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`flex items-center gap-[.75rem] px-5 py-4 rounded-lg transition-all ${
-                    isActive
-                      ? 'bg-white text-neutral-950 font-medium'
-                      : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                  }`}
-                >
-                  <Icon className="size-5.5" />
-                  <span className="text-[1.2rem]">{item.label}</span>
-                </Link>
-              );
-            })}
+          <nav className="p-4">
+            {navSections.map((section, index) => (
+              <div key={section.title}>
+                {index > 0 && (
+                  <div className="my-4 mx-3 border-t border-neutral-800" />
+                )}
+                <h3 className="px-5 mb-3 text-sm font-semibold text-neutral-500 uppercase tracking-wider">
+                  {section.title}
+                </h3>
+                <div className="space-y-1">
+                  {section.items.map((item) => {
+                    const Icon = item.icon;
+                    const isActive = isItemActive(item);
+                    
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`flex items-center gap-[.75rem] px-5 py-3.5 rounded-lg transition-all ${
+                          isActive
+                            ? 'bg-white text-neutral-950 font-medium'
+                            : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                        }`}
+                      >
+                        <Icon className="size-5" />
+                        <span className="text-[1.1rem]">{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
         </aside>
       )}
@@ -157,34 +216,46 @@ export default function MainLayout({
             onClick={() => setIsSidebarOpen(false)}
           />
           <aside className="lg:hidden fixed left-0 top-20 bottom-0 w-64 border-r border-neutral-800 bg-neutral-950 z-40 overflow-y-auto">
-            <nav className="p-4 space-y-1">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = isItemActive(item);
-                
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setIsSidebarOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                      isActive
-                        ? 'bg-white text-neutral-950 font-medium'
-                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
-                    }`}
-                  >
-                    <Icon className="size-5" />
-                    <span className="text-base">{item.label}</span>
-                  </Link>
-                );
-              })}
+            <nav className="p-4">
+              {navSections.map((section, index) => (
+                <div key={section.title}>
+                  {index > 0 && (
+                    <div className="my-4 mx-2 border-t border-neutral-800" />
+                  )}
+                  <h3 className="px-4 mb-3 text-sm font-semibold text-neutral-500 uppercase tracking-wider">
+                    {section.title}
+                  </h3>
+                  <div className="space-y-1">
+                    {section.items.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = isItemActive(item);
+                      
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setIsSidebarOpen(false)}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                            isActive
+                              ? 'bg-white text-neutral-950 font-medium'
+                              : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                          }`}
+                        >
+                          <Icon className="size-5" />
+                          <span className="text-base">{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </nav>
           </aside>
         </>
       )}
 
       <main className={`${shouldShowSidebar ? 'lg:ml-[18rem]' : ''} ${isMessagesPage ? 'pt-[5.5rem]' : 'pt-24'} min-h-screen`}>
-        <div className={`${isMessagesPage ? 'h-[calc(100vh-5.5rem)]' : 'p-6 lg:p-8'} ${!shouldShowSidebar && !isMessagesPage && !isSettingsPage ? 'max-w-7xl mx-auto' : ''}`}>
+        <div className={`${isMessagesPage ? 'h-[calc(100vh-5.5rem)]' : 'p-6 lg:p-8'} ${!shouldShowSidebar && !isMessagesPage && !isSettingsPage && !isNotificationsPage ? 'max-w-7xl mx-auto' : ''}`}>
           {children}
         </div>
       </main>

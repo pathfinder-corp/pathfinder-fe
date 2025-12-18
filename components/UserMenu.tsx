@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { LogOut, Settings, LayoutDashboard, MessageCircle, GraduationCap, FileText } from 'lucide-react';
+import { LogOut, Settings, LayoutDashboard, MessageCircle, GraduationCap } from 'lucide-react';
 import { useUserStore } from '@/stores';
 import { authService } from '@/services';
 import { toast } from 'sonner';
@@ -44,11 +44,8 @@ export function UserMenu() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-3 p-2 rounded-full cursor-pointer"
+        className="flex items-center p-1 rounded-full cursor-pointer"
       >
-        <span className="text-lg font-medium text-white hidden md:block">
-          {user.firstName} {user.lastName}
-        </span>
         {user.avatar ? (
           <div className="relative size-11 rounded-full overflow-hidden border-2 border-neutral-700">
             <Image
@@ -58,7 +55,7 @@ export function UserMenu() {
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover"
               priority
-          />
+            />
           </div>
         ) : (
           <div className="size-11 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 border-2 border-neutral-600 flex items-center justify-center text-sm font-bold">
@@ -99,37 +96,13 @@ export function UserMenu() {
               Messages
             </Link>
 
-            {user.role === USER_ROLES.MENTOR && (
-              <Link
-                href="/mentor/profile"
-                className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
-                onClick={() => setIsOpen(false)}
-              >
-                <GraduationCap className="size-5" />
-                Mentor Profile
-              </Link>
-            )}
-
-            {user.role === USER_ROLES.STUDENT && (
-              <>
-                <Link
-                  href="/mentor/applications"
-                  className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
-                  onClick={() => setIsOpen(false)}
-                >
-                  <FileText className="size-5" />
-                  My Applications
-                </Link>
-              </>
-            )}
-
-              <Link
+            <Link
                 href="/settings"
               className="flex items-center gap-3 px-4 py-3 text-base text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
                 onClick={() => setIsOpen(false)}
               >
               <Settings className="size-5" />
-              Settings
+                Settings
               </Link>
 
               <button

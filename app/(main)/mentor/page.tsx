@@ -8,6 +8,8 @@ import { z } from 'zod';
 import { Send, Loader2, Plus, X, GraduationCap, FileText, AlertCircle, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 import { mentorService } from '@/services';
+import { useUserStore } from '@/stores';
+import { USER_ROLES } from '@/constants';
 import type { ICreateMentorApplicationRequest, IMentorApplication, MentorApplicationStatus } from '@/types';
 
 import { Input } from '@/components/ui/input';
@@ -49,6 +51,7 @@ type MentorApplicationFormData = z.infer<typeof mentorApplicationSchema>;
 
 export default function MentorApplicationPage() {
   const router = useRouter();
+  const { user, isInitialized } = useUserStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCheckingApplication, setIsCheckingApplication] = useState<boolean>(true);
@@ -80,6 +83,13 @@ export default function MentorApplicationPage() {
   const selectedExperience = watch('yearsExperience');
 
   useEffect(() => {
+    if (!isInitialized) return;
+
+    if (user?.role === USER_ROLES.MENTOR) {
+      router.replace('/mentor/applications');
+      return;
+    }
+
     const checkExistingApplication = async () => {
       try {
         setIsCheckingApplication(true);
@@ -100,7 +110,7 @@ export default function MentorApplicationPage() {
     };
 
     checkExistingApplication();
-  }, []);
+  }, [isInitialized, user?.role, router]);
 
   const addItem = (
     value: string, 
@@ -205,7 +215,7 @@ export default function MentorApplicationPage() {
     }
   };
 
-  if (isCheckingApplication) {
+  if (isCheckingApplication || !isInitialized || user?.role === USER_ROLES.MENTOR) {
     return (
       <div className="pt-10 flex flex-col items-center justify-center">
         <Loader2 className="size-8 animate-spin text-neutral-400" />
@@ -235,7 +245,7 @@ export default function MentorApplicationPage() {
             className="!h-12 !text-base"
           >
             <FileText className="size-5 mr-2" />
-            View My Applications
+            View My Application
           </Button>
         </div>
       </div>

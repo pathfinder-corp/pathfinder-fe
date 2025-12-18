@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { 
   Search, 
   Send, 
@@ -10,17 +11,24 @@ import {
   Check,
   CheckCheck,
   X,
-  Smile
+  Edit2,
+  Trash2,
+  Reply,
+  Loader2
 } from 'lucide-react';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
+import { toast } from 'sonner';
 import { useUserStore } from '@/stores';
-import type { IConversation, IMessage, IMessageParticipant } from '@/types';
+import { chatService, socketService, mentorshipService } from '@/services';
+import { getAuthToken } from '@/lib/cookie';
+import type { IChatConversation, IChatMessage, IChatParticipant } from '@/types';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { Textarea } from '@/components/ui/textarea';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,180 +36,366 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator
 } from '@/components/ui/dropdown-menu';
-
-const mockConversations: IConversation[] = [
-  {
-    id: '1',
-    participants: [
-      { id: '1', firstName: 'John', lastName: 'Doe', email: 'john@example.com', avatar: null, role: 'mentor', isOnline: true },
-      { id: '2', firstName: 'Current', lastName: 'User', email: 'me@example.com', avatar: null, role: 'student' }
-    ],
-    lastMessage: {
-      id: 'm1',
-      conversationId: '1',
-      senderId: '1',
-      content: 'Thanks for your quick response. Actually I\'m facing some issues with the figma prototype.',
-      status: 'read',
-      createdAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-      updatedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
-    },
-    unreadCount: 2,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '2',
-    participants: [
-      { id: '3', firstName: 'Sarah', lastName: 'Wilson', email: 'sarah@example.com', avatar: null, role: 'mentor', isOnline: false },
-      { id: '2', firstName: 'Current', lastName: 'User', email: 'me@example.com', avatar: null, role: 'student' }
-    ],
-    lastMessage: {
-      id: 'm2',
-      conversationId: '2',
-      senderId: '2',
-      content: 'I\'ve completed the roadmap you suggested. Can we discuss the next steps?',
-      status: 'delivered',
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-      updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString()
-    },
-    unreadCount: 0,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '3',
-    participants: [
-      { id: '4', firstName: 'Mike', lastName: 'Chen', email: 'mike@example.com', avatar: null, role: 'mentor', isOnline: true },
-      { id: '2', firstName: 'Current', lastName: 'User', email: 'me@example.com', avatar: null, role: 'student' }
-    ],
-    lastMessage: {
-      id: 'm3',
-      conversationId: '3',
-      senderId: '4',
-      content: 'Great progress on your learning path! Keep it up 🎉',
-      status: 'read',
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
-      updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString()
-    },
-    unreadCount: 0,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  },
-  {
-    id: '4',
-    participants: [
-      { id: '5', firstName: 'Emily', lastName: 'Brown', email: 'emily@example.com', avatar: null, role: 'mentor', isOnline: false },
-      { id: '2', firstName: 'Current', lastName: 'User', email: 'me@example.com', avatar: null, role: 'student' }
-    ],
-    lastMessage: {
-      id: 'm4',
-      conversationId: '4',
-      senderId: '5',
-      content: 'Let me know if you need any clarification on the assessment feedback.',
-      status: 'read',
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-      updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString()
-    },
-    unreadCount: 0,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString()
-  }
-];
-
-const mockMessages: IMessage[] = [
-  {
-    id: 'm1',
-    conversationId: '1',
-    senderId: '1',
-    content: 'Hello! Good morning. How are you? 👋',
-    status: 'read',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString()
-  },
-  {
-    id: 'm2',
-    conversationId: '1',
-    senderId: '2',
-    content: 'I\'m good, 👍\nHow can I help you? printing and industry.',
-    status: 'read',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 1.9).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 1.9).toISOString()
-  },
-  {
-    id: 'm3',
-    conversationId: '1',
-    senderId: '1',
-    content: 'Thanks for your quick response. Actually I\'m facing some issues with the figma prototype.',
-    status: 'read',
-    createdAt: new Date(Date.now() - 1000 * 60 * 60).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 60).toISOString()
-  },
-  {
-    id: 'm4',
-    conversationId: '1',
-    senderId: '2',
-    content: 'Alright, can you please tell me exactly what problem you are facing with the prototype.',
-    status: 'read',
-    createdAt: new Date(Date.now() - 1000 * 60 * 55).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 55).toISOString()
-  },
-  {
-    id: 'm5',
-    conversationId: '1',
-    senderId: '1',
-    content: 'Yes, sure.',
-    status: 'read',
-    createdAt: new Date(Date.now() - 1000 * 60 * 50).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 50).toISOString()
-  },
-  {
-    id: 'm6',
-    conversationId: '1',
-    senderId: '1',
-    content: 'I keep getting "error while creating a new popup" for the first time in figma prototype.',
-    status: 'read',
-    createdAt: new Date(Date.now() - 1000 * 60 * 45).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 45).toISOString()
-  },
-  {
-    id: 'm7',
-    conversationId: '1',
-    senderId: '2',
-    content: 'Well, I believe you are experiencing issues with the Figma program. I believe that updating it to the most recent version would resolve the problem.',
-    status: 'delivered',
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
-    updatedAt: new Date(Date.now() - 1000 * 60 * 30).toISOString()
-  }
-];
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 export default function MessagesPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { user } = useUserStore();
-  const [conversations, setConversations] = useState<IConversation[]>(mockConversations);
-  const [selectedConversation, setSelectedConversation] = useState<IConversation | null>(null);
-  const [messages, setMessages] = useState<IMessage[]>([]);
+  
+  const token = useMemo(() => getAuthToken(), []);
+  
+  const [conversations, setConversations] = useState<IChatConversation[]>([]);
+  const [selectedConversation, setSelectedConversation] = useState<IChatConversation | null>(null);
+  const [messages, setMessages] = useState<IChatMessage[]>([]);
   const [messageInput, setMessageInput] = useState<string>('');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingConversations, setIsLoadingConversations] = useState<boolean>(true);
+  const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
+  const [isSending, setIsSending] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(false);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
+  
+  const [typingUsers, setTypingUsers] = useState<Map<string, boolean>>(new Map());
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const [editingMessage, setEditingMessage] = useState<IChatMessage | null>(null);
+  const [editContent, setEditContent] = useState<string>('');
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
+  
+  const [deletingMessage, setDeletingMessage] = useState<IChatMessage | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
+  
+  const [replyingTo, setReplyingTo] = useState<IChatMessage | null>(null);
+  const [isSocketConnected, setIsSocketConnected] = useState<boolean>(false);
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const joinedConversationsRef = useRef<Set<string>>(new Set());
+  const selectedConversationIdRef = useRef<string | null>(null);
 
-  const currentUserId = user?.id || '2';
+  const currentUserId = user?.id;
+
+  const fetchConversations = useCallback(async () => {
+    try {
+      setIsLoadingConversations(true);
+      let data = await chatService.getConversations();
+      
+      if (data.length === 0) {
+        try {
+          const response = await mentorshipService.getMentorships({ status: 'active' });
+          const activeMentorships = response.mentorships || [];
+          
+          for (const mentorship of activeMentorships) {
+            try {
+              await chatService.getConversationByMentorship(mentorship.id);
+            } catch (err) {
+              console.error('Failed to create conversation for mentorship:', mentorship.id, err);
+            }
+          }
+          
+          if (activeMentorships.length > 0) {
+            data = await chatService.getConversations();
+          }
+        } catch (err) {
+          console.error('Failed to fetch mentorships:', err);
+        }
+      }
+      
+      setConversations(data);
+      
+      const conversationId = searchParams.get('conversation');
+      if (conversationId && data.length > 0) {
+        const conv = data.find(c => c.id === conversationId);
+        if (conv) {
+          setSelectedConversation(conv);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch conversations:', error);
+      toast.error('Failed to load conversations');
+    } finally {
+      setIsLoadingConversations(false);
+    }
+  }, [searchParams]);
+
+  const fetchMessages = useCallback(async (conversationId: string, cursor?: string) => {
+    try {
+      if (cursor) {
+        setIsLoadingMore(true);
+      } else {
+        setIsLoadingMessages(true);
+        setMessages([]);
+      }
+      
+      const data = await chatService.getMessages(conversationId, {
+        limit: 50,
+        before: cursor,
+      });
+      
+      if (cursor) {
+        setMessages(prev => [...data.messages.reverse(), ...prev]);
+      } else {
+        setMessages(data.messages.reverse());
+      }
+      
+      setHasMore(data.hasMore);
+      setNextCursor(data.nextCursor);
+    } catch (error) {
+      console.error('Failed to fetch messages:', error);
+      toast.error('Failed to load messages');
+    } finally {
+      setIsLoadingMessages(false);
+      setIsLoadingMore(false);
+    }
+  }, []);
 
   useEffect(() => {
-    if (selectedConversation) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setMessages(mockMessages.filter(m => m.conversationId === selectedConversation.id));
-        setIsLoading(false);
-      }, 300);
+    if (token && currentUserId) {
+      socketService.connect(token, currentUserId);
+      
+      const unsubConnect = socketService.onConnect(() => {
+        setIsSocketConnected(true);
+      });
+      
+      const unsubDisconnect = socketService.onDisconnect(() => {
+        setIsSocketConnected(false);
+      });
+      
+      if (socketService.isConnected()) {
+        setIsSocketConnected(true);
+      }
+      
+      return () => {
+        unsubConnect();
+        unsubDisconnect();
+        socketService.disconnect();
+      };
     }
-  }, [selectedConversation]);
+  }, [token, currentUserId]);
+
+  useEffect(() => {
+    if (!isSocketConnected) {
+      joinedConversationsRef.current.clear();
+      return;
+    }
+
+    conversations.forEach(conv => {
+      if (!joinedConversationsRef.current.has(conv.id)) {
+        socketService.joinConversation(conv.id);
+        joinedConversationsRef.current.add(conv.id);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSocketConnected, conversations.length]);
+
+  useEffect(() => {
+    fetchConversations();
+  }, [fetchConversations]);
+
+  useEffect(() => {
+    if (!selectedConversation) return;
+    if (selectedConversationIdRef.current === selectedConversation.id) return;
+    
+    selectedConversationIdRef.current = selectedConversation.id;
+    fetchMessages(selectedConversation.id);
+    
+    const url = new URL(window.location.href);
+    url.searchParams.set('conversation', selectedConversation.id);
+    router.replace(url.pathname + url.search, { scroll: false });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedConversation?.id, fetchMessages, router]);
+
+  useEffect(() => {
+    const conversationId = selectedConversation?.id;
+    if (!conversationId) return;
+
+    const unsubMessage = socketService.onMessage(conversationId, (message) => {
+      setMessages(prev => {
+        if (prev.some(m => m.id === message.id)) {
+          return prev.map(m => m.id === message.id ? message : m);
+        }
+        return [...prev, message];
+      });
+      
+      if (message.senderId !== currentUserId) {
+        socketService.markAsRead(conversationId, [message.id]);
+      }
+    });
+
+    const unsubTyping = socketService.onTyping(conversationId, (data) => {
+      if (data.userId !== currentUserId) {
+        setTypingUsers(prev => {
+          const newMap = new Map(prev);
+          newMap.set(data.userId, data.isTyping);
+          return newMap;
+        });
+      }
+    });
+
+    const unsubRead = socketService.onRead(conversationId, (data) => {
+      if (data.readBy !== currentUserId) {
+        setMessages(prev => 
+          prev.map(m => 
+            data.messageIds.includes(m.id) 
+              ? { ...m, readAt: new Date().toISOString() } 
+              : m
+          )
+        );
+      }
+    });
+
+    return () => {
+      unsubMessage();
+      unsubTyping();
+      unsubRead();
+    };
+  }, [selectedConversation?.id, currentUserId]);
+
+  useEffect(() => {
+    const selectedId = selectedConversation?.id;
+    
+    const unsubGlobal = socketService.onMessage('*', (message) => {
+      
+      setConversations(prev => 
+        prev.map(conv => {
+          if (conv.id === message.conversationId) {
+            return {
+              ...conv,
+              lastMessage: message,
+              lastMessageAt: message.createdAt,
+              unreadCount: message.senderId !== currentUserId && conv.id !== selectedId
+                ? (conv.unreadCount || 0) + 1
+                : conv.unreadCount,
+            };
+          }
+          return conv;
+        }).sort((a, b) => 
+          new Date(b.lastMessageAt || b.createdAt).getTime() - 
+          new Date(a.lastMessageAt || a.createdAt).getTime()
+        )
+      );
+      
+      if (selectedId && message.conversationId === selectedId) {
+        setMessages(prev => {
+          if (prev.some(m => m.id === message.id)) {
+            return prev.map(m => m.id === message.id ? message : m);
+          }
+          return [...prev, message];
+        });
+        
+        if (message.senderId !== currentUserId) {
+          socketService.markAsRead(selectedId, [message.id]);
+        }
+      }
+    });
+
+    const unsubTyping = socketService.onTyping('*', (data) => {
+      if (selectedId && data.conversationId === selectedId && data.userId !== currentUserId) {
+        setTypingUsers(prev => {
+          const newMap = new Map(prev);
+          newMap.set(data.userId, data.isTyping);
+          return newMap;
+        });
+      }
+    });
+
+    return () => {
+      unsubGlobal();
+      unsubTyping();
+    };
+  }, [currentUserId, selectedConversation?.id]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const getOtherParticipant = (conversation: IConversation): IMessageParticipant => {
-    return conversation.participants.find(p => p.id !== currentUserId) || conversation.participants[0];
+  useEffect(() => {
+    if (!selectedConversation) return;
+
+    const pollInterval = setInterval(async () => {
+      try {
+        const data = await chatService.getMessages(selectedConversation.id, { limit: 10 });
+        const newMessages = data.messages.reverse();
+        
+        setMessages(prev => {
+          const lastPrevId = prev[prev.length - 1]?.id;
+          const hasNewMessages = newMessages.some(m => !prev.some(p => p.id === m.id));
+          
+          if (hasNewMessages) {
+            const merged = [...prev];
+            for (const msg of newMessages) {
+              if (!merged.some(m => m.id === msg.id)) {
+                merged.push(msg);
+              }
+            }
+            merged.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+            return merged;
+          }
+          return prev;
+        });
+      } catch (error) {
+      }
+    }, 3000);
+
+    return () => clearInterval(pollInterval);
+  }, [selectedConversation]);
+
+    const handleTyping = useCallback(() => {
+    if (!selectedConversation) return;
+    
+    socketService.sendTyping(selectedConversation.id, true);
+    
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    
+    typingTimeoutRef.current = setTimeout(() => {
+      socketService.sendTyping(selectedConversation.id, false);
+    }, 2000);
+  }, [selectedConversation]);
+
+  const getOtherParticipant = (conversation: IChatConversation): IChatParticipant | null => {
+    if (conversation.participant1 && conversation.participant1.id !== currentUserId) {
+      return conversation.participant1;
+    }
+    if (conversation.participant2 && conversation.participant2.id !== currentUserId) {
+      return conversation.participant2;
+    }
+    return null;
+  };
+
+  const getOtherParticipantRole = (conversation: IChatConversation): string => {
+    const other = getOtherParticipant(conversation);
+    if (!other) return '';
+    
+    if (other.role) {
+      return other.role === 'mentor' ? 'Mentor' : 'Student';
+    }
+    
+    if (conversation.mentorId && conversation.studentId) {
+      return other.id === conversation.mentorId ? 'Mentor' : 'Student';
+    }
+    
+    return '';
   };
 
   const formatMessageTime = (dateStr: string): string => {
@@ -209,35 +403,59 @@ export default function MessagesPage() {
     return format(date, 'HH:mm');
   };
 
-  const formatConversationTime = (dateStr: string): string => {
+  const formatConversationTime = (dateStr: string | null): string => {
+    if (!dateStr) return '';
     const date = parseISO(dateStr);
     if (isToday(date)) return format(date, 'HH:mm');
     if (isYesterday(date)) return 'Yesterday';
     return format(date, 'MMM dd');
   };
 
-  const handleSendMessage = useCallback(() => {
-    if (!messageInput.trim() || !selectedConversation) return;
+  const handleSendMessage = useCallback(async () => {
+    if (!messageInput.trim() || !selectedConversation || isSending) return;
 
-    const newMessage: IMessage = {
-      id: `m${Date.now()}`,
-      conversationId: selectedConversation.id,
-      senderId: currentUserId,
-      content: messageInput.trim(),
-      status: 'sending',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    setMessages(prev => [...prev, newMessage]);
+    const content = messageInput.trim();
     setMessageInput('');
+    setIsSending(true);
+    
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+    socketService.sendTyping(selectedConversation.id, false);
 
-    setTimeout(() => {
-      setMessages(prev => prev.map(m => 
-        m.id === newMessage.id ? { ...m, status: 'sent' as const } : m
-      ));
-    }, 500);
-  }, [messageInput, selectedConversation, currentUserId]);
+    try {
+      const message = await chatService.sendMessage(selectedConversation.id, {
+        content,
+        parentMessageId: replyingTo?.id,
+      });
+      
+      setMessages(prev => {
+        if (prev.some(m => m.id === message.id)) return prev;
+        return [...prev, message];
+      });
+      
+      setConversations(prev => 
+        prev.map(conv => {
+          if (conv.id === selectedConversation.id) {
+            return {
+              ...conv,
+              lastMessage: message,
+              lastMessageAt: message.createdAt,
+            };
+          }
+          return conv;
+        })
+      );
+      
+      setReplyingTo(null);
+    } catch (error) {
+      console.error('Failed to send message:', error);
+      toast.error('Failed to send message');
+      setMessageInput(content);
+    } finally {
+      setIsSending(false);
+    }
+  }, [messageInput, selectedConversation, isSending, replyingTo]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -246,34 +464,85 @@ export default function MessagesPage() {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'sending':
-        return <div className="size-3 rounded-full border-2 border-neutral-400 border-t-transparent animate-spin" />;
-      case 'sent':
-        return <Check className="size-3.5 text-neutral-400" />;
-      case 'delivered':
-        return <CheckCheck className="size-3.5 text-neutral-400" />;
-      case 'read':
-        return <CheckCheck className="size-3.5 text-white" />;
-      default:
-        return null;
+  const handleEditMessage = useCallback(async () => {
+    if (!editingMessage || !editContent.trim()) return;
+    
+    try {
+      const updatedMessage = await chatService.editMessage(editingMessage.id, {
+        content: editContent.trim(),
+      });
+      
+      setMessages(prev => 
+        prev.map(m => m.id === editingMessage.id ? updatedMessage : m)
+      );
+      
+      setIsEditDialogOpen(false);
+      setEditingMessage(null);
+      setEditContent('');
+      toast.success('Message edited');
+    } catch (error) {
+      console.error('Failed to edit message:', error);
+      toast.error('Failed to edit message');
     }
+  }, [editingMessage, editContent]);
+
+  const handleDeleteMessage = useCallback(async () => {
+    if (!deletingMessage) return;
+    
+    try {
+      await chatService.deleteMessage(deletingMessage.id);
+      
+      setMessages(prev => 
+        prev.map(m => 
+          m.id === deletingMessage.id 
+            ? { ...m, isDeleted: true, content: 'This message was deleted' } 
+            : m
+        )
+      );
+      
+      setIsDeleteDialogOpen(false);
+      setDeletingMessage(null);
+      toast.success('Message deleted');
+    } catch (error) {
+      console.error('Failed to delete message:', error);
+      toast.error('Failed to delete message');
+    }
+  }, [deletingMessage]);
+
+  const handleLoadMore = useCallback(() => {
+    if (selectedConversation && hasMore && nextCursor && !isLoadingMore) {
+      fetchMessages(selectedConversation.id, nextCursor);
+    }
+  }, [selectedConversation, hasMore, nextCursor, isLoadingMore, fetchMessages]);
+
+  const getStatusIcon = (message: IChatMessage) => {
+    if (message.readAt) {
+      return <CheckCheck className="size-3.5 text-white" />;
+    }
+    return <Check className="size-3.5 text-neutral-400" />;
   };
 
   const filteredConversations = conversations.filter(conv => {
     if (!searchQuery.trim()) return true;
     const other = getOtherParticipant(conv);
+    if (!other) return false;
     const fullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-    return fullName.includes(searchQuery.toLowerCase()) || 
-           other.email.toLowerCase().includes(searchQuery.toLowerCase());
+    return fullName.includes(searchQuery.toLowerCase());
   });
+
+  const isOtherTyping = Array.from(typingUsers.values()).some(isTyping => isTyping);
 
   return (
     <div className="h-full flex overflow-hidden bg-neutral-950">
       <div className="w-[300px] border-r border-neutral-800 flex flex-col bg-neutral-900/50">
-        <div className="h-20 px-4 flex items-center border-b border-neutral-800">
+        <div className="h-20 px-4 flex items-center justify-between border-b border-neutral-800">
           <h1 className="text-[1.5rem] font-bold">Messages</h1>
+          <div className="flex items-center gap-1.5">
+            <span className={`size-2 rounded-full ${isSocketConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+            <span className="text-xs text-neutral-500">
+              {isSocketConnected ? 'Connected' : 'Disconnected'}
+            </span>
+          </div>
         </div>
         
         <div className="px-3 mt-4 mb-2">
@@ -298,22 +567,48 @@ export default function MessagesPage() {
 
         <ScrollArea className="flex-1">
           <div className="p-2">
-            {filteredConversations.length === 0 ? (
+            {isLoadingConversations ? (
+              <div className="space-y-2">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="flex items-start gap-3 p-3">
+                    <Skeleton className="size-12 rounded-full bg-neutral-800" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-32 bg-neutral-800" />
+                      <Skeleton className="h-3 w-48 bg-neutral-800" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredConversations.length === 0 ? (
               <div className="py-16 text-center">
                 <div className="size-14 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
                   <MessageCircle className="size-7 text-neutral-500" />
                 </div>
-                <p className="text-neutral-400">No conversations found</p>
+                <p className="text-neutral-400">
+                  {searchQuery ? 'No conversations found' : 'No conversations yet'}
+                </p>
+                {!searchQuery && (
+                  <p className="text-neutral-500 text-sm mt-2">
+                    Connect with a mentor to start chatting
+                  </p>
+                )}
               </div>
             ) : (
               filteredConversations.map((conversation) => {
                 const other = getOtherParticipant(conversation);
+                if (!other) return null;
+                
                 const isActive = selectedConversation?.id === conversation.id;
                 
                 return (
                   <button
                     key={conversation.id}
-                    onClick={() => setSelectedConversation(conversation)}
+                    onClick={() => {
+                      setSelectedConversation(conversation);
+                      setConversations(prev => 
+                        prev.map(c => c.id === conversation.id ? { ...c, unreadCount: 0 } : c)
+                      );
+                    }}
                     className={`w-full flex items-start gap-3 p-3 rounded-xl transition-colors text-left cursor-pointer ${
                       isActive 
                         ? 'bg-neutral-800' 
@@ -335,9 +630,6 @@ export default function MessagesPage() {
                           {other.firstName[0]}{other.lastName[0]}
                         </div>
                       )}
-                      {other.isOnline && (
-                        <div className="absolute bottom-0 right-0 size-3.5 rounded-full bg-green-500 border-2 border-neutral-900" />
-                      )}
                     </div>
 
                     <div className="flex-1 min-w-0 overflow-hidden">
@@ -346,7 +638,7 @@ export default function MessagesPage() {
                           {other.firstName} {other.lastName}
                         </span>
                         <span className="text-sm text-neutral-500 flex-shrink-0">
-                          {conversation.lastMessage && formatConversationTime(conversation.lastMessage.createdAt)}
+                          {formatConversationTime(conversation.lastMessageAt)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between gap-2">
@@ -354,9 +646,11 @@ export default function MessagesPage() {
                           {conversation.lastMessage?.senderId === currentUserId && (
                             <span className="text-neutral-500">You: </span>
                           )}
-                          {conversation.lastMessage?.content || 'No messages yet'}
+                          {conversation.lastMessage?.isDeleted 
+                            ? 'Message deleted' 
+                            : conversation.lastMessage?.content || 'No messages yet'}
                         </p>
-                        {conversation.unreadCount > 0 && (
+                        {conversation.unreadCount && conversation.unreadCount > 0 && (
                           <Badge className="bg-white text-black text-xs px-1.5 pt-1.5 h-5 min-w-5 flex items-center justify-center rounded-full">
                             {conversation.unreadCount}
                           </Badge>
@@ -378,6 +672,8 @@ export default function MessagesPage() {
               <div className="flex items-center gap-3">
                 {(() => {
                   const other = getOtherParticipant(selectedConversation);
+                  if (!other) return null;
+                  
                   return (
                     <>
                       <div className="relative">
@@ -395,16 +691,24 @@ export default function MessagesPage() {
                             {other.firstName[0]}{other.lastName[0]}
                           </div>
                         )}
-                        {other.isOnline && (
-                          <div className="absolute bottom-0 right-0 size-3 rounded-full bg-green-500 border-2 border-neutral-900" />
-                        )}
                       </div>
                       <div>
                         <p className="font-semibold text-xl">
                           {other.firstName} {other.lastName}
                         </p>
-                        <p className="text-base text-neutral-400 capitalize">
-                          {other.role} {other.isOnline && '• Online'}
+                        <p className="text-base text-neutral-400">
+                          {isOtherTyping ? (
+                            <span className="text-green-400 flex items-center gap-1">
+                              Typing
+                              <span className="flex gap-0.5">
+                                <span className="size-1 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                <span className="size-1 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <span className="size-1 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                              </span>
+                            </span>
+                          ) : (
+                            getOtherParticipantRole(selectedConversation) || 'Online'
+                          )}
                         </p>
                       </div>
                     </>
@@ -432,118 +736,271 @@ export default function MessagesPage() {
               </div>
             </div>
 
-            <ScrollArea className="flex-1">
+            <ScrollArea className="flex-1" ref={messagesContainerRef}>
               <div className="p-5">
-              {isLoading ? (
-                <div className="space-y-4">
-                  {[...Array(5)].map((_, i) => (
-                    <div key={i} className={`flex gap-3 ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
-                      {i % 2 === 0 && <Skeleton className="size-9 rounded-full bg-neutral-800 flex-shrink-0" />}
-                      <Skeleton className={`h-16 ${i % 2 === 0 ? 'w-[60%]' : 'w-[50%]'} rounded-2xl bg-neutral-800`} />
-                      {i % 2 !== 0 && <Skeleton className="size-9 rounded-full bg-neutral-800 flex-shrink-0" />}
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {messages.map((message, index) => {
-                    const isOwn = message.senderId === currentUserId;
-                    const showAvatar = index === 0 || 
-                      messages[index - 1].senderId !== message.senderId;
-                    const other = getOtherParticipant(selectedConversation);
-                    
-                    return (
-                      <div
-                        key={message.id}
-                        className={`flex gap-3 ${isOwn ? 'justify-end' : 'justify-start'}`}
-                      >
-                        {!isOwn && (
-                          <div className="flex-shrink-0 w-9">
-                            {showAvatar && (
-                              other.avatar ? (
-                                <div className="relative size-9 rounded-full overflow-hidden">
-                                  <Image
-                                    src={other.avatar}
-                                    alt={`${other.firstName} ${other.lastName}`}
-                                    fill
-                                    className="object-cover"
-                                  />
-                                </div>
-                              ) : (
-                                <div className="size-9 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-xs font-bold">
-                                  {other.firstName[0]}{other.lastName[0]}
-                                </div>
-                              )
-                            )}
-                          </div>
-                        )}
+                {hasMore && (
+                  <div className="flex justify-center mb-4">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleLoadMore}
+                      disabled={isLoadingMore}
+                      className="text-neutral-400 hover:text-white"
+                    >
+                      {isLoadingMore ? (
+                        <>
+                          <Loader2 className="size-4 mr-2 animate-spin" />
+                          Loading...
+                        </>
+                      ) : (
+                        'Load earlier messages'
+                      )}
+                    </Button>
+                  </div>
+                )}
 
-                        <div className={`max-w-[65%] ${isOwn ? 'order-first' : ''}`}>
-                          <div
-                            className={`px-4 py-3 rounded-2xl ${
-                              isOwn
-                                ? 'bg-white text-neutral-900 rounded-br-md'
-                                : 'bg-neutral-800 text-neutral-100 rounded-bl-md'
-                            }`}
-                          >
-                            <p className="text-base leading-relaxed whitespace-pre-wrap">
-                              {message.content}
-                            </p>
+                {isLoadingMessages ? (
+                  <div className="space-y-4">
+                    {[...Array(5)].map((_, i) => (
+                      <div key={i} className={`flex gap-3 ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
+                        {i % 2 === 0 && <Skeleton className="size-9 rounded-full bg-neutral-800 flex-shrink-0" />}
+                        <Skeleton className={`h-16 ${i % 2 === 0 ? 'w-[60%]' : 'w-[50%]'} rounded-2xl bg-neutral-800`} />
+                        {i % 2 !== 0 && <Skeleton className="size-9 rounded-full bg-neutral-800 flex-shrink-0" />}
+                      </div>
+                    ))}
+                  </div>
+                ) : messages.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-64 text-center">
+                    <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mb-4">
+                      <MessageCircle className="size-8 text-neutral-500" />
+                    </div>
+                    <p className="text-neutral-400 text-lg">No messages yet</p>
+                    <p className="text-neutral-500 text-sm mt-1">Start the conversation!</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {messages.map((message, index) => {
+                      const isOwn = message.senderId === currentUserId;
+                      const showAvatar = index === 0 || 
+                        messages[index - 1].senderId !== message.senderId;
+                      const other = getOtherParticipant(selectedConversation);
+                      
+                      return (
+                        <div
+                          key={message.id}
+                          className={`flex gap-3 ${isOwn ? 'justify-end' : 'justify-start'} group`}
+                        >
+                          {!isOwn && (
+                            <div className="flex-shrink-0 w-9">
+                              {showAvatar && other && (
+                                other.avatar ? (
+                                  <div className="relative size-9 rounded-full overflow-hidden">
+                                    <Image
+                                      src={other.avatar}
+                                      alt={`${other.firstName} ${other.lastName}`}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="size-9 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-xs font-bold">
+                                    {other.firstName[0]}{other.lastName[0]}
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          )}
+
+                          <div className={`max-w-[65%] ${isOwn ? 'order-first' : ''}`}>
+                            {message.parentMessage && (
+                              <div className={`text-xs text-neutral-500 mb-1 px-3 py-1.5 rounded-lg bg-neutral-800/50 ${isOwn ? 'ml-auto' : ''} max-w-fit`}>
+                                <span className="font-medium">
+                                  {typeof message.parentMessage === 'object' 
+                                    ? `${message.parentMessage.sender?.firstName || 'User'}`
+                                    : 'Reply'}
+                                </span>
+                                <p className="truncate">
+                                  {typeof message.parentMessage === 'object' 
+                                    ? message.parentMessage.content 
+                                    : message.parentMessage}
+                                </p>
+                              </div>
+                            )}
+                            
+                            <div className="relative">
+                              <div
+                                className={`px-4 py-3 rounded-2xl ${
+                                  message.isDeleted
+                                    ? 'bg-neutral-800/50 text-neutral-500 italic'
+                                    : isOwn
+                                      ? 'bg-white text-neutral-900 rounded-br-md'
+                                      : 'bg-neutral-800 text-neutral-100 rounded-bl-md'
+                                }`}
+                              >
+                                <p className="text-base leading-relaxed whitespace-pre-wrap">
+                                  {message.content}
+                                </p>
+                              </div>
+                              
+                              {isOwn && !message.isDeleted && (
+                                <div className="absolute -left-20 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="size-8 text-neutral-400 hover:text-white"
+                                    onClick={() => {
+                                      setEditingMessage(message);
+                                      setEditContent(message.content);
+                                      setIsEditDialogOpen(true);
+                                    }}
+                                  >
+                                    <Edit2 className="size-3.5" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="size-8 text-neutral-400 hover:text-red-500"
+                                    onClick={() => {
+                                      setDeletingMessage(message);
+                                      setIsDeleteDialogOpen(true);
+                                    }}
+                                  >
+                                    <Trash2 className="size-3.5" />
+                                  </Button>
+                                </div>
+                              )}
+                              
+                              {!isOwn && !message.isDeleted && (
+                                <div className="absolute -right-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="size-8 text-neutral-400 hover:text-white"
+                                    onClick={() => setReplyingTo(message)}
+                                  >
+                                    <Reply className="size-3.5" />
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                            
+                            <div className={`flex items-center gap-1.5 mt-1.5 ${isOwn ? 'justify-end' : 'justify-start'}`}>
+                              <span className="text-sm text-neutral-500">
+                                {formatMessageTime(message.createdAt)}
+                              </span>
+                              {message.isEdited && (
+                                <span className="text-xs text-neutral-500">(edited)</span>
+                              )}
+                              {isOwn && !message.isDeleted && getStatusIcon(message)}
+                            </div>
                           </div>
-                          <div className={`flex items-center gap-1.5 mt-1.5 ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                            <span className="text-sm text-neutral-500">
-                              {formatMessageTime(message.createdAt)}
-                            </span>
-                            {isOwn && getStatusIcon(message.status)}
+
+                          {isOwn && (
+                            <div className="flex-shrink-0 w-9">
+                              {showAvatar && (
+                                user?.avatar ? (
+                                  <div className="relative size-9 rounded-full overflow-hidden">
+                                    <Image
+                                      src={user.avatar}
+                                      alt={`${user.firstName} ${user.lastName}`}
+                                      fill
+                                      className="object-cover"
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="size-9 rounded-full bg-white text-neutral-900 flex items-center justify-center text-xs font-bold">
+                                    {user?.firstName[0]}{user?.lastName[0]}
+                                  </div>
+                                )
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    
+                    {isOtherTyping && (
+                      <div className="flex gap-3 justify-start">
+                        <div className="flex-shrink-0 w-9">
+                          {(() => {
+                            const other = getOtherParticipant(selectedConversation);
+                            if (!other) return null;
+                            return other.avatar ? (
+                              <div className="relative size-9 rounded-full overflow-hidden">
+                                <Image
+                                  src={other.avatar}
+                                  alt={`${other.firstName} ${other.lastName}`}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="size-9 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-xs font-bold">
+                                {other.firstName[0]}{other.lastName[0]}
+                              </div>
+                            );
+                          })()}
+                        </div>
+                        <div className="px-4 py-3 rounded-2xl bg-neutral-800 rounded-bl-md">
+                          <div className="flex items-center gap-1">
+                            <span className="size-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="size-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <span className="size-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                           </div>
                         </div>
-
-                        {isOwn && (
-                          <div className="flex-shrink-0 w-9">
-                            {showAvatar && (
-                              user?.avatar ? (
-                                <div className="relative size-9 rounded-full overflow-hidden">
-                                  <Image
-                                    src={user.avatar}
-                                    alt={`${user.firstName} ${user.lastName}`}
-                                    fill
-                                    className="object-cover"
-                                  />
-                                </div>
-                              ) : (
-                                <div className="size-9 rounded-full bg-white text-neutral-900 flex items-center justify-center text-xs font-bold">
-                                  {user?.firstName[0]}{user?.lastName[0]}
-                                </div>
-                              )
-                            )}
-                          </div>
-                        )}
                       </div>
-                    );
-                  })}
-                  <div ref={messagesEndRef} />
-                </div>
-              )}
+                    )}
+                    
+                    <div ref={messagesEndRef} />
+                  </div>
+                )}
               </div>
             </ScrollArea>
 
             <div className="p-5 border-t border-neutral-800 bg-neutral-900/30">
+              {replyingTo && (
+                <div className="flex items-center justify-between mb-3 px-4 py-2 bg-neutral-800/50 rounded-lg">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs text-neutral-400 mb-0.5">
+                      Replying to {replyingTo.sender?.firstName || 'User'}
+                    </p>
+                    <p className="text-sm text-neutral-300 truncate">{replyingTo.content}</p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 text-neutral-400 hover:text-white flex-shrink-0"
+                    onClick={() => setReplyingTo(null)}
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+              )}
+              
               <div className="flex items-center gap-3">
                 <div className="flex-1 relative">
                   <Input
                     placeholder="Type a message..."
                     value={messageInput}
-                    onChange={(e) => setMessageInput(e.target.value)}
-                    onKeyPress={handleKeyPress}
+                    onChange={(e) => {
+                      setMessageInput(e.target.value);
+                      handleTyping();
+                    }}
+                    onKeyDown={handleKeyPress}
                     className="!h-14 pr-12 bg-neutral-800/50 border-neutral-700 !text-lg"
+                    disabled={isSending}
                   />
                 </div>
                 <Button 
                   onClick={handleSendMessage}
-                  disabled={!messageInput.trim()}
+                  disabled={!messageInput.trim() || isSending}
                   className="size-12 rounded-full bg-white text-black hover:bg-neutral-200 flex-shrink-0"
                 >
-                  <Send className="size-6" />
+                  {isSending ? (
+                    <Loader2 className="size-6 animate-spin" />
+                  ) : (
+                    <Send className="size-6" />
+                  )}
                 </Button>
               </div>
             </div>
@@ -556,13 +1013,80 @@ export default function MessagesPage() {
               </div>
               <h2 className="text-2xl font-semibold mb-2">Your Messages</h2>
               <p className="text-neutral-400 text-lg max-w-sm">
-                Select a conversation to start messaging with your mentor.
+                {isLoadingConversations 
+                  ? 'Loading conversations...'
+                  : conversations.length === 0
+                    ? 'Connect with a mentor to start chatting'
+                    : 'Select a conversation to start messaging'
+                }
               </p>
             </div>
           </div>
         )}
       </div>
+
+      <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <DialogContent className="bg-neutral-900 border-neutral-800">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Edit Message</DialogTitle>
+            <DialogDescription className="text-neutral-400">
+              Make changes to your message.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={editContent}
+            onChange={(e) => setEditContent(e.target.value)}
+            className="min-h-[100px] bg-neutral-800 border-neutral-700 text-base"
+          />
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setIsEditDialogOpen(false);
+                setEditingMessage(null);
+                setEditContent('');
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleEditMessage}
+              disabled={!editContent.trim() || editContent === editingMessage?.content}
+              className="bg-white text-black hover:bg-neutral-200"
+            >
+              Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent className="bg-neutral-900 border-neutral-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl">Delete Message</AlertDialogTitle>
+            <AlertDialogDescription className="text-neutral-400">
+              Are you sure you want to delete this message? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() => {
+                setIsDeleteDialogOpen(false);
+                setDeletingMessage(null);
+              }}
+              className="bg-neutral-800 border-neutral-700 hover:bg-neutral-700"
+            >
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteMessage}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
-

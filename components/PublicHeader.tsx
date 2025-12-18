@@ -5,9 +5,10 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useUserStore } from '@/stores';
 
-import { Button } from '@/components/ui/button';
-import { UserMenu } from '@/components/UserMenu';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from './ui/button';
+import { UserMenu } from './UserMenu';
+import { NotificationDropdown } from './NotificationDropdown';
+import { Skeleton } from './ui/skeleton';
 
 const NAV_ITEMS = [
   { label: 'Home', href: '/' },
@@ -66,7 +67,11 @@ export function PublicHeader() {
           {!isInitialized ? (
             <Skeleton className="size-12 rounded-full" />
           ) : isAuthenticated ? (
-            <UserMenu />
+            <>
+              <NotificationDropdown />
+              <div className="h-6 w-px bg-neutral-700" />
+              <UserMenu />
+            </>
           ) : (
             <>
               <Button

@@ -11,12 +11,15 @@ import {
   Linkedin,
   ExternalLink,
   Users,
-  Calendar
+  Calendar,
+  Loader2,
+  Send,
+  CheckCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { useUserStore } from '@/stores';
-import { mentorService } from '@/services';
+import { mentorService, mentorshipService } from '@/services';
 import type { IMentorProfile } from '@/types';
 
 import { PublicHeader } from '@/components/PublicHeader';
@@ -25,6 +28,15 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { USER_ROLES } from '@/constants';
 
 type TabType = 'about' | 'background';
 
@@ -37,11 +49,17 @@ export default function MentorDetailPage() {
   const params = useParams();
   const router = useRouter();
   const mentorId = params.id as string;
+  const user = useUserStore((state) => state.user);
   const initializeUser = useUserStore((state) => state.initializeUser);
 
   const [mentor, setMentor] = useState<IMentorProfile | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<TabType>('about');
+
+  const [isConnectDialogOpen, setIsConnectDialogOpen] = useState<boolean>(false);
+  const [connectMessage, setConnectMessage] = useState<string>('');
+  const [isSendingRequest, setIsSendingRequest] = useState<boolean>(false);
+  const [requestSent, setRequestSent] = useState<boolean>(false);
 
   const activeIndex = TABS.findIndex(tab => tab.id === activeTab);
 
@@ -81,6 +99,41 @@ export default function MentorDetailPage() {
       return 'Invalid date';
     }
   };
+
+  const handleSendRequest = async () => {
+    if (!mentor || !connectMessage.trim()) {
+      toast.error('Please enter a message');
+      return;
+    }
+
+    try {
+      setIsSendingRequest(true);
+      await mentorshipService.createRequest({
+        mentorId: mentor.userId,
+        message: connectMessage.trim()
+      });
+      setRequestSent(true);
+      toast.success('Connection request sent successfully!');
+    } catch (error) {
+      console.error('Failed to send request:', error);
+      toast.error('Failed to send connection request');
+    } finally {
+      setIsSendingRequest(false);
+    }
+  };
+
+  const handleCloseDialog = () => {
+    setIsConnectDialogOpen(false);
+    if (requestSent) {
+      setConnectMessage('');
+      setRequestSent(false);
+    }
+  };
+
+  const canConnect = user && 
+    user.role === USER_ROLES.STUDENT && 
+    user.id !== mentor?.userId && 
+    mentor?.isAcceptingMentees;
 
   if (isLoading) {
     return (
@@ -386,14 +439,32 @@ export default function MentorDetailPage() {
                 
                 <Button
                   size="lg"
-                  className="capitalize w-full !h-12 text-[1.1rem] bg-white text-neutral-950 hover:bg-neutral-200 mb-4"
-                  disabled={!mentor.isAcceptingMentees}
-                  onClick={() => router.push(`/messages?mentorId=${mentor.id}`)}
+                  className="w-full !h-12 text-[1.1rem] bg-white text-neutral-950 hover:bg-neutral-200 mb-4"
+                  disabled={!canConnect}
+                  onClick={() => setIsConnectDialogOpen(true)}
                 >
-                  connect now
+                  Connect Now
                 </Button>
 
-                {!mentor.isAcceptingMentees && (
+                {!user && (
+                  <p className="text-sm text-neutral-500 text-center">
+                    Please login to connect with this mentor
+                  </p>
+                )}
+
+                {user && user.role !== USER_ROLES.STUDENT && (
+                  <p className="text-sm text-neutral-500 text-center">
+                    Only students can send connection requests
+                  </p>
+                )}
+
+                {user && user.id === mentor.userId && (
+                  <p className="text-sm text-neutral-500 text-center">
+                    This is your own profile
+                  </p>
+                )}
+
+                {user && user.role === USER_ROLES.STUDENT && !mentor.isAcceptingMentees && (
                   <p className="text-sm text-neutral-500 text-center">
                     This mentor is currently not accepting new mentees
                   </p>
@@ -473,6 +544,90 @@ export default function MentorDetailPage() {
           </div>
         </div>
       </main>
+
+      <Dialog open={isConnectDialogOpen} onOpenChange={handleCloseDialog}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-xl">
+              {requestSent ? 'Request Sent!' : `Connect with ${mentor.user?.firstName}`}
+            </DialogTitle>
+            <DialogDescription>
+              {requestSent 
+                ? 'Your connection request has been sent successfully.'
+                : 'Send a message introducing yourself and explaining why you\'d like to connect.'
+              }
+            </DialogDescription>
+          </DialogHeader>
+
+          {requestSent ? (
+            <div className="py-6 text-center">
+              <div className="size-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="size-8 text-green-500" />
+              </div>
+              <p className="text-base text-neutral-400 mb-6">
+                {mentor.user?.firstName} will review your request and respond soon.
+              </p>
+              <div className="flex gap-3 justify-center">
+                <Button
+                  variant="outline"
+                  onClick={handleCloseDialog}
+                  className="!h-11"
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={() => router.push('/mentorship/requests')}
+                  className="!h-11"
+                >
+                  View My Requests
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <Textarea
+                value={connectMessage}
+                onChange={(e) => setConnectMessage(e.target.value)}
+                placeholder="Hi! I'm interested in learning from you because..."
+                className="min-h-[120px] !text-base"
+                disabled={isSendingRequest}
+              />
+
+              <p className="text-sm text-neutral-500">
+                Tip: Mention your goals, what you hope to learn, and why you think this mentor would be a good fit.
+              </p>
+
+              <div className="flex gap-3 justify-end pt-2">
+                <Button
+                  variant="outline"
+                  onClick={handleCloseDialog}
+                  disabled={isSendingRequest}
+                  className="!h-11"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSendRequest}
+                  disabled={isSendingRequest || !connectMessage.trim()}
+                  className="!h-11"
+                >
+                  {isSendingRequest ? (
+                    <>
+                      Sending...
+                      <Loader2 className="size-4 animate-spin" />
+                    </>
+                  ) : (
+                    <>
+                      Send Request
+                      <Send className="size-4" />
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

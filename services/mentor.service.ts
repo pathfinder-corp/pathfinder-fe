@@ -24,7 +24,7 @@ export const mentorService = {
       const response = await api.get<IMentorApplication[]>('/mentor-applications/mine');
       return response.data;
     } catch (error) {
-      console.error('Get my applications failed:', error);
+      console.error('Get my application failed:', error);
       throw error;
     }
   },

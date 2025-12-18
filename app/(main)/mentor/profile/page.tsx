@@ -253,7 +253,7 @@ export default function MentorProfilePage() {
             onClick={() => router.push('/mentor/applications')}
             className="!h-12 !text-base"
           >
-            View My Applications
+            View My Application
           </Button>
           <Button
             onClick={() => router.push('/mentor')}

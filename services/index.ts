@@ -4,3 +4,7 @@ export { userService } from './user.service';
 export { assessmentService } from './assessment.service';
 export { adminService } from './admin.service';
 export { mentorService } from './mentor.service';
+export { mentorshipService } from './mentorship.service';
+export { notificationService } from './notification.service';
+export { chatService } from './chat.service';
+export { socketService } from './socket.service';
