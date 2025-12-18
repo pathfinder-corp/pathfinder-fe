@@ -159,12 +159,12 @@ export default function VerifyEmailPage() {
               {isResending ? (
                 <>
                   Sending...
-                  <Loader2 className="size-6 animate-spin" />
+                  <Loader2 className="size-7 animate-spin" />
                 </>
               ) : (
                 <>
                   Resend Verification Email
-                  <Mail className="size-6" />
+                  <Mail className="size-7" />
                 </>
               )}
             </Button>
@@ -183,4 +183,3 @@ export default function VerifyEmailPage() {
     </Card>
   );
 }
-

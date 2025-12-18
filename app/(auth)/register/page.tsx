@@ -270,13 +270,13 @@ export default function RegisterPage() {
         <CardFooter className="flex flex-col space-y-5 mt-8">
           <Button
             type="submit"
-            className="w-full h-14 text-2xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+            className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
             disabled={isLoading}
           >
             {isLoading ? (
               <>
                 Registering...
-                <Loader2 className="ml-2 size-7 animate-spin" />
+                <Loader2 className="size-7 animate-spin" />
               </>
             ) : (
               'Register'

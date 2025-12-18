@@ -77,17 +77,9 @@ export default function ForgotPasswordPage() {
   return (
     <Card className="border-neutral-800 bg-neutral-950/50 backdrop-blur-sm">
       <CardHeader className="space-y-2">
-        <div className="flex items-center gap-4 mb-2">
-          <Link
-            href="/login"
-            className="text-neutral-400 hover:text-neutral-200 transition-colors"
-          >
-            <ArrowLeft className="size-7" />
-          </Link>
-          <CardTitle className="text-4xl font-bold tracking-tight">
-            Forgot password?
-          </CardTitle>
-        </div>
+        <CardTitle className="text-4xl font-bold tracking-tight">
+          Forgot password?
+        </CardTitle>
         <CardDescription className="text-2xl text-neutral-400">
           {emailSent 
             ? 'We have sent you an email with instructions to reset your password'
@@ -124,13 +116,13 @@ export default function ForgotPasswordPage() {
           <CardFooter className="flex flex-col space-y-5 mt-8">
             <Button
               type="submit"
-              className="w-full h-14 text-2xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+              className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
               disabled={isLoading}
             >
               {isLoading ? (
                 <>
                   Sending...
-                  <Loader2 className="ml-2 size-7 animate-spin" />
+                  <Loader2 className="size-7 animate-spin" />
                 </>
               ) : (
                 'Send email'
@@ -183,7 +175,7 @@ export default function ForgotPasswordPage() {
 
             <Button
               asChild
-              className="w-full h-14 text-2xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+              className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
             >
               <Link href="/login">
                 Back to login
