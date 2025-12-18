@@ -123,11 +123,37 @@ export default function MessagesPage() {
         }
       }
       
-      setConversations(data);
+      const updatedConversations = await Promise.all(
+        data.map(async (conv) => {
+          if (!conv.lastMessage) {
+            try {
+              const messagesData = await chatService.getMessages(conv.id, { limit: 1 });
+              if (messagesData.messages.length > 0) {
+                const lastMsg = messagesData.messages[messagesData.messages.length - 1];
+                return {
+                  ...conv,
+                  lastMessage: lastMsg,
+                  lastMessageAt: lastMsg.createdAt,
+                };
+              }
+            } catch (err) {
+              console.error('Failed to fetch last message for conversation:', conv.id, err);
+            }
+          }
+          return conv;
+        })
+      );
+      
+      updatedConversations.sort((a, b) => 
+        new Date(b.lastMessageAt || b.createdAt).getTime() - 
+        new Date(a.lastMessageAt || a.createdAt).getTime()
+      );
+      
+      setConversations(updatedConversations);
       
       const conversationId = searchParams.get('conversation');
-      if (conversationId && data.length > 0) {
-        const conv = data.find(c => c.id === conversationId);
+      if (conversationId && updatedConversations.length > 0) {
+        const conv = updatedConversations.find(c => c.id === conversationId);
         if (conv) {
           setSelectedConversation(conv);
         }
@@ -382,15 +408,12 @@ export default function MessagesPage() {
   const startTypingIndicator = useCallback(() => {
     if (!selectedConversation) return;
     
-    // Send initial typing event
     socketService.sendTyping(selectedConversation.id, true);
     
-    // Clear any existing interval
     if (typingIntervalRef.current) {
       clearInterval(typingIntervalRef.current);
     }
     
-    // Keep sending typing events every 3 seconds to prevent timeout
     typingIntervalRef.current = setInterval(() => {
       if (selectedConversation) {
         socketService.sendTyping(selectedConversation.id, true);
@@ -401,13 +424,11 @@ export default function MessagesPage() {
   const stopTypingIndicator = useCallback(() => {
     if (!selectedConversation) return;
     
-    // Clear the interval
     if (typingIntervalRef.current) {
       clearInterval(typingIntervalRef.current);
       typingIntervalRef.current = null;
     }
     
-    // Clear the old timeout as well
     if (typingTimeoutRef.current) {
       clearTimeout(typingTimeoutRef.current);
       typingTimeoutRef.current = null;
@@ -416,22 +437,18 @@ export default function MessagesPage() {
     socketService.sendTyping(selectedConversation.id, false);
   }, [selectedConversation]);
 
-  // Handle input changes - start/stop typing based on content
   const handleInputChange = useCallback((value: string) => {
     setMessageInput(value);
     
     if (value.trim()) {
-      // Start typing indicator if there's content and not already started
       if (!typingIntervalRef.current) {
         startTypingIndicator();
       }
     } else {
-      // Stop typing indicator if input is empty
       stopTypingIndicator();
     }
   }, [startTypingIndicator, stopTypingIndicator]);
 
-  // Clean up typing indicator when conversation changes
   useEffect(() => {
     return () => {
       if (typingIntervalRef.current) {
@@ -486,7 +503,6 @@ export default function MessagesPage() {
     setMessageInput('');
     setIsSending(true);
     
-    // Stop typing indicator when sending
     stopTypingIndicator();
 
     try {
@@ -585,9 +601,9 @@ export default function MessagesPage() {
 
   const getStatusIcon = (message: IChatMessage) => {
     if (message.readAt) {
-      return <CheckCheck className="size-3.5 text-white" />;
+      return <CheckCheck className="size-4 text-white" />;
     }
-    return <Check className="size-3.5 text-neutral-400" />;
+    return <Check className="size-4 text-neutral-400" />;
   };
 
   const filteredConversations = conversations.filter(conv => {
@@ -600,63 +616,71 @@ export default function MessagesPage() {
 
   const isOtherTyping = Array.from(typingUsers.values()).some(isTyping => isTyping);
 
+  useEffect(() => {
+    if (isOtherTyping) {
+      requestAnimationFrame(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      });
+    }
+  }, [isOtherTyping]);
+
   return (
     <div className="h-full flex overflow-hidden bg-neutral-950">
-      <div className="w-[300px] border-r border-neutral-800 flex flex-col bg-neutral-900/50">
-        <div className="h-20 px-4 flex items-center justify-between border-b border-neutral-800">
-          <h1 className="text-[1.5rem] font-bold">Messages</h1>
-          <div className="flex items-center gap-1.5">
-            <span className={`size-2 rounded-full ${isSocketConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-            <span className="text-xs text-neutral-500">
+      <div className="w-[360px] border-r border-neutral-800 flex flex-col bg-neutral-900/50">
+        <div className="h-24 px-5 flex items-center justify-between border-b border-neutral-800">
+          <h1 className="text-3xl font-bold">Messages</h1>
+          <div className="flex items-center gap-2">
+            <span className={`size-2.5 rounded-full ${isSocketConnected ? 'bg-green-500' : 'bg-red-500'}`} />
+            <span className="text-sm text-neutral-500">
               {isSocketConnected ? 'Connected' : 'Disconnected'}
             </span>
           </div>
         </div>
         
-        <div className="px-3 mt-4 mb-2">
+        <div className="px-4 mt-5 mb-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-neutral-500" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-neutral-500" />
             <Input
               placeholder="Search..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-11 bg-neutral-800/50 border-neutral-700 text-base"
+              className="pl-12 h-14 bg-neutral-800/50 border-neutral-700 text-lg"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="cursor-pointer absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+                className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
               >
-                <X className="size-4" />
+                <X className="size-5" />
               </button>
             )}
           </div>
         </div>
 
         <ScrollArea className="flex-1">
-          <div className="p-2">
+          <div className="p-3">
             {isLoadingConversations ? (
-              <div className="space-y-2">
+              <div className="space-y-2.5">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex items-start gap-3 p-3">
-                    <Skeleton className="size-12 rounded-full bg-neutral-800" />
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-4 w-32 bg-neutral-800" />
-                      <Skeleton className="h-3 w-48 bg-neutral-800" />
+                  <div key={i} className="flex items-start gap-4 p-4">
+                    <Skeleton className="size-14 rounded-full bg-neutral-800" />
+                    <div className="flex-1 space-y-2.5">
+                      <Skeleton className="h-5 w-36 bg-neutral-800" />
+                      <Skeleton className="h-4 w-52 bg-neutral-800" />
                     </div>
                   </div>
                 ))}
               </div>
             ) : filteredConversations.length === 0 ? (
-              <div className="py-16 text-center">
-                <div className="size-14 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
-                  <MessageCircle className="size-7 text-neutral-500" />
+              <div className="py-20 text-center">
+                <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-5">
+                  <MessageCircle className="size-8 text-neutral-500" />
                 </div>
-                <p className="text-neutral-400">
+                <p className="text-lg text-neutral-400">
                   {searchQuery ? 'No conversations found' : 'No conversations yet'}
                 </p>
                 {!searchQuery && (
-                  <p className="text-neutral-500 text-sm mt-2">
+                  <p className="text-base text-neutral-500 mt-2">
                     Connect with a mentor to start chatting
                   </p>
                 )}
@@ -677,7 +701,7 @@ export default function MessagesPage() {
                         prev.map(c => c.id === conversation.id ? { ...c, unreadCount: 0 } : c)
                       );
                     }}
-                    className={`w-full flex items-start gap-3 p-3 rounded-xl transition-colors text-left cursor-pointer ${
+                    className={`w-full flex items-start gap-4 p-4 rounded-xl transition-colors text-left cursor-pointer ${
                       isActive 
                         ? 'bg-neutral-800' 
                         : 'hover:bg-neutral-800/50'
@@ -685,7 +709,7 @@ export default function MessagesPage() {
                   >
                     <div className="relative flex-shrink-0">
                       {other.avatar ? (
-                        <div className="relative size-12 rounded-full overflow-hidden">
+                        <div className="relative size-14 rounded-full overflow-hidden">
                           <Image
                             src={other.avatar}
                             alt={`${other.firstName} ${other.lastName}`}
@@ -694,23 +718,23 @@ export default function MessagesPage() {
                           />
                         </div>
                       ) : (
-                        <div className="size-12 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
+                        <div className="size-14 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-base font-bold">
                           {other.firstName[0]}{other.lastName[0]}
                         </div>
                       )}
                     </div>
 
                     <div className="flex-1 min-w-0 overflow-hidden">
-                      <div className="flex items-center justify-between gap-2 mb-0.5">
-                        <span className="font-semibold text-base truncate max-w-[160px]">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <span className="font-semibold text-lg truncate max-w-[180px]">
                           {other.firstName} {other.lastName}
                         </span>
-                        <span className="text-sm text-neutral-500 flex-shrink-0">
+                        <span className="text-base text-neutral-500 flex-shrink-0">
                           {formatConversationTime(conversation.lastMessageAt)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-[.9rem] text-neutral-400 truncate max-w-[200px]">
+                        <p className="text-base text-neutral-400 truncate max-w-[220px]">
                           {conversation.lastMessage?.senderId === currentUserId && (
                             <span className="text-neutral-500">You: </span>
                           )}
@@ -719,7 +743,7 @@ export default function MessagesPage() {
                             : conversation.lastMessage?.content || 'No messages yet'}
                         </p>
                         {conversation.unreadCount && conversation.unreadCount > 0 && (
-                          <Badge className="bg-white text-black text-xs px-1.5 pt-1.5 h-5 min-w-5 flex items-center justify-center rounded-full">
+                          <Badge className="bg-white text-black text-sm px-2 py-1 h-6 min-w-6 flex items-center justify-center rounded-full">
                             {conversation.unreadCount}
                           </Badge>
                         )}
@@ -736,8 +760,8 @@ export default function MessagesPage() {
       <div className="flex-1 flex flex-col">
         {selectedConversation ? (
           <>
-            <div className="h-20 px-5 flex items-center justify-between border-b border-neutral-800 bg-neutral-900/30">
-              <div className="flex items-center gap-3">
+            <div className="h-24 px-6 flex items-center justify-between border-b border-neutral-800 bg-neutral-900/30">
+              <div className="flex items-center gap-4">
                 {(() => {
                   const other = getOtherParticipant(selectedConversation);
                   if (!other) return null;
@@ -746,7 +770,7 @@ export default function MessagesPage() {
                     <>
                       <div className="relative">
                         {other.avatar ? (
-                          <div className="relative size-11 rounded-full overflow-hidden">
+                          <div className="relative size-14 rounded-full overflow-hidden">
                             <Image
                               src={other.avatar}
                               alt={`${other.firstName} ${other.lastName}`}
@@ -755,23 +779,23 @@ export default function MessagesPage() {
                             />
                           </div>
                         ) : (
-                          <div className="size-11 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
+                          <div className="size-14 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-base font-bold">
                             {other.firstName[0]}{other.lastName[0]}
                           </div>
                         )}
                       </div>
                       <div>
-                        <p className="font-semibold text-xl">
+                        <p className="font-semibold text-2xl">
                           {other.firstName} {other.lastName}
                         </p>
-                        <p className="text-base text-neutral-400">
+                        <p className="text-lg text-neutral-400">
                           {isOtherTyping ? (
-                            <span className="text-green-400 flex items-center gap-1">
+                            <span className="text-green-400 flex items-center gap-1.5">
                               Typing
-                              <span className="flex gap-0.5">
-                                <span className="size-1 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                <span className="size-1 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                <span className="size-1 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                              <span className="flex gap-1">
+                                <span className="size-1.5 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                <span className="size-1.5 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <span className="size-1.5 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                               </span>
                             </span>
                           ) : (
@@ -787,16 +811,16 @@ export default function MessagesPage() {
               <div className="flex items-center gap-1">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="size-10">
-                      <MoreVertical className="size-5" />
+                    <Button variant="ghost" size="icon" className="size-12">
+                      <MoreVertical className="size-6" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem className="text-base py-2">
+                  <DropdownMenuContent align="end" className="w-52">
+                    <DropdownMenuItem className="text-lg py-3">
                       View profile
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="dark:hover:bg-red-500/10 text-base py-2 text-red-500 focus:text-red-500">
+                    <DropdownMenuItem className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500">
                       Delete conversation
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -805,19 +829,19 @@ export default function MessagesPage() {
             </div>
 
             <ScrollArea className="flex-1" ref={messagesContainerRef}>
-              <div className="p-5">
+              <div className="p-6">
                 {hasMore && (
-                  <div className="flex justify-center mb-4">
+                  <div className="flex justify-center mb-5">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={handleLoadMore}
                       disabled={isLoadingMore}
-                      className="text-neutral-400 hover:text-white"
+                      className="text-neutral-400 hover:text-white text-base !h-10"
                     >
                       {isLoadingMore ? (
                         <>
-                          <Loader2 className="size-4 mr-2 animate-spin" />
+                          <Loader2 className="size-5 mr-2 animate-spin" />
                           Loading...
                         </>
                       ) : (
@@ -828,25 +852,25 @@ export default function MessagesPage() {
                 )}
 
                 {isLoadingMessages ? (
-                  <div className="space-y-4">
+                  <div className="space-y-5">
                     {[...Array(5)].map((_, i) => (
-                      <div key={i} className={`flex gap-3 ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
-                        {i % 2 === 0 && <Skeleton className="size-9 rounded-full bg-neutral-800 flex-shrink-0" />}
-                        <Skeleton className={`h-16 ${i % 2 === 0 ? 'w-[60%]' : 'w-[50%]'} rounded-2xl bg-neutral-800`} />
-                        {i % 2 !== 0 && <Skeleton className="size-9 rounded-full bg-neutral-800 flex-shrink-0" />}
+                      <div key={i} className={`flex gap-4 ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
+                        {i % 2 === 0 && <Skeleton className="size-11 rounded-full bg-neutral-800 flex-shrink-0" />}
+                        <Skeleton className={`h-20 ${i % 2 === 0 ? 'w-[60%]' : 'w-[50%]'} rounded-2xl bg-neutral-800`} />
+                        {i % 2 !== 0 && <Skeleton className="size-11 rounded-full bg-neutral-800 flex-shrink-0" />}
                       </div>
                     ))}
                   </div>
                 ) : messages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-64 text-center">
-                    <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mb-4">
-                      <MessageCircle className="size-8 text-neutral-500" />
+                    <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mb-5">
+                      <MessageCircle className="size-10 text-neutral-500" />
                     </div>
-                    <p className="text-neutral-400 text-lg">No messages yet</p>
-                    <p className="text-neutral-500 text-sm mt-1">Start the conversation!</p>
+                    <p className="text-neutral-400 text-xl">No messages yet</p>
+                    <p className="text-neutral-500 text-base mt-2">Start the conversation!</p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-5">
                     {messages.map((message, index) => {
                       const isOwn = message.senderId === currentUserId;
                       const showAvatar = index === messages.length - 1 || 
@@ -855,12 +879,12 @@ export default function MessagesPage() {
                       
                       return (
                         <div key={message.id} className="group">
-                          <div className={`flex gap-3 items-end ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
-                            <div className="flex-shrink-0 w-9">
+                          <div className={`flex gap-4 items-end ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
+                            <div className="flex-shrink-0 w-11">
                               {showAvatar && (
                                 isOwn ? (
                                   user?.avatar ? (
-                                    <div className="relative size-9 rounded-full overflow-hidden">
+                                    <div className="relative size-11 rounded-full overflow-hidden">
                                       <Image
                                         src={user.avatar}
                                         alt={`${user.firstName} ${user.lastName}`}
@@ -869,13 +893,13 @@ export default function MessagesPage() {
                                       />
                                     </div>
                                   ) : (
-                                    <div className="size-9 rounded-full bg-white text-neutral-900 flex items-center justify-center text-xs font-bold">
+                                    <div className="size-11 rounded-full bg-white text-neutral-900 flex items-center justify-center text-sm font-bold">
                                       {user?.firstName[0]}{user?.lastName[0]}
                                     </div>
                                   )
                                 ) : other && (
                                   other.avatar ? (
-                                    <div className="relative size-9 rounded-full overflow-hidden">
+                                    <div className="relative size-11 rounded-full overflow-hidden">
                                       <Image
                                         src={other.avatar}
                                         alt={`${other.firstName} ${other.lastName}`}
@@ -884,7 +908,7 @@ export default function MessagesPage() {
                                       />
                                     </div>
                                   ) : (
-                                    <div className="size-9 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-xs font-bold">
+                                    <div className="size-11 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
                                       {other.firstName[0]}{other.lastName[0]}
                                     </div>
                                   )
@@ -894,7 +918,7 @@ export default function MessagesPage() {
 
                             <div className="max-w-[65%]">
                               {message.parentMessage && (
-                                <div className={`text-xs text-neutral-500 mb-1 px-3 py-1.5 rounded-lg bg-neutral-800/50 ${isOwn ? 'ml-auto' : ''} max-w-fit`}>
+                                <div className={`text-sm text-neutral-500 mb-2 px-4 py-2 rounded-lg bg-neutral-800/50 ${isOwn ? 'ml-auto' : ''} max-w-fit`}>
                                   <span className="font-medium">
                                     {typeof message.parentMessage === 'object' 
                                       ? `${message.parentMessage.sender?.firstName || 'User'}`
@@ -910,7 +934,7 @@ export default function MessagesPage() {
                               
                               <div className="relative">
                                 <div
-                                  className={`px-4 py-3 rounded-2xl ${
+                                  className={`px-5 py-4 rounded-2xl ${
                                     message.isDeleted
                                       ? 'bg-neutral-800/50 text-neutral-500 italic'
                                       : isOwn
@@ -918,48 +942,48 @@ export default function MessagesPage() {
                                         : 'bg-neutral-800 text-neutral-100 rounded-bl-md'
                                   }`}
                                 >
-                                  <p className="text-base leading-relaxed whitespace-pre-wrap">
+                                  <p className="text-lg leading-relaxed whitespace-pre-wrap">
                                     {message.content}
                                   </p>
                                 </div>
                                 
                                 {isOwn && !message.isDeleted && (
-                                  <div className="absolute -left-20 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                  <div className="absolute -left-24 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="size-8 text-neutral-400 hover:text-white"
+                                      className="size-10 text-neutral-400 hover:text-white"
                                       onClick={() => {
                                         setEditingMessage(message);
                                         setEditContent(message.content);
                                         setIsEditDialogOpen(true);
                                       }}
                                     >
-                                      <Edit2 className="size-3.5" />
+                                      <Edit2 className="size-4" />
                                     </Button>
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="size-8 text-neutral-400 hover:text-red-500"
+                                      className="size-10 text-neutral-400 hover:text-red-500 dark:hover:bg-red-500/10"
                                       onClick={() => {
                                         setDeletingMessage(message);
                                         setIsDeleteDialogOpen(true);
                                       }}
                                     >
-                                      <Trash2 className="size-3.5" />
+                                      <Trash2 className="size-4" />
                                     </Button>
                                   </div>
                                 )}
                                 
                                 {!isOwn && !message.isDeleted && (
-                                  <div className="absolute -right-10 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <div className="absolute -right-12 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="size-8 text-neutral-400 hover:text-white"
+                                      className="size-10 text-neutral-400 hover:text-white"
                                       onClick={() => setReplyingTo(message)}
                                     >
-                                      <Reply className="size-3.5" />
+                                      <Reply className="size-4" />
                                     </Button>
                                   </div>
                                 )}
@@ -967,12 +991,12 @@ export default function MessagesPage() {
                             </div>
                           </div>
                           
-                          <div className={`flex items-center gap-1.5 mt-1.5 ${isOwn ? 'justify-end mr-12' : 'justify-start ml-12'}`}>
-                            <span className="text-sm text-neutral-500">
+                          <div className={`flex items-center gap-2 mt-2 ${isOwn ? 'justify-end mr-14' : 'justify-start ml-14'}`}>
+                            <span className="text-base text-neutral-500">
                               {formatMessageTime(message.createdAt)}
                             </span>
                             {message.isEdited && (
-                              <span className="text-xs text-neutral-500">(edited)</span>
+                              <span className="text-sm text-neutral-500">(edited)</span>
                             )}
                             {isOwn && !message.isDeleted && getStatusIcon(message)}
                           </div>
@@ -981,13 +1005,13 @@ export default function MessagesPage() {
                     })}
                     
                     {isOtherTyping && (
-                      <div className="flex gap-3 flex-row">
-                        <div className="flex-shrink-0 w-9 flex items-end">
+                      <div className="flex gap-4 flex-row">
+                        <div className="flex-shrink-0 w-11 flex items-end">
                           {(() => {
                             const other = getOtherParticipant(selectedConversation);
                             if (!other) return null;
                             return other.avatar ? (
-                              <div className="relative size-9 rounded-full overflow-hidden">
+                              <div className="relative size-11 rounded-full overflow-hidden">
                                 <Image
                                   src={other.avatar}
                                   alt={`${other.firstName} ${other.lastName}`}
@@ -996,17 +1020,17 @@ export default function MessagesPage() {
                                 />
                               </div>
                             ) : (
-                              <div className="size-9 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-xs font-bold">
+                              <div className="size-11 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
                                 {other.firstName[0]}{other.lastName[0]}
                               </div>
                             );
                           })()}
                         </div>
-                        <div className="px-4 py-3 rounded-2xl bg-neutral-800 rounded-bl-md">
-                          <div className="flex items-center gap-1">
-                            <span className="size-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                            <span className="size-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                            <span className="size-2 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        <div className="px-5 py-4 rounded-2xl bg-neutral-800 rounded-bl-md">
+                          <div className="flex items-center gap-1.5">
+                            <span className="size-2.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="size-2.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <span className="size-2.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                           </div>
                         </div>
                       </div>
@@ -1018,27 +1042,27 @@ export default function MessagesPage() {
               </div>
             </ScrollArea>
 
-            <div className="p-5 border-t border-neutral-800 bg-neutral-900/30">
+            <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
               {replyingTo && (
-                <div className="flex items-center justify-between mb-3 px-4 py-2 bg-neutral-800/50 rounded-lg">
+                <div className="flex items-center justify-between mb-4 px-5 py-3 bg-neutral-800/50 rounded-lg">
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-neutral-400 mb-0.5">
+                    <p className="text-sm text-neutral-400 mb-1">
                       Replying to {replyingTo.sender?.firstName || 'User'}
                     </p>
-                    <p className="text-sm text-neutral-300 truncate">{replyingTo.content}</p>
+                    <p className="text-base text-neutral-300 truncate">{replyingTo.content}</p>
                   </div>
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="size-8 text-neutral-400 hover:text-white flex-shrink-0"
+                    className="size-10 text-neutral-400 hover:text-white flex-shrink-0"
                     onClick={() => setReplyingTo(null)}
                   >
-                    <X className="size-4" />
+                    <X className="size-5" />
                   </Button>
                 </div>
               )}
               
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-4">
                 <div className="flex-1 relative">
                   <Input
                     placeholder="Type a message..."
@@ -1046,24 +1070,23 @@ export default function MessagesPage() {
                     onChange={(e) => handleInputChange(e.target.value)}
                     onKeyDown={handleKeyPress}
                     onBlur={() => {
-                      // Stop typing when input loses focus and is empty
                       if (!messageInput.trim()) {
                         stopTypingIndicator();
                       }
                     }}
-                    className="!h-14 pr-12 bg-neutral-800/50 border-neutral-700 !text-lg"
+                    className="!h-16 pr-14 bg-neutral-800/50 border-neutral-700 !text-xl"
                     disabled={isSending}
                   />
                 </div>
                 <Button 
                   onClick={handleSendMessage}
                   disabled={!messageInput.trim() || isSending}
-                  className="size-12 rounded-full bg-white text-black hover:bg-neutral-200 flex-shrink-0"
+                  className="size-14 rounded-full bg-white text-black hover:bg-neutral-200 flex-shrink-0"
                 >
                   {isSending ? (
-                    <Loader2 className="size-6 animate-spin" />
+                    <Loader2 className="size-7 animate-spin" />
                   ) : (
-                    <Send className="size-6" />
+                    <Send className="size-7" />
                   )}
                 </Button>
               </div>
@@ -1072,11 +1095,11 @@ export default function MessagesPage() {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-6">
-                <MessageCircle className="size-10 text-neutral-500" />
+              <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+                <MessageCircle className="size-12 text-neutral-500" />
               </div>
-              <h2 className="text-2xl font-semibold mb-2">Your Messages</h2>
-              <p className="text-neutral-400 text-lg max-w-sm">
+              <h2 className="text-3xl font-semibold mb-3">Your Messages</h2>
+              <p className="text-neutral-400 text-xl max-w-sm">
                 {isLoadingConversations 
                   ? 'Loading conversations...'
                   : conversations.length === 0
@@ -1092,15 +1115,15 @@ export default function MessagesPage() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="bg-neutral-900 border-neutral-800">
           <DialogHeader>
-            <DialogTitle className="text-xl">Edit Message</DialogTitle>
-            <DialogDescription className="text-neutral-400">
+            <DialogTitle className="text-2xl">Edit Message</DialogTitle>
+            <DialogDescription className="text-lg text-neutral-400">
               Make changes to your message.
             </DialogDescription>
           </DialogHeader>
           <Textarea
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
-            className="min-h-[100px] bg-neutral-800 border-neutral-700 text-base"
+            className="min-h-[120px] bg-neutral-800 border-neutral-700 text-lg"
           />
           <DialogFooter>
             <Button
@@ -1110,13 +1133,14 @@ export default function MessagesPage() {
                 setEditingMessage(null);
                 setEditContent('');
               }}
+              className="!h-11 !text-base"
             >
               Cancel
             </Button>
             <Button
               onClick={handleEditMessage}
               disabled={!editContent.trim() || editContent === editingMessage?.content}
-              className="bg-white text-black hover:bg-neutral-200"
+              className="bg-white text-black hover:bg-neutral-200 !h-11 !text-base"
             >
               Save Changes
             </Button>
@@ -1127,8 +1151,8 @@ export default function MessagesPage() {
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="bg-neutral-900 border-neutral-800">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-xl">Delete Message</AlertDialogTitle>
-            <AlertDialogDescription className="text-neutral-400">
+            <AlertDialogTitle className="text-2xl">Delete Message</AlertDialogTitle>
+            <AlertDialogDescription className="text-lg text-neutral-400">
               Are you sure you want to delete this message? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -1138,13 +1162,13 @@ export default function MessagesPage() {
                 setIsDeleteDialogOpen(false);
                 setDeletingMessage(null);
               }}
-              className="bg-neutral-800 border-neutral-700 hover:bg-neutral-700"
+              className="bg-neutral-800 border-neutral-700 hover:bg-neutral-700 !h-11 !text-base"
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteMessage}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-red-600 text-white hover:bg-red-700 !h-11 !text-base"
             >
               Delete
             </AlertDialogAction>
