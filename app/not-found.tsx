@@ -23,7 +23,7 @@ export default function NotFound() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
-            className="relative mb-6"
+            className="relative"
           >
             <span className="text-[140px] md:text-[180px] font-bold text-neutral-900 leading-none select-none">
               404
