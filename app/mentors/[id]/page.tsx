@@ -23,6 +23,7 @@ import { mentorService, mentorshipService } from '@/services';
 import type { IMentorProfile } from '@/types';
 
 import { PublicHeader } from '@/components/PublicHeader';
+import { PublicFooter } from '@/components/PublicFooter';
 import { TransitionPanel } from '@/components/motion-primitives/transition-panel';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -550,6 +551,7 @@ export default function MentorDetailPage() {
             </div>
           </div>
         </div>
+        <PublicFooter />
       </main>
 
       <Dialog open={isConnectDialogOpen} onOpenChange={handleCloseDialog}>

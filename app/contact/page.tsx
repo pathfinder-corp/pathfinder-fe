@@ -11,9 +11,6 @@ import {
   MessageSquare,
   Clock,
   Sparkles,
-  Github,
-  Linkedin,
-  Twitter,
   ArrowRight,
   CheckCircle2,
   Loader2
@@ -22,6 +19,7 @@ import { toast } from 'sonner';
 import { useUserStore } from '@/stores';
 
 import { PublicHeader } from '@/components/PublicHeader';
+import { PublicFooter } from '@/components/PublicFooter';
 import { BackgroundBeams } from '@/components/ui/background-beams';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -92,12 +90,6 @@ const FAQ_ITEMS = [
   }
 ];
 
-const SOCIAL_LINKS = [
-  { icon: Github, href: 'https://github.com/pathfinder', label: 'GitHub' },
-  { icon: Linkedin, href: 'https://linkedin.com/company/pathfinder', label: 'LinkedIn' },
-  { icon: Twitter, href: 'https://twitter.com/pathfinder', label: 'Twitter' }
-];
-
 export default function ContactPage() {
   const initializeUser = useUserStore((state) => state.initializeUser);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -150,7 +142,7 @@ export default function ContactPage() {
 
       <main className="relative z-10 pt-40">
         <section className="px-8 pb-24">
-          <div className="max-w-[85rem] mx-auto text-center">
+          <div className="max-w-[1100px] mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -186,7 +178,7 @@ export default function ContactPage() {
         </section>
 
         <section className="px-8 pb-24">
-          <div className="max-w-[85rem] mx-auto">
+          <div className="max-w-[1100px] mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {CONTACT_INFO.map((info, index) => (
                 <motion.div
@@ -216,7 +208,7 @@ export default function ContactPage() {
         </section>
 
         <section className="px-8 pb-24">
-          <div className="max-w-[85rem] mx-auto">
+          <div className="max-w-[1100px] mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
@@ -372,84 +364,7 @@ export default function ContactPage() {
           </div>
         </section>
 
-        <footer className="border-t border-neutral-800 bg-neutral-950/80 backdrop-blur-xl">
-          <div className="max-w-[85rem] mx-auto px-8 py-20">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-              <div className="lg:col-span-1">
-                <Link href="/" className="text-4xl font-bold tracking-tight hover:text-neutral-300 transition-colors">
-                  Pathfinder.
-                </Link>
-                <p className="mt-6 text-lg text-neutral-400 leading-relaxed">
-                  AI-Powered Academic and Career Pathway Recommendation System. 
-                  Guide your future with intelligent insights.
-                </p>
-                <div className="flex items-center gap-4 mt-8">
-                  {SOCIAL_LINKS.map((social) => (
-                    <a
-                      key={social.label}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="size-12 rounded-full bg-neutral-900 border border-neutral-800 flex items-center justify-center text-neutral-400 hover:text-white hover:border-neutral-700 hover:bg-neutral-800 transition-all duration-300"
-                      aria-label={social.label}
-                    >
-                      <social.icon className="size-5" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-xl font-semibold mb-6">Product</h4>
-                <ul className="space-y-4">
-                  {['Roadmap Generator', 'Career Assessment', 'Mentor Matching', 'Learning Paths', 'AI Insights'].map((item) => (
-                    <li key={item}>
-                      <Link href="#" className="text-lg text-neutral-400 hover:text-white transition-colors">
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-xl font-semibold mb-6">Company</h4>
-                <ul className="space-y-4">
-                  {['About Us', 'Careers', 'Blog', 'Press Kit', 'Partners'].map((item) => (
-                    <li key={item}>
-                      <Link href="#" className="text-lg text-neutral-400 hover:text-white transition-colors">
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="text-xl font-semibold mb-6">Legal</h4>
-                <ul className="space-y-4">
-                  {['Privacy Policy', 'Terms of Service', 'Cookie Policy', 'Data Protection', 'Accessibility'].map((item) => (
-                    <li key={item}>
-                      <Link href="#" className="text-lg text-neutral-400 hover:text-white transition-colors">
-                        {item}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="pt-10 border-t border-neutral-800 flex flex-col md:flex-row items-center justify-between gap-6">
-              <p className="text-lg text-neutral-500">
-                © {new Date().getFullYear()} Pathfinder. All rights reserved.
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="size-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-lg text-neutral-400">All systems operational</span>
-              </div>
-            </div>
-          </div>
-        </footer>
+        <PublicFooter />
       </main>
     </div>
   );

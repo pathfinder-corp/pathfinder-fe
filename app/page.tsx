@@ -46,7 +46,7 @@ export default function Home() {
 
             <h1 className="text-9xl font-bold tracking-tight leading-tight">
               Guide{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-neutral-500">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-neutral-200 to-neutral-500">
                 your future
               </span>
               <br />

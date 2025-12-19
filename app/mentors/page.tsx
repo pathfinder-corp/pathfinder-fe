@@ -24,6 +24,7 @@ import type { IMentorProfile, IMentorProfilesParams } from '@/types';
 import { ITEMS_PER_PAGE, USER_ROLES } from '@/constants';
 
 import { PublicHeader } from '@/components/PublicHeader';
+import { PublicFooter } from '@/components/PublicFooter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -620,6 +621,8 @@ export default function MentorsPage() {
             </div>
           </section>
         )}
+
+        <PublicFooter />
       </main>
     </div>
   );
