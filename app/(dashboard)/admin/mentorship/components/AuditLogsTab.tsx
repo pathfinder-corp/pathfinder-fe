@@ -48,8 +48,10 @@ export function AuditLogsTab() {
       setTotalPages(response?.meta?.totalPages || 1);
       setTotalLogs(response?.meta?.total || 0);
     } catch (error) {
-      toast.error('Failed to load audit logs');
-      console.error('Fetch audit logs error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load audit logs';
+      toast.error(errorMessage);
       setAuditLogs([]);
     } finally {
       setIsLoading(false);

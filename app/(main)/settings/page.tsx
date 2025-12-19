@@ -106,8 +106,12 @@ export default function SettingsPage() {
       profileForm.setValue('firstName', data.firstName);
       profileForm.setValue('lastName', data.lastName);
     } catch (error) {
-      console.error('Failed to load profile:', error);
-      toast.error('Failed to load profile');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load profile';
+      toast.error('Failed to load profile', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoadingProfile(false);
     }
@@ -127,8 +131,12 @@ export default function SettingsPage() {
       
       toast.success('Profile updated successfully');
     } catch (error) {
-      console.error('Failed to update profile:', error);
-      toast.error('Failed to update profile');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to update profile';
+      toast.error('Failed to update profile', {
+        description: errorMessage,
+      });
     } finally {
       setIsSavingProfile(false);
     }
@@ -145,9 +153,11 @@ export default function SettingsPage() {
       passwordForm.reset();
       toast.success('Password changed successfully');
     } catch (error) {
-      console.error('Failed to change password:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to change password';
       toast.error('Failed to change password', {
-        description: 'Please check your current password and try again',
+        description: errorMessage,
       });
     } finally {
       setIsChangingPassword(false);
@@ -173,9 +183,11 @@ export default function SettingsPage() {
         description: 'Please check your inbox and spam folder',
       });
     } catch (error) {
-      console.error('Failed to resend verification:', error);
-      toast.error('Failed to send verification email', {
-        description: 'Please try again later',
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to resend verification';
+      toast.error('Failed to resend verification email', {
+        description: errorMessage,
       });
     } finally {
       setIsResendingVerification(false);

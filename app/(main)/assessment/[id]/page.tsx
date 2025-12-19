@@ -83,7 +83,10 @@ export default function AssessmentDetailPage() {
           setResult(resultData);
         }
       } catch (error) {
-        toast.error('Failed to load assessment');
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : 'Failed to load assessment';
+        toast.error(errorMessage);
         router.push('/history');
       } finally {
         updateLoadingState('initial', false);
@@ -103,7 +106,10 @@ export default function AssessmentDetailPage() {
       setQuestionStartTime(Date.now());
       toast.success('Assessment started! Good luck!');
     } catch (error) {
-      toast.error('Failed to start assessment');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to start assessment';
+      toast.error(errorMessage);
     } finally {
       updateLoadingState('starting', false);
     }
@@ -145,7 +151,10 @@ export default function AssessmentDetailPage() {
       } : null);
 
     } catch (error) {
-      toast.error('Failed to submit answer');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to submit answer';
+      toast.error(errorMessage);
     } finally {
       updateLoadingState('submitting', false);
     }
@@ -183,7 +192,10 @@ export default function AssessmentDetailPage() {
       setAssessment(prev => prev ? { ...prev, status: 'completed' } : null);
       toast.success('Assessment completed!');
     } catch (error) {
-      toast.error('Failed to complete assessment. Make sure all questions are answered.');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to complete assessment. Make sure all questions are answered.';
+      toast.error(errorMessage);
     } finally {
       updateLoadingState('completing', false);
     }

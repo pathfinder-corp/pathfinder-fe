@@ -75,7 +75,12 @@ export default function RoadmapDetailPage() {
         setNodes(flowNodes);
         setEdges(flowEdges);
       } catch (error) {
-        toast.error(error instanceof Error ? error.message : 'Cannot load roadmap');
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : 'Cannot load roadmap';
+        toast.error('Cannot load roadmap', {
+          description: errorMessage,
+        });
         router.push('/roadmap');
       } finally {
         updateLoadingState('initial', false);
@@ -211,8 +216,12 @@ export default function RoadmapDetailPage() {
         [selectedNodeId]: [...(prev[selectedNodeId] || []), aiMessage]
       }));
     } catch (error) {
-      toast.error('Failed to get AI response. Please try again.');
-      console.error('AI insight error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to get AI response. Please try again.';
+      toast.error('Failed to get AI response. Please try again.', {
+        description: errorMessage,
+      });
     } finally {
       updateLoadingState('aiChat', false);
     }

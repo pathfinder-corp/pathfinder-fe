@@ -14,6 +14,7 @@ import {
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { notificationService } from '@/services';
 import type { INotification, NotificationType } from '@/types';
+import { toast } from 'sonner';
 
 import { Button } from './ui/button';
 import {
@@ -36,7 +37,12 @@ export function NotificationDropdown() {
       const response = await notificationService.getUnreadCount();
       setUnreadCount(response.count);
     } catch (error) {
-      console.error('Failed to fetch unread count:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to fetch unread count';
+      toast.error('Failed to fetch unread count', {
+        description: errorMessage,
+      });
     }
   }, []);
 
@@ -47,7 +53,12 @@ export function NotificationDropdown() {
       setNotifications(response.notifications);
       setUnreadCount(response.unreadCount);
     } catch (error) {
-      console.error('Failed to fetch notifications:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to fetch notifications';
+      toast.error('Failed to fetch notifications', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +85,12 @@ export function NotificationDropdown() {
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Failed to mark as read:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to mark notification as read';
+      toast.error('Failed to mark notification as read', {
+        description: errorMessage,
+      });
     }
   };
 
@@ -88,7 +104,12 @@ export function NotificationDropdown() {
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
       setUnreadCount(0);
     } catch (error) {
-      console.error('Failed to mark all as read:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to mark all as read';
+      toast.error('Failed to mark all as read', {
+        description: errorMessage,
+      });
     } finally {
       setIsMarkingRead(false);
     }

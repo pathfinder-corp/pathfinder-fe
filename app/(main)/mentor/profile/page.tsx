@@ -117,7 +117,6 @@ export default function MentorProfilePage() {
         setProfile(data);
         setHasProfile(true);
         
-        // Populate form with existing data
         reset({
           headline: data.headline || '',
           bio: data.bio || '',
@@ -133,8 +132,12 @@ export default function MentorProfilePage() {
         setIndustries(data.industries || []);
         setLanguages(data.languages || []);
       } catch (error) {
-        // No profile found - user might need to apply first
-        console.error('Failed to fetch mentor profile:', error);
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : 'Failed to fetch mentor profile';
+        toast.error('Failed to fetch mentor profile', {
+          description: errorMessage,
+        });
         setHasProfile(false);
       } finally {
         setIsLoading(false);
@@ -214,7 +217,12 @@ export default function MentorProfilePage() {
       
       toast.success('Profile updated successfully!');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to update profile');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to update profile';
+      toast.error('Failed to update profile', {
+        description: errorMessage,
+      });
     } finally {
       setIsSaving(false);
     }

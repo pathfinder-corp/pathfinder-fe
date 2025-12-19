@@ -93,7 +93,12 @@ export function ShareRoadmapDialog({
         );
         setSearchResults(filteredResults);
       } catch (error) {
-        console.error('Search users error:', error);
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : 'Failed to search users';
+        toast.error('Failed to search users', {
+          description: errorMessage,
+        });
         setSearchResults([]);
       } finally {
         setIsSearching(false);
@@ -109,8 +114,12 @@ export function ShareRoadmapDialog({
       const data = await roadmapService.getShareSettings(roadmapId);
       setIsSharedWithAll(data.isSharedWithAll);
     } catch (error) {
-      toast.error('Failed to load sharing settings');
-      console.error('Fetch share settings error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load sharing settings';
+      toast.error('Failed to load sharing settings', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -122,7 +131,12 @@ export function ShareRoadmapDialog({
       const users = await roadmapService.getSharedUsers(roadmapId);
       setSharedUsers(users);
     } catch (error) {
-      console.error('Fetch shared users error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to fetch shared users';
+      toast.error('Failed to fetch shared users', {
+        description: errorMessage,
+      });
       setSharedUsers([]);
     } finally {
       setIsLoadingUsers(false);
@@ -134,7 +148,12 @@ export function ShareRoadmapDialog({
       const users = await roadmapService.getSharedUsers(roadmapId);
       setSharedUsers(users);
     } catch (error) {
-      console.error('Refresh shared users error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to refresh shared users';
+      toast.error('Failed to refresh shared users', {
+        description: errorMessage,
+      });
     }
   };
 
@@ -149,8 +168,12 @@ export function ShareRoadmapDialog({
       toast.success(checked ? 'Roadmap is now public' : 'Roadmap is now private');
     } catch (error) {
       setIsSharedWithAll(previousValue);
-      toast.error('Failed to update sharing settings');
-      console.error('Toggle share with all error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to toggle share with all';
+      toast.error('Failed to toggle share with all', {
+        description: errorMessage,
+      });
     }
   };
 
@@ -164,8 +187,12 @@ export function ShareRoadmapDialog({
       setUserToRevoke(null);
       refreshSharedUsers();
     } catch (error) {
-      toast.error('Failed to revoke access');
-      console.error('Revoke access error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to revoke access';
+      toast.error('Failed to revoke access', {
+        description: errorMessage,
+      });
     } finally {
       setIsRevoking(false);
     }
@@ -183,14 +210,20 @@ export function ShareRoadmapDialog({
       await roadmapService.shareRoadmap(roadmapId, {
         userIds: [user.id]
       });
-      toast.success(`Shared with ${user.firstName} ${user.lastName}`);
+      toast.success(`Shared with ${user.firstName} ${user.lastName}`, {
+        description: 'User invited successfully',
+      });
       
       setSearchEmail('');
       setSearchResults([]);
       refreshSharedUsers();
     } catch (error) {
-      toast.error('Failed to share with user');
-      console.error('Invite user error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to share with user';
+      toast.error('Failed to share with user', {
+        description: errorMessage,
+      });
     } finally {
       setIsInviting(false);
     }

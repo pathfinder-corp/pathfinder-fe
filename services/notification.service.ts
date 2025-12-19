@@ -5,7 +5,7 @@ import type {
   IMarkReadRequest,
   IMarkReadResponse
 } from '@/types';
-import { api } from '@/lib';
+import { api, extractErrorMessage } from '@/lib';
 
 export const notificationService = {
   getNotifications: async (params?: INotificationsParams): Promise<INotificationsResponse> => {
@@ -22,6 +22,8 @@ export const notificationService = {
       return response.data;
     } catch (error) {
       console.error('Get notifications failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -32,6 +34,8 @@ export const notificationService = {
       return response.data;
     } catch (error) {
       console.error('Get unread count failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -42,6 +46,8 @@ export const notificationService = {
       return response.data;
     } catch (error) {
       console.error('Mark as read failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   }

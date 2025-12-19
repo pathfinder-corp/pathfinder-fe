@@ -124,8 +124,12 @@ export default function MentorsPage() {
       setTotalPages(response.meta?.totalPages || 1);
       setTotal(response.meta?.total || 0);
     } catch (error) {
-      console.error('Fetch mentors error:', error);
-      toast.error('Failed to load mentors');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load mentors';
+      toast.error('Failed to load mentors', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }

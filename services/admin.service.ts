@@ -22,7 +22,7 @@ import type {
   IAuditLogsParams,
   IIPStatisticsResponse
 } from '@/types';
-import { api } from '@/lib';
+import { api, extractErrorMessage } from '@/lib';
 
 export const adminService = {
   getDashboardOverview: async (): Promise<IDashboardOverview> => {
@@ -31,6 +31,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get dashboard overview failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -41,6 +43,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get dashboard users failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -51,6 +55,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get dashboard roadmaps failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -61,6 +67,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get dashboard assessments failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -71,6 +79,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get users failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -81,6 +91,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get user by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -91,6 +103,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Update user failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -100,6 +114,8 @@ export const adminService = {
       await api.delete(`/admin/users/${id}`);
     } catch (error) {
       console.error('Delete user failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -110,6 +126,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get roadmaps failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -120,6 +138,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get roadmap by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -129,6 +149,8 @@ export const adminService = {
       await api.delete(`/admin/roadmaps/${id}`);
     } catch (error) {
       console.error('Delete roadmap failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -139,6 +161,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get assessments failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -149,6 +173,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get assessment by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -158,6 +184,8 @@ export const adminService = {
       await api.delete(`/admin/assessments/${id}`);
     } catch (error) {
       console.error('Delete assessment failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -168,6 +196,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get mentor applications failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -178,6 +208,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get mentor application by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -188,6 +220,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Review mentor application failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -198,6 +232,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Mark application under review failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -208,6 +244,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get flagged applications failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -218,6 +256,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Unflag application failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -228,6 +268,8 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get IP statistics failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -238,8 +280,9 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get audit logs failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   }
 };
-

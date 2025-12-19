@@ -10,7 +10,7 @@ import type {
   IMentorshipRequestsParams,
   IMentorshipRequestsResponse
 } from '@/types';
-import { api } from '@/lib';
+import { api, extractErrorMessage } from '@/lib';
 
 export const mentorshipService = {
   getMentorships: async (params?: IMentorshipsParams): Promise<IMentorshipsResponse> => {
@@ -47,6 +47,8 @@ export const mentorshipService = {
       return response.data;
     } catch (error) {
       console.error('End mentorship failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -57,6 +59,8 @@ export const mentorshipService = {
       return response.data;
     } catch (error) {
       console.error('Create mentorship request failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -95,6 +99,8 @@ export const mentorshipService = {
       await api.delete(`/mentorship-requests/${id}`);
     } catch (error) {
       console.error('Cancel mentorship request failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -108,6 +114,8 @@ export const mentorshipService = {
       return response.data;
     } catch (error) {
       console.error('Accept mentorship request failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -121,6 +129,8 @@ export const mentorshipService = {
       return response.data;
     } catch (error) {
       console.error('Decline mentorship request failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   }

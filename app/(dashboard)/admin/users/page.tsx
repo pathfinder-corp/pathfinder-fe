@@ -132,8 +132,10 @@ export default function AdminUsersPage() {
       setTotalPages(response.meta.totalPages);
       setTotalUsers(response.meta.total);
     } catch (error) {
-      toast.error('Failed to load users');
-      console.error('Fetch users error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load users';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -173,7 +175,10 @@ export default function AdminUsersPage() {
       setSelectedUser(userDetail);
       setIsViewDialogOpen(true);
     } catch (error) {
-      toast.error('Failed to load user details');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load user details';
+      toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
     }
@@ -188,7 +193,10 @@ export default function AdminUsersPage() {
       setEditStatus(userDetail.status);
       setIsEditDialogOpen(true);
     } catch (error) {
-      toast.error('Failed to load user details');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load user details';
+      toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
     }
@@ -207,7 +215,10 @@ export default function AdminUsersPage() {
       setIsEditDialogOpen(false);
       fetchUsers();
     } catch (error) {
-      toast.error('Failed to update user');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to update user';
+      toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
     }
@@ -224,7 +235,10 @@ export default function AdminUsersPage() {
       setUserToDelete(null);
       fetchUsers();
     } catch (error) {
-      toast.error('Failed to delete user');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to delete user';
+      toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
     }

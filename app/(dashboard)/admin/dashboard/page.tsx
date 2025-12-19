@@ -127,8 +127,10 @@ export default function AdminDashboardPage() {
       setRoadmapsData(roadmapsRes);
       setAssessmentsData(assessmentsRes);
     } catch (error) {
-      toast.error('Failed to load dashboard data');
-      console.error('Dashboard fetch error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load dashboard data';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

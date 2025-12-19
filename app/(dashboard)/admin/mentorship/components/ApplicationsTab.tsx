@@ -96,8 +96,10 @@ export function ApplicationsTab({
       setTotalPages(response.meta?.totalPages || 1);
       setTotalApplications(response.meta?.total || 0);
     } catch (error) {
-      toast.error('Failed to load mentor applications');
-      console.error('Fetch applications error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load mentor applications';
+      toast.error(errorMessage);
       setApplications([]);
       setTotalPages(1);
       setTotalApplications(0);
@@ -121,7 +123,10 @@ export function ApplicationsTab({
       fetchApplications();
       onMarkUnderReview(application);
     } catch (error) {
-      toast.error('Failed to mark application as under review');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to mark application as under review';
+      toast.error(errorMessage);
     }
   };
 
@@ -132,7 +137,10 @@ export function ApplicationsTab({
       fetchApplications();
       onUnflagApplication(application);
     } catch (error) {
-      toast.error('Failed to unflag application');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to unflag application';
+      toast.error(errorMessage);
     }
   };
 

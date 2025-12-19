@@ -28,8 +28,10 @@ export function IPStatisticsTab() {
       const response = await adminService.getIPStatistics();
       setIPStatistics(response || []);
     } catch (error) {
-      toast.error('Failed to load IP statistics');
-      console.error('Fetch IP statistics error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load IP statistics';
+      toast.error(errorMessage);
       setIPStatistics([]);
     } finally {
       setIsLoading(false);

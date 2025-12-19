@@ -7,7 +7,7 @@ import type {
   IEditMessageRequest,
   IUnreadCountResponse,
 } from '@/types';
-import { api } from '@/lib';
+import { api, extractErrorMessage } from '@/lib';
 
 export const chatService = {
   getConversations: async (): Promise<IChatConversation[]> => {
@@ -16,6 +16,8 @@ export const chatService = {
       return response.data;
     } catch (error) {
       console.error('Get conversations failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -28,6 +30,8 @@ export const chatService = {
       return response.data;
     } catch (error) {
       console.error('Get conversation by mentorship failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -47,6 +51,8 @@ export const chatService = {
       return response.data;
     } catch (error) {
       console.error('Get messages failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -63,6 +69,8 @@ export const chatService = {
       return response.data;
     } catch (error) {
       console.error('Send message failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -73,6 +81,8 @@ export const chatService = {
       return response.data;
     } catch (error) {
       console.error('Edit message failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -83,6 +93,8 @@ export const chatService = {
       return response.data;
     } catch (error) {
       console.error('Delete message failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -95,8 +107,9 @@ export const chatService = {
       return response.data;
     } catch (error) {
       console.error('Get unread count failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
 };
-

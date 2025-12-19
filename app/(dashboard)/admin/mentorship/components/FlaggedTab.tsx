@@ -43,8 +43,10 @@ export function FlaggedTab({ onViewApplication, onUnflagApplication }: FlaggedTa
       const response = await adminService.getFlaggedApplications();
       setFlaggedApplications(response || []);
     } catch (error) {
-      toast.error('Failed to load flagged applications');
-      console.error('Fetch flagged applications error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load flagged applications';
+      toast.error(errorMessage);
       setFlaggedApplications([]);
     } finally {
       setIsLoading(false);
@@ -62,7 +64,10 @@ export function FlaggedTab({ onViewApplication, onUnflagApplication }: FlaggedTa
       fetchFlaggedApplications();
       onUnflagApplication(application);
     } catch (error) {
-      toast.error('Failed to unflag application');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to unflag application';
+      toast.error(errorMessage);
     }
   };
 

@@ -28,8 +28,9 @@ export function UserMenu() {
       router.push('/login');
       router.refresh();
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'An error occurred. Please try again.';
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'An error occurred while logging out. Please try again.';
       toast.error('Logout failed', {
         description: errorMessage,
       });

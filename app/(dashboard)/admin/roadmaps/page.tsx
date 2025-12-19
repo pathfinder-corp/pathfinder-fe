@@ -126,8 +126,12 @@ export default function AdminRoadmapsPage() {
       setTotalPages(response.meta.totalPages);
       setTotalRoadmaps(response.meta.total);
     } catch (error) {
-      toast.error('Failed to load roadmaps');
-      console.error('Fetch roadmaps error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load roadmaps';
+      toast.error('Failed to load roadmaps', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -167,7 +171,12 @@ export default function AdminRoadmapsPage() {
       setSelectedRoadmap(roadmapDetail);
       setIsViewDialogOpen(true);
     } catch (error) {
-      toast.error('Failed to load roadmap details');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load roadmap details';
+      toast.error('Failed to load roadmap details', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoadingAction(false);
     }
@@ -184,7 +193,12 @@ export default function AdminRoadmapsPage() {
       setRoadmapToDelete(null);
       fetchRoadmaps();
     } catch (error) {
-      toast.error('Failed to delete roadmap');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to delete roadmap';
+      toast.error('Failed to delete roadmap', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoadingAction(false);
     }

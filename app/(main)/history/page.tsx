@@ -133,8 +133,12 @@ export default function HistoryPage() {
       setHasNextPage(roadmapsData.length === ITEMS_PER_PAGE);
       setPage(1);
     } catch (error) {
-      console.error('Error fetching data:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to fetch data');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to fetch data';
+      toast.error('Failed to fetch data', {
+        description: errorMessage,
+      });
     } finally {
       updateLoadingState('initial', false);
     }
@@ -156,8 +160,12 @@ export default function HistoryPage() {
         setHasNextPage(false);
       }
     } catch (error) {
-      console.error('Error loading more roadmaps:', error);
-      toast.error('Failed to load more roadmaps');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load more roadmaps';
+      toast.error('Failed to load more roadmaps', {
+        description: errorMessage,
+      });
     } finally {
       updateLoadingState('loadMore', false);
     }
@@ -177,7 +185,12 @@ export default function HistoryPage() {
         toast.success('Assessment deleted successfully');
       }
     } catch (error) {
-      toast.error(`Failed to delete ${item.type}`);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : `Failed to delete ${item.type}`;
+      toast.error('Failed to delete', {
+        description: errorMessage,
+      });
     } finally {
       updateLoadingState('delete', false);
       setDeleteItem(null);
@@ -194,8 +207,12 @@ export default function HistoryPage() {
       setHasNextPage(false);
       toast.success('All roadmaps deleted successfully');
     } catch (error) {
-      console.error('Error deleting all roadmaps:', error);
-      toast.error('Failed to delete all roadmaps');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to delete all roadmaps';
+      toast.error('Failed to delete all roadmaps', {
+        description: errorMessage,
+      });
     } finally {
       updateLoadingState('deleteAll', false);
       setIsDeleteAllOpen(false);

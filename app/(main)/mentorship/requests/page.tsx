@@ -86,8 +86,12 @@ export default function MentorshipRequestsPage() {
       });
       setRequests(response.requests || []);
     } catch (error) {
-      console.error('Failed to fetch requests:', error);
-      toast.error('Failed to load requests');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load requests';
+      toast.error('Failed to load requests', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -114,8 +118,12 @@ export default function MentorshipRequestsPage() {
       
       router.push('/messages');
     } catch (error) {
-      console.error('Failed to accept request:', error);
-      toast.error('Failed to accept request');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to accept request';
+      toast.error('Failed to accept request', {
+        description: errorMessage,
+      });
       setIsProcessing(false);
     }
   };
@@ -137,8 +145,12 @@ export default function MentorshipRequestsPage() {
       setDeclineReason('');
       fetchRequests();
     } catch (error) {
-      console.error('Failed to decline request:', error);
-      toast.error('Failed to decline request');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to decline request';
+      toast.error('Failed to decline request', {
+        description: errorMessage,
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -155,8 +167,12 @@ export default function MentorshipRequestsPage() {
       setSelectedRequest(null);
       fetchRequests();
     } catch (error) {
-      console.error('Failed to cancel request:', error);
-      toast.error('Failed to cancel request');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to cancel request';
+      toast.error('Failed to cancel request', {
+        description: errorMessage,
+      });
     } finally {
       setIsProcessing(false);
     }

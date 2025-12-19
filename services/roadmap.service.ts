@@ -7,7 +7,7 @@ import type {
   IShareRoadmapRequest,
   ISharedUser
 } from '@/types';
-import { api } from '@/lib';
+import { api, extractErrorMessage } from '@/lib';
 
 export const roadmapService = {
   createRoadmap: async (data: IRoadmapRequest): Promise<IRoadmapResponse> => {
@@ -17,7 +17,8 @@ export const roadmapService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Create roadmap failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -27,7 +28,8 @@ export const roadmapService = {
       const response = await api.get<IRoadmapResponse>(`/roadmaps/${id}`);
       return response.data;
     } catch (error) {
-      console.error('Get roadmap failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -39,7 +41,8 @@ export const roadmapService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Get all roadmaps failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -48,7 +51,8 @@ export const roadmapService = {
     try {
       await api.delete(`/roadmaps/${id}`);
     } catch (error) {
-      console.error('Delete roadmap failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -57,7 +61,8 @@ export const roadmapService = {
     try {
       await api.delete('/roadmaps');
     } catch (error) {
-      console.error('Delete all roadmaps failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -74,7 +79,8 @@ export const roadmapService = {
       );
       return response.data;
     } catch (error) {
-      console.error('Ask AI insight failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -84,7 +90,8 @@ export const roadmapService = {
       const response = await api.get<IShareSettings>(`/roadmaps/${id}/share`);
       return response.data;
     } catch (error) {
-      console.error('Get share settings failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -94,7 +101,8 @@ export const roadmapService = {
       const response = await api.get<ISharedUser[]>(`/roadmaps/${id}/shared-users`);
       return response.data;
     } catch (error) {
-      console.error('Get shared users failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -103,7 +111,8 @@ export const roadmapService = {
     try {
       await api.post(`/roadmaps/${id}/share`, data);
     } catch (error) {
-      console.error('Share roadmap failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -112,7 +121,8 @@ export const roadmapService = {
     try {
       await api.delete(`/roadmaps/${id}/share/${userId}`);
     } catch (error) {
-      console.error('Revoke access failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   }

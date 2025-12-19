@@ -11,7 +11,7 @@ import type {
   IChangePasswordRequest,
   IUser
 } from '@/types';
-import { api } from '@/lib';
+import { api, extractErrorMessage } from '@/lib';
 
 export const authService = {
   login: async (credentials: ILoginRequest): Promise<ILoginResponse> => {
@@ -20,6 +20,8 @@ export const authService = {
       return response.data;
     } catch (error) {
       console.error('Login failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -30,6 +32,8 @@ export const authService = {
       return response.data;
     } catch (error) {
       console.error('Registration failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -39,6 +43,8 @@ export const authService = {
       await api.post('/auth/logout');
     } catch (error) {
       console.error('Logout error:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -52,6 +58,8 @@ export const authService = {
       return response.data;
     } catch (error) {
       console.error('Forgot password failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -65,6 +73,8 @@ export const authService = {
       return response.data;
     } catch (error) {
       console.error('Reset password failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -75,6 +85,8 @@ export const authService = {
       return response.data;
     } catch (error) {
       console.error('Get profile failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -85,6 +97,8 @@ export const authService = {
       return response.data;
     } catch (error) {
       console.error('Update profile failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -95,6 +109,8 @@ export const authService = {
       return response.data;
     } catch (error) {
       console.error('Change password failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -105,6 +121,8 @@ export const authService = {
       return response.data;
     } catch (error) {
       console.error('Resend verification failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -115,6 +133,8 @@ export const authService = {
       return response.data;
     } catch (error) {
       console.error('Email verification failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },

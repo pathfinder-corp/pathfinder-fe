@@ -63,8 +63,12 @@ export default function NotificationsPage() {
       setTotalPages(response.meta.totalPages);
       setUnreadCount(response.unreadCount);
     } catch (error) {
-      console.error('Failed to fetch notifications:', error);
-      toast.error('Failed to load notifications');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load notifications';
+      toast.error('Failed to load notifications', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -86,8 +90,12 @@ export default function NotificationsPage() {
       );
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
-      console.error('Failed to mark as read:', error);
-      toast.error('Failed to mark notification as read');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to mark notification as read';
+      toast.error('Failed to mark notification as read', {
+        description: errorMessage,
+      });
     }
   };
 
@@ -105,8 +113,12 @@ export default function NotificationsPage() {
       setUnreadCount(0);
       toast.success('All notifications marked as read');
     } catch (error) {
-      console.error('Failed to mark all as read:', error);
-      toast.error('Failed to mark all as read');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to mark all as read';
+      toast.error('Failed to mark all as read', {
+        description: errorMessage,
+      });
     } finally {
       setIsMarkingAll(false);
     }

@@ -55,3 +55,11 @@ export function isValidEmailFormat(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email);
 }
+
+export function extractErrorMessage(error: unknown): string | null {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const axiosError = error as { response?: { data?: { message?: string; description?: string } } };
+    return axiosError.response?.data?.message || axiosError.response?.data?.description || null;
+  }
+  return null;
+}

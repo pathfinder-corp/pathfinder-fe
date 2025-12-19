@@ -78,7 +78,12 @@ export default function RoadmapPage() {
       toast.success('Create roadmap successfully!');
       router.push(`/roadmap/${response.id}`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'An error occurred while creating the roadmap');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to create roadmap';
+      toast.error('Failed to create roadmap', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -237,6 +242,10 @@ export default function RoadmapPage() {
           )}
         </Button>
       </form>
+
+      <p className="text-center text-lg text-neutral-500 mt-10">
+        AI can make mistakes, make sure to verify important information
+      </p>
     </div>
   );
 }

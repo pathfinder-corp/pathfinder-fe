@@ -76,8 +76,12 @@ export default function MentorDetailPage() {
         const data = await mentorService.getMentorById(mentorId);
         setMentor(data);
       } catch (error) {
-        console.error('Failed to fetch mentor:', error);
-        toast.error('Failed to load mentor profile');
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : 'Failed to fetch mentor';
+        toast.error('Failed to fetch mentor', {
+          description: errorMessage,
+        });
         router.push('/mentors');
       } finally {
         setIsLoading(false);
@@ -116,7 +120,10 @@ export default function MentorDetailPage() {
       toast.success('Connection request sent successfully!');
     } catch (error) {
       console.error('Failed to send request:', error);
-      toast.error('Failed to send connection request');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to send connection request';
+      toast.error(errorMessage);
     } finally {
       setIsSendingRequest(false);
     }

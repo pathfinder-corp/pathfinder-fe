@@ -6,7 +6,7 @@ import type {
   IMentorProfilesParams,
   IMentorProfilesResponse
 } from '@/types';
-import { api } from '@/lib';
+import { api, extractErrorMessage } from '@/lib';
 
 export const mentorService = {
   createApplication: async (data: ICreateMentorApplicationRequest): Promise<IMentorApplication> => {
@@ -15,6 +15,8 @@ export const mentorService = {
       return response.data;
     } catch (error) {
       console.error('Create mentor application failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -25,6 +27,8 @@ export const mentorService = {
       return response.data;
     } catch (error) {
       console.error('Get my application failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -35,6 +39,8 @@ export const mentorService = {
       return response.data;
     } catch (error) {
       console.error('Get application by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -44,6 +50,8 @@ export const mentorService = {
       await api.delete(`/mentor-applications/${id}`);
     } catch (error) {
       console.error('Withdraw application failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -54,6 +62,8 @@ export const mentorService = {
       return response.data;
     } catch (error) {
       console.error('Get my mentor profile failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -64,6 +74,8 @@ export const mentorService = {
       return response.data;
     } catch (error) {
       console.error('Update my mentor profile failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -98,6 +110,8 @@ export const mentorService = {
       return response.data;
     } catch (error) {
       console.error('Get mentors failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -108,8 +122,9 @@ export const mentorService = {
       return response.data;
     } catch (error) {
       console.error('Get mentor by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   }
 };
-

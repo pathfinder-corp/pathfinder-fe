@@ -1,5 +1,5 @@
 import type { ISearchUserResult } from '@/types';
-import { api } from '@/lib';
+import { api, extractErrorMessage } from '@/lib';
 
 export const userService = {
   searchUsers: async (email: string): Promise<ISearchUserResult[]> => {
@@ -10,6 +10,8 @@ export const userService = {
       return response.data;
     } catch (error) {
       console.error('Search users failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   }

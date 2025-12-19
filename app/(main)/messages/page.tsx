@@ -121,7 +121,12 @@ export default function MessagesPage() {
             try {
               await chatService.getConversationByMentorship(mentorship.id);
             } catch (err) {
-              console.error('Failed to create conversation for mentorship:', mentorship.id, err);
+              const errorMessage = err instanceof Error 
+                ? err.message 
+                : 'Failed to create conversation for mentorship';
+              toast.error('Failed to create conversation for mentorship', {
+                description: errorMessage,
+              });
             }
           }
           
@@ -129,7 +134,12 @@ export default function MessagesPage() {
             data = await chatService.getConversations();
           }
         } catch (err) {
-          console.error('Failed to fetch mentorships:', err);
+          const errorMessage = err instanceof Error 
+            ? err.message 
+            : 'Failed to fetch mentorships';
+          toast.error('Failed to fetch mentorships', {
+            description: errorMessage,
+          });
         }
       }
       
@@ -141,7 +151,12 @@ export default function MessagesPage() {
             const mentorship = await mentorshipService.getMentorshipById(conv.mentorshipId);
             mentorshipStatus = mentorship.status;
           } catch (err) {
-            console.error('Failed to fetch mentorship status:', err);
+            const errorMessage = err instanceof Error 
+              ? err.message 
+              : 'Failed to fetch mentorship status';
+            toast.error('Failed to fetch mentorship status', {
+              description: errorMessage,
+            });
           }
           
           if (!conv.lastMessage) {
@@ -157,7 +172,12 @@ export default function MessagesPage() {
                 };
               }
             } catch (err) {
-              console.error('Failed to fetch last message for conversation:', conv.id, err);
+              const errorMessage = err instanceof Error 
+                ? err.message 
+                : 'Failed to fetch last message for conversation';
+              toast.error('Failed to fetch last message for conversation', {
+                description: errorMessage,
+              });
             }
           }
           
@@ -183,8 +203,12 @@ export default function MessagesPage() {
         }
       }
     } catch (error) {
-      console.error('Failed to fetch conversations:', error);
-      toast.error('Failed to load conversations');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to fetch conversations';
+      toast.error('Failed to load conversations', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoadingConversations(false);
     }
@@ -220,8 +244,12 @@ export default function MessagesPage() {
       setHasMore(data.hasMore);
       setNextCursor(data.nextCursor);
     } catch (error) {
-      console.error('Failed to fetch messages:', error);
-      toast.error('Failed to load messages');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to fetch messages';
+      toast.error('Failed to load messages', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoadingMessages(false);
       setIsLoadingMore(false);
@@ -560,8 +588,12 @@ export default function MessagesPage() {
       
       setReplyingTo(null);
     } catch (error) {
-      console.error('Failed to send message:', error);
-      toast.error('Failed to send message');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to send message';
+      toast.error('Failed to send message', {
+        description: errorMessage,
+      });
       setMessageInput(content);
     } finally {
       setIsSending(false);
@@ -590,10 +622,13 @@ export default function MessagesPage() {
       setIsEditDialogOpen(false);
       setEditingMessage(null);
       setEditContent('');
-      toast.success('Message edited');
     } catch (error) {
-      console.error('Failed to edit message:', error);
-      toast.error('Failed to edit message');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to edit message';
+      toast.error('Failed to edit message', {
+        description: errorMessage,
+      });
     }
   }, [editingMessage, editContent]);
 
@@ -613,10 +648,13 @@ export default function MessagesPage() {
       
       setIsDeleteDialogOpen(false);
       setDeletingMessage(null);
-      toast.success('Message deleted');
     } catch (error) {
-      console.error('Failed to delete message:', error);
-      toast.error('Failed to delete message');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to delete message';
+      toast.error('Failed to delete message', {
+        description: errorMessage,
+      });
     }
   }, [deletingMessage]);
 
@@ -644,12 +682,14 @@ export default function MessagesPage() {
       
       setIsEndMentorshipDialogOpen(false);
       setEndMentorshipReason('');
-      
-      toast.success('Mentorship ended successfully');
     } catch (error) {
       console.error('Failed to end mentorship:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to end mentorship';
-      toast.error(errorMessage);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to end mentorship';
+      toast.error('Failed to end mentorship', {
+        description: errorMessage,
+      });
     } finally {
       setIsEndingMentorship(false);
     }

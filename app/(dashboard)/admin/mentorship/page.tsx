@@ -57,7 +57,10 @@ export default function AdminMentorshipPage() {
       setSelectedApplication(applicationDetail);
       setIsViewDialogOpen(true);
     } catch (error) {
-      toast.error('Failed to load application details');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load application details';
+      toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
     }
@@ -88,7 +91,10 @@ export default function AdminMentorshipPage() {
       setApplicationToReview(null);
       triggerRefresh();
     } catch (error) {
-      toast.error('Failed to approve application');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to approve application';
+      toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
     }
@@ -110,7 +116,10 @@ export default function AdminMentorshipPage() {
       setApplicationToReview(null);
       triggerRefresh();
     } catch (error) {
-      toast.error('Failed to decline application');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to decline application';
+      toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
     }

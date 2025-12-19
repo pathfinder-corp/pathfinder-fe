@@ -5,7 +5,7 @@ import type {
   ISubmitAnswerResponse,
   IAssessmentResult
 } from '@/types';
-import { api } from '@/lib';
+import { api, extractErrorMessage } from '@/lib';
 
 export const assessmentService = {
   createAssessment: async (data: ICreateAssessmentRequest): Promise<IAssessment> => {
@@ -16,6 +16,8 @@ export const assessmentService = {
       return response.data;
     } catch (error) {
       console.error('Create assessment failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -26,6 +28,8 @@ export const assessmentService = {
       return response.data;
     } catch (error) {
       console.error('Get all assessments failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -36,6 +40,8 @@ export const assessmentService = {
       return response.data;
     } catch (error) {
       console.error('Get assessment failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -45,6 +51,8 @@ export const assessmentService = {
       await api.delete(`/assessments/${id}`);
     } catch (error) {
       console.error('Delete assessment failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -55,6 +63,8 @@ export const assessmentService = {
       return response.data;
     } catch (error) {
       console.error('Start assessment failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -65,6 +75,8 @@ export const assessmentService = {
       return response.data;
     } catch (error) {
       console.error('Submit answer failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -77,6 +89,8 @@ export const assessmentService = {
       return response.data;
     } catch (error) {
       console.error('Complete assessment failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   },
@@ -87,6 +101,8 @@ export const assessmentService = {
       return response.data;
     } catch (error) {
       console.error('Get results failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
       throw error;
     }
   }

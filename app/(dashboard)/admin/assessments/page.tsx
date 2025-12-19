@@ -134,8 +134,10 @@ export default function AdminAssessmentsPage() {
       setTotalPages(response.meta.totalPages);
       setTotalAssessments(response.meta.total);
     } catch (error) {
-      toast.error('Failed to load assessments');
-      console.error('Fetch assessments error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load assessments';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -175,7 +177,10 @@ export default function AdminAssessmentsPage() {
       setSelectedAssessment(assessmentDetail);
       setIsViewDialogOpen(true);
     } catch (error) {
-      toast.error('Failed to load assessment details');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load assessment details';
+      toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
     }
@@ -192,7 +197,10 @@ export default function AdminAssessmentsPage() {
       setAssessmentToDelete(null);
       fetchAssessments();
     } catch (error) {
-      toast.error('Failed to delete assessment');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to delete assessment';
+      toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
     }

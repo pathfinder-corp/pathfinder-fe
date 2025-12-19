@@ -56,8 +56,12 @@ export default function MyApplicationsPage() {
         await refreshUser();
       }
     } catch (error) {
-      toast.error('Failed to load applications');
-      console.error('Fetch applications error:', error);
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load applications';
+      toast.error('Failed to load applications', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +83,12 @@ export default function MyApplicationsPage() {
       setApplicationToWithdraw(null);
       fetchApplications();
     } catch (error) {
-      toast.error('Failed to withdraw application');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to withdraw application';
+      toast.error('Failed to withdraw application', {
+        description: errorMessage,
+      });
     } finally {
       setIsWithdrawing(false);
     }

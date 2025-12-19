@@ -103,7 +103,12 @@ export default function MentorApplicationPage() {
           setExistingApplication(pendingOrUnderReview);
         }
       } catch (error) {
-        console.error('Failed to check existing applications:', error);
+        const errorMessage = error instanceof Error 
+          ? error.message 
+          : 'Failed to check existing applications';
+        toast.error('Failed to check existing applications', {
+          description: errorMessage,
+        });
       } finally {
         setIsCheckingApplication(false);
       }
@@ -181,7 +186,12 @@ export default function MentorApplicationPage() {
       toast.success('Application submitted successfully!');
       router.push('/mentor/applications');
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to submit application');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to submit application';
+      toast.error('Failed to submit application', {
+        description: errorMessage,
+      });
     } finally {
       setIsLoading(false);
     }

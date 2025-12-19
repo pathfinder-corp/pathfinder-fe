@@ -67,7 +67,10 @@ export default function AssessmentPage() {
       toast.success('Assessment created successfully!');
       router.push(`/assessment/${response.id}`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to create assessment');
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to create assessment';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -159,6 +162,9 @@ export default function AssessmentPage() {
           )}
         </Button>
       </form>
+      <p className="text-center text-lg text-neutral-500 mt-10">
+        AI can make mistakes, make sure to verify important information
+      </p>
     </div>
   );
 }
