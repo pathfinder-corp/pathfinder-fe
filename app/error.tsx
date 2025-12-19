@@ -23,8 +23,8 @@ export default function Error({ error, reset }: ErrorProps) {
       <PublicHeader />
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-linear-to-br from-red-500/5 via-neutral-500/5 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-linear-to-tl from-orange-500/5 via-neutral-500/5 to-transparent rounded-full blur-3xl" />
+        <div className="absolute top-1/3 left-1/4 size-[500px] bg-linear-to-br from-red-500/5 via-neutral-500/5 to-transparent rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/4 size-[400px] bg-linear-to-tl from-orange-500/5 via-neutral-500/5 to-transparent rounded-full blur-3xl" />
       </div>
 
       <main className="relative z-10 min-h-screen flex items-center justify-center px-8">

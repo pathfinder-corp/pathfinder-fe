@@ -19,11 +19,11 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
       <body className="dark min-h-screen bg-neutral-950 text-white antialiased">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div 
-            className="absolute top-1/3 left-1/4 w-[500px] h-[500px] rounded-full blur-3xl" 
+            className="absolute top-1/3 left-1/4 size-[500px] rounded-full blur-3xl" 
             style={{ background: 'linear-gradient(to bottom right, rgba(239, 68, 68, 0.05), rgba(115, 115, 115, 0.05), transparent)' }}
           />
           <div 
-            className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] rounded-full blur-3xl"
+            className="absolute bottom-1/3 right-1/4 size-[400px] rounded-full blur-3xl"
             style={{ background: 'linear-gradient(to top left, rgba(249, 115, 22, 0.05), rgba(115, 115, 115, 0.05), transparent)' }}
           />
         </div>
@@ -34,22 +34,22 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
               <div className="relative inline-flex">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div 
-                    className="w-48 h-48 md:w-56 md:h-56 rounded-full animate-pulse"
+                    className="size-12 md:size-14 rounded-full animate-pulse"
                     style={{ border: '1px solid rgba(239, 68, 68, 0.2)' }}
                   />
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div 
-                    className="w-36 h-36 md:w-44 md:h-44 rounded-full"
+                    className="size-9 md:size-11 rounded-full"
                     style={{ border: '1px solid rgba(249, 115, 22, 0.2)' }}
                   />
                 </div>
                 
                 <div 
-                  className="relative w-32 h-32 md:w-36 md:h-36 rounded-full flex items-center justify-center backdrop-blur-sm"
+                  className="relative size-8 md:size-9 rounded-full flex items-center justify-center backdrop-blur-sm"
                   style={{ background: 'rgba(23, 23, 23, 0.8)', border: '1px solid rgb(38, 38, 38)' }}
                 >
-                  <AlertTriangle className="w-16 h-16 md:w-18 md:h-18" style={{ color: 'rgb(249, 115, 22)' }} />
+                  <AlertTriangle className="size-4 md:size-[18px]" style={{ color: 'rgb(249, 115, 22)' }} />
                 </div>
               </div>
             </div>
@@ -101,8 +101,8 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                 className="w-full sm:w-auto rounded-full text-xl px-10 py-5 cursor-pointer flex items-center justify-center gap-3 font-medium transition-colors"
                 style={{ background: 'white', color: 'rgb(10, 10, 10)' }}
               >
-                <RefreshCw className="w-5 h-5" />
                 Try Again
+                <RefreshCw className="size-5" />
               </button>
               
               <Link
@@ -114,8 +114,8 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                   backdropFilter: 'blur(24px)'
                 }}
               >
-                <Home className="w-5 h-5" />
                   Go Home
+                  <Home className="size-5" />
               </Link>
             </div>
 
