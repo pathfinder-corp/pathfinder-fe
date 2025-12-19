@@ -489,26 +489,26 @@ export default function AdminUsersPage() {
                           View details
                         </DropdownMenuItem>
                         {user.role !== USER_ROLES.ADMIN && (
-                          <DropdownMenuItem 
-                            onClick={() => handleEditUser(user)}
-                            className="text-base py-2"
-                          >
-                            <Pencil className="size-4" />
-                            Edit user
-                          </DropdownMenuItem>
-                        )}
-                        <DropdownMenuSeparator />
-                        {user.role !== USER_ROLES.ADMIN && (
-                          <DropdownMenuItem 
-                            onClick={() => {
-                              setUserToDelete(user);
-                              setIsDeleteDialogOpen(true);
-                            }}
-                            className="dark:hover:bg-red-500/10 transition-colors text-base py-2 text-red-500 focus:text-red-500"
-                          >
-                            <Trash2 className="size-4 text-red-500" />
-                            Delete user
-                          </DropdownMenuItem>
+                          <>
+                            <DropdownMenuItem 
+                              onClick={() => handleEditUser(user)}
+                              className="text-base py-2"
+                            >
+                              <Pencil className="size-4" />
+                              Edit user
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => {
+                                setUserToDelete(user);
+                                setIsDeleteDialogOpen(true);
+                              }}
+                              className="dark:hover:bg-red-500/10 transition-colors text-base py-2 text-red-500 focus:text-red-500"
+                            >
+                              <Trash2 className="size-4 text-red-500" />
+                              Delete user
+                            </DropdownMenuItem>
+                          </>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>

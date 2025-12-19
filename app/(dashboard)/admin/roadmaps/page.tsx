@@ -424,7 +424,7 @@ export default function AdminRoadmapsPage() {
                       <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem 
                           onClick={() => handleViewRoadmap(roadmap)}
-                          className="text-lg py-3"
+                          className="!text-lg py-3"
                         >
                           <Eye className="size-5" />
                           View details
@@ -433,7 +433,7 @@ export default function AdminRoadmapsPage() {
                           <Link 
                             href={`/roadmap/${roadmap.id}`} 
                             target="_blank"
-                            className="text-lg py-3"
+                            className="!text-lg py-3"
                           >
                             <ExternalLink className="size-5" />
                             Open roadmap
@@ -445,7 +445,7 @@ export default function AdminRoadmapsPage() {
                             setRoadmapToDelete(roadmap);
                             setIsDeleteDialogOpen(true);
                           }}
-                          className="dark:hover:bg-red-500/10 transition-colors text-lg py-3 text-red-500 focus:text-red-500"
+                          className="dark:hover:bg-red-500/10 transition-colors !text-lg py-3 text-red-500 focus:text-red-500"
                         >
                           <Trash2 className="size-5 text-red-500" />
                           Delete roadmap

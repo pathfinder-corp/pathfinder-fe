@@ -486,7 +486,7 @@ export default function AdminAssessmentsPage() {
                           <Eye className="size-5" />
                           View details
                         </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
+                        {/* <DropdownMenuItem asChild>
                           <Link 
                             href={`/assessment/${assessment.id}`} 
                             target="_blank"
@@ -495,7 +495,7 @@ export default function AdminAssessmentsPage() {
                             <ExternalLink className="size-5" />
                             Open assessment
                           </Link>
-                        </DropdownMenuItem>
+                        </DropdownMenuItem> */}
                         <DropdownMenuSeparator />
                         <DropdownMenuItem 
                           onClick={() => {
@@ -648,14 +648,14 @@ export default function AdminAssessmentsPage() {
                 </div>
               </div>
 
-              <div className="pt-2">
+              {/* <div className="pt-2">
                 <Button asChild className="w-full !h-14 !text-[1.15rem]">
                   <Link href={`/assessment/${selectedAssessment.id}`} target="_blank">
                     Open Assessment
                     <ExternalLink className="size-5" />
                   </Link>
                 </Button>
-              </div>
+              </div> */}
             </div>
           )}
         </DialogContent>

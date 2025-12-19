@@ -113,7 +113,7 @@ export function DeclineDialog({
       <AlertDialogContent className="max-w-md">
         <AlertDialogHeader>
           <AlertDialogTitle className="text-2xl flex items-center gap-2">
-            <XCircle className="size-7 text-red-500" />
+            <XCircle className="size-7" />
             Decline Application
           </AlertDialogTitle>
           <AlertDialogDescription className="text-base">

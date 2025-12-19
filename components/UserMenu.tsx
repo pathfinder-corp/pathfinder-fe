@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { LogOut, Settings, LayoutDashboard, MessageCircle, GraduationCap } from 'lucide-react';
+import { LogOut, Settings, LayoutDashboard, MessageCircle } from 'lucide-react';
 import { useUserStore } from '@/stores';
 import { authService } from '@/services';
 import { toast } from 'sonner';

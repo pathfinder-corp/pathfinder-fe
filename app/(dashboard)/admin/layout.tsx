@@ -119,7 +119,7 @@ export default function AdminLayout({
         </div>
 
         <div className="p-7 border-b border-neutral-800">
-          <h2 className="text-3xl font-semibold">Admin Panel</h2>
+          <h2 className="text-3xl font-semibold">Admin Dashboard</h2>
           <p className="text-xl text-neutral-500 mt-1">Manage your platform</p>
         </div>
 

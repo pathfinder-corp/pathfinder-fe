@@ -115,7 +115,7 @@ export function AuditLogsTab() {
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="text-neutral-300 text-lg">{log.entityType || 'N/A'}</span>
+                    <span className="text-neutral-300 text-lg uppercase">{log.entityType || 'N/A'}</span>
                     <span className="text-neutral-500 text-base ml-2">
                       #{log.entityId?.substring(0, 8) || 'N/A'}
                     </span>
