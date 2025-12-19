@@ -44,7 +44,7 @@ export default function AssessmentPage() {
   } = useForm<AssessmentFormData>({
     resolver: zodResolver(assessmentSchema),
     defaultValues: {
-      difficulty: 'medium',
+      difficulty: 'easy',
       questionCount: 10
     }
   });
