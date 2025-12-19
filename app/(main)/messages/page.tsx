@@ -16,14 +16,16 @@ import {
   Trash2,
   Reply,
   Loader2,
-  Eye
+  Eye,
+  UserX,
+  UserPlus
 } from 'lucide-react';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 import { useUserStore } from '@/stores';
 import { chatService, socketService, mentorshipService } from '@/services';
 import { getAuthToken } from '@/lib/cookie';
-import type { IChatConversation, IChatMessage, IChatParticipant } from '@/types';
+import type { IChatConversation, IChatMessage, IChatParticipant, MentorshipStatus } from '@/types';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -86,16 +88,22 @@ export default function MessagesPage() {
   const [deletingMessage, setDeletingMessage] = useState<IChatMessage | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   
+  const [isEndMentorshipDialogOpen, setIsEndMentorshipDialogOpen] = useState<boolean>(false);
+  const [endMentorshipReason, setEndMentorshipReason] = useState<string>('');
+  const [isEndingMentorship, setIsEndingMentorship] = useState<boolean>(false);
+  
   const [replyingTo, setReplyingTo] = useState<IChatMessage | null>(null);
   const [isSocketConnected, setIsSocketConnected] = useState<boolean>(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const scrollAreaViewportRef = useRef<HTMLDivElement | null>(null);
   const joinedConversationsRef = useRef<Set<string>>(new Set());
   const selectedConversationIdRef = useRef<string | null>(null);
   const shouldScrollRef = useRef<boolean>(true);
   const prevMessagesLengthRef = useRef<number>(0);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isAutoLoadingRef = useRef<boolean>(false);
 
   const currentUserId = user?.id;
 
@@ -127,6 +135,15 @@ export default function MessagesPage() {
       
       const updatedConversations = await Promise.all(
         data.map(async (conv) => {
+          let mentorshipStatus: MentorshipStatus = 'active';
+          
+          try {
+            const mentorship = await mentorshipService.getMentorshipById(conv.mentorshipId);
+            mentorshipStatus = mentorship.status;
+          } catch (err) {
+            console.error('Failed to fetch mentorship status:', err);
+          }
+          
           if (!conv.lastMessage) {
             try {
               const messagesData = await chatService.getMessages(conv.id, { limit: 1 });
@@ -136,13 +153,18 @@ export default function MessagesPage() {
                   ...conv,
                   lastMessage: lastMsg,
                   lastMessageAt: lastMsg.createdAt,
+                  mentorshipStatus
                 };
               }
             } catch (err) {
               console.error('Failed to fetch last message for conversation:', conv.id, err);
             }
           }
-          return conv;
+          
+          return {
+            ...conv,
+            mentorshipStatus
+          };
         })
       );
       
@@ -499,7 +521,11 @@ export default function MessagesPage() {
 
   const handleSendMessage = useCallback(async () => {
     if (!messageInput.trim() || !selectedConversation || isSending) return;
-
+    
+    if (selectedConversation.mentorshipStatus === 'ended') {
+      toast.error('Cannot send messages. This mentorship has ended.');
+      return;
+    }
     const content = messageInput.trim();
     setMessageInput('');
     setIsSending(true);
@@ -594,11 +620,81 @@ export default function MessagesPage() {
     }
   }, [deletingMessage]);
 
+  const handleEndMentorship = useCallback(async () => {
+    if (!selectedConversation || !endMentorshipReason.trim()) return;
+    
+    try {
+      setIsEndingMentorship(true);
+      
+      await mentorshipService.endMentorship(selectedConversation.mentorshipId, {
+        reason: endMentorshipReason.trim(),
+      });
+      
+      setConversations(prev => 
+        prev.map(c => 
+          c.id === selectedConversation.id 
+            ? { ...c, mentorshipStatus: 'ended' as const }
+            : c
+        )
+      );
+      
+      setSelectedConversation(prev => 
+        prev ? { ...prev, mentorshipStatus: 'ended' as const } : null
+      );
+      
+      setIsEndMentorshipDialogOpen(false);
+      setEndMentorshipReason('');
+      
+      toast.success('Mentorship ended successfully');
+    } catch (error) {
+      console.error('Failed to end mentorship:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to end mentorship';
+      toast.error(errorMessage);
+    } finally {
+      setIsEndingMentorship(false);
+    }
+  }, [selectedConversation, endMentorshipReason]);
+
   const handleLoadMore = useCallback(() => {
     if (selectedConversation && hasMore && nextCursor && !isLoadingMore) {
       fetchMessages(selectedConversation.id, nextCursor);
     }
   }, [selectedConversation, hasMore, nextCursor, isLoadingMore, fetchMessages]);
+
+  useEffect(() => {
+    const scrollAreaViewport = messagesContainerRef.current?.querySelector('[data-radix-scroll-area-viewport]') as HTMLDivElement;
+    if (!scrollAreaViewport) return;
+    
+    scrollAreaViewportRef.current = scrollAreaViewport;
+    
+    const handleScroll = () => {
+      if (isAutoLoadingRef.current || isLoadingMore || !hasMore || !nextCursor) return;
+      
+      const scrollTop = scrollAreaViewport.scrollTop;
+      const threshold = 200;
+      
+      if (scrollTop < threshold) {
+        isAutoLoadingRef.current = true;
+        const previousScrollHeight = scrollAreaViewport.scrollHeight;
+        const previousScrollTop = scrollAreaViewport.scrollTop;
+        
+        handleLoadMore();
+        
+        setTimeout(() => {
+          const newScrollHeight = scrollAreaViewport.scrollHeight;
+          const scrollDiff = newScrollHeight - previousScrollHeight;
+          scrollAreaViewport.scrollTop = previousScrollTop + scrollDiff;
+          isAutoLoadingRef.current = false;
+        }, 100);
+      }
+    };
+    
+    scrollAreaViewport.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      scrollAreaViewport.removeEventListener('scroll', handleScroll);
+    };
+  }, [hasMore, nextCursor, isLoadingMore, handleLoadMore]);
 
   const getStatusIcon = (message: IChatMessage) => {
     if (message.readAt) {
@@ -743,21 +839,28 @@ export default function MessagesPage() {
                             ? 'Message deleted' 
                             : conversation.lastMessage?.content || 'No messages yet'}
                         </p>
-                        <AnimatePresence mode="wait">
-                          {conversation.unreadCount && conversation.unreadCount > 0 && (
-                            <motion.div
-                              key={`unread-${conversation.id}`}
-                              initial={{ scale: 0, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              exit={{ scale: 0, opacity: 0 }}
-                              transition={{ duration: 0.2, type: "spring", stiffness: 200 }}
-                            >
-                              <Badge className="bg-white text-black text-sm px-2 py-1 h-6 min-w-6 flex items-center justify-center rounded-full">
-                                {conversation.unreadCount}
-                              </Badge>
-                            </motion.div>
+                        <div className="flex items-center gap-2">
+                          {conversation.mentorshipStatus === 'ended' && (
+                            <Badge variant="outline" className="text-xs px-2 py-0.5 border-neutral-600 text-neutral-500">
+                              Ended
+                            </Badge>
                           )}
-                        </AnimatePresence>
+                          <AnimatePresence mode="wait">
+                            {conversation.unreadCount && conversation.unreadCount > 0 && (
+                              <motion.div
+                                key={`unread-${conversation.id}`}
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                transition={{ duration: 0.2, type: "spring", stiffness: 200 }}
+                              >
+                                <Badge className="bg-white text-black text-sm px-2 py-1 h-6 min-w-6 flex items-center justify-center rounded-full">
+                                  {conversation.unreadCount}
+                                </Badge>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
                       </div>
                     </div>
                   </button>
@@ -827,15 +930,30 @@ export default function MessagesPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem className="text-lg py-3">
+                    <DropdownMenuItem 
+                      className="text-lg py-3"
+                      onClick={() => {
+                        const other = getOtherParticipant(selectedConversation);
+                        if (other?.role === 'mentor') {
+                          router.push(`/mentors/${selectedConversation.mentorshipId}`);
+                        }
+                      }}
+                    >
                       <Eye className="size-5" />
                       View profile
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500">
-                      <Trash2 className="size-5 text-red-500" />
-                      Delete conversation
-                    </DropdownMenuItem>
+                    {selectedConversation.mentorshipStatus !== 'ended' && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem 
+                          className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
+                          onClick={() => setIsEndMentorshipDialogOpen(true)}
+                        >
+                          <X className="size-5 text-red-500" />
+                          End mentorship
+                        </DropdownMenuItem>
+                      </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -875,7 +993,7 @@ export default function MessagesPage() {
                     ))}
                   </div>
                 ) : messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-64 text-center">
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center justify-center text-center">
                     <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mb-5">
                       <MessageCircle className="size-10 text-neutral-500" />
                     </div>
@@ -886,6 +1004,8 @@ export default function MessagesPage() {
                   <div className="space-y-5">
                     <AnimatePresence initial={false}>
                       {messages.map((message, index) => {
+                        if (message.isSystemMessage || message.type === 'system') return null;
+                        
                         const isOwn = message.senderId === currentUserId;
                         const showAvatar = index === messages.length - 1 || 
                           messages[index + 1]?.senderId !== message.senderId;
@@ -1077,55 +1197,87 @@ export default function MessagesPage() {
               </div>
             </ScrollArea>
 
-            <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
-              {replyingTo && (
-                <div className="flex items-center justify-between mb-4 px-5 py-3 bg-neutral-800/50 rounded-lg">
+            {selectedConversation.mentorshipStatus === 'ended' ? (
+              <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
+                <div className="flex items-center gap-5 px-6 py-5 bg-neutral-800/50 rounded-2xl">
+                  <div className="size-14 rounded-full bg-neutral-700/50 flex items-center justify-center flex-shrink-0">
+                    <UserX className="size-7 text-neutral-400" />
+                  </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-neutral-400 mb-1">
-                      Replying to {replyingTo.sender?.firstName || 'User'}
+                    <p className="text-lg font-medium text-neutral-300">
+                      Mentorship Ended
                     </p>
-                    <p className="text-base text-neutral-300 truncate">{replyingTo.content}</p>
+                    <p className="text-base text-neutral-500 mt-1">
+                      This conversation is now read-only. You can reconnect to continue chatting.
+                    </p>
                   </div>
                   <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-10 text-neutral-400 hover:text-white flex-shrink-0"
-                    onClick={() => setReplyingTo(null)}
-                  >
-                    <X className="size-5" />
-                  </Button>
-                </div>
-              )}
-              
-              <div className="flex items-center gap-4">
-                <div className="flex-1 relative">
-                  <Input
-                    placeholder="Type a message..."
-                    value={messageInput}
-                    onChange={(e) => handleInputChange(e.target.value)}
-                    onKeyDown={handleKeyPress}
-                    onBlur={() => {
-                      if (!messageInput.trim()) {
-                        stopTypingIndicator();
+                    onClick={() => {
+                      const other = getOtherParticipant(selectedConversation);
+                      if (other?.role === 'mentor' || selectedConversation.mentorId === other?.id) {
+                        router.push('/mentors');
+                      } else {
+                        router.push('/mentorship/requests');
                       }
                     }}
-                    className="!h-16 pr-14 bg-neutral-800/50 border-neutral-700 !text-xl"
-                    disabled={isSending}
-                  />
+                    className="bg-white text-black hover:bg-neutral-200 !h-12 px-6 !text-base font-medium flex-shrink-0"
+                  >
+                    Reconnect
+                    <UserPlus className="size-5" />
+                  </Button>
                 </div>
-                <Button 
-                  onClick={handleSendMessage}
-                  disabled={!messageInput.trim() || isSending}
-                  className="size-14 rounded-full bg-white text-black hover:bg-neutral-200 flex-shrink-0"
-                >
-                  {isSending ? (
-                    <Loader2 className="size-7 animate-spin" />
-                  ) : (
-                    <Send className="size-7" />
-                  )}
-                </Button>
               </div>
-            </div>
+            ) : (
+              <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
+                {replyingTo && (
+                  <div className="flex items-center justify-between mb-4 px-5 py-3 bg-neutral-800/50 rounded-lg">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm text-neutral-400 mb-1">
+                        Replying to {replyingTo.sender?.firstName || 'User'}
+                      </p>
+                      <p className="text-base text-neutral-300 truncate">{replyingTo.content}</p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-10 text-neutral-400 hover:text-white flex-shrink-0"
+                      onClick={() => setReplyingTo(null)}
+                    >
+                      <X className="size-5" />
+                    </Button>
+                  </div>
+                )}
+                
+                <div className="flex items-center gap-4">
+                  <div className="flex-1 relative">
+                    <Input
+                      placeholder="Type a message..."
+                      value={messageInput}
+                      onChange={(e) => handleInputChange(e.target.value)}
+                      onKeyDown={handleKeyPress}
+                      onBlur={() => {
+                        if (!messageInput.trim()) {
+                          stopTypingIndicator();
+                        }
+                      }}
+                      className="!h-16 pr-14 bg-neutral-800/50 border-neutral-700 !text-xl"
+                      disabled={isSending}
+                    />
+                  </div>
+                  <Button 
+                    onClick={handleSendMessage}
+                    disabled={!messageInput.trim() || isSending}
+                    className="size-14 rounded-full bg-white text-black hover:bg-neutral-200 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSending ? (
+                      <Loader2 className="size-7 animate-spin" />
+                    ) : (
+                      <Send className="size-7" />
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <div className="flex-1 flex items-center justify-center">
@@ -1210,6 +1362,64 @@ export default function MessagesPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={isEndMentorshipDialogOpen} onOpenChange={setIsEndMentorshipDialogOpen}>
+        <DialogContent className="bg-neutral-900 border-neutral-800">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">End Mentorship</DialogTitle>
+            <DialogDescription className="text-lg text-neutral-400">
+              {selectedConversation && (() => {
+                const other = getOtherParticipant(selectedConversation);
+                return `Are you sure you want to end your mentorship with ${other?.firstName} ${other?.lastName}? This will close the conversation, but you can connect again in the future.`;
+              })()}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-3">
+            <label className="text-base font-medium">
+              Reason for ending <span className="text-red-500">*</span>
+            </label>
+            <Textarea
+              value={endMentorshipReason}
+              onChange={(e) => setEndMentorshipReason(e.target.value)}
+              placeholder="Please provide a reason for ending this mentorship..."
+              className="min-h-[120px] bg-neutral-800 border-neutral-700 text-lg resize-none"
+              maxLength={500}
+            />
+            <p className="text-sm text-neutral-500">
+              {endMentorshipReason.length}/500 characters
+            </p>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setIsEndMentorshipDialogOpen(false);
+                setEndMentorshipReason('');
+              }}
+              disabled={isEndingMentorship}
+              className="!h-11 !text-base"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleEndMentorship}
+              disabled={!endMentorshipReason.trim() || endMentorshipReason.trim().length < 10 || isEndingMentorship}
+              className="bg-red-600 text-white hover:bg-red-700 !h-11 !text-base"
+            >
+              {isEndingMentorship ? (
+                <>
+                  <Loader2 className="size-5 mr-2 animate-spin" />
+                  Ending...
+                </>
+              ) : (
+                'End Mentorship'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

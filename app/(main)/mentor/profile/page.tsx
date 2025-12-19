@@ -239,7 +239,7 @@ export default function MentorProfilePage() {
 
   if (!hasProfile) {
     return (
-      <div className="pt-12 flex flex-col items-center justify-center">
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
         <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mb-8">
           <AlertCircle className="size-12 text-neutral-400" />
         </div>

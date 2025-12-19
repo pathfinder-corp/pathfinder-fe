@@ -357,7 +357,18 @@ export default function MentorshipRequestsPage() {
                           )}
 
                           <div className="flex items-center gap-3">
-                            {userRole === 'as_mentor' && request.status === 'pending' && (
+                            {userRole === 'as_student' && request.mentorProfileId && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => router.push(`/mentors/${request.mentorProfileId}`)}
+                                className="!h-10 !text-base"
+                              >
+                                View Profile
+                              </Button>
+                            )}
+
+{userRole === 'as_mentor' && request.status === 'pending' && (
                               <>
                                 <Button
                                   size="sm"
@@ -411,16 +422,6 @@ export default function MentorshipRequestsPage() {
                               </Button>
                             )}
 
-                            {userRole === 'as_student' && request.mentorProfileId && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => router.push(`/mentors/${request.mentorProfileId}`)}
-                                className="!h-10 !text-base"
-                              >
-                                View Profile
-                              </Button>
-                            )}
 
                             {request.status === 'pending' && request.expiresAt && (
                               <span className="text-base text-neutral-500 ml-auto flex items-center gap-1.5">

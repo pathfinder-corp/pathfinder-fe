@@ -200,14 +200,12 @@ export default function MentorApplicationPage() {
         return (
           <Badge className="px-4 py-2 text-base bg-blue-500/20 text-blue-400 border-blue-500/30">
             Under Review
-            <FileText className="size-4" />
           </Badge>
         );
       case 'flagged':
         return (
           <Badge className="px-4 py-2 text-base bg-orange-500/20 text-orange-400 border-orange-500/30">
             Under Review
-            <AlertCircle className="size-4" />
           </Badge>
         );
       default:
@@ -217,16 +215,16 @@ export default function MentorApplicationPage() {
 
   if (isCheckingApplication || !isInitialized || user?.role === USER_ROLES.MENTOR) {
     return (
-      <div className="pt-12 flex flex-col items-center justify-center">
-        <Loader2 className="size-10 animate-spin text-neutral-400" />
-        <p className="mt-5 text-lg text-neutral-400">Checking application status...</p>
+      <div className="absolute inset-0 size-full flex flex-col items-center justify-center">
+        <Loader2 className="size-16 animate-spin text-neutral-400" />
+        <p className="mt-5 text-2xl text-neutral-400">Checking application status...</p>
       </div>
     );
   }
 
   if (existingApplication) {
     return (
-      <div className="pt-12 flex flex-col items-center justify-center">
+      <div className="pt-48 flex flex-col items-center justify-center">
         <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mb-8">
           <GraduationCap className="size-12 text-neutral-400" />
         </div>
@@ -244,8 +242,8 @@ export default function MentorApplicationPage() {
             onClick={() => router.push('/mentor/applications')}
             className="!h-14 !text-lg"
           >
-            <FileText className="size-6 mr-2" />
             View My Application
+            <FileText className="size-6" />
           </Button>
         </div>
       </div>

@@ -6,6 +6,7 @@ export type MentorshipRequestStatus =
   | 'expired';
 
 export type MentorshipRequestRole = 'as_student' | 'as_mentor';
+export type MentorshipStatus = 'active' | 'ended';
 
 export interface IMentorshipRequestUser {
   id: string;
@@ -44,7 +45,7 @@ export interface IMentorship {
   mentor: IMentorshipUser;
   studentId: string;
   student: IMentorshipUser;
-  status: 'active' | 'ended';
+  status: MentorshipStatus;
   endReason: string | null;
   endedBy: string | null;
   startedAt: string;
@@ -53,8 +54,8 @@ export interface IMentorship {
 }
 
 export interface IMentorshipsParams {
-  status?: 'active' | 'ended';
-  role?: 'as_mentor' | 'as_student';
+  status?: MentorshipStatus;
+  role?: MentorshipRequestRole;
   page?: number;
   limit?: number;
 }

@@ -190,9 +190,9 @@ export function NotificationDropdown() {
 
       <DropdownMenuContent 
         align="end" 
-        className="w-[28rem] p-0 bg-neutral-900 border-neutral-800"
+        className="w-[28rem] p-0 bg-neutral-900 border-neutral-800 flex flex-col h-[300px]"
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-800">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-800 flex-shrink-0">
           <h3 className="font-semibold text-2xl">Notifications</h3>
           {unreadCount > 0 && (
             <Button
@@ -214,13 +214,13 @@ export function NotificationDropdown() {
           )}
         </div>
 
-        <ScrollArea className="h-96">
+        <ScrollArea className={!isLoading && notifications.length === 0 ? "h-48" : "flex-1 min-h-0"}>
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
               <Loader2 className="size-7 animate-spin text-neutral-400" />
             </div>
           ) : notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center absolute inset-0 text-neutral-500">
+            <div className="flex flex-col items-center justify-center h-full text-neutral-500">
               <Bell className="size-10 mb-3 opacity-40" />
               <p className="text-lg">No notifications yet</p>
             </div>
@@ -264,7 +264,7 @@ export function NotificationDropdown() {
           )}
         </ScrollArea>
 
-        <div className="border-t border-neutral-800 p-3">
+        <div className="border-t border-neutral-800 p-3 flex-shrink-0">
           <Button
             variant="ghost"
             className="w-full h-11 text-base text-neutral-400 hover:text-white"

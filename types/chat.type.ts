@@ -1,4 +1,6 @@
-export type MessageType = 'text' | 'image' | 'file';
+import { MentorshipStatus } from './mentorship.type';
+
+export type MessageType = 'text' | 'image' | 'file' | 'system';
 
 export interface IChatParticipant {
   id: string;
@@ -24,6 +26,7 @@ export interface IChatMessage {
   readAt: string | null;
   createdAt: string;
   updatedAt: string;
+  isSystemMessage?: boolean;
 }
 
 export interface IChatConversation {
@@ -39,6 +42,7 @@ export interface IChatConversation {
   lastMessage?: IChatMessage | null;
   unreadCount?: number;
   createdAt: string;
+  mentorshipStatus?: MentorshipStatus;
 }
 
 export interface IGetMessagesResponse {
