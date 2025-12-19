@@ -258,7 +258,7 @@ export default function RoadmapDetailPage() {
       <div className="flex items-start justify-between">
         <div className="flex-1">
           <div className="flex items-center gap-4 mb-3">
-            <h1 className="text-6xl font-bold">{roadmap.topic}</h1>
+            <h1 className="text-5xl font-bold">{roadmap.topic}</h1>
             {isViewer && (
               <Badge variant="secondary" className="text-base px-4 py-2">
                 View Only
@@ -268,12 +268,12 @@ export default function RoadmapDetailPage() {
           
           <div className="flex items-center gap-6 text-neutral-400">
             <div className="flex items-center gap-2">
-              <Zap className="size-6" />
-              <span className="text-lg capitalize">{roadmap.learningPace || 'N/A'}</span>
+              <Zap className="size-7" />
+              <span className="text-xl capitalize">{roadmap.learningPace || 'N/A'}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Calendar className="size-6" />
-              <span className="text-lg">{roadmap.timeframe || 'N/A'}</span>
+              <Calendar className="size-7" />
+              <span className="text-xl">{roadmap.timeframe || 'N/A'}</span>
             </div>
           </div>
         </div>
@@ -302,7 +302,7 @@ export default function RoadmapDetailPage() {
             </AccordionTrigger>
             
             <AccordionContent className="px-6 pb-6">
-              <div className="space-y-3 text-lg text-neutral-300">
+              <div className="space-y-3 text-xl text-neutral-300">
                 <p>
                   <strong>Recommended cadence:</strong> {roadmap.summary.recommendedCadence}
                 </p>
@@ -318,8 +318,8 @@ export default function RoadmapDetailPage() {
 
               {roadmap.summary.successTips && roadmap.summary.successTips.length > 0 && (
                 <div className="mt-4">
-                  <strong className="block mb-2 text-lg">Success tips:</strong>
-                  <ul className="list-disc list-inside space-y-2 text-lg text-neutral-300">
+                  <strong className="block mb-2 text-xl">Success tips:</strong>
+                  <ul className="list-disc list-inside space-y-2 text-xl text-neutral-300">
                     {roadmap.summary.successTips.map((tip, index) => (
                       <li key={index}>{tip}</li>
                     ))}
@@ -355,7 +355,7 @@ export default function RoadmapDetailPage() {
               <SheetContent side="bottom" className="h-[95vh] w-full">
                 <SheetHeader>
                   <SheetTitle className="text-3xl">{roadmap.topic}</SheetTitle>
-                  <SheetDescription className="text-lg">
+                  <SheetDescription className="text-xl">
                     Detailed learning roadmap - Move with mouse, zoom with scroll
                   </SheetDescription>
                 </SheetHeader>
@@ -391,12 +391,12 @@ export default function RoadmapDetailPage() {
                 key={index}
                 className="flex items-start gap-4 p-5 bg-neutral-800/50 rounded-lg border border-neutral-700"
               >
-                <div className="flex-shrink-0 size-8 rounded-full bg-white flex items-center justify-center text-black font-bold text-base">
+                <div className="flex-shrink-0 size-10 rounded-full bg-white flex items-center justify-center text-black font-bold text-lg">
                   {index + 1}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold mb-2">{milestone.title}</h3>
-                  <p className="text-lg text-neutral-400">{milestone.successCriteria}</p>
+                  <h3 className="text-2xl font-semibold mb-2">{milestone.title}</h3>
+                  <p className="text-xl text-neutral-400">{milestone.successCriteria}</p>
                 </div>
               </div>
             ))}
@@ -437,8 +437,8 @@ export default function RoadmapDetailPage() {
                     </SheetTitle>
                     {!isChatMode && (
                       <div className="flex items-center gap-2 text-neutral-400">
-                        <Clock className="size-5" />
-                        <span className="text-lg">{selectedNode.duration}</span>
+                        <Clock className="size-6" />
+                        <span className="text-xl">{selectedNode.duration}</span>
                       </div>
                     )}
                   </div>

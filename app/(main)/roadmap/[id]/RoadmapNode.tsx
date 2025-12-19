@@ -79,17 +79,17 @@ function RoadmapNode({ data }: NodeProps<any>) {
                 </div>
                 
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-xl mb-1.5 line-clamp-2">
+                  <h3 className="font-bold text-2xl mb-2 line-clamp-2">
                     {label}
                   </h3>
                   
-                  <p className="text-base text-neutral-400 leading-6 mb-2 line-clamp-2">
+                  <p className="text-lg text-neutral-400 leading-6 mb-2 line-clamp-2">
                     {description}
                   </p>
                   
-                  <div className="flex items-center gap-2 text-sm text-neutral-500">
-                    <Clock className="size-4 flex-shrink-0" />
-                    <span className="truncate text-base">{duration}</span>
+                  <div className="flex items-center gap-2 text-neutral-500">
+                    <Clock className="size-5 flex-shrink-0" />
+                    <span className="truncate text-lg">{duration}</span>
                   </div>
                 </div>
               </div>
@@ -101,10 +101,10 @@ function RoadmapNode({ data }: NodeProps<any>) {
             className="max-w-sm p-5 bg-[#272727] border-neutral-700"
           >
             <div className="space-y-2">
-              <h4 className="font-bold text-lg text-white">{label}</h4>
-              <p className="text-base text-neutral-300">{description}</p>
-              <div className="flex items-center gap-2 text-base text-neutral-400 pt-2 border-t border-neutral-700">
-                <Clock className="size-4" />
+              <h4 className="font-bold text-xl text-white">{label}</h4>
+              <p className="text-lg text-neutral-300">{description}</p>
+              <div className="flex items-center gap-2 text-lg text-neutral-400 pt-2 border-t border-neutral-700">
+                <Clock className="size-5" />
                 <span>{duration}</span>
               </div>
             </div>

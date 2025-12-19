@@ -192,7 +192,40 @@ const DotGrid: React.FC<DotGridProps> = ({
   }, [buildGrid]);
 
   useEffect(() => {
+    const resetAllDots = () => {
+      for (const dot of dotsRef.current) {
+        if (dot.xOffset !== 0 || dot.yOffset !== 0 || dot._inertiaApplied) {
+          gsap.killTweensOf(dot);
+          gsap.to(dot, {
+            xOffset: 0,
+            yOffset: 0,
+            duration: returnDuration,
+            ease: 'elastic.out(1,0.75)',
+            onComplete: () => {
+              dot._inertiaApplied = false;
+            }
+          });
+        }
+      }
+    };
+
     const onMove = (e: MouseEvent) => {
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (!rect) return;
+
+      const localX = e.clientX - rect.left;
+      const localY = e.clientY - rect.top;
+
+      if (localX < 0 || localX > rect.width || localY < 0 || localY > rect.height) {
+        pointerRef.current.x = -9999;
+        pointerRef.current.y = -9999;
+        pointerRef.current.speed = 0;
+        pointerRef.current.vx = 0;
+        pointerRef.current.vy = 0;
+        resetAllDots();
+        return;
+      }
+
       const now = performance.now();
       const pr = pointerRef.current;
       const dt = pr.lastTime ? now - pr.lastTime : 16;
@@ -213,11 +246,8 @@ const DotGrid: React.FC<DotGridProps> = ({
       pr.vx = vx;
       pr.vy = vy;
       pr.speed = speed;
-
-      const rect = canvasRef.current?.getBoundingClientRect();
-      if (!rect) return;
-      pr.x = e.clientX - rect.left;
-      pr.y = e.clientY - rect.top;
+      pr.x = localX;
+      pr.y = localY;
 
       for (const dot of dotsRef.current) {
         const dist = Math.hypot(dot.cx - pr.x, dot.cy - pr.y);
@@ -271,13 +301,24 @@ const DotGrid: React.FC<DotGridProps> = ({
       }
     };
 
+    const onMouseLeave = () => {
+      pointerRef.current.x = -9999;
+      pointerRef.current.y = -9999;
+      pointerRef.current.speed = 0;
+      pointerRef.current.vx = 0;
+      pointerRef.current.vy = 0;
+      resetAllDots();
+    };
+
     const throttledMove = throttle(onMove, 50);
     window.addEventListener('mousemove', throttledMove, { passive: true });
     window.addEventListener('click', onClick);
+    document.addEventListener('mouseleave', onMouseLeave);
 
     return () => {
       window.removeEventListener('mousemove', throttledMove);
       window.removeEventListener('click', onClick);
+      document.removeEventListener('mouseleave', onMouseLeave);
     };
   }, [maxSpeed, speedTrigger, proximity, resistance, returnDuration, shockRadius, shockStrength]);
 

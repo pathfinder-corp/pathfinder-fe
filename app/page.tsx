@@ -36,7 +36,7 @@ export default function Home() {
       <main className="relative z-10">
         <section className="min-h-screen flex items-center justify-center px-8 pt-14">
           <div className="max-w-10xl mx-auto text-center space-y-10">
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm text-lg text-neutral-400">
+            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm text-lg text-neutral-300">
               <span className="relative flex size-3">
                 <span className="animate-ping absolute inline-flex size-full rounded-full bg-white opacity-75" />
                 <span className="relative inline-flex rounded-full size-3 bg-white" />

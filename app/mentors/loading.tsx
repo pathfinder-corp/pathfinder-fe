@@ -20,7 +20,7 @@ export default function MentorsLoading() {
 
       <main className="pt-24">
         <section className="relative py-16 overflow-hidden">
-          <div className="max-w-7xl mx-auto px-6 text-center">
+          <div className="max-w-[1100px] mx-auto px-6 text-center">
             <Skeleton className="h-10 w-64 mx-auto mb-8 rounded-full bg-neutral-800" />
             <Skeleton className="h-20 w-[36rem] mx-auto mb-6 bg-neutral-800" />
             <Skeleton className="h-8 w-[44rem] mx-auto mb-12 bg-neutral-800" />
@@ -44,7 +44,7 @@ export default function MentorsLoading() {
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-6 -mt-4 mb-10">
+        <section className="max-w-[1100px] mx-auto px-6 -mt-4 mb-10">
           <div className="bg-neutral-900/80 border border-neutral-800 rounded-2xl p-6">
             <div className="flex flex-col lg:flex-row gap-4">
               <Skeleton className="flex-1 h-16 bg-neutral-800 rounded-lg" />
@@ -57,13 +57,13 @@ export default function MentorsLoading() {
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-6 pb-16">
+        <section className="max-w-[1100px] mx-auto px-6 pb-16">
           <div className="flex items-center justify-between mb-10">
             <Skeleton className="h-7 w-52 bg-neutral-800" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {[...Array(8)].map((_, i) => (
               <div key={i} className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
                 <Skeleton className="h-32 w-full bg-neutral-800" />
                 <div className="p-6 pt-14">

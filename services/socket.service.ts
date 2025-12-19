@@ -72,11 +72,17 @@ class SocketService {
     this.socket.on('message:updated', (message: IChatMessage) => {
       const callbacks = this.messageCallbacks.get(message.conversationId) || [];
       callbacks.forEach(cb => cb(message));
+      
+      const globalCallbacks = this.messageCallbacks.get('*') || [];
+      globalCallbacks.forEach(cb => cb(message));
     });
 
     this.socket.on('message:deleted', (message: IChatMessage) => {
       const callbacks = this.messageCallbacks.get(message.conversationId) || [];
       callbacks.forEach(cb => cb(message));
+      
+      const globalCallbacks = this.messageCallbacks.get('*') || [];
+      globalCallbacks.forEach(cb => cb(message));
     });
 
     this.socket.on('typing:indicator', (data: { conversationId: string; userId: string; isTyping: boolean }) => {

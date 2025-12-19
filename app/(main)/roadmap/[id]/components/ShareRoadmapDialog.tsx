@@ -211,7 +211,7 @@ export function ShareRoadmapDialog({
         <DialogContent className="sm:max-w-[600px] max-h-[90vh] p-0 gap-0">
           <DialogHeader className="p-6 pb-5">
             <DialogTitle className="text-3xl font-bold">Share Roadmap</DialogTitle>
-            <DialogDescription className="text-lg text-neutral-400 mt-2">
+            <DialogDescription className="text-xl text-neutral-400 mt-2">
               Share &quot;{roadmapTitle}&quot; with others or make it public
             </DialogDescription>
           </DialogHeader>
@@ -224,20 +224,20 @@ export function ShareRoadmapDialog({
             <ScrollArea className="max-h-[calc(90vh-120px)]">
               <div className="px-6 pb-6 space-y-6">
                 <div className="space-y-3">
-                  <label className="text-base font-semibold flex items-center gap-2">
-                    <Copy className="size-5" />
+                  <label className="text-lg font-semibold flex items-center gap-2">
+                    <Copy className="size-6" />
                     Share Link
                   </label>
                   <div className="flex gap-2">
                     <Input
                       readOnly
                       value={`${window.location.origin}/roadmap/${roadmapId}`}
-                      className="flex-1 !h-12 text-base bg-neutral-900/50 border-neutral-800"
+                      className="flex-1 !h-14 text-lg bg-neutral-900/50 border-neutral-800"
                     />
                     <Button
                       onClick={handleCopyLink}
                       size="default"
-                      className="!h-12 px-6 text-base"
+                      className="!h-14 px-6 text-lg"
                     >
                       Copy
                     </Button>
@@ -249,11 +249,11 @@ export function ShareRoadmapDialog({
                 <div className="flex items-start justify-between gap-4 p-5 bg-neutral-900/50 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-colors">
                   <div className="flex items-start gap-3 flex-1">
                     <div className="p-2.5 bg-neutral-800 rounded-lg">
-                      <Globe className="size-6 text-neutral-300" />
+                      <Globe className="size-7 text-neutral-300" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-lg mb-1">Public Access</p>
-                      <p className="text-base text-neutral-400 leading-relaxed">
+                      <p className="font-semibold text-xl mb-1">Public Access</p>
+                      <p className="text-lg text-neutral-400 leading-relaxed">
                         Anyone with the link can view this roadmap
                       </p>
                     </div>
@@ -268,20 +268,20 @@ export function ShareRoadmapDialog({
                 <Separator className="bg-neutral-800" />
 
                 <div className="space-y-3">
-                  <label className="text-base font-semibold flex items-center gap-2">
-                    <Mail className="size-5" />
+                  <label className="text-lg font-semibold flex items-center gap-2">
+                    <Mail className="size-6" />
                     Invite by Email
                   </label>
                   <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-neutral-500" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-6 text-neutral-500" />
                     <Input
                       placeholder="Enter email address (e.g. user@example.com)"
                       value={searchEmail}
                       onChange={(e) => setSearchEmail(e.target.value)}
-                      className="!h-12 text-base bg-neutral-900/50 border-neutral-800 pl-12"
+                      className="!h-14 text-lg bg-neutral-900/50 border-neutral-800 pl-14"
                     />
                     {isSearching && (
-                      <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 size-5 animate-spin text-neutral-500" />
+                      <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 size-6 animate-spin text-neutral-500" />
                     )}
                   </div>
 
@@ -293,22 +293,22 @@ export function ShareRoadmapDialog({
                           className="flex items-center justify-between p-4 hover:bg-neutral-800/50 transition-colors border-b border-neutral-800/50 last:border-b-0"
                         >
                           <div className="flex-1 min-w-0">
-                            <p className="font-medium text-base truncate">
+                            <p className="font-medium text-lg truncate">
                               {user.firstName} {user.lastName}
                             </p>
-                            <p className="text-sm text-neutral-400 truncate">{user.email}</p>
+                            <p className="text-base text-neutral-400 truncate">{user.email}</p>
                           </div>
                           <Button
                             size="sm"
                             variant="outline"
-                            className="!h-9 gap-2 ml-3 flex-shrink-0 text-base"
+                            className="!h-11 gap-2 ml-3 flex-shrink-0 text-lg px-4"
                             onClick={() => handleInviteUser(user)}
                             disabled={isInviting}
                           >
                             {isInviting ? (
-                              <Loader2 className="size-4 animate-spin" />
+                              <Loader2 className="size-5 animate-spin" />
                             ) : (
-                              <UserPlus className="size-4" />
+                              <UserPlus className="size-5" />
                             )}
                             Invite
                           </Button>
@@ -320,11 +320,11 @@ export function ShareRoadmapDialog({
                   {searchEmail && !isSearching && (
                     <>
                       {!isValidEmailFormat(searchEmail) ? (
-                        <p className="text-base text-neutral-500 text-center py-3">
+                        <p className="text-lg text-neutral-500 text-center py-3">
                           Please enter a valid email address
                         </p>
                       ) : searchResults.length === 0 ? (
-                        <p className="text-base text-neutral-500 text-center py-3">
+                        <p className="text-lg text-neutral-500 text-center py-3">
                           No users found with that email
                         </p>
                       ) : null}
@@ -335,8 +335,8 @@ export function ShareRoadmapDialog({
                 <Separator className="bg-neutral-800" />
 
                 <div className="space-y-3">
-                  <label className="text-base font-semibold flex items-center gap-2">
-                    <Users className="size-5" />
+                  <label className="text-lg font-semibold flex items-center gap-2">
+                    <Users className="size-6" />
                     Shared with ({sharedUsers.length})
                   </label>
 
@@ -369,11 +369,11 @@ export function ShareRoadmapDialog({
                                 </div>
                               )}
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-base truncate">
+                                <p className="font-semibold text-lg truncate">
                                   {user.firstName} {user.lastName}
                                 </p>
-                                <p className="text-sm text-neutral-400 truncate mt-0.5">{user.email}</p>
-                                <p className="text-sm text-neutral-500 mt-1">
+                                <p className="text-base text-neutral-400 truncate mt-0.5">{user.email}</p>
+                                <p className="text-base text-neutral-500 mt-1">
                                   Shared {formatSharedDate(user.sharedAt)}
                                 </p>
                               </div>
@@ -391,10 +391,10 @@ export function ShareRoadmapDialog({
                       </ScrollArea>
                     </div>
                   ) : (
-                    <div className="text-center py-12 text-neutral-400 text-base border border-dashed border-neutral-800 rounded-lg bg-neutral-900/20">
-                      <Users className="size-12 mx-auto mb-3 text-neutral-600" />
-                      <p className="font-medium text-base">No users shared yet</p>
-                      <p className="text-sm mt-1 text-neutral-500">Invite users by entering their email above</p>
+                    <div className="text-center py-12 text-neutral-400 border border-dashed border-neutral-800 rounded-lg bg-neutral-900/20">
+                      <Users className="size-14 mx-auto mb-3 text-neutral-600" />
+                      <p className="font-medium text-lg">No users shared yet</p>
+                      <p className="text-base mt-1 text-neutral-500">Invite users by entering their email above</p>
                     </div>
                   )}
                 </div>
@@ -407,8 +407,8 @@ export function ShareRoadmapDialog({
       <AlertDialog open={!!userToRevoke} onOpenChange={(open) => !open && !isRevoking && setUserToRevoke(null)}>
         <AlertDialogContent className="sm:max-w-[480px]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl">Revoke Access</AlertDialogTitle>
-            <AlertDialogDescription className="text-base leading-relaxed">
+            <AlertDialogTitle className="text-3xl">Revoke Access</AlertDialogTitle>
+            <AlertDialogDescription className="text-lg leading-relaxed">
               Are you sure you want to revoke access for{' '}
               <span className="font-semibold text-white">
                 {userToRevoke?.firstName} {userToRevoke?.lastName}
@@ -417,17 +417,17 @@ export function ShareRoadmapDialog({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="!h-11 text-base" disabled={isRevoking}>
+            <AlertDialogCancel className="!h-12 text-lg" disabled={isRevoking}>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleRevokeAccess}
               disabled={isRevoking}
-              className="bg-red-600 hover:bg-red-700 text-white !h-11 text-base"
+              className="bg-red-600 hover:bg-red-700 text-white !h-12 text-lg"
             >
               {isRevoking ? (
                 <>
-                  <Loader2 className="size-5 animate-spin mr-2" />
+                  <Loader2 className="size-6 animate-spin mr-2" />
                   Revoking...
                 </>
               ) : (

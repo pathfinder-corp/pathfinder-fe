@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Search, 
   Send, 
@@ -14,7 +15,8 @@ import {
   Edit2,
   Trash2,
   Reply,
-  Loader2
+  Loader2,
+  Eye
 } from 'lucide-react';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { toast } from 'sonner';
@@ -315,13 +317,12 @@ export default function MessagesPage() {
       setConversations(prev => 
         prev.map(conv => {
           if (conv.id === message.conversationId) {
+            const shouldIncrement = message.senderId !== currentUserId && conv.id !== selectedId;
             return {
               ...conv,
               lastMessage: message,
               lastMessageAt: message.createdAt,
-              unreadCount: message.senderId !== currentUserId && conv.id !== selectedId
-                ? (conv.unreadCount || 0) + 1
-                : conv.unreadCount,
+              unreadCount: shouldIncrement ? (conv.unreadCount || 0) + 1 : 0,
             };
           }
           return conv;
@@ -742,11 +743,21 @@ export default function MessagesPage() {
                             ? 'Message deleted' 
                             : conversation.lastMessage?.content || 'No messages yet'}
                         </p>
-                        {conversation.unreadCount && conversation.unreadCount > 0 && (
-                          <Badge className="bg-white text-black text-sm px-2 py-1 h-6 min-w-6 flex items-center justify-center rounded-full">
-                            {conversation.unreadCount}
-                          </Badge>
-                        )}
+                        <AnimatePresence mode="wait">
+                          {conversation.unreadCount && conversation.unreadCount > 0 && (
+                            <motion.div
+                              key={`unread-${conversation.id}`}
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              exit={{ scale: 0, opacity: 0 }}
+                              transition={{ duration: 0.2, type: "spring", stiffness: 200 }}
+                            >
+                              <Badge className="bg-white text-black text-sm px-2 py-1 h-6 min-w-6 flex items-center justify-center rounded-full">
+                                {conversation.unreadCount}
+                              </Badge>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
                       </div>
                     </div>
                   </button>
@@ -788,20 +799,20 @@ export default function MessagesPage() {
                         <p className="font-semibold text-2xl">
                           {other.firstName} {other.lastName}
                         </p>
-                        <p className="text-lg text-neutral-400">
+                        <div className="text-lg text-neutral-400">
                           {isOtherTyping ? (
-                            <span className="text-green-400 flex items-center gap-1.5">
+                            <p className="text-green-500 flex items-center gap-1.5">
                               Typing
                               <span className="flex gap-1">
-                                <span className="size-1.5 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                <span className="size-1.5 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                <span className="size-1.5 bg-green-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                                <span className="size-1.5 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                <span className="size-1.5 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <span className="size-1.5 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                               </span>
-                            </span>
+                            </p>
                           ) : (
                             getOtherParticipantRole(selectedConversation) || 'Online'
                           )}
-                        </p>
+                        </div>
                       </div>
                     </>
                   );
@@ -815,12 +826,14 @@ export default function MessagesPage() {
                       <MoreVertical className="size-6" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-52">
+                  <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuItem className="text-lg py-3">
+                      <Eye className="size-5" />
                       View profile
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500">
+                      <Trash2 className="size-5 text-red-500" />
                       Delete conversation
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -871,170 +884,192 @@ export default function MessagesPage() {
                   </div>
                 ) : (
                   <div className="space-y-5">
-                    {messages.map((message, index) => {
-                      const isOwn = message.senderId === currentUserId;
-                      const showAvatar = index === messages.length - 1 || 
-                        messages[index + 1]?.senderId !== message.senderId;
-                      const other = getOtherParticipant(selectedConversation);
-                      
-                      return (
-                        <div key={message.id} className="group">
-                          <div className={`flex gap-4 items-end ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
-                            <div className="flex-shrink-0 w-11">
-                              {showAvatar && (
-                                isOwn ? (
-                                  user?.avatar ? (
-                                    <div className="relative size-11 rounded-full overflow-hidden">
-                                      <Image
-                                        src={user.avatar}
-                                        alt={`${user.firstName} ${user.lastName}`}
-                                        fill
-                                        className="object-cover"
-                                      />
-                                    </div>
-                                  ) : (
-                                    <div className="size-11 rounded-full bg-white text-neutral-900 flex items-center justify-center text-sm font-bold">
-                                      {user?.firstName[0]}{user?.lastName[0]}
-                                    </div>
+                    <AnimatePresence initial={false}>
+                      {messages.map((message, index) => {
+                        const isOwn = message.senderId === currentUserId;
+                        const showAvatar = index === messages.length - 1 || 
+                          messages[index + 1]?.senderId !== message.senderId;
+                        const other = getOtherParticipant(selectedConversation);
+                        
+                        return (
+                          <motion.div 
+                            key={message.id} 
+                            className="group"
+                            initial={{ opacity: 0, x: isOwn ? 30 : -30, scale: 0.95 }}
+                            animate={{ opacity: 1, x: 0, scale: 1 }}
+                            exit={{ opacity: 0, x: isOwn ? 30 : -30, scale: 0.95 }}
+                            transition={{ 
+                              duration: 0.3, 
+                              type: "spring", 
+                              stiffness: 200, 
+                              damping: 20 
+                            }}
+                          >
+                            <div className={`flex gap-4 items-end ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
+                              <div className="flex-shrink-0 w-11">
+                                {showAvatar && (
+                                  isOwn ? (
+                                    user?.avatar ? (
+                                      <div className="relative size-11 rounded-full overflow-hidden">
+                                        <Image
+                                          src={user.avatar}
+                                          alt={`${user.firstName} ${user.lastName}`}
+                                          fill
+                                          className="object-cover"
+                                        />
+                                      </div>
+                                    ) : (
+                                      <div className="size-11 rounded-full bg-white text-neutral-900 flex items-center justify-center text-sm font-bold">
+                                        {user?.firstName[0]}{user?.lastName[0]}
+                                      </div>
+                                    )
+                                  ) : other && (
+                                    other.avatar ? (
+                                      <div className="relative size-11 rounded-full overflow-hidden">
+                                        <Image
+                                          src={other.avatar}
+                                          alt={`${other.firstName} ${other.lastName}`}
+                                          fill
+                                          className="object-cover"
+                                        />
+                                      </div>
+                                    ) : (
+                                      <div className="size-11 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
+                                        {other.firstName[0]}{other.lastName[0]}
+                                      </div>
+                                    )
                                   )
-                                ) : other && (
-                                  other.avatar ? (
-                                    <div className="relative size-11 rounded-full overflow-hidden">
-                                      <Image
-                                        src={other.avatar}
-                                        alt={`${other.firstName} ${other.lastName}`}
-                                        fill
-                                        className="object-cover"
-                                      />
-                                    </div>
-                                  ) : (
-                                    <div className="size-11 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
-                                      {other.firstName[0]}{other.lastName[0]}
-                                    </div>
-                                  )
-                                )
-                              )}
-                            </div>
+                                )}
+                              </div>
 
-                            <div className="max-w-[65%]">
-                              {message.parentMessage && (
-                                <div className={`text-sm text-neutral-500 mb-2 px-4 py-2 rounded-lg bg-neutral-800/50 ${isOwn ? 'ml-auto' : ''} max-w-fit`}>
-                                  <span className="font-medium">
-                                    {typeof message.parentMessage === 'object' 
-                                      ? `${message.parentMessage.sender?.firstName || 'User'}`
-                                      : 'Reply'}
-                                  </span>
-                                  <p className="truncate">
-                                    {typeof message.parentMessage === 'object' 
-                                      ? message.parentMessage.content 
-                                      : message.parentMessage}
-                                  </p>
-                                </div>
-                              )}
-                              
-                              <div className="relative">
-                                <div
-                                  className={`px-5 py-4 rounded-2xl ${
-                                    message.isDeleted
-                                      ? 'bg-neutral-800/50 text-neutral-500 italic'
-                                      : isOwn
-                                        ? 'bg-white text-neutral-900 rounded-br-md'
-                                        : 'bg-neutral-800 text-neutral-100 rounded-bl-md'
-                                  }`}
-                                >
-                                  <p className="text-lg leading-relaxed whitespace-pre-wrap">
-                                    {message.content}
-                                  </p>
-                                </div>
-                                
-                                {isOwn && !message.isDeleted && (
-                                  <div className="absolute -left-24 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="size-10 text-neutral-400 hover:text-white"
-                                      onClick={() => {
-                                        setEditingMessage(message);
-                                        setEditContent(message.content);
-                                        setIsEditDialogOpen(true);
-                                      }}
-                                    >
-                                      <Edit2 className="size-4" />
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="size-10 text-neutral-400 hover:text-red-500 dark:hover:bg-red-500/10"
-                                      onClick={() => {
-                                        setDeletingMessage(message);
-                                        setIsDeleteDialogOpen(true);
-                                      }}
-                                    >
-                                      <Trash2 className="size-4" />
-                                    </Button>
+                              <div className="max-w-[65%]">
+                                {message.parentMessage && (
+                                  <div className={`text-sm text-neutral-500 mb-2 px-4 py-2 rounded-lg bg-neutral-800/50 ${isOwn ? 'ml-auto' : ''} max-w-fit`}>
+                                    <span className="font-medium">
+                                      {typeof message.parentMessage === 'object' 
+                                        ? `${message.parentMessage.sender?.firstName || 'User'}`
+                                        : 'Reply'}
+                                    </span>
+                                    <p className="truncate">
+                                      {typeof message.parentMessage === 'object' 
+                                        ? message.parentMessage.content 
+                                        : message.parentMessage}
+                                    </p>
                                   </div>
                                 )}
                                 
-                                {!isOwn && !message.isDeleted && (
-                                  <div className="absolute -right-12 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="size-10 text-neutral-400 hover:text-white"
-                                      onClick={() => setReplyingTo(message)}
-                                    >
-                                      <Reply className="size-4" />
-                                    </Button>
+                                <div className="relative">
+                                  <div
+                                    className={`px-5 py-4 rounded-2xl ${
+                                      message.isDeleted
+                                        ? 'bg-neutral-800/50 text-neutral-500 italic'
+                                        : isOwn
+                                          ? 'bg-white text-neutral-900 rounded-br-md'
+                                          : 'bg-neutral-800 text-neutral-100 rounded-bl-md'
+                                    }`}
+                                  >
+                                    <p className="text-lg leading-relaxed whitespace-pre-wrap">
+                                      {message.content}
+                                    </p>
                                   </div>
-                                )}
+                                  
+                                  {isOwn && !message.isDeleted && (
+                                    <div className="absolute -left-24 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="size-10 text-neutral-400 hover:text-white"
+                                        onClick={() => {
+                                          setEditingMessage(message);
+                                          setEditContent(message.content);
+                                          setIsEditDialogOpen(true);
+                                        }}
+                                      >
+                                        <Edit2 className="size-4" />
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="size-10 text-neutral-400 hover:text-red-500 dark:hover:bg-red-500/10"
+                                        onClick={() => {
+                                          setDeletingMessage(message);
+                                          setIsDeleteDialogOpen(true);
+                                        }}
+                                      >
+                                        <Trash2 className="size-4" />
+                                      </Button>
+                                    </div>
+                                  )}
+                                  
+                                  {!isOwn && !message.isDeleted && (
+                                    <div className="absolute -right-12 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="size-10 text-neutral-400 hover:text-white"
+                                        onClick={() => setReplyingTo(message)}
+                                      >
+                                        <Reply className="size-4" />
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                          
-                          <div className={`flex items-center gap-2 mt-2 ${isOwn ? 'justify-end mr-14' : 'justify-start ml-14'}`}>
-                            <span className="text-base text-neutral-500">
-                              {formatMessageTime(message.createdAt)}
-                            </span>
-                            {message.isEdited && (
-                              <span className="text-sm text-neutral-500">(edited)</span>
-                            )}
-                            {isOwn && !message.isDeleted && getStatusIcon(message)}
-                          </div>
-                        </div>
-                      );
-                    })}
+                            
+                            <div className={`flex items-center gap-2 mt-2 ${isOwn ? 'justify-end mr-14' : 'justify-start ml-14'}`}>
+                              <span className="text-base text-neutral-500">
+                                {formatMessageTime(message.createdAt)}
+                              </span>
+                              {message.isEdited && (
+                                <span className="text-sm text-neutral-500">(edited)</span>
+                              )}
+                              {isOwn && !message.isDeleted && getStatusIcon(message)}
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </AnimatePresence>
                     
-                    {isOtherTyping && (
-                      <div className="flex gap-4 flex-row">
-                        <div className="flex-shrink-0 w-11 flex items-end">
-                          {(() => {
-                            const other = getOtherParticipant(selectedConversation);
-                            if (!other) return null;
-                            return other.avatar ? (
-                              <div className="relative size-11 rounded-full overflow-hidden">
-                                <Image
-                                  src={other.avatar}
-                                  alt={`${other.firstName} ${other.lastName}`}
-                                  fill
-                                  className="object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <div className="size-11 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
-                                {other.firstName[0]}{other.lastName[0]}
-                              </div>
-                            );
-                          })()}
-                        </div>
-                        <div className="px-5 py-4 rounded-2xl bg-neutral-800 rounded-bl-md">
-                          <div className="flex items-center gap-1.5">
-                            <span className="size-2.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                            <span className="size-2.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                            <span className="size-2.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                    <AnimatePresence>
+                      {isOtherTyping && (
+                        <motion.div 
+                          className="flex gap-4 flex-row"
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <div className="flex-shrink-0 w-11 flex items-end">
+                            {(() => {
+                              const other = getOtherParticipant(selectedConversation);
+                              if (!other) return null;
+                              return other.avatar ? (
+                                <div className="relative size-11 rounded-full overflow-hidden">
+                                  <Image
+                                    src={other.avatar}
+                                    alt={`${other.firstName} ${other.lastName}`}
+                                    fill
+                                    className="object-cover"
+                                  />
+                                </div>
+                              ) : (
+                                <div className="size-11 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
+                                  {other.firstName[0]}{other.lastName[0]}
+                                </div>
+                              );
+                            })()}
                           </div>
-                        </div>
-                      </div>
-                    )}
+                          <div className="px-5 py-4 rounded-2xl bg-neutral-800 rounded-bl-md">
+                            <div className="flex items-center gap-1.5">
+                              <span className="size-2.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                              <span className="size-2.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                              <span className="size-2.5 bg-neutral-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                     
                     <div ref={messagesEndRef} />
                   </div>

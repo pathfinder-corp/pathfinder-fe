@@ -13,8 +13,8 @@ import {
   X,
   SlidersHorizontal,
   ArrowRight,
-  CheckCircle,
-  GraduationCap
+  GraduationCap,
+  MessageSquareShare
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useDebounceValue } from 'usehooks-ts';
@@ -348,9 +348,12 @@ export default function MentorsPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-800/30 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%221%22%20cy%3D%221%22%20r%3D%221%22%20fill%3D%22%23333%22%2F%3E%3C%2Fsvg%3E')] opacity-30" />
           
-          <div className="relative max-w-7xl mx-auto px-6 text-center">
+          <div className="relative max-w-[1100px] mx-auto px-6 text-center">
             <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-neutral-700 bg-neutral-900/80 backdrop-blur-sm mb-8">
-              <span className="text-base text-neutral-300">Connect with industry experts</span>
+              <MessageSquareShare className="size-5 text-neutral-300" />
+              <span className="text-lg text-neutral-300">
+                Connect with industry experts
+              </span>
             </div>
             
             <h1 className="text-6xl md:text-7xl font-bold mb-6 tracking-tight">
@@ -360,12 +363,12 @@ export default function MentorsPage() {
               </span>
             </h1>
             
-            <p className="text-2xl text-neutral-400 max-w-2xl mx-auto mb-12">
+            <p className="text-2xl text-neutral-400 max-w-3xl mx-auto mb-12">
               Learn from experienced professionals who have walked the path before you. 
               Get personalized guidance to accelerate your career growth.
             </p>
 
-            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-14">
+            <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 mb-2">
               <div className="text-center">
                 <div className="text-4xl font-bold text-white">{total || '100'}+</div>
                 <div className="text-base text-neutral-500">Expert Mentors</div>
@@ -384,7 +387,7 @@ export default function MentorsPage() {
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-6 -mt-4 mb-10">
+        <section className="max-w-[1100px] mx-auto px-6 -mt-4 mb-10">
           <div className="bg-neutral-900/80 backdrop-blur-xl border border-neutral-800 rounded-2xl p-4 md:p-6 shadow-xl">
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="relative flex-1">
@@ -393,12 +396,12 @@ export default function MentorsPage() {
                   placeholder="Search by name, expertise, or skills..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-14 !h-16 !text-lg bg-neutral-800/50 border-neutral-700 focus:border-neutral-600"
+                  className="pl-14 !h-16 !text-xl bg-neutral-800/50 border-neutral-700 focus:border-neutral-600"
                 />
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors"
+                    className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors"
                   >
                     <X className="size-6" />
                   </button>
@@ -407,7 +410,7 @@ export default function MentorsPage() {
 
               <div className="flex flex-wrap items-center gap-3">
                 <Select value={minExperience} onValueChange={setMinExperience}>
-                  <SelectTrigger className="w-[180px] !h-16 !text-base bg-neutral-800/50 border-neutral-700">
+                  <SelectTrigger className="w-[180px] !h-16 !text-lg bg-neutral-800/50 border-neutral-700">
                     <SelectValue placeholder="Experience" />
                   </SelectTrigger>
                   <SelectContent>
@@ -420,7 +423,7 @@ export default function MentorsPage() {
                 </Select>
 
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[200px] !h-16 !text-base bg-neutral-800/50 border-neutral-700">
+                  <SelectTrigger className="w-[200px] !h-16 !text-lg bg-neutral-800/50 border-neutral-700">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
@@ -437,7 +440,7 @@ export default function MentorsPage() {
                     <Button
                       variant="outline"
                       size="lg"
-                      className={`!h-16 !text-base gap-2.5 bg-neutral-800/50 border-neutral-700 hover:bg-neutral-700 ${hasActiveFilters ? 'border-white text-white' : ''}`}
+                      className={`!h-16 !text-lg gap-2.5 bg-neutral-800/50 border-neutral-700 hover:bg-neutral-700 ${hasActiveFilters ? 'border-white text-white' : ''}`}
                     >
                       <SlidersHorizontal className="size-6" />
                       More Filters
@@ -522,8 +525,8 @@ export default function MentorsPage() {
           </div>
         </section>
 
-        <section className="max-w-7xl mx-auto px-6 pb-16">
-          <div className="flex items-center justify-between mb-10">
+        <section className="max-w-[1100px] mx-auto px-6 pb-16">
+          <div className="flex items-center justify-between mb-8">
             {isLoading ? (
               <Skeleton className="h-7 w-52 bg-neutral-800" />
             ) : (
@@ -535,8 +538,8 @@ export default function MentorsPage() {
           </div>
 
           {isLoading && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[...Array(6)].map((_, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {[...Array(8)].map((_, i) => (
                 <div key={i} className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden">
                   <Skeleton className="h-32 w-full bg-neutral-800" />
                   <div className="p-6 pt-14">
@@ -575,7 +578,7 @@ export default function MentorsPage() {
 
           {!isLoading && mentors.length > 0 && (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {mentors.map(renderMentorCard)}
               </div>
               {renderPagination()}
@@ -584,7 +587,7 @@ export default function MentorsPage() {
         </section>
 
         {isAuthenticated && user?.role === USER_ROLES.STUDENT && (
-          <section className="max-w-7xl mx-auto px-6 pb-16">
+          <section className="max-w-[1100px] mx-auto px-6 pb-16">
             <div className="relative overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-900 to-neutral-950 border border-neutral-800 rounded-2xl p-10 md:p-14">
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
               
