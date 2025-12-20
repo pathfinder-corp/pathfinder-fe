@@ -350,7 +350,7 @@ export default function SettingsPage() {
                         <Input
                           id="firstName"
                           placeholder="Enter your first name"
-                          className="h-14 !text-lg bg-neutral-900/50 border-neutral-800"
+                          className="h-14 text-lg! bg-neutral-900/50 border-neutral-800"
                           {...profileForm.register('firstName')}
                         />
                         {profileForm.formState.errors.firstName && (
@@ -366,7 +366,7 @@ export default function SettingsPage() {
                         <Input
                           id="lastName"
                           placeholder="Enter your last name"
-                          className="h-14 !text-lg bg-neutral-900/50 border-neutral-800"
+                          className="h-14 text-lg! bg-neutral-900/50 border-neutral-800"
                           {...profileForm.register('lastName')}
                         />
                         {profileForm.formState.errors.lastName && (
@@ -380,7 +380,7 @@ export default function SettingsPage() {
                     <Button
                       type="submit"
                       disabled={isSavingProfile || !profileForm.formState.isDirty}
-                      className="w-full !h-16 !text-xl bg-white text-neutral-950 hover:bg-neutral-200"
+                      className="w-full h-16! text-xl! bg-white text-neutral-950 hover:bg-neutral-200"
                     >
                       {isSavingProfile ? (
                         <>
@@ -420,7 +420,7 @@ export default function SettingsPage() {
                       id="currentPassword"
                       type={showCurrentPassword ? 'text' : 'password'}
                       placeholder="Enter your current password"
-                      className="h-14 !text-lg bg-neutral-900/50 border-neutral-800 pr-14"
+                      className="h-14 text-lg! bg-neutral-900/50 border-neutral-800 pr-14"
                       {...passwordForm.register('currentPassword')}
                     />
                     <button
@@ -447,7 +447,7 @@ export default function SettingsPage() {
                       id="newPassword"
                       type={showNewPassword ? 'text' : 'password'}
                       placeholder="Enter your new password"
-                      className="h-14 !text-lg bg-neutral-900/50 border-neutral-800 pr-14"
+                      className="h-14 text-lg! bg-neutral-900/50 border-neutral-800 pr-14"
                       {...passwordForm.register('newPassword')}
                     />
                     <button
@@ -484,7 +484,7 @@ export default function SettingsPage() {
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Confirm your new password"
-                      className="h-14 !text-lg bg-neutral-900/50 border-neutral-800 pr-14"
+                      className="h-14 text-lg! bg-neutral-900/50 border-neutral-800 pr-14"
                       {...passwordForm.register('confirmPassword')}
                     />
                     <button
@@ -505,7 +505,7 @@ export default function SettingsPage() {
                 <Button
                   type="submit"
                   disabled={isChangingPassword}
-                  className="w-full !h-16 !text-xl bg-white text-neutral-950 hover:bg-neutral-200"
+                  className="w-full h-16! text-xl! bg-white text-neutral-950 hover:bg-neutral-200"
                 >
                   {isChangingPassword ? (
                     <>

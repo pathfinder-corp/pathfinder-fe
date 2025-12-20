@@ -285,7 +285,7 @@ export default function HistoryPage() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 size-10"
+                className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 size-10"
               >
                 <MoreVertical className="size-6" />
               </Button>
@@ -417,7 +417,7 @@ export default function HistoryPage() {
             size="lg"
             variant="outline"
             disabled={loadingStates.initial || loadingStates.deleteAll}
-            className="!h-14 rounded-full text-lg !border-red-500 text-red-500 hover:text-red-500"
+            className="h-14! rounded-full text-lg !border-red-500 text-red-500 hover:text-red-500"
           >
             Delete All
             <Trash2 className="size-6" />
@@ -432,7 +432,7 @@ export default function HistoryPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           disabled={loadingStates.initial}
-          className="pl-14 !h-16 !text-lg bg-neutral-900/50 border-neutral-800"
+          className="pl-14 h-16! text-lg! bg-neutral-900/50 border-neutral-800"
         />
       </div>
 
@@ -548,11 +548,11 @@ export default function HistoryPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="!h-11 text-base">Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="h-11! text-base">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={() => deleteItem && handleDelete(deleteItem)}
               disabled={loadingStates.delete}
-              className="bg-red-500 hover:bg-red-600 text-white !h-11 text-base"
+              className="bg-red-500 hover:bg-red-600 text-white h-11! text-base"
             >
               {loadingStates.delete ? 'Deleting...' : 'Delete'}
             </AlertDialogAction>
@@ -569,11 +569,11 @@ export default function HistoryPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={loadingStates.deleteAll} className="!h-11 text-base">Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={loadingStates.deleteAll} className="h-11! text-base">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAll}
               disabled={loadingStates.deleteAll}
-              className="bg-red-500 hover:bg-red-600 text-white !h-11 text-base"
+              className="bg-red-500 hover:bg-red-600 text-white h-11! text-base"
             >
               {loadingStates.deleteAll ? 'Deleting...' : 'Delete All'}
             </AlertDialogAction>

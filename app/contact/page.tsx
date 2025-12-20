@@ -160,7 +160,7 @@ export default function ContactPage() {
               className="text-7xl md:text-8xl font-bold tracking-tight mb-8"
             >
               Let&apos;s Start a{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-neutral-500">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-neutral-200 to-neutral-500">
                 Conversation
               </span>
             </motion.h1>
@@ -234,7 +234,7 @@ export default function ContactPage() {
                         placeholder="John Doe"
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="!h-16 !text-xl bg-neutral-900/50 border-neutral-800 focus:border-white/30 rounded-xl px-5"
+                        className="h-16! text-xl! bg-neutral-900/50 border-neutral-800 focus:border-white/30 rounded-xl px-5"
                         required
                       />
                     </div>
@@ -249,7 +249,7 @@ export default function ContactPage() {
                         placeholder="john@example.com"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="!h-16 !text-xl bg-neutral-900/50 border-neutral-800 focus:border-white/30 rounded-xl px-5"
+                        className="h-16! text-xl! bg-neutral-900/50 border-neutral-800 focus:border-white/30 rounded-xl px-5"
                         required
                       />
                     </div>
@@ -265,7 +265,7 @@ export default function ContactPage() {
                       placeholder="How can we help you?"
                       value={formData.subject}
                       onChange={handleInputChange}
-                      className="!h-16 !text-xl bg-neutral-900/50 border-neutral-800 focus:border-white/30 rounded-xl px-5"
+                      className="h-16! text-xl! bg-neutral-900/50 border-neutral-800 focus:border-white/30 rounded-xl px-5"
                     />
                   </div>
 
@@ -279,7 +279,7 @@ export default function ContactPage() {
                       placeholder="Tell us more about your inquiry..."
                       value={formData.message}
                       onChange={handleInputChange}
-                      className="min-h-[180px] !text-xl bg-neutral-900/50 border-neutral-800 focus:border-white/30 rounded-xl px-5 py-4"
+                      className="min-h-[180px] text-xl! bg-neutral-900/50 border-neutral-800 focus:border-white/30 rounded-xl px-5 py-4"
                       required
                     />
                   </div>
@@ -343,7 +343,7 @@ export default function ContactPage() {
                   ))}
                 </Accordion>
 
-                <div className="mt-10 p-8 rounded-2xl bg-gradient-to-br from-neutral-900 to-neutral-900/50 border border-neutral-800">
+                <div className="mt-10 p-8 rounded-2xl bg-linear-to-br from-neutral-900 to-neutral-900/50 border border-neutral-800">
                   <h3 className="text-2xl font-semibold mb-3">Still have questions?</h3>
                   <p className="text-lg text-neutral-400 mb-6">
                     Can&apos;t find the answer you&apos;re looking for? Our support team is here to help.

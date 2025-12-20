@@ -5,7 +5,7 @@ export default function SettingsLoading() {
     <div className="max-w-4xl mx-auto space-y-8">
       <div className="space-y-3">
         <Skeleton className="h-12 w-56 bg-neutral-800" />
-        <Skeleton className="h-8 w-[28rem] bg-neutral-800" />
+        <Skeleton className="h-8 w-md bg-neutral-800" />
       </div>
 
       <div className="flex items-center gap-2 border-b border-neutral-800 pb-1">

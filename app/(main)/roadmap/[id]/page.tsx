@@ -291,7 +291,7 @@ export default function RoadmapDetailPage() {
           <Button
             variant="outline"
             size="lg"
-            className="flex items-center gap-2 !h-14 !text-lg"
+            className="flex items-center gap-2 h-14! text-lg!"
             onClick={() => setIsShareDialogOpen(true)}
           >
             Share
@@ -348,7 +348,7 @@ export default function RoadmapDetailPage() {
             <Button 
               variant="outline" 
               size="sm" 
-              className="!h-10"
+              className="h-10!"
               onClick={handleResetView}
               title="Reset view to initial position"
             >
@@ -357,7 +357,7 @@ export default function RoadmapDetailPage() {
             
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="!h-10">
+                <Button variant="outline" size="sm" className="h-10!">
                   <Maximize2 className="size-5" />
                 </Button>
               </SheetTrigger>
@@ -400,7 +400,7 @@ export default function RoadmapDetailPage() {
                 key={index}
                 className="flex items-start gap-4 p-5 bg-neutral-800/50 rounded-lg border border-neutral-700"
               >
-                <div className="flex-shrink-0 size-10 rounded-full bg-white flex items-center justify-center text-black font-bold text-lg">
+                <div className="shrink-0 size-10 rounded-full bg-white flex items-center justify-center text-black font-bold text-lg">
                   {index + 1}
                 </div>
                 <div className="flex-1">
@@ -435,7 +435,7 @@ export default function RoadmapDetailPage() {
                         variant="ghost"
                         size="sm"
                         onClick={handleBackToDetail}
-                        className="mb-2 -ml-2 !h-10 !text-base"
+                        className="mb-2 -ml-2 h-10! text-base!"
                       >
                         <ArrowLeft className="size-5 mr-2" />
                         Back to details
@@ -459,7 +459,7 @@ export default function RoadmapDetailPage() {
                         size="sm"
                         onClick={handleClearChat}
                         disabled={loadingStates.aiChat}
-                        className="!h-10 !text-base"
+                        className="h-10! text-base!"
                       >
                         Clear Chat
                       </Button>
@@ -469,7 +469,7 @@ export default function RoadmapDetailPage() {
                       <Button
                         onClick={handleAskAI}
                         size="lg"
-                        className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 !h-12 !text-lg"
+                        className="flex items-center gap-2 bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 h-12! text-lg!"
                       >
                         Ask AI
                         <Sparkles className="size-5" />

@@ -131,7 +131,7 @@ export function FlaggedTab({ onViewApplication, onUnflagApplication }: FlaggedTa
                 >
                   <TableCell className="py-5 pl-6">
                     <div className="flex items-center gap-3">
-                      <div className="size-12 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold flex-shrink-0">
+                      <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold shrink-0">
                         {app.user?.firstName?.[0] || ''}{app.user?.lastName?.[0] || ''}
                       </div>
                       <div className="min-w-0">
@@ -142,7 +142,7 @@ export function FlaggedTab({ onViewApplication, onUnflagApplication }: FlaggedTa
                           {app.user?.email || 'N/A'}
                         </p>
                       </div>
-                      <ShieldAlert className="size-5 text-neutral-400 flex-shrink-0" />
+                      <ShieldAlert className="size-5 text-neutral-400 shrink-0" />
                     </div>
                   </TableCell>
                   <TableCell>

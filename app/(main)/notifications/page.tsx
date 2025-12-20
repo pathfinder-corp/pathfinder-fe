@@ -246,7 +246,7 @@ export default function NotificationsPage() {
   return (
     <div className="pt-10 pb-12 flex flex-col items-center justify-center">
       <div className="flex items-center gap-5 mb-8">
-        <div className="size-20 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
+        <div className="size-20 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
           <Bell className="size-10 text-neutral-300" />
         </div>
         <div>
@@ -257,7 +257,7 @@ export default function NotificationsPage() {
         </div>
       </div>
 
-      <div className="w-[58rem] mb-8">
+      <div className="w-232 mb-8">
         <div className="flex items-center justify-between border-b border-neutral-800">
           <div className="flex items-center">
             {FILTERS.map((filter) => {
@@ -294,7 +294,7 @@ export default function NotificationsPage() {
               variant="outline"
               onClick={handleMarkAllAsRead}
               disabled={isMarkingAll}
-              className="!h-12 !text-base"
+              className="h-12! text-base!"
             >
               {isMarkingAll ? (
                 <>
@@ -322,7 +322,7 @@ export default function NotificationsPage() {
         }}
       >
         {FILTERS.map((filter) => (
-          <div key={filter.id} className="w-[58rem]">
+          <div key={filter.id} className="w-232">
             {isLoading ? (
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
@@ -360,12 +360,12 @@ export default function NotificationsPage() {
                     onClick={() => handleNotificationClick(notification)}
                     className={`w-full text-left bg-neutral-900/50 border rounded-xl p-6 hover:bg-neutral-800/50 transition-all cursor-pointer ${
                       !notification.isRead 
-                        ? 'border-neutral-700 bg-white/[0.02]' 
+                        ? 'border-neutral-700 bg-white/2' 
                         : 'border-neutral-800'
                     }`}
                   >
                     <div className="flex items-start gap-5">
-                      <div className="size-14 rounded-full bg-neutral-800 flex items-center justify-center flex-shrink-0">
+                      <div className="size-14 rounded-full bg-neutral-800 flex items-center justify-center shrink-0">
                         {getNotificationIcon(notification.type)}
                       </div>
                       
@@ -402,7 +402,7 @@ export default function NotificationsPage() {
                       variant="outline"
                       onClick={() => setPage(p => Math.max(1, p - 1))}
                       disabled={page === 1 || isLoading}
-                      className="!h-12 !text-base"
+                      className="h-12! text-base!"
                     >
                       Previous
                     </Button>
@@ -413,7 +413,7 @@ export default function NotificationsPage() {
                       variant="outline"
                       onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                       disabled={page === totalPages || isLoading}
-                      className="!h-12 !text-base"
+                      className="h-12! text-base!"
                     >
                       Next
                     </Button>

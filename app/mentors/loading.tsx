@@ -22,8 +22,8 @@ export default function MentorsLoading() {
         <section className="relative py-16 overflow-hidden">
           <div className="max-w-[1100px] mx-auto px-6 text-center">
             <Skeleton className="h-10 w-64 mx-auto mb-8 rounded-full bg-neutral-800" />
-            <Skeleton className="h-20 w-[36rem] mx-auto mb-6 bg-neutral-800" />
-            <Skeleton className="h-8 w-[44rem] mx-auto mb-12 bg-neutral-800" />
+            <Skeleton className="h-20 w-xl mx-auto mb-6 bg-neutral-800" />
+            <Skeleton className="h-8 w-176 mx-auto mb-12 bg-neutral-800" />
             
             <div className="flex items-center justify-center gap-16 mb-14">
               <div className="text-center">

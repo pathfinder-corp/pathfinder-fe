@@ -27,7 +27,7 @@ export default function UsersLoading() {
         {[...Array(10)].map((_, i) => (
           <div key={i} className="grid grid-cols-7 gap-4 px-6 py-4 border-b border-neutral-800 items-center">
             <div className="flex items-center gap-3">
-              <Skeleton className="size-10 rounded-full bg-neutral-800 flex-shrink-0" />
+              <Skeleton className="size-10 rounded-full bg-neutral-800 shrink-0" />
               <Skeleton className="h-5 w-32 bg-neutral-800" />
             </div>
             <Skeleton className="h-5 w-48 bg-neutral-800" />

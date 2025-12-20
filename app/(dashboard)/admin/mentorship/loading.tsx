@@ -5,7 +5,7 @@ export default function MentorshipLoading() {
     <div className="space-y-6">
       <div>
         <Skeleton className="h-14 w-80 mb-3 bg-neutral-800" />
-        <Skeleton className="h-8 w-[28rem] bg-neutral-800" />
+        <Skeleton className="h-8 w-md bg-neutral-800" />
       </div>
 
       <div className="flex items-center gap-1 border-b border-neutral-800 pb-px">
@@ -33,7 +33,7 @@ export default function MentorshipLoading() {
         {[...Array(10)].map((_, i) => (
           <div key={i} className="grid grid-cols-6 gap-4 px-6 py-5 border-b border-neutral-800 items-center">
             <div className="flex items-center gap-3">
-              <Skeleton className="size-12 rounded-full bg-neutral-800 flex-shrink-0" />
+              <Skeleton className="size-12 rounded-full bg-neutral-800 shrink-0" />
               <div className="space-y-2">
                 <Skeleton className="h-6 w-36 bg-neutral-800" />
                 <Skeleton className="h-5 w-44 bg-neutral-800" />

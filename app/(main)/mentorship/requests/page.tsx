@@ -249,7 +249,7 @@ export default function MentorshipRequestsPage() {
         }
       </p>
 
-      <div className="w-[58rem] flex items-center gap-1 mb-10 border-b border-neutral-800">
+      <div className="w-232 flex items-center gap-1 mb-10 border-b border-neutral-800">
         {TABS.map((tab) => {
           const isActive = activeTab === tab.id;
           return (
@@ -286,7 +286,7 @@ export default function MentorshipRequestsPage() {
         {TABS.map((tab) => (
           <div key={tab.id}>
             {isLoading ? (
-              <div className="w-[58rem] space-y-5">
+              <div className="w-232 space-y-5">
                 {[...Array(3)].map((_, i) => (
                   <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
                     <div className="flex items-start gap-5">
@@ -301,7 +301,7 @@ export default function MentorshipRequestsPage() {
                 ))}
               </div>
             ) : requests.length === 0 ? (
-              <div className="w-[58rem] text-center py-20">
+              <div className="w-232 text-center py-20">
                 <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
                   <Users className="size-12 text-neutral-500" />
                 </div>
@@ -315,14 +315,14 @@ export default function MentorshipRequestsPage() {
                 {userRole === 'as_student' && (
                   <Button 
                     onClick={() => router.push('/mentors')}
-                    className="!h-14 !text-lg"
+                    className="h-14! text-lg!"
                   >
                     Browse Mentors
                   </Button>
                 )}
               </div>
             ) : (
-              <div className="w-[58rem] space-y-5">
+              <div className="w-232 space-y-5">
                 {requests.map((request) => {
                   const otherUser = userRole === 'as_mentor' ? request.student : request.mentor;
                   
@@ -333,7 +333,7 @@ export default function MentorshipRequestsPage() {
                     >
                       <div className="flex items-start gap-5">
                         {otherUser.avatar ? (
-                          <div className="relative size-16 rounded-full overflow-hidden flex-shrink-0">
+                          <div className="relative size-16 rounded-full overflow-hidden shrink-0">
                             <Image
                               src={otherUser.avatar}
                               alt={`${otherUser.firstName} ${otherUser.lastName}`}
@@ -342,7 +342,7 @@ export default function MentorshipRequestsPage() {
                             />
                           </div>
                         ) : (
-                          <div className="size-16 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
+                          <div className="size-16 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold shrink-0">
                             {getInitials(otherUser.firstName, otherUser.lastName)}
                           </div>
                         )}
@@ -378,7 +378,7 @@ export default function MentorshipRequestsPage() {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => router.push(`/mentors/${request.mentorProfileId}`)}
-                                className="!h-10 !text-base"
+                                className="h-10! text-base!"
                               >
                                 View Profile
                               </Button>
@@ -392,7 +392,7 @@ export default function MentorshipRequestsPage() {
                                     setSelectedRequest(request);
                                     setIsAcceptDialogOpen(true);
                                   }}
-                                  className="!h-10 !text-base bg-green-500/20 text-green-400 border-green-500/30 dark:hover:bg-green-500/30"
+                                  className="h-10! text-base! bg-green-500/20 text-green-400 border-green-500/30 dark:hover:bg-green-500/30"
                                 >
                                   Accept
                                   <CheckCircle className="size-5" />
@@ -400,7 +400,7 @@ export default function MentorshipRequestsPage() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="!h-10 !text-base dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10"
+                                  className="h-10! text-base! dark:text-red-500 border-red-500/30! dark:hover:bg-red-500/10"
                                   onClick={() => {
                                     setSelectedRequest(request);
                                     setIsDeclineDialogOpen(true);
@@ -416,7 +416,7 @@ export default function MentorshipRequestsPage() {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                className="!h-10 !text-base dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10"
+                                className="h-10! text-base! dark:text-red-500 border-red-500/30! dark:hover:bg-red-500/10"
                                 onClick={() => {
                                   setSelectedRequest(request);
                                   setIsCancelDialogOpen(true);
@@ -431,7 +431,7 @@ export default function MentorshipRequestsPage() {
                               <Button
                                 size="sm"
                                 onClick={() => router.push('/messages')}
-                                className="!h-10 !text-base"
+                                className="h-10! text-base!"
                               >
                                 Message
                                 <MessageCircle className="size-5" />
@@ -471,7 +471,7 @@ export default function MentorshipRequestsPage() {
               value={acceptMessage}
               onChange={(e) => setAcceptMessage(e.target.value)}
               placeholder="Add a welcome message (optional)..."
-              className="min-h-[120px] !text-base"
+              className="min-h-[120px] text-base!"
               disabled={isProcessing}
             />
 
@@ -480,14 +480,14 @@ export default function MentorshipRequestsPage() {
                 variant="outline"
                 onClick={() => setIsAcceptDialogOpen(false)}
                 disabled={isProcessing}
-                className="!h-12 !text-base"
+                className="h-12! text-base!"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleAccept}
                 disabled={isProcessing}
-                className="!h-12 !text-base"
+                className="h-12! text-base!"
               >
                 {isProcessing ? (
                   <>
@@ -520,7 +520,7 @@ export default function MentorshipRequestsPage() {
               value={declineReason}
               onChange={(e) => setDeclineReason(e.target.value)}
               placeholder="Explain why you're declining this request..."
-              className="min-h-[120px] !text-base"
+              className="min-h-[120px] text-base!"
               disabled={isProcessing}
             />
 
@@ -529,7 +529,7 @@ export default function MentorshipRequestsPage() {
                 variant="outline"
                 onClick={() => setIsDeclineDialogOpen(false)}
                 disabled={isProcessing}
-                className="!h-12 !text-base"
+                className="h-12! text-base!"
               >
                 Cancel
               </Button>
@@ -537,7 +537,7 @@ export default function MentorshipRequestsPage() {
                 variant="destructive"
                 onClick={handleDecline}
                 disabled={isProcessing || !declineReason.trim()}
-                className="!h-12 !text-base"
+                className="h-12! text-base!"
               >
                 {isProcessing ? (
                   <>
@@ -569,13 +569,13 @@ export default function MentorshipRequestsPage() {
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isProcessing} className="!h-12 !text-base">
+            <AlertDialogCancel disabled={isProcessing} className="h-12! text-base!">
               Keep Request
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleCancel}
               disabled={isProcessing}
-              className="bg-red-600 hover:bg-red-700 text-white !h-12 !text-base"
+              className="bg-red-600 hover:bg-red-700 text-white h-12! text-base!"
             >
               {isProcessing ? (
                 <>

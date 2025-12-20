@@ -67,13 +67,13 @@ export function ApproveDialog({
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading} className="!h-12 text-base">
+          <AlertDialogCancel disabled={isLoading} className="h-12! text-base">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading}
-            className="bg-green-600 hover:bg-green-700 text-white !h-12 text-base"
+            className="bg-green-600 hover:bg-green-700 text-white h-12! text-base"
           >
             {isLoading && <Loader2 className="size-5 mr-2 animate-spin" />}
             Approve Application
@@ -148,13 +148,13 @@ export function DeclineDialog({
         </div>
 
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading} className="!h-12 text-base">
+          <AlertDialogCancel disabled={isLoading} className="h-12! text-base">
             Cancel
           </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleConfirm}
             disabled={isLoading || !declineReason.trim()}
-            className="bg-red-600 hover:bg-red-700 text-white !h-12 text-base"
+            className="bg-red-600 hover:bg-red-700 text-white h-12! text-base"
           >
             {isLoading && <Loader2 className="size-5 mr-2 animate-spin" />}
             Decline Application

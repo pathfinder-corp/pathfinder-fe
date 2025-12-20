@@ -232,8 +232,8 @@ export default function MentorProfilePage() {
     return (
       <div className="pt-12 pb-16 flex flex-col items-center justify-center">
         <Skeleton className="h-16 w-80 mb-8 bg-neutral-800" />
-        <Skeleton className="h-8 w-[32rem] bg-neutral-800" />
-        <div className="w-[58rem] space-y-8 mt-10">
+        <Skeleton className="h-8 w-lg bg-neutral-800" />
+        <div className="w-232 space-y-8 mt-10">
           {[...Array(6)].map((_, i) => (
             <div key={i} className="space-y-3">
               <Skeleton className="h-8 w-44 bg-neutral-800" />
@@ -259,13 +259,13 @@ export default function MentorProfilePage() {
           <Button
             variant="outline"
             onClick={() => router.push('/mentor/applications')}
-            className="!h-14 !text-lg"
+            className="h-14! text-lg!"
           >
             View My Application
           </Button>
           <Button
             onClick={() => router.push('/mentor')}
-            className="!h-14 !text-lg"
+            className="h-14! text-lg!"
           >
             <GraduationCap className="size-6 mr-2" />
             Apply to Become a Mentor
@@ -278,7 +278,7 @@ export default function MentorProfilePage() {
   return (
     <div className="pt-12 pb-16 flex flex-col items-center justify-center">
       <div className="flex items-center gap-5 mb-8">
-        <div className="size-20 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
+        <div className="size-20 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
           <GraduationCap className="size-10 text-neutral-300" />
         </div>
         <div>
@@ -287,7 +287,7 @@ export default function MentorProfilePage() {
         </div>
       </div>
 
-      <div className="w-[58rem] flex items-center justify-between mb-8 p-5 bg-neutral-900/50 border border-neutral-800 rounded-xl">
+      <div className="w-232 flex items-center justify-between mb-8 p-5 bg-neutral-900/50 border border-neutral-800 rounded-xl">
         <div className="flex items-center gap-4">
           {isAcceptingMentees ? (
             <Badge className="bg-green-500/20 text-green-400 border-green-500/30 py-2 px-4 text-base">
@@ -308,7 +308,7 @@ export default function MentorProfilePage() {
           <Button
             variant="outline"
             onClick={() => router.push(`/mentors/${profile?.id}`)}
-            className="!h-11 !text-base"
+            className="h-11! text-base!"
           >
             View Public
             <Eye className="size-5" />
@@ -316,7 +316,7 @@ export default function MentorProfilePage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-232 space-y-8">
         <div className="space-y-3">
           <Label htmlFor="headline" className="text-xl">
             Professional Headline <span className="text-red-500">*</span>
@@ -324,7 +324,7 @@ export default function MentorProfilePage() {
           <Input
             {...register('headline')}
             placeholder="e.g., Senior Software Engineer at Google | 8+ Years in Cloud Architecture"
-            className="w-full !h-20 !text-xl !px-6"
+            className="w-full h-20! text-xl! px-6!"
           />
           {errors.headline && (
             <p className="text-red-500 text-lg">{errors.headline.message}</p>
@@ -338,7 +338,7 @@ export default function MentorProfilePage() {
           <Textarea
             {...register('bio')}
             placeholder="Tell potential mentees about yourself, your background, and mentoring style..."
-            className="w-full min-h-[160px] !text-lg !px-6 !py-5"
+            className="w-full min-h-[160px] text-lg! px-6! py-5!"
           />
           {errors.bio && (
             <p className="text-red-500 text-lg">{errors.bio.message}</p>
@@ -354,12 +354,12 @@ export default function MentorProfilePage() {
               value={String(selectedExperience)} 
               onValueChange={(value) => setValue('yearsExperience', Number(value))}
             >
-              <SelectTrigger className="w-full !h-20 !text-xl !px-6">
+              <SelectTrigger className="w-full h-20! text-xl! px-6!">
                 <SelectValue placeholder="Select experience" />
               </SelectTrigger>
               <SelectContent>
                 {EXPERIENCE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={String(option.value)} className="!text-xl">
+                  <SelectItem key={option.value} value={String(option.value)} className="text-xl!">
                     {option.label}
                   </SelectItem>
                 ))}
@@ -378,12 +378,12 @@ export default function MentorProfilePage() {
               value={String(selectedMaxMentees)} 
               onValueChange={(value) => setValue('maxMentees', Number(value))}
             >
-              <SelectTrigger className="w-full !h-20 !text-xl !px-6">
+              <SelectTrigger className="w-full h-20! text-xl! px-6!">
                 <SelectValue placeholder="Select max mentees" />
               </SelectTrigger>
               <SelectContent>
                 {MAX_MENTEES_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={String(option.value)} className="!text-xl">
+                  <SelectItem key={option.value} value={String(option.value)} className="text-xl!">
                     {option.label}
                   </SelectItem>
                 ))}
@@ -404,13 +404,13 @@ export default function MentorProfilePage() {
                 onChange={(e) => setNewLanguage(e.target.value)}
                 onKeyDown={(e) => handleKeyDown(e, newLanguage, setNewLanguage, languages, setLanguages)}
                 placeholder="Add language..."
-                className="flex-1 !h-20 !text-xl !px-6"
+                className="flex-1 h-20! text-xl! px-6!"
               />
               <Button 
                 type="button"
                 variant="outline"
                 onClick={() => addItem(newLanguage, setNewLanguage, languages, setLanguages)}
-                className="!h-20 !w-20"
+                className="size-20!"
               >
                 <Plus className="size-7" />
               </Button>
@@ -442,13 +442,13 @@ export default function MentorProfilePage() {
               onChange={(e) => setNewExpertise(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, newExpertise, setNewExpertise, expertise, setExpertise)}
               placeholder="e.g., Software Engineering, Cloud Architecture, Data Science..."
-              className="flex-1 !h-20 !text-xl !px-6"
+              className="flex-1 h-20! text-xl! px-6!"
             />
             <Button 
               type="button"
               variant="outline"
               onClick={() => addItem(newExpertise, setNewExpertise, expertise, setExpertise)}
-              className="!h-20 !w-20"
+              className="size-20!"
             >
               <Plus className="size-7" />
             </Button>
@@ -477,13 +477,13 @@ export default function MentorProfilePage() {
               onChange={(e) => setNewSkill(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, newSkill, setNewSkill, skills, setSkills)}
               placeholder="e.g., JavaScript, Python, Leadership, System Design..."
-              className="flex-1 !h-20 !text-xl !px-6"
+              className="flex-1 h-20! text-xl! px-6!"
             />
             <Button 
               type="button"
               variant="outline"
               onClick={() => addItem(newSkill, setNewSkill, skills, setSkills)}
-              className="!h-20 !w-20"
+              className="size-20!"
             >
               <Plus className="size-7" />
             </Button>
@@ -510,13 +510,13 @@ export default function MentorProfilePage() {
               onChange={(e) => setNewIndustry(e.target.value)}
               onKeyDown={(e) => handleKeyDown(e, newIndustry, setNewIndustry, industries, setIndustries)}
               placeholder="e.g., FinTech, Healthcare, E-commerce..."
-              className="flex-1 !h-20 !text-xl !px-6"
+              className="flex-1 h-20! text-xl! px-6!"
             />
             <Button 
               type="button"
               variant="outline"
               onClick={() => addItem(newIndustry, setNewIndustry, industries, setIndustries)}
-              className="!h-20 !w-20"
+              className="size-20!"
             >
               <Plus className="size-7" />
             </Button>
@@ -545,7 +545,7 @@ export default function MentorProfilePage() {
             <Input
               {...register('linkedinUrl')}
               placeholder="https://linkedin.com/in/yourprofile"
-              className="w-full !h-20 !text-xl !px-6"
+              className="w-full h-20! text-xl! px-6!"
             />
             {errors.linkedinUrl && (
               <p className="text-red-500 text-lg">{errors.linkedinUrl.message}</p>
@@ -559,7 +559,7 @@ export default function MentorProfilePage() {
             <Input
               {...register('portfolioUrl')}
               placeholder="https://yourportfolio.com"
-              className="w-full !h-20 !text-xl !px-6"
+              className="w-full h-20! text-xl! px-6!"
             />
             {errors.portfolioUrl && (
               <p className="text-red-500 text-lg">{errors.portfolioUrl.message}</p>
@@ -570,7 +570,7 @@ export default function MentorProfilePage() {
         <Button 
           type="submit" 
           disabled={isSaving}
-          className="w-full !h-16 !text-xl"
+          className="w-full h-16! text-xl!"
         >
           {isSaving ? (
             <>

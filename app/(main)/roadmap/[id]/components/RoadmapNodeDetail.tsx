@@ -27,7 +27,7 @@ export function RoadmapNodeDetail({ node }: IRoadmapNodeDetailProps) {
             <ul className="space-y-4">
               {node.keyActivities.map((activity, idx) => (
                 <li key={idx} className="flex items-center gap-3">
-                  <span className="flex-shrink-0 size-8 rounded-full bg-white text-black flex items-center justify-center text-lg font-bold">
+                  <span className="shrink-0 size-8 rounded-full bg-white text-black flex items-center justify-center text-lg font-bold">
                     {idx + 1}
                   </span>
                   <span className="text-xl text-neutral-300 leading-relaxed">
@@ -62,7 +62,7 @@ export function RoadmapNodeDetail({ node }: IRoadmapNodeDetailProps) {
                         {resource.title}
                       </h4>
                     </div>
-                    <ExternalLink className="size-6 text-neutral-500 group-hover:text-white transition-colors flex-shrink-0" />
+                    <ExternalLink className="size-6 text-neutral-500 group-hover:text-white transition-colors shrink-0" />
                   </div>
                   <p className="text-lg text-neutral-400 leading-relaxed">
                     {resource.description}

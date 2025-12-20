@@ -265,12 +265,12 @@ export function ShareRoadmapDialog({
                     <Input
                       readOnly
                       value={`${window.location.origin}/roadmap/${roadmapId}`}
-                      className="flex-1 !h-14 text-lg bg-neutral-900/50 border-neutral-800"
+                      className="flex-1 h-14! text-lg bg-neutral-900/50 border-neutral-800"
                     />
                     <Button
                       onClick={handleCopyLink}
                       size="default"
-                      className="!h-14 px-6 text-lg"
+                      className="h-14! px-6 text-lg"
                     >
                       Copy
                     </Button>
@@ -311,7 +311,7 @@ export function ShareRoadmapDialog({
                       placeholder="Enter email address (e.g. user@example.com)"
                       value={searchEmail}
                       onChange={(e) => setSearchEmail(e.target.value)}
-                      className="!h-14 text-lg bg-neutral-900/50 border-neutral-800 pl-14"
+                      className="h-14! text-lg bg-neutral-900/50 border-neutral-800 pl-14"
                     />
                     {isSearching && (
                       <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 size-6 animate-spin text-neutral-500" />
@@ -334,7 +334,7 @@ export function ShareRoadmapDialog({
                           <Button
                             size="sm"
                             variant="outline"
-                            className="!h-11 gap-2 ml-3 flex-shrink-0 text-lg px-4"
+                            className="h-11! gap-2 ml-3 shrink-0 text-lg px-4"
                             onClick={() => handleInviteUser(user)}
                             disabled={isInviting}
                           >
@@ -394,10 +394,10 @@ export function ShareRoadmapDialog({
                                   alt={`${user.firstName} ${user.lastName}`}
                                   width={44}
                                   height={44}
-                                  className="size-11 rounded-full object-cover flex-shrink-0"
+                                  className="size-11 rounded-full object-cover shrink-0"
                                 />
                               ) : (
-                                <div className="size-11 rounded-full bg-neutral-700 flex items-center justify-center flex-shrink-0">
+                                <div className="size-11 rounded-full bg-neutral-700 flex items-center justify-center shrink-0">
                                   <User className="size-6 text-neutral-400" />
                                 </div>
                               )}
@@ -414,7 +414,7 @@ export function ShareRoadmapDialog({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="size-10 dark:hover:bg-red-500/10 hover:text-red-500 transition-colors flex-shrink-0 ml-3"
+                              className="size-10 dark:hover:bg-red-500/10 hover:text-red-500 transition-colors shrink-0 ml-3"
                               onClick={() => setUserToRevoke(user)}
                             >
                               <Trash2 className="size-5" />
@@ -450,13 +450,13 @@ export function ShareRoadmapDialog({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="!h-12 text-lg" disabled={isRevoking}>
+            <AlertDialogCancel className="h-12! text-lg" disabled={isRevoking}>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleRevokeAccess}
               disabled={isRevoking}
-              className="bg-red-600 hover:bg-red-700 text-white !h-12 text-lg"
+              className="bg-red-600 hover:bg-red-700 text-white h-12! text-lg"
             >
               {isRevoking ? (
                 <>

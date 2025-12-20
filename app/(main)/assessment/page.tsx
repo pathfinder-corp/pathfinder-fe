@@ -83,7 +83,7 @@ export default function AssessmentPage() {
         Create a personalized assessment to evaluate your understanding of any topic
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-8 mt-8">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-232 space-y-8 mt-8">
         <div className="space-y-3">
           <Label htmlFor="domain" className="text-xl">
             What topic would you like to assess? <span className="text-red-500">*</span>
@@ -91,7 +91,7 @@ export default function AssessmentPage() {
           <Input
             {...register('domain')}
             placeholder="e.g., JavaScript Variables, Go Routines, System Design"
-            className="w-full !h-20 !text-xl !px-6"
+            className="w-full h-20! text-xl! px-6!"
           />
           {errors.domain && (
             <p className="text-red-500 text-lg">{errors.domain.message}</p>
@@ -128,12 +128,12 @@ export default function AssessmentPage() {
             value={String(selectedQuestionCount)} 
             onValueChange={(value) => setValue('questionCount', Number(value))}
           >
-            <SelectTrigger className="w-full !h-20 !text-xl !px-6">
+            <SelectTrigger className="w-full h-20! text-xl! px-6!">
               <SelectValue placeholder="Select number of questions" />
             </SelectTrigger>
             <SelectContent>
               {QUESTION_COUNT_OPTIONS.map((count) => (
-                <SelectItem key={count} value={String(count)} className="!text-xl">
+                <SelectItem key={count} value={String(count)} className="text-xl!">
                   {count} questions
                 </SelectItem>
               ))}
@@ -147,7 +147,7 @@ export default function AssessmentPage() {
         <Button 
           type="submit" 
           disabled={isLoading}
-          className="w-full !h-16 !text-xl"
+          className="w-full h-16! text-xl!"
         >
           {isLoading ? (
             <>

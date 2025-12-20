@@ -111,7 +111,7 @@ export default function RoadmapPage() {
         </>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="w-[58rem] space-y-7 mt-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="w-232 space-y-7 mt-6">
         <div className="space-y-3">
           <Label htmlFor="topic" className="text-xl">
             Topic <span className="text-red-500">*</span>
@@ -119,7 +119,7 @@ export default function RoadmapPage() {
           <Input
             {...register('topic')}
             placeholder="Enter any topic..."
-            className="w-full !h-20 !text-xl !px-6"
+            className="w-full h-20! text-xl! px-6!"
           />
           {errors.topic && (
             <p className="text-red-500 text-lg">{errors.topic.message}</p>
@@ -134,7 +134,7 @@ export default function RoadmapPage() {
             <Input
               {...register('background')}
               placeholder="Enter background..."
-              className="w-full !h-20 !text-xl !px-6"
+              className="w-full h-20! text-xl! px-6!"
             />
           </div>
           <div className="space-y-3">
@@ -142,17 +142,17 @@ export default function RoadmapPage() {
               Experience
             </Label>
             <Select onValueChange={(value) => setValue('experienceLevel', value as any)}>
-              <SelectTrigger className="w-full !h-20 !text-xl !px-6">
+              <SelectTrigger className="w-full h-20! text-xl! px-6!">
                 <SelectValue placeholder="Select experience" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="beginner" className="!text-xl">
+                <SelectItem value="beginner" className="text-xl!">
                   Beginner
                 </SelectItem>
-                <SelectItem value="intermediate" className="!text-xl">
+                <SelectItem value="intermediate" className="text-xl!">
                   Intermediate
                 </SelectItem>
-                <SelectItem value="advanced" className="!text-xl">
+                <SelectItem value="advanced" className="text-xl!">
                   Advanced
                 </SelectItem>
               </SelectContent>
@@ -168,7 +168,7 @@ export default function RoadmapPage() {
             <Input
               {...register('targetOutcome')}
               placeholder="Enter target outcome..."
-              className="w-full !h-20 !text-xl !px-6"
+              className="w-full h-20! text-xl! px-6!"
             />
           </div>
           <div className="space-y-3">
@@ -176,17 +176,17 @@ export default function RoadmapPage() {
               Learning Pace
             </Label>
             <Select onValueChange={(value) => setValue('learningPace', value as any)}>
-              <SelectTrigger className="w-full !h-20 !text-xl !px-6">
+              <SelectTrigger className="w-full h-20! text-xl! px-6!">
                 <SelectValue placeholder="Select learning pace" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="flexible" className="!text-xl">
+                <SelectItem value="flexible" className="text-xl!">
                   Flexible
                 </SelectItem>
-                <SelectItem value="balanced" className="!text-xl">
+                <SelectItem value="balanced" className="text-xl!">
                   Balanced
                 </SelectItem>
-                <SelectItem value="intensive" className="!text-xl">
+                <SelectItem value="intensive" className="text-xl!">
                   Intensive
                 </SelectItem>
               </SelectContent>
@@ -209,7 +209,7 @@ export default function RoadmapPage() {
               align="start"
               locale="vi-VN"
               showCompare={false}
-              className="w-full !h-20 !text-xl !px-6"
+              className="w-full h-20! text-xl! px-6!"
             />
           </div>
           <div className="space-y-3">
@@ -219,7 +219,7 @@ export default function RoadmapPage() {
             <Input
               {...register('preferences')}
               placeholder="Enter preferences..."
-              className="w-full !h-20 !text-xl !px-6"
+              className="w-full h-20! text-xl! px-6!"
             />
           </div>
         </div>
@@ -227,7 +227,7 @@ export default function RoadmapPage() {
         <Button 
           type="submit" 
           disabled={isLoading}
-          className="w-full !h-16 !text-xl"
+          className="w-full h-16! text-xl!"
         >
           {isLoading ? (
             <>

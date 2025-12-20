@@ -152,7 +152,7 @@ export default function MentorDetailPage() {
             <Skeleton className="h-10 w-40 mb-8 bg-neutral-800" />
             
             <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
-              <Skeleton className="size-40 rounded-xl bg-neutral-800 flex-shrink-0" />
+              <Skeleton className="size-40 rounded-xl bg-neutral-800 shrink-0" />
               <div className="flex-1 space-y-4">
                 <Skeleton className="h-10 w-72 bg-neutral-800" />
                 <Skeleton className="h-6 w-full max-w-lg bg-neutral-800" />
@@ -197,7 +197,7 @@ export default function MentorDetailPage() {
             <p className="text-xl text-neutral-400 mb-10">
               The mentor profile you&apos;re looking for doesn&apos;t exist or has been removed.
             </p>
-            <Button size="lg" onClick={() => router.push('/mentors')} className="!h-14 !text-lg !px-10">
+            <Button size="lg" onClick={() => router.push('/mentors')} className="h-14! text-lg! px-10!">
               <ArrowLeft className="size-6 mr-2" />
               Back to Mentors
             </Button>
@@ -216,7 +216,7 @@ export default function MentorDetailPage() {
 
           <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
             {mentor.user?.avatar ? (
-              <div className="relative size-40 rounded-xl overflow-hidden border border-neutral-800 flex-shrink-0">
+              <div className="relative size-40 rounded-xl overflow-hidden border border-neutral-800 shrink-0">
                 <Image
                   src={mentor.user.avatar}
                   alt={`${mentor.user?.firstName} ${mentor.user?.lastName}`}
@@ -227,7 +227,7 @@ export default function MentorDetailPage() {
                 />
               </div>
             ) : (
-              <div className="size-40 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-4xl font-bold flex-shrink-0">
+              <div className="size-40 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-4xl font-bold shrink-0">
                 {getInitials(mentor.user?.firstName || '', mentor.user?.lastName || '')}
               </div>
             )}
@@ -447,7 +447,7 @@ export default function MentorDetailPage() {
                 
                 <Button
                   size="lg"
-                  className="w-full !h-14 !text-lg bg-white text-neutral-950 hover:bg-neutral-200 mb-5"
+                  className="w-full h-14! text-lg! bg-white text-neutral-950 hover:bg-neutral-200 mb-5"
                   disabled={!canConnect}
                   onClick={() => setIsConnectDialogOpen(true)}
                 >
@@ -580,13 +580,13 @@ export default function MentorDetailPage() {
                 <Button
                   variant="outline"
                   onClick={handleCloseDialog}
-                  className="!h-12 !text-base"
+                  className="h-12! text-base!"
                 >
                   Close
                 </Button>
                 <Button
                   onClick={() => router.push('/mentorship/requests')}
-                  className="!h-12 !text-base"
+                  className="h-12! text-base!"
                 >
                   View My Requests
                 </Button>
@@ -598,7 +598,7 @@ export default function MentorDetailPage() {
                 value={connectMessage}
                 onChange={(e) => setConnectMessage(e.target.value)}
                 placeholder="Hi! I'm interested in learning from you because..."
-                className="min-h-[140px] !text-lg"
+                className="min-h-[140px] text-lg!"
                 disabled={isSendingRequest}
               />
 
@@ -611,14 +611,14 @@ export default function MentorDetailPage() {
                   variant="outline"
                   onClick={handleCloseDialog}
                   disabled={isSendingRequest}
-                  className="!h-12 !text-base"
+                  className="h-12! text-base!"
                 >
                   Cancel
                 </Button>
                 <Button
                   onClick={handleSendRequest}
                   disabled={isSendingRequest || !connectMessage.trim()}
-                  className="!h-12 !text-base"
+                  className="h-12! text-base!"
                 >
                   {isSendingRequest ? (
                     <>

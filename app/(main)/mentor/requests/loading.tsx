@@ -3,12 +3,12 @@ import { Skeleton } from '@/components/ui/skeleton';
 export default function MentorshipRequestsLoading() {
   return (
     <div className="pt-12 pb-16 flex flex-col items-center justify-center">
-      <Skeleton className="h-16 w-[32rem] mb-8 bg-neutral-800" />
-      <Skeleton className="h-8 w-[36rem] mb-10 bg-neutral-800" />
+      <Skeleton className="h-16 w-lg mb-8 bg-neutral-800" />
+      <Skeleton className="h-8 w-xl mb-10 bg-neutral-800" />
 
-      <Skeleton className="h-14 w-[58rem] mb-10 bg-neutral-800 rounded-lg" />
+      <Skeleton className="h-14 w-232 mb-10 bg-neutral-800 rounded-lg" />
 
-      <div className="w-[58rem] space-y-5">
+      <div className="w-232 space-y-5">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
             <div className="flex items-start gap-5">

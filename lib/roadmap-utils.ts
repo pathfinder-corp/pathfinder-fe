@@ -20,9 +20,9 @@ export function convertRoadmapToFlow(roadmap: IRoadmapResponse): {
   const edges: Edge[] = [];
   
   const centerX = 600;
-  const phaseSpacing = 260;
-  const stepOffsetX = 320;
-  const stepLevelSpacing = 140;
+  const phaseSpacing = 320;
+  const stepOffsetX = 420;
+  const stepLevelSpacing = 180;
   
   let currentY = 0;
 
@@ -69,7 +69,7 @@ export function convertRoadmapToFlow(roadmap: IRoadmapResponse): {
     });
 
     if (phase.steps && phase.steps.length > 0) {
-      let stepY = currentY + 180;
+      let stepY = currentY + 220;
 
       for (let i = 0; i < phase.steps.length; i += 2) {
         const leftStep = phase.steps[i];

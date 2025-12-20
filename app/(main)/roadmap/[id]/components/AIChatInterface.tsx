@@ -72,7 +72,7 @@ export function AIChatInterface({
 
           {isLoading && (
             <div className="flex gap-3 justify-start">
-              <div className="flex-shrink-0 size-10 rounded-full bg-white flex items-center justify-center mt-1">
+              <div className="shrink-0 size-10 rounded-full bg-white flex items-center justify-center mt-1">
                 <Bot className="size-6 text-black" />
               </div>
               <div className="max-w-[75%] rounded-lg p-5 bg-neutral-900 border border-neutral-800">
@@ -100,7 +100,7 @@ export function AIChatInterface({
             onKeyDown={handleKeyDown}
             placeholder="Ask a question about this step..."
             rows={2}
-            className="custom-scrollbar flex-1 min-h-[3.5rem] max-h-[3.5rem] resize-none bg-neutral-900 border-neutral-800 !text-xl"
+            className="custom-scrollbar flex-1 min-h-[3.5rem] max-h-[3.5rem] resize-none bg-neutral-900 border-neutral-800 text-xl!"
             disabled={isLoading}
           />
           <Button

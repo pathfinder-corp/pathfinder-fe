@@ -157,7 +157,7 @@ export function ApplicationsTab({
             placeholder="Search by applicant name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-14 !h-14 !text-lg bg-neutral-900/50 border-neutral-800"
+            className="pl-14 h-14! text-lg! bg-neutral-900/50 border-neutral-800"
           />
           {searchQuery && (
             <button
@@ -173,7 +173,7 @@ export function ApplicationsTab({
           value={statusFilter} 
           onValueChange={(value) => setStatusFilter(value as StatusFilter)}
         >
-          <SelectTrigger className="w-[200px] !h-14 text-lg bg-neutral-900/50 border-neutral-800">
+          <SelectTrigger className="w-[200px] h-14! text-lg bg-neutral-900/50 border-neutral-800">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -252,7 +252,7 @@ export function ApplicationsTab({
                 >
                   <TableCell className="py-5 pl-6">
                     <div className="flex items-center gap-3">
-                      <div className="size-12 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold flex-shrink-0">
+                      <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold shrink-0">
                         {application.user?.firstName?.[0] || ''}{application.user?.lastName?.[0] || ''}
                       </div>
                       <div className="min-w-0">
@@ -264,7 +264,7 @@ export function ApplicationsTab({
                         </p>
                       </div>
                       {application.isFlagged && (
-                        <AlertTriangle className="size-5 text-orange-400 flex-shrink-0" />
+                        <AlertTriangle className="size-5 text-orange-400 shrink-0" />
                       )}
                     </div>
                   </TableCell>

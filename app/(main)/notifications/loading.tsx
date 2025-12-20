@@ -11,7 +11,7 @@ export default function NotificationsLoading() {
         </div>
       </div>
 
-      <div className="w-[58rem] flex items-center justify-between mb-8">
+      <div className="w-232 flex items-center justify-between mb-8">
         <div className="flex items-center gap-2">
           <Skeleton className="h-12 w-20 bg-neutral-800" />
           <Skeleton className="h-12 w-24 bg-neutral-800" />
@@ -20,7 +20,7 @@ export default function NotificationsLoading() {
         <Skeleton className="h-12 w-40 bg-neutral-800" />
       </div>
 
-      <div className="w-[58rem] space-y-4">
+      <div className="w-232 space-y-4">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
             <div className="flex items-start gap-5">

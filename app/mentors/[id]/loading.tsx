@@ -21,7 +21,7 @@ export default function MentorDetailLoading() {
       <main className="pt-36 pb-16">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
-            <Skeleton className="size-40 rounded-xl bg-neutral-800 flex-shrink-0" />
+            <Skeleton className="size-40 rounded-xl bg-neutral-800 shrink-0" />
             <div className="flex-1 space-y-5">
               <Skeleton className="h-14 w-80 bg-neutral-800" />
               <Skeleton className="h-8 w-full max-w-lg bg-neutral-800" />

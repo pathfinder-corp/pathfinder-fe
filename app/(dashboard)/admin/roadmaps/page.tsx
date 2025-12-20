@@ -276,7 +276,7 @@ export default function AdminRoadmapsPage() {
             placeholder="Search by topic..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-14 h-14 !text-lg bg-neutral-900/50 border-neutral-800"
+            className="pl-14 h-14 text-lg! bg-neutral-900/50 border-neutral-800"
           />
           {searchQuery && (
             <button
@@ -292,7 +292,7 @@ export default function AdminRoadmapsPage() {
           value={shareFilter} 
           onValueChange={(value) => setShareFilter(value as ShareFilter)}
         >
-          <SelectTrigger className="w-[160px] !h-14 text-lg bg-neutral-900/50 border-neutral-800">
+          <SelectTrigger className="w-[160px] h-14! text-lg bg-neutral-900/50 border-neutral-800">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
@@ -385,7 +385,7 @@ export default function AdminRoadmapsPage() {
                 >
                   <TableCell className="py-5 pl-7">
                     <div className="flex items-center gap-3">
-                      <div className="size-12 rounded-lg bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center flex-shrink-0">
+                      <div className="size-12 rounded-lg bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center shrink-0">
                         <Map className="size-6 text-neutral-400" />
                       </div>
                       <p className="font-medium text-lg text-neutral-100 truncate max-w-[240px]">
@@ -395,7 +395,7 @@ export default function AdminRoadmapsPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                      <div className="size-10 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold shrink-0">
                         {roadmap.owner.firstName[0]}{roadmap.owner.lastName[0]}
                       </div>
                       <div className="min-w-0">
@@ -438,7 +438,7 @@ export default function AdminRoadmapsPage() {
                       <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem 
                           onClick={() => handleViewRoadmap(roadmap)}
-                          className="!text-lg py-3"
+                          className="text-lg! py-3"
                         >
                           <Eye className="size-5" />
                           View details
@@ -447,7 +447,7 @@ export default function AdminRoadmapsPage() {
                           <Link 
                             href={`/roadmap/${roadmap.id}`} 
                             target="_blank"
-                            className="!text-lg py-3"
+                            className="text-lg! py-3"
                           >
                             <ExternalLink className="size-5" />
                             Open roadmap
@@ -459,7 +459,7 @@ export default function AdminRoadmapsPage() {
                             setRoadmapToDelete(roadmap);
                             setIsDeleteDialogOpen(true);
                           }}
-                          className="dark:hover:bg-red-500/10 transition-colors !text-lg py-3 text-red-500 focus:text-red-500"
+                          className="dark:hover:bg-red-500/10 transition-colors text-lg! py-3 text-red-500 focus:text-red-500"
                         >
                           <Trash2 className="size-5 text-red-500" />
                           Delete roadmap
@@ -542,7 +542,7 @@ export default function AdminRoadmapsPage() {
           {selectedRoadmap && (
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="size-14 rounded-xl bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center flex-shrink-0">
+                <div className="size-14 rounded-xl bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center shrink-0">
                   <Map className="size-7 text-neutral-400" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -558,7 +558,7 @@ export default function AdminRoadmapsPage() {
               <div className="bg-neutral-800/50 rounded-lg p-4">
                 <p className="text-sm text-neutral-500 mb-2">Owner</p>
                 <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
+                  <div className="size-10 rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
                     {selectedRoadmap.owner.firstName[0]}{selectedRoadmap.owner.lastName[0]}
                   </div>
                   <div>
@@ -611,7 +611,7 @@ export default function AdminRoadmapsPage() {
               </div>
 
               <div className="pt-2">
-                <Button asChild className="w-full !h-14 !text-[1.15rem]">
+                <Button asChild className="w-full h-14! !text-[1.15rem]">
                   <Link href={`/roadmap/${selectedRoadmap.id}`} target="_blank">
                     Open Roadmap
                     <ExternalLink className="size-5" />

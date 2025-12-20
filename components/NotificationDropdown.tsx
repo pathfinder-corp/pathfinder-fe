@@ -159,7 +159,7 @@ export function NotificationDropdown() {
   };
 
   const getNotificationIcon = (type: NotificationType) => {
-    const className = `size-5 mt-1 flex-shrink-0 text-neutral-400`;
+    const className = `size-5 mt-1 shrink-0 text-neutral-400`;
     switch (type) {
       case 'request_received':
       case 'request_accepted':
@@ -211,9 +211,9 @@ export function NotificationDropdown() {
 
       <DropdownMenuContent 
         align="end" 
-        className="w-[28rem] p-0 bg-neutral-900 border-neutral-800 flex flex-col h-[300px]"
+        className="w-md p-0 bg-neutral-900 border-neutral-800 flex flex-col h-[300px]"
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-800 flex-shrink-0">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-800 shrink-0">
           <h3 className="font-semibold text-2xl">Notifications</h3>
           {unreadCount > 0 && (
             <Button
@@ -252,7 +252,7 @@ export function NotificationDropdown() {
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
                   className={`w-full text-left px-5 py-4 hover:bg-neutral-800/50 transition-colors cursor-pointer ${
-                    !notification.isRead ? 'bg-white/[0.02]' : ''
+                    !notification.isRead ? 'bg-white/2' : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -266,7 +266,7 @@ export function NotificationDropdown() {
                           {notification.title}
                         </p>
                         {!notification.isRead && (
-                          <span className="size-2 rounded-full bg-green-500 animate-pulse flex-shrink-0 mt-2" />
+                          <span className="size-2 rounded-full bg-green-500 animate-pulse shrink-0 mt-2" />
                         )}
                       </div>
                       
@@ -285,7 +285,7 @@ export function NotificationDropdown() {
           )}
         </ScrollArea>
 
-        <div className="border-t border-neutral-800 p-3 flex-shrink-0">
+        <div className="border-t border-neutral-800 p-3 shrink-0">
           <Button
             variant="ghost"
             className="w-full h-11 text-base text-neutral-400 hover:text-white"

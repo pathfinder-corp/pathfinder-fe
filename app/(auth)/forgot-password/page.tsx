@@ -101,7 +101,7 @@ export default function ForgotPasswordPage() {
                   placeholder="user@example.com"
                   autoComplete="off"
                   disabled={isLoading}
-                  className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pl-14 ${
+                  className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pl-14 ${
                     errors.email ? 'border-red-500 focus:border-red-500' : ''
                   }`}
                   {...register('email')}

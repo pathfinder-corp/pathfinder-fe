@@ -4,9 +4,9 @@ export default function MyApplicationsLoading() {
   return (
     <div className="pt-12 pb-16 flex flex-col items-center justify-center">
       <Skeleton className="h-16 w-80 mb-8 bg-neutral-800" />
-      <Skeleton className="h-8 w-[32rem] mb-10 bg-neutral-800" />
+      <Skeleton className="h-8 w-lg mb-10 bg-neutral-800" />
 
-      <div className="w-[58rem]">
+      <div className="w-232">
         <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden">
           <div className="p-7 border-b border-neutral-800">
             <div className="flex items-start gap-5">
@@ -14,7 +14,7 @@ export default function MyApplicationsLoading() {
               <div className="flex-1">
                 <div className="flex items-start justify-between gap-4">
                   <div className="space-y-3">
-                    <Skeleton className="h-10 w-[28rem] bg-neutral-800" />
+                    <Skeleton className="h-10 w-md bg-neutral-800" />
                     <Skeleton className="h-6 w-52 bg-neutral-800" />
                   </div>
                   <Skeleton className="h-11 w-36 bg-neutral-800 rounded-full" />
@@ -69,7 +69,7 @@ export default function MyApplicationsLoading() {
 
           <div className="p-7 border-t border-neutral-800 bg-neutral-900/30">
             <div className="flex items-center justify-between">
-              <Skeleton className="h-5 w-[28rem] bg-neutral-800" />
+              <Skeleton className="h-5 w-md bg-neutral-800" />
               <Skeleton className="h-12 w-48 bg-neutral-800 rounded-md" />
             </div>
           </div>

@@ -46,8 +46,8 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
     let maxY = -Infinity;
   
     nodes.forEach(node => {
-      const nodeWidth = 280;
-      const nodeHeight = 150;
+      const nodeWidth = 380;
+      const nodeHeight = 180;
       
       minX = Math.min(minX, node.position.x);
       maxX = Math.max(maxX, node.position.x + nodeWidth);
@@ -55,7 +55,7 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
       maxY = Math.max(maxY, node.position.y + nodeHeight);
     });
   
-    const padding = 300;
+    const padding = 400;
     return [
       [minX - padding, minY - padding],
       [maxX + padding, maxY + padding]
@@ -80,10 +80,10 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
     const startNode = nodes.find(node => node.id === 'start');
     if (startNode && startNode.position) {
       setCenter(
-        startNode.position.x + 135, 
-        startNode.position.y + 370, 
+        startNode.position.x + 190, 
+        startNode.position.y + 320, 
         { 
-          zoom: 0.8,
+          zoom: 1,
           duration: 800
         }
       );

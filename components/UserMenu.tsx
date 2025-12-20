@@ -59,7 +59,7 @@ export function UserMenu() {
             />
           </div>
         ) : (
-          <div className="size-14 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 border-2 border-neutral-600 flex items-center justify-center text-lg font-bold">
+          <div className="size-14 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 border-2 border-neutral-600 flex items-center justify-center text-lg font-bold">
             {getInitials()}
           </div>
         )}

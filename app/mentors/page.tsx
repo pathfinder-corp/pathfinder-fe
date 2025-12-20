@@ -163,10 +163,10 @@ export default function MentorsPage() {
   const renderMentorCard = (mentor: IMentorProfile) => (
     <div
       key={mentor.id}
-      className="group bg-gradient-to-b from-neutral-900 to-neutral-950 border border-neutral-800 rounded-2xl overflow-hidden hover:border-neutral-600 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500"
+      className="group bg-linear-to-b from-neutral-900 to-neutral-950 border border-neutral-800 rounded-2xl overflow-hidden hover:border-neutral-600 hover:shadow-2xl hover:shadow-white/5 transition-all duration-500"
     >
-      <div className="relative h-32 bg-gradient-to-br from-neutral-800 via-neutral-900 to-neutral-950">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
+      <div className="relative h-32 bg-linear-to-br from-neutral-800 via-neutral-900 to-neutral-950">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
         
         {mentor.isAcceptingMentees && (
           <div className="absolute top-4 right-4">
@@ -188,7 +188,7 @@ export default function MentorsPage() {
               />
             </div>
           ) : (
-            <div className="size-20 rounded-2xl bg-gradient-to-br from-neutral-700 to-neutral-800 border-4 border-neutral-950 flex items-center justify-center text-xl font-bold shadow-xl">
+            <div className="size-20 rounded-2xl bg-linear-to-br from-neutral-700 to-neutral-800 border-4 border-neutral-950 flex items-center justify-center text-xl font-bold shadow-xl">
               {getInitials(mentor.user?.firstName || '', mentor.user?.lastName || '')}
             </div>
           )}
@@ -273,7 +273,7 @@ export default function MentorsPage() {
 
         <Button
           onClick={() => router.push(`/mentors/${mentor.id}`)}
-          className="w-full !h-12 !text-base bg-white text-neutral-950 hover:bg-neutral-200 font-medium group/btn"
+          className="w-full h-12! text-base! bg-white text-neutral-950 hover:bg-neutral-200 font-medium group/btn"
         >
           View Profile
           <ArrowRight className="size-5 group-hover/btn:translate-x-1 transition-transform" />
@@ -310,7 +310,7 @@ export default function MentorsPage() {
           size="lg"
           onClick={() => setPage(p => Math.max(1, p - 1))}
           disabled={page === 1}
-          className="!h-12 !text-base"
+          className="h-12! text-base!"
         >
           Previous
         </Button>
@@ -322,7 +322,7 @@ export default function MentorsPage() {
               variant={page === p ? 'default' : 'outline'}
               size="lg"
               onClick={() => setPage(p)}
-              className={`!h-12 !w-12 !text-base ${page === p ? 'bg-white text-neutral-950' : ''}`}
+              className={`size-12! text-base! ${page === p ? 'bg-white text-neutral-950' : ''}`}
             >
               {p}
             </Button>
@@ -336,7 +336,7 @@ export default function MentorsPage() {
           size="lg"
           onClick={() => setPage(p => Math.min(totalPages, p + 1))}
           disabled={page === totalPages}
-          className="!h-12 !text-base"
+          className="h-12! text-base!"
         >
           Next
         </Button>
@@ -350,7 +350,7 @@ export default function MentorsPage() {
 
       <main className="pt-24">
         <section className="relative py-16 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-neutral-800/30 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--tw-gradient-stops))] from-neutral-800/30 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Ccircle%20cx%3D%221%22%20cy%3D%221%22%20r%3D%221%22%20fill%3D%22%23333%22%2F%3E%3C%2Fsvg%3E')] opacity-30" />
           
           <div className="relative max-w-[1100px] mx-auto px-6 text-center">
@@ -363,7 +363,7 @@ export default function MentorsPage() {
             
             <h1 className="text-6xl md:text-7xl font-bold mb-6 tracking-tight">
               Find Your Perfect{' '}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-200 to-neutral-500">
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-neutral-200 to-neutral-500">
                 Mentor
               </span>
             </h1>
@@ -401,7 +401,7 @@ export default function MentorsPage() {
                   placeholder="Search by name, expertise, or skills..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-14 !h-16 !text-xl bg-neutral-800/50 border-neutral-700 focus:border-neutral-600"
+                  className="pl-14 h-16! text-xl! bg-neutral-800/50 border-neutral-700 focus:border-neutral-600"
                 />
                 {searchQuery && (
                   <button
@@ -415,12 +415,12 @@ export default function MentorsPage() {
 
               <div className="flex flex-wrap items-center gap-3">
                 <Select value={minExperience} onValueChange={setMinExperience}>
-                  <SelectTrigger className="w-[180px] !h-16 !text-lg bg-neutral-800/50 border-neutral-700">
+                  <SelectTrigger className="w-[180px] h-16! text-lg! bg-neutral-800/50 border-neutral-700">
                     <SelectValue placeholder="Experience" />
                   </SelectTrigger>
                   <SelectContent>
                     {EXPERIENCE_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value} className="!text-base">
+                      <SelectItem key={opt.value} value={opt.value} className="text-base!">
                         {opt.label}
                       </SelectItem>
                     ))}
@@ -428,12 +428,12 @@ export default function MentorsPage() {
                 </Select>
 
                 <Select value={sortBy} onValueChange={setSortBy}>
-                  <SelectTrigger className="w-[200px] !h-16 !text-lg bg-neutral-800/50 border-neutral-700">
+                  <SelectTrigger className="w-[200px] h-16! text-lg! bg-neutral-800/50 border-neutral-700">
                     <SelectValue placeholder="Sort by" />
                   </SelectTrigger>
                   <SelectContent>
                     {SORT_OPTIONS.map((opt) => (
-                      <SelectItem key={opt.value} value={opt.value} className="!text-base">
+                      <SelectItem key={opt.value} value={opt.value} className="text-base!">
                         {opt.label}
                       </SelectItem>
                     ))}
@@ -445,7 +445,7 @@ export default function MentorsPage() {
                     <Button
                       variant="outline"
                       size="lg"
-                      className={`!h-16 !text-lg gap-2.5 bg-neutral-800/50 border-neutral-700 hover:bg-neutral-700 ${hasActiveFilters ? 'border-white text-white' : ''}`}
+                      className={`h-16! text-lg! gap-2.5 bg-neutral-800/50 border-neutral-700 hover:bg-neutral-700 ${hasActiveFilters ? 'border-white text-white' : ''}`}
                     >
                       <SlidersHorizontal className="size-6" />
                       More Filters
@@ -469,7 +469,7 @@ export default function MentorsPage() {
                             placeholder="e.g., Frontend, Backend, Cloud"
                             value={expertiseFilter}
                             onChange={(e) => setExpertiseFilter(e.target.value)}
-                            className="!h-14 !text-base"
+                            className="h-14! text-base!"
                           />
                           <p className="text-base text-neutral-500">Separate multiple values with commas</p>
                         </div>
@@ -480,7 +480,7 @@ export default function MentorsPage() {
                             placeholder="e.g., React, Python, AWS"
                             value={skillsFilter}
                             onChange={(e) => setSkillsFilter(e.target.value)}
-                            className="!h-14 !text-base"
+                            className="h-14! text-base!"
                           />
                           <p className="text-base text-neutral-500">Separate multiple values with commas</p>
                         </div>
@@ -491,7 +491,7 @@ export default function MentorsPage() {
                             placeholder="e.g., FinTech, Healthcare"
                             value={industriesFilter}
                             onChange={(e) => setIndustriesFilter(e.target.value)}
-                            className="!h-14 !text-base"
+                            className="h-14! text-base!"
                           />
                           <p className="text-base text-neutral-500">Separate multiple values with commas</p>
                         </div>
@@ -502,7 +502,7 @@ export default function MentorsPage() {
                             placeholder="e.g., English, Vietnamese"
                             value={languagesFilter}
                             onChange={(e) => setLanguagesFilter(e.target.value)}
-                            className="!h-14 !text-base"
+                            className="h-14! text-base!"
                           />
                           <p className="text-base text-neutral-500">Separate multiple values with commas</p>
                         </div>
@@ -512,13 +512,13 @@ export default function MentorsPage() {
                       <Button
                         variant="outline"
                         onClick={clearFilters}
-                        className="flex-1 !h-14 !text-base"
+                        className="flex-1 h-14! text-base!"
                       >
                         Clear All
                       </Button>
                       <Button
                         onClick={() => setIsFilterOpen(false)}
-                        className="flex-1 !h-14 !text-base"
+                        className="flex-1 h-14! text-base!"
                       >
                         Apply Filters
                       </Button>
@@ -574,7 +574,7 @@ export default function MentorsPage() {
                   : 'No mentors are currently available. Check back later!'}
               </p>
               {(searchQuery || hasActiveFilters) && (
-                <Button variant="outline" size="lg" onClick={clearFilters} className="!h-12 !text-base">
+                <Button variant="outline" size="lg" onClick={clearFilters} className="h-12! text-base!">
                   Clear all filters
                 </Button>
               )}
@@ -593,8 +593,8 @@ export default function MentorsPage() {
 
         {isAuthenticated && user?.role === USER_ROLES.STUDENT && (
           <section className="max-w-[1100px] mx-auto px-6 pb-16">
-            <div className="relative overflow-hidden bg-gradient-to-br from-neutral-900 via-neutral-900 to-neutral-950 border border-neutral-800 rounded-2xl p-10 md:p-14">
-              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
+            <div className="relative overflow-hidden bg-linear-to-br from-neutral-900 via-neutral-900 to-neutral-950 border border-neutral-800 rounded-2xl p-10 md:p-14">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
               
               <div className="relative flex flex-col md:flex-row items-center justify-between gap-8">
                 <div className="flex items-center gap-6">
@@ -612,7 +612,7 @@ export default function MentorsPage() {
                 <Button
                   onClick={() => router.push('/mentor')}
                   size="lg"
-                  className="!h-16 !px-10 !text-xl bg-white text-neutral-950 hover:bg-neutral-200 whitespace-nowrap"
+                  className="h-16! px-10! text-xl! bg-white text-neutral-950 hover:bg-neutral-200 whitespace-nowrap"
                 >
                   Become a Mentor
                   <ArrowRight className="size-6" />

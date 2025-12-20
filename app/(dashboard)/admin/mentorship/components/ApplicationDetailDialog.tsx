@@ -51,7 +51,7 @@ export function ApplicationDetailDialog({
         <ScrollArea className="max-h-[calc(90vh-180px)]">
           <div className="p-6 space-y-6">
             <div className="flex items-start gap-4">
-              <div className="size-16 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
+              <div className="size-16 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold shrink-0">
                 {application.user?.firstName?.[0] || ''}{application.user?.lastName?.[0] || ''}
               </div>
               <div className="flex-1 min-w-0">
@@ -266,7 +266,7 @@ export function ApplicationDetailDialog({
           <div className="p-6 pt-4 border-t border-neutral-800 flex items-center gap-3">
             <Button
               variant="outline"
-              className="flex-1 !h-14 text-lg text-red-500 border-red-500/30 hover:bg-red-500/10"
+              className="flex-1 h-14! text-lg text-red-500 border-red-500/30 hover:bg-red-500/10"
               onClick={() => {
                 onOpenChange(false);
                 onDecline(application);
@@ -276,7 +276,7 @@ export function ApplicationDetailDialog({
               Decline
             </Button>
             <Button
-              className="flex-1 !h-14 text-lg bg-green-600 hover:bg-green-700"
+              className="flex-1 h-14! text-lg bg-green-600 hover:bg-green-700"
               onClick={() => {
                 onOpenChange(false);
                 onApprove(application);

@@ -73,7 +73,7 @@ function MobileUserSection({ onClose }: { onClose: () => void }) {
             />
           </div>
         ) : (
-          <div className="size-16 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 border-2 border-neutral-600 flex items-center justify-center text-xl font-bold">
+          <div className="size-16 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 border-2 border-neutral-600 flex items-center justify-center text-xl font-bold">
             {getInitials()}
           </div>
         )}
@@ -172,7 +172,7 @@ export function PublicHeader() {
                 asChild
                 variant="ghost"
                 size="lg"
-                className="!h-16 rounded-full text-xl border border-neutral-700 hover:border-white hover:bg-white/5 transition-all duration-300"
+                className="h-16! rounded-full text-xl border border-neutral-700 hover:border-white hover:bg-white/5 transition-all duration-300"
               >
                 <Link href="/login">Login</Link>
               </Button>
@@ -180,7 +180,7 @@ export function PublicHeader() {
               <Button
                 asChild
                 size="lg"
-                className="!h-16 rounded-full text-xl bg-white text-neutral-950 hover:bg-neutral-200 transition-all duration-300"
+                className="h-16! rounded-full text-xl bg-white text-neutral-950 hover:bg-neutral-200 transition-all duration-300"
               >
                 <Link href="/register">Register</Link>
               </Button>
@@ -240,7 +240,7 @@ export function PublicHeader() {
                     <Button
                       asChild
                       variant="outline"
-                      className="w-full !h-14 text-xl border-2 border-neutral-700 hover:border-white hover:bg-white/5 rounded-2xl"
+                      className="w-full h-14! text-xl border-2 border-neutral-700 hover:border-white hover:bg-white/5 rounded-2xl"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Link href="/login">Login</Link>
@@ -248,7 +248,7 @@ export function PublicHeader() {
                     
                     <Button
                       asChild
-                      className="w-full !h-14 text-xl bg-white text-neutral-950 hover:bg-neutral-200 rounded-2xl shadow-lg"
+                      className="w-full h-14! text-xl bg-white text-neutral-950 hover:bg-neutral-200 rounded-2xl shadow-lg"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Link href="/register">Get Started</Link>

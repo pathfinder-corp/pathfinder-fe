@@ -256,7 +256,7 @@ export default function AssessmentDetailPage() {
         <AlertCircle className="size-20 text-neutral-500 mb-6" />
         <h2 className="text-3xl font-bold mb-3">Assessment not found</h2>
         <p className="text-lg text-neutral-400 mb-8">The assessment you&apos;re looking for doesn&apos;t exist.</p>
-        <Button onClick={() => router.push('/history')} className="!h-14 !text-lg">
+        <Button onClick={() => router.push('/history')} className="h-14! text-lg!">
           <Home className="size-5" />
           Back to History
         </Button>
@@ -294,7 +294,7 @@ export default function AssessmentDetailPage() {
       <div className="max-w-5xl mx-auto py-10 px-4">
         <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-10 mb-8">
           <div className="flex flex-col md:flex-row items-center gap-10">
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <CircularProgress
                 value={scorePercent}
                 size={140}
@@ -379,7 +379,7 @@ export default function AssessmentDetailPage() {
                   <ul className="space-y-2.5">
                     {result.summary.strengths.map((strength, idx) => (
                       <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
-                        <CheckCircle2 className="size-5 text-neutral-400 mt-1 flex-shrink-0" />
+                        <CheckCircle2 className="size-5 text-neutral-400 mt-1 shrink-0" />
                         <span>{strength}</span>
                       </li>
                     ))}
@@ -396,7 +396,7 @@ export default function AssessmentDetailPage() {
                   <ul className="space-y-2.5">
                     {result.summary.weaknesses.map((weakness, idx) => (
                       <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
-                        <XCircle className="size-5 text-neutral-400 mt-1 flex-shrink-0" />
+                        <XCircle className="size-5 text-neutral-400 mt-1 shrink-0" />
                         <span>{weakness}</span>
                       </li>
                     ))}
@@ -413,7 +413,7 @@ export default function AssessmentDetailPage() {
                   <ul className="space-y-2.5">
                     {result.summary.topicsToReview.map((topic, idx) => (
                       <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
-                        <BookOpen className="size-5 text-neutral-400 mt-1 flex-shrink-0" />
+                        <BookOpen className="size-5 text-neutral-400 mt-1 shrink-0" />
                         <span>{topic}</span>
                       </li>
                     ))}
@@ -430,7 +430,7 @@ export default function AssessmentDetailPage() {
                   <ul className="space-y-2.5">
                     {result.summary.studyRecommendations.map((recommendation, idx) => (
                       <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
-                        <span className="flex-shrink-0 size-7 rounded-full bg-neutral-700 text-white flex items-center justify-center text-sm font-bold mt-0.5">
+                        <span className="shrink-0 size-7 rounded-full bg-neutral-700 text-white flex items-center justify-center text-sm font-bold mt-0.5">
                           {idx + 1}
                         </span>
                         <span>{recommendation}</span>
@@ -460,7 +460,7 @@ export default function AssessmentDetailPage() {
                   }}
                   className="cursor-pointer flex items-start gap-4 p-6 bg-neutral-800/50 border border-neutral-700 rounded-xl hover:border-neutral-500 hover:bg-neutral-800 transition-all text-left group"
                 >
-                  <div className="flex-shrink-0 size-11 rounded-lg bg-neutral-700 flex items-center justify-center">
+                  <div className="shrink-0 size-11 rounded-lg bg-neutral-700 flex items-center justify-center">
                     <Map className="size-6 text-white" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -468,7 +468,7 @@ export default function AssessmentDetailPage() {
                       {roadmap.topic}
                     </h4>
                   </div>
-                  <ExternalLink className="size-5 text-neutral-500 group-hover:text-white transition-colors flex-shrink-0 mt-1" />
+                  <ExternalLink className="size-5 text-neutral-500 group-hover:text-white transition-colors shrink-0 mt-1" />
                 </button>
               ))}
             </div>
@@ -493,9 +493,9 @@ export default function AssessmentDetailPage() {
                     {q.questionText}
                   </p>
                   {q.isCorrect ? (
-                    <CheckCircle2 className="size-7 text-green-400 flex-shrink-0" />
+                    <CheckCircle2 className="size-7 text-green-400 shrink-0" />
                   ) : (
-                    <XCircle className="size-7 text-red-400 flex-shrink-0" />
+                    <XCircle className="size-7 text-red-400 shrink-0" />
                   )}
                 </div>
                 
@@ -534,7 +534,7 @@ export default function AssessmentDetailPage() {
             variant="outline" 
             size="lg"
             onClick={() => router.push('/assessment')}
-            className="!h-16 !text-xl"
+            className="h-16! text-xl!"
           >
             Try Again
             <RotateCcw className="size-6" />
@@ -542,7 +542,7 @@ export default function AssessmentDetailPage() {
           <Button 
             size="lg"
             onClick={() => router.push('/history')}
-            className="!h-16 !text-xl"
+            className="h-16! text-xl!"
           >
             View All History
             <ChevronRight className="size-6" />
@@ -558,7 +558,7 @@ export default function AssessmentDetailPage() {
 
   if (assessment.status === 'pending') {
     return (
-      <div className="w-[58rem] mx-auto py-12">
+      <div className="w-232 mx-auto py-12">
         <div className="text-center">
           <div className="inline-flex items-center justify-center size-28 rounded-full bg-neutral-900/50 border border-neutral-800 mb-10">
             <Sparkles className="size-14 text-white" />
@@ -579,19 +579,19 @@ export default function AssessmentDetailPage() {
             <h2 className="text-3xl font-semibold mb-8">Before you begin</h2>
             <ul className="text-left space-y-5 text-neutral-400 max-w-lg mx-auto">
               <li className="flex items-start gap-4">
-                <CheckCircle2 className="size-7 text-green-400 mt-0.5 flex-shrink-0" />
+                <CheckCircle2 className="size-7 text-green-400 mt-0.5 shrink-0" />
                 <span className="text-xl">Read each question carefully before selecting an answer</span>
               </li>
               <li className="flex items-start gap-4">
-                <CheckCircle2 className="size-7 text-green-400 mt-0.5 flex-shrink-0" />
+                <CheckCircle2 className="size-7 text-green-400 mt-0.5 shrink-0" />
                 <span className="text-xl">You can navigate between questions using the arrows</span>
               </li>
               <li className="flex items-start gap-4">
-                <CheckCircle2 className="size-7 text-green-400 mt-0.5 flex-shrink-0" />
+                <CheckCircle2 className="size-7 text-green-400 mt-0.5 shrink-0" />
                 <span className="text-xl">Click &quot;Check Answer&quot; to submit your response</span>
               </li>
               <li className="flex items-start gap-4">
-                <CheckCircle2 className="size-7 text-green-400 mt-0.5 flex-shrink-0" />
+                <CheckCircle2 className="size-7 text-green-400 mt-0.5 shrink-0" />
                 <span className="text-xl">Complete all questions to see your final results</span>
               </li>
             </ul>
@@ -601,7 +601,7 @@ export default function AssessmentDetailPage() {
             size="lg"
             onClick={handleStartAssessment}
             disabled={loadingStates.starting}
-            className="!h-16 !px-14 !text-xl"
+            className="h-16! !px-14 text-xl!"
           >
             {loadingStates.starting ? (
               <>
@@ -621,7 +621,7 @@ export default function AssessmentDetailPage() {
   }
 
   return (
-    <div className="w-[58rem] mx-auto py-8">
+    <div className="w-232 mx-auto py-8">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-5">
           <Button 
@@ -672,7 +672,7 @@ export default function AssessmentDetailPage() {
                 className={getOptionStyle(index)}
               >
                 <div className={`
-                  size-9 rounded-full border-2 flex items-center justify-center flex-shrink-0
+                  size-9 rounded-full border-2 flex items-center justify-center shrink-0
                   ${!currentAnswer?.isSubmitted && selectedOption === index
                     ? 'border-white bg-white'
                     : ''
@@ -725,7 +725,7 @@ export default function AssessmentDetailPage() {
           size="lg"
           onClick={handleSkipQuestion}
           disabled={currentQuestionIndex >= assessment.questionCount - 1 || loadingStates.submitting}
-          className="!h-16 !text-xl"
+          className="h-16! text-xl!"
         >
           Skip Question
         </Button>
@@ -736,7 +736,7 @@ export default function AssessmentDetailPage() {
               size="lg"
               onClick={handleSubmitAnswer}
               disabled={selectedOption === null || loadingStates.submitting}
-              className="!h-16 !text-xl"
+              className="h-16! text-xl!"
             >
               {loadingStates.submitting ? (
                 <>
@@ -752,7 +752,7 @@ export default function AssessmentDetailPage() {
               <Button 
                 size="lg"
                 onClick={handleNextQuestion}
-                className="!h-16 !text-xl"
+                className="h-16! text-xl!"
               >
                 Next Question
                 <ChevronRight className="size-6" />
@@ -766,7 +766,7 @@ export default function AssessmentDetailPage() {
               variant="outline"
               onClick={handleCompleteAssessment}
               disabled={loadingStates.completing}
-              className="!h-16 !text-xl !border-green-500/50 text-green-400 hover:text-green-400 hover:bg-green-500/10"
+              className="h-16! text-xl! !border-green-500/50 text-green-400 hover:text-green-400 hover:bg-green-500/10"
             >
               {loadingStates.completing ? (
                 <>

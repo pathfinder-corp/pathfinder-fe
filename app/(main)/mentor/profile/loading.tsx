@@ -11,9 +11,9 @@ export default function MentorProfileLoading() {
         </div>
       </div>
 
-      <Skeleton className="w-[58rem] h-20 mb-8 bg-neutral-800 rounded-xl" />
+      <Skeleton className="w-232 h-20 mb-8 bg-neutral-800 rounded-xl" />
 
-      <div className="w-[58rem] space-y-8">
+      <div className="w-232 space-y-8">
         <div className="space-y-3">
           <Skeleton className="h-8 w-52 bg-neutral-800" />
           <Skeleton className="h-20 w-full bg-neutral-800 rounded-lg" />

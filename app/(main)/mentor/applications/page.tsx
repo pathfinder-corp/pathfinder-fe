@@ -149,13 +149,13 @@ export default function MyApplicationsPage() {
       <div className="pt-12 pb-16 flex flex-col items-center justify-center">
         <h1 className="text-6xl font-bold mb-8">My Application</h1>
         <p className="text-2xl text-neutral-500 mb-10">Track the status of your mentor applications</p>
-        <div className="w-[58rem] space-y-5">
+        <div className="w-232 space-y-5">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
               <div className="flex items-start gap-5">
                 <Skeleton className="size-16 rounded-full bg-neutral-800" />
                 <div className="flex-1 space-y-3">
-                  <Skeleton className="h-8 w-[28rem] bg-neutral-800" />
+                  <Skeleton className="h-8 w-md bg-neutral-800" />
                   <Skeleton className="h-6 w-72 bg-neutral-800" />
                 </div>
                 <Skeleton className="h-10 w-32 bg-neutral-800 rounded-full" />
@@ -173,7 +173,7 @@ export default function MyApplicationsPage() {
       <p className="text-2xl text-neutral-500 mb-10">Track the status of your mentor applications</p>
 
       {applications.length === 0 ? (
-        <div className="w-[58rem] text-center py-20">
+        <div className="w-232 text-center py-20">
           <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
             <GraduationCap className="size-12 text-neutral-500" />
           </div>
@@ -183,14 +183,14 @@ export default function MyApplicationsPage() {
           </p>
           <Button 
             onClick={() => router.push('/mentor')}
-            className="!h-16 !text-xl !px-10"
+            className="h-16! text-xl! px-10!"
           >
             Apply to Become a Mentor
             <Plus className="size-7" />
           </Button>
         </div>
       ) : (
-        <div className="w-[58rem]">
+        <div className="w-232">
           {applications.map((application) => (
             <div 
               key={application.id}
@@ -198,7 +198,7 @@ export default function MyApplicationsPage() {
             >
               <div className="p-7 border-b border-neutral-800">
                 <div className="flex items-start gap-5">
-                  <div className="size-20 rounded-xl bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold flex-shrink-0">
+                  <div className="size-20 rounded-xl bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold shrink-0">
                     <GraduationCap className="size-10 text-neutral-300" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -378,7 +378,7 @@ export default function MyApplicationsPage() {
                     {application.status === 'approved' && (
                       <Button
                         onClick={() => router.push('/mentor/profile')}
-                        className="!h-12 !text-base"
+                        className="h-12! text-base!"
                       >
                         Go to Mentor Profile
                       </Button>
@@ -386,7 +386,7 @@ export default function MyApplicationsPage() {
                     {canWithdraw(application.status) && (
                       <Button
                         variant="outline"
-                        className="dark:text-red-500 !border-red-500/30 dark:hover:bg-red-500/10 !h-12 !text-base"
+                        className="dark:text-red-500 border-red-500/30! dark:hover:bg-red-500/10 h-12! text-base!"
                         onClick={() => {
                           setApplicationToWithdraw(application);
                           setIsWithdrawDialogOpen(true);
@@ -399,7 +399,7 @@ export default function MyApplicationsPage() {
                     {(application.status === 'declined' || application.status === 'withdrawn') && (
                       <Button
                         onClick={() => router.push('/mentor')}
-                        className="!h-12 !text-base"
+                        className="h-12! text-base!"
                       >
                         <Plus className="size-5 mr-2" />
                         Submit New Application
@@ -427,13 +427,13 @@ export default function MyApplicationsPage() {
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isWithdrawing} className="!h-12 !text-base">
+            <AlertDialogCancel disabled={isWithdrawing} className="h-12! text-base!">
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleWithdraw}
               disabled={isWithdrawing}
-              className="bg-red-600 hover:bg-red-700 text-white !h-12 !text-base"
+              className="bg-red-600 hover:bg-red-700 text-white h-12! text-base!"
             >
               {isWithdrawing && <Loader2 className="size-5 mr-2 animate-spin" />}
               Withdraw Application

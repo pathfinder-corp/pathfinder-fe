@@ -320,7 +320,7 @@ export default function AdminUsersPage() {
             placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-14 h-14 !text-lg bg-neutral-900/50 border-neutral-800"
+            className="pl-14 h-14 text-lg! bg-neutral-900/50 border-neutral-800"
           />
           {searchQuery && (
             <button
@@ -336,7 +336,7 @@ export default function AdminUsersPage() {
           value={roleFilter} 
           onValueChange={(value) => setRoleFilter(value as RoleFilter)}
         >
-          <SelectTrigger className="w-[160px] !h-14 text-lg bg-neutral-900/50 border-neutral-800">
+          <SelectTrigger className="w-[160px] h-14! text-lg bg-neutral-900/50 border-neutral-800">
             <SelectValue placeholder="Role" />
           </SelectTrigger>
           <SelectContent>
@@ -450,7 +450,7 @@ export default function AdminUsersPage() {
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-3">
                       {user.avatar ? (
-                        <div className="relative size-10 rounded-full overflow-hidden flex-shrink-0">
+                        <div className="relative size-10 rounded-full overflow-hidden shrink-0">
                           <Image
                             src={user.avatar}
                             alt={`${user.firstName} ${user.lastName}`}
@@ -459,7 +459,7 @@ export default function AdminUsersPage() {
                           />
                         </div>
                       ) : (
-                        <div className="size-10 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold flex-shrink-0">
+                        <div className="size-10 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold shrink-0">
                           {user.firstName[0]}{user.lastName[0]}
                         </div>
                       )}
@@ -612,7 +612,7 @@ export default function AdminUsersPage() {
                     />
                   </div>
                 ) : (
-                  <div className="size-16 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold">
+                  <div className="size-16 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold">
                     {selectedUser.firstName[0]}{selectedUser.lastName[0]}
                   </div>
                 )}
@@ -681,7 +681,7 @@ export default function AdminUsersPage() {
                     />
                   </div>
                 ) : (
-                  <div className="size-12 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold">
+                  <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold">
                     {selectedUser.firstName[0]}{selectedUser.lastName[0]}
                   </div>
                 )}

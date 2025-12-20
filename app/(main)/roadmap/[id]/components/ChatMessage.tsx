@@ -15,7 +15,7 @@ export function ChatMessage({ message }: IChatMessageProps) {
       className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
     >
       {message.role === 'assistant' && (
-        <div className="flex-shrink-0 size-10 rounded-full bg-white flex items-center justify-center mt-1">
+        <div className="shrink-0 size-10 rounded-full bg-white flex items-center justify-center mt-1">
           <Bot className="size-6 text-black" />
         </div>
       )}
@@ -59,7 +59,7 @@ export function ChatMessage({ message }: IChatMessageProps) {
       </div>
       
       {message.role === 'user' && (
-        <div className="flex-shrink-0 size-10 rounded-full bg-neutral-800 flex items-center justify-center mt-1">
+        <div className="shrink-0 size-10 rounded-full bg-neutral-800 flex items-center justify-center mt-1">
           <User className="size-6 text-white" />
         </div>
       )}

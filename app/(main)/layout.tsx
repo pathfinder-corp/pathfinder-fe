@@ -153,7 +153,7 @@ export default function MainLayout({
                   asChild
                   variant="ghost"
                   size="lg"
-                  className="!h-14 rounded-full text-lg border border-neutral-700 hover:border-white hover:bg-white/5 transition-all duration-300"
+                  className="h-14! rounded-full text-lg border border-neutral-700 hover:border-white hover:bg-white/5 transition-all duration-300"
                 >
                   <Link href="/login">Login</Link>
                 </Button>
@@ -161,7 +161,7 @@ export default function MainLayout({
                 <Button
                   asChild
                   size="lg"
-                  className="!h-14 rounded-full text-lg bg-white text-neutral-950 hover:bg-neutral-200 transition-all duration-300"
+                  className="h-14! rounded-full text-lg bg-white text-neutral-950 hover:bg-neutral-200 transition-all duration-300"
                 >
                   <Link href="/register">Register</Link>
                 </Button>

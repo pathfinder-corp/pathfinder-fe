@@ -73,7 +73,6 @@ export default function MessagesPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [isLoadingConversations, setIsLoadingConversations] = useState<boolean>(true);
   const [isLoadingMessages, setIsLoadingMessages] = useState<boolean>(false);
-  const [isSending, setIsSending] = useState<boolean>(false);
   const [hasMore, setHasMore] = useState<boolean>(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
@@ -104,6 +103,7 @@ export default function MessagesPage() {
   const prevMessagesLengthRef = useRef<number>(0);
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isAutoLoadingRef = useRef<boolean>(false);
+  const messageInputRef = useRef<HTMLInputElement>(null);
 
   const currentUserId = user?.id;
 
@@ -548,16 +548,18 @@ export default function MessagesPage() {
   };
 
   const handleSendMessage = useCallback(async () => {
-    if (!messageInput.trim() || !selectedConversation || isSending) return;
+    if (!messageInput.trim() || !selectedConversation) return;
     
     if (selectedConversation.mentorshipStatus === 'ended') {
       toast.error('Cannot send messages. This mentorship has ended.');
       return;
     }
-    const content = messageInput.trim();
-    setMessageInput('');
-    setIsSending(true);
     
+    const content = messageInput.trim();
+    const parentId = replyingTo?.id;
+    
+    setMessageInput('');
+    setReplyingTo(null);
     stopTypingIndicator();
 
     try {
@@ -565,7 +567,7 @@ export default function MessagesPage() {
       
       const message = await chatService.sendMessage(selectedConversation.id, {
         content,
-        parentMessageId: replyingTo?.id,
+        parentMessageId: parentId,
       });
       
       setMessages(prev => {
@@ -586,7 +588,9 @@ export default function MessagesPage() {
         })
       );
       
-      setReplyingTo(null);
+      requestAnimationFrame(() => {
+        messageInputRef.current?.focus();
+      });
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -594,11 +598,9 @@ export default function MessagesPage() {
       toast.error('Failed to send message', {
         description: errorMessage,
       });
-      setMessageInput(content);
-    } finally {
-      setIsSending(false);
+      setMessageInput(prev => prev || content);
     }
-  }, [messageInput, selectedConversation, isSending, replyingTo, stopTypingIndicator]);
+  }, [messageInput, selectedConversation, replyingTo, stopTypingIndicator]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -753,6 +755,42 @@ export default function MessagesPage() {
 
   const isOtherTyping = Array.from(typingUsers.values()).some(isTyping => isTyping);
 
+  const renderMessageContent = useCallback((content: string, isOwn: boolean) => {
+    const urlRegex = /(https?:\/\/[^\s<]+|www\.[^\s<]+)/gi;
+    const parts = content.split(urlRegex);
+    
+    if (parts.length === 1) {
+      return <span>{content}</span>;
+    }
+
+    return parts.map((part, index) => {
+      if (urlRegex.test(part)) {
+        urlRegex.lastIndex = 0;
+        const href = part.startsWith('www.') ? `https://${part}` : part;
+        return (
+          <a
+            key={index}
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className={`
+              underline underline-offset-2 decoration-1 
+              transition-colors duration-200
+              ${isOwn 
+                ? 'text-blue-600 hover:text-blue-700 decoration-blue-600/50 hover:decoration-blue-700' 
+                : 'text-blue-400 hover:text-blue-300 decoration-blue-400/50 hover:decoration-blue-300'
+              }
+            `}
+          >
+            {part}
+          </a>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
+  }, []);
+
   useEffect(() => {
     if (isOtherTyping) {
       requestAnimationFrame(() => {
@@ -844,7 +882,7 @@ export default function MessagesPage() {
                         : 'hover:bg-neutral-800/50'
                     }`}
                   >
-                    <div className="relative flex-shrink-0">
+                    <div className="relative shrink-0">
                       {other.avatar ? (
                         <div className="relative size-14 rounded-full overflow-hidden">
                           <Image
@@ -855,7 +893,7 @@ export default function MessagesPage() {
                           />
                         </div>
                       ) : (
-                        <div className="size-14 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-base font-bold">
+                        <div className="size-14 rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-base font-bold">
                           {other.firstName[0]}{other.lastName[0]}
                         </div>
                       )}
@@ -866,7 +904,7 @@ export default function MessagesPage() {
                         <span className="font-semibold text-lg truncate max-w-[180px]">
                           {other.firstName} {other.lastName}
                         </span>
-                        <span className="text-base text-neutral-500 flex-shrink-0">
+                        <span className="text-base text-neutral-500 shrink-0">
                           {formatConversationTime(conversation.lastMessageAt)}
                         </span>
                       </div>
@@ -933,7 +971,7 @@ export default function MessagesPage() {
                             />
                           </div>
                         ) : (
-                          <div className="size-14 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-base font-bold">
+                          <div className="size-14 rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-base font-bold">
                             {other.firstName[0]}{other.lastName[0]}
                           </div>
                         )}
@@ -1008,7 +1046,7 @@ export default function MessagesPage() {
                       size="sm"
                       onClick={handleLoadMore}
                       disabled={isLoadingMore}
-                      className="text-neutral-400 hover:text-white text-base !h-10"
+                      className="text-neutral-400 hover:text-white text-base h-10!"
                     >
                       {isLoadingMore ? (
                         <>
@@ -1026,9 +1064,9 @@ export default function MessagesPage() {
                   <div className="space-y-5">
                     {[...Array(5)].map((_, i) => (
                       <div key={i} className={`flex gap-4 ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}>
-                        {i % 2 === 0 && <Skeleton className="size-11 rounded-full bg-neutral-800 flex-shrink-0" />}
+                        {i % 2 === 0 && <Skeleton className="size-11 rounded-full bg-neutral-800 shrink-0" />}
                         <Skeleton className={`h-20 ${i % 2 === 0 ? 'w-[60%]' : 'w-[50%]'} rounded-2xl bg-neutral-800`} />
-                        {i % 2 !== 0 && <Skeleton className="size-11 rounded-full bg-neutral-800 flex-shrink-0" />}
+                        {i % 2 !== 0 && <Skeleton className="size-11 rounded-full bg-neutral-800 shrink-0" />}
                       </div>
                     ))}
                   </div>
@@ -1066,7 +1104,7 @@ export default function MessagesPage() {
                             }}
                           >
                             <div className={`flex gap-4 items-end ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
-                              <div className="flex-shrink-0 w-11">
+                              <div className="shrink-0 w-11">
                                 {showAvatar && (
                                   isOwn ? (
                                     user?.avatar ? (
@@ -1094,7 +1132,7 @@ export default function MessagesPage() {
                                         />
                                       </div>
                                     ) : (
-                                      <div className="size-11 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
+                                      <div className="size-11 rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
                                         {other.firstName[0]}{other.lastName[0]}
                                       </div>
                                     )
@@ -1128,8 +1166,11 @@ export default function MessagesPage() {
                                           : 'bg-neutral-800 text-neutral-100 rounded-bl-md'
                                     }`}
                                   >
-                                    <p className="text-lg leading-relaxed whitespace-pre-wrap">
-                                      {message.content}
+                                    <p className="text-lg leading-relaxed whitespace-pre-wrap wrap-break-word">
+                                      {message.isDeleted 
+                                        ? message.content 
+                                        : renderMessageContent(message.content, isOwn)
+                                      }
                                     </p>
                                   </div>
                                   
@@ -1200,7 +1241,7 @@ export default function MessagesPage() {
                           exit={{ opacity: 0, y: -10 }}
                           transition={{ duration: 0.2 }}
                         >
-                          <div className="flex-shrink-0 w-11 flex items-end">
+                          <div className="shrink-0 w-11 flex items-end">
                             {(() => {
                               const other = getOtherParticipant(selectedConversation);
                               if (!other) return null;
@@ -1214,7 +1255,7 @@ export default function MessagesPage() {
                                   />
                                 </div>
                               ) : (
-                                <div className="size-11 rounded-full bg-gradient-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
+                                <div className="size-11 rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
                                   {other.firstName[0]}{other.lastName[0]}
                                 </div>
                               );
@@ -1240,7 +1281,7 @@ export default function MessagesPage() {
             {selectedConversation.mentorshipStatus === 'ended' ? (
               <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
                 <div className="flex items-center gap-5 px-6 py-5 bg-neutral-800/50 rounded-2xl">
-                  <div className="size-14 rounded-full bg-neutral-700/50 flex items-center justify-center flex-shrink-0">
+                  <div className="size-14 rounded-full bg-neutral-700/50 flex items-center justify-center shrink-0">
                     <UserX className="size-7 text-neutral-400" />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -1260,7 +1301,7 @@ export default function MessagesPage() {
                         router.push('/mentorship/requests');
                       }
                     }}
-                    className="bg-white text-black hover:bg-neutral-200 !h-12 px-6 !text-base font-medium flex-shrink-0"
+                    className="bg-white text-black hover:bg-neutral-200 h-12! px-6 text-base! font-medium shrink-0"
                   >
                     Reconnect
                     <UserPlus className="size-5" />
@@ -1280,7 +1321,7 @@ export default function MessagesPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="size-10 text-neutral-400 hover:text-white flex-shrink-0"
+                      className="size-10 text-neutral-400 hover:text-white shrink-0"
                       onClick={() => setReplyingTo(null)}
                     >
                       <X className="size-5" />
@@ -1291,6 +1332,7 @@ export default function MessagesPage() {
                 <div className="flex items-center gap-4">
                   <div className="flex-1 relative">
                     <Input
+                      ref={messageInputRef}
                       placeholder="Type a message..."
                       value={messageInput}
                       onChange={(e) => handleInputChange(e.target.value)}
@@ -1300,20 +1342,15 @@ export default function MessagesPage() {
                           stopTypingIndicator();
                         }
                       }}
-                      className="!h-16 pr-14 bg-neutral-800/50 border-neutral-700 !text-xl"
-                      disabled={isSending}
+                      className="h-16! pr-14 bg-neutral-800/50 border-neutral-700 text-xl!"
                     />
                   </div>
                   <Button 
                     onClick={handleSendMessage}
-                    disabled={!messageInput.trim() || isSending}
-                    className="size-14 rounded-full bg-white text-black hover:bg-neutral-200 flex-shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                    disabled={!messageInput.trim()}
+                    className="size-14 rounded-full bg-white text-black hover:bg-neutral-200 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {isSending ? (
-                      <Loader2 className="size-7 animate-spin" />
-                    ) : (
-                      <Send className="size-7" />
-                    )}
+                    <Send className="size-7" />
                   </Button>
                 </div>
               </div>
@@ -1360,14 +1397,14 @@ export default function MessagesPage() {
                 setEditingMessage(null);
                 setEditContent('');
               }}
-              className="!h-11 !text-base"
+              className="h-11! text-base!"
             >
               Cancel
             </Button>
             <Button
               onClick={handleEditMessage}
               disabled={!editContent.trim() || editContent === editingMessage?.content}
-              className="bg-white text-black hover:bg-neutral-200 !h-11 !text-base"
+              className="bg-white text-black hover:bg-neutral-200 h-11! text-base!"
             >
               Save Changes
             </Button>
@@ -1389,13 +1426,13 @@ export default function MessagesPage() {
                 setIsDeleteDialogOpen(false);
                 setDeletingMessage(null);
               }}
-              className="bg-neutral-800 border-neutral-700 hover:bg-neutral-700 !h-11 !text-base"
+              className="bg-neutral-800 border-neutral-700 hover:bg-neutral-700 h-11! text-base!"
             >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteMessage}
-              className="bg-red-600 text-white hover:bg-red-700 !h-11 !text-base"
+              className="bg-red-600 text-white hover:bg-red-700 h-11! text-base!"
             >
               Delete
             </AlertDialogAction>
@@ -1439,14 +1476,14 @@ export default function MessagesPage() {
                 setEndMentorshipReason('');
               }}
               disabled={isEndingMentorship}
-              className="!h-11 !text-base"
+              className="h-11! text-base!"
             >
               Cancel
             </Button>
             <Button
               onClick={handleEndMentorship}
               disabled={!endMentorshipReason.trim() || endMentorshipReason.trim().length < 10 || isEndingMentorship}
-              className="bg-red-600 text-white hover:bg-red-700 !h-11 !text-base"
+              className="bg-red-600 text-white hover:bg-red-700 h-11! text-base!"
             >
               {isEndingMentorship ? (
                 <>

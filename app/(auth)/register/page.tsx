@@ -147,7 +147,7 @@ export default function RegisterPage() {
                 placeholder="John"
                 autoComplete="off"
                 disabled={isLoading}
-                className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
+                className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
                   errors.firstName ? 'border-red-500 focus:border-red-500' : ''
                 }`}
                 {...register('firstName')}
@@ -167,7 +167,7 @@ export default function RegisterPage() {
                 placeholder="Doe"
                 autoComplete="off"
                 disabled={isLoading}
-                className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
+                className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
                   errors.lastName ? 'border-red-500 focus:border-red-500' : ''
                 }`}
                 {...register('lastName')}
@@ -188,7 +188,7 @@ export default function RegisterPage() {
               placeholder="john.doe@example.com"
               autoComplete="off"
               disabled={isLoading}
-              className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
+              className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
                 errors.email ? 'border-red-500 focus:border-red-500' : ''
               }`}
               {...register('email')}
@@ -209,7 +209,7 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 autoComplete="new-password"
                 disabled={isLoading}
-                className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
+                className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
                   errors.password ? 'border-red-500 focus:border-red-500' : ''
                 }`}
                 {...register('password')}
@@ -243,7 +243,7 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 autoComplete="new-password"
                 disabled={isLoading}
-                className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
+                className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
                   errors.confirmPassword ? 'border-red-500 focus:border-red-500' : ''
                 }`}
                 {...register('confirmPassword')}

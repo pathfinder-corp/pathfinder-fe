@@ -158,7 +158,7 @@ export default function ResetPasswordPage() {
                   placeholder="••••••••"
                   autoComplete="new-password"
                   disabled={isLoading}
-                  className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
+                  className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
                     errors.newPassword ? 'border-red-500 focus:border-red-500' : ''
                   }`}
                   {...register('newPassword')}
@@ -203,7 +203,7 @@ export default function ResetPasswordPage() {
                   placeholder="••••••••"
                   autoComplete="new-password"
                   disabled={isLoading}
-                  className={`!text-xl h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
+                  className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
                     errors.confirmPassword ? 'border-red-500 focus:border-red-500' : ''
                   }`}
                   {...register('confirmPassword')}

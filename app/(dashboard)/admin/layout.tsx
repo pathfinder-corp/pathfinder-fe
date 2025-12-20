@@ -146,7 +146,7 @@ export default function AdminLayout({
 
         <div className="p-7 border-t border-neutral-800">
           <div className="flex items-center gap-4">
-            <div className="size-14 rounded-full bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold">
+            <div className="size-14 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold">
               {user.firstName[0]}{user.lastName[0]}
             </div>
             <div className="flex-1 min-w-0">
