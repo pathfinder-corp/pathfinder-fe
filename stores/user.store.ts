@@ -55,6 +55,17 @@ export const useUserStore = create<IUserStore>()(
                 createdAt: profile.createdAt,
                 updatedAt: profile.updatedAt,
               };
+              
+              if (updatedUser.status === 'suspended') {
+                if (typeof window !== 'undefined' && window.location.pathname !== '/suspended') {
+                  window.location.href = '/suspended';
+                }
+                set({ user: null, isAuthenticated: false, isInitialized: true });
+                localStorage.removeItem('user');
+                removeAuthCookie();
+                return;
+              }
+              
               set({ user: updatedUser });
               localStorage.setItem('user', JSON.stringify(updatedUser));
               setUserRoleCookie(updatedUser.role);
@@ -85,6 +96,19 @@ export const useUserStore = create<IUserStore>()(
             createdAt: profile.createdAt,
             updatedAt: profile.updatedAt,
           };
+          
+          if (user.status === 'suspended') {
+            if (typeof window !== 'undefined' && window.location.pathname !== '/suspended') {
+              window.location.href = '/suspended';
+            }
+            set({ user: null, isAuthenticated: false });
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('user');
+              removeAuthCookie();
+            }
+            return;
+          }
+          
           set({ user, isAuthenticated: true });
           if (typeof window !== 'undefined') {
             localStorage.setItem('user', JSON.stringify(user));

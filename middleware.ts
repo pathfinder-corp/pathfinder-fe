@@ -8,7 +8,7 @@ export function middleware(request: NextRequest) {
 
   const publicRoutePrefixes = ['/', '/contact', '/about-ai', '/mentors'];
   const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
-  const publicAuthRoutes = ['/verify-email'];
+  const publicAuthRoutes = ['/verify-email', '/suspended'];
   const adminRoutes = ['/admin'];
   
   const studentAndMentorRoutes = ['/mentor/requests', '/mentor/applications'];

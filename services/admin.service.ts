@@ -124,11 +124,24 @@ export const adminService = {
     }
   },
 
-  deleteUser: async (id: string): Promise<void> => {
+  banUser: async (id: string): Promise<IAdminUser> => {
     try {
-      await api.delete(`/admin/users/${id}`);
+      const response = await api.patch<IAdminUser>(`/admin/users/${id}/ban`);
+      return response.data;
     } catch (error) {
-      console.error('Delete user failed:', error);
+      console.error('Ban user failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  unbanUser: async (id: string): Promise<IAdminUser> => {
+    try {
+      const response = await api.patch<IAdminUser>(`/admin/users/${id}/unban`);
+      return response.data;
+    } catch (error) {
+      console.error('Unban user failed:', error);
       const message = extractErrorMessage(error);
       if (message) throw new Error(message);
       throw error;

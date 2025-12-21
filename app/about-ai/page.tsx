@@ -605,7 +605,7 @@ export default function AboutAIPage() {
                       <Button
                         asChild
                         size="lg"
-                        className="w-full sm:w-auto rounded-full bg-white text-neutral-950 hover:bg-neutral-200 text-xl px-12 py-8 font-semibold shadow-2xl shadow-white/10 transition-all duration-300 hover:shadow-white/20 hover:scale-[1.02]"
+                        className="w-full sm:w-auto rounded-full bg-white text-neutral-950 hover:bg-neutral-200 text-xl px-12 py-8 font-semibold shadow-2xl shadow-white/10 transition-all duration-300 hover:shadow-white/20"
                       >
                         <Link href="/register">
                           Get Started Free
@@ -624,18 +624,18 @@ export default function AboutAIPage() {
                       </Button>
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-center gap-6 mt-12 pt-10 border-t border-neutral-800">
+                    <div className="flex flex-wrap items-center justify-center gap-8 mt-12 pt-10 border-t border-neutral-800">
                       <div className="flex items-center gap-2 text-neutral-500">
-                        <CheckCircle2 className="size-5" />
-                        <span>Free to start</span>
+                        <CheckCircle2 className="size-5.5" />
+                        <span className="text-lg">Free to start</span>
                       </div>
                       <div className="flex items-center gap-2 text-neutral-500">
-                        <CheckCircle2 className="size-5" />
-                        <span>No credit card required</span>
+                        <CheckCircle2 className="size-5.5" />
+                        <span className="text-lg">No credit card required</span>
                       </div>
                       <div className="flex items-center gap-2 text-neutral-500">
-                        <CheckCircle2 className="size-5" />
-                        <span>Cancel anytime</span>
+                        <CheckCircle2 className="size-5.5" />
+                        <span className="text-lg">Cancel anytime</span>
                       </div>
                     </div>
                   </div>

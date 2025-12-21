@@ -13,7 +13,9 @@ import {
   X,
   ArrowUpDown,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Ban,
+  CheckCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
@@ -101,8 +103,9 @@ export default function AdminUsersPage() {
   const [selectedUser, setSelectedUser] = useState<IAdminUserDetail | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
-  const [userToDelete, setUserToDelete] = useState<IAdminUser | null>(null);
+  const [isBanDialogOpen, setIsBanDialogOpen] = useState<boolean>(false);
+  const [isUnbanDialogOpen, setIsUnbanDialogOpen] = useState<boolean>(false);
+  const [userToBan, setUserToBan] = useState<IAdminUser | null>(null);
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
 
   const [editRole, setEditRole] = useState<UserRole>(USER_ROLES.STUDENT);
@@ -205,6 +208,16 @@ export default function AdminUsersPage() {
   const handleSaveEdit = async () => {
     if (!selectedUser) return;
 
+    if (selectedUser.status === USER_STATUS.SUSPENDED && editStatus !== USER_STATUS.SUSPENDED) {
+      toast.error('Cannot change status of suspended user. Please use Unban action instead.');
+      return;
+    }
+
+    if (editStatus === USER_STATUS.SUSPENDED && selectedUser.status !== USER_STATUS.SUSPENDED) {
+      toast.error('Cannot set status to suspended. Please use Ban action instead.');
+      return;
+    }
+
     try {
       setIsLoadingAction(true);
       await adminService.updateUser(selectedUser.id, {
@@ -224,20 +237,40 @@ export default function AdminUsersPage() {
     }
   };
 
-  const handleDeleteUser = async () => {
-    if (!userToDelete) return;
+  const handleBanUser = async () => {
+    if (!userToBan) return;
 
     try {
       setIsLoadingAction(true);
-      await adminService.deleteUser(userToDelete.id);
-      toast.success('User deleted successfully');
-      setIsDeleteDialogOpen(false);
-      setUserToDelete(null);
+      await adminService.banUser(userToBan.id);
+      toast.success('User banned successfully');
+      setIsBanDialogOpen(false);
+      setUserToBan(null);
       fetchUsers();
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
-        : 'Failed to delete user';
+        : 'Failed to ban user';
+      toast.error(errorMessage);
+    } finally {
+      setIsLoadingAction(false);
+    }
+  };
+
+  const handleUnbanUser = async () => {
+    if (!userToBan) return;
+
+    try {
+      setIsLoadingAction(true);
+      await adminService.unbanUser(userToBan.id);
+      toast.success('User unbanned successfully');
+      setIsUnbanDialogOpen(false);
+      setUserToBan(null);
+      fetchUsers();
+    } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to unban user';
       toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
@@ -265,9 +298,13 @@ export default function AdminUsersPage() {
   };
 
   const getStatusBadgeColor = (status: UserStatus) => {
-    return status === USER_STATUS.ACTIVE 
-      ? 'bg-green-500/20 text-green-400 border-green-500/30'
-      : 'bg-red-500/20 text-red-400 border-red-500/30';
+    if (status === USER_STATUS.ACTIVE) {
+      return 'bg-green-500/20 text-green-400 border-green-500/30';
+    }
+    if (status === USER_STATUS.SUSPENDED) {
+      return 'bg-red-500/20 text-red-400 border-red-500/30';
+    }
+    return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
   };
 
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE + 1;
@@ -512,16 +549,29 @@ export default function AdminUsersPage() {
                               Edit user
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                              onClick={() => {
-                                setUserToDelete(user);
-                                setIsDeleteDialogOpen(true);
-                              }}
-                              className="dark:hover:bg-red-500/10 transition-colors text-base py-2 text-red-500 focus:text-red-500"
-                            >
-                              <Trash2 className="size-4 text-red-500" />
-                              Delete user
-                            </DropdownMenuItem>
+                            {user.status === USER_STATUS.SUSPENDED ? (
+                              <DropdownMenuItem 
+                                onClick={() => {
+                                  setUserToBan(user);
+                                  setIsUnbanDialogOpen(true);
+                                }}
+                                className="dark:hover:bg-green-500/10 transition-colors text-base py-2 text-green-500 focus:text-green-500"
+                              >
+                                <CheckCircle className="size-4 text-green-500" />
+                                Unban user
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem 
+                                onClick={() => {
+                                  setUserToBan(user);
+                                  setIsBanDialogOpen(true);
+                                }}
+                                className="dark:hover:bg-red-500/10 transition-colors text-base py-2 text-red-500 focus:text-red-500"
+                              >
+                                <Ban className="size-4 text-red-500" />
+                                Ban user
+                              </DropdownMenuItem>
+                            )}
                           </>
                         )}
                       </DropdownMenuContent>
@@ -709,15 +759,25 @@ export default function AdminUsersPage() {
 
                 <div>
                   <label className="text-base text-neutral-400 mb-2 block">Status</label>
-                  <Select value={editStatus} onValueChange={(v) => setEditStatus(v as typeof editStatus)}>
+                  <Select 
+                    value={editStatus} 
+                    onValueChange={(v) => setEditStatus(v as typeof editStatus)}
+                    disabled={selectedUser.status === USER_STATUS.SUSPENDED}
+                  >
                     <SelectTrigger className="h-12 text-base">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="active" className="text-base">Active</SelectItem>
                       <SelectItem value="inactive" className="text-base">Inactive</SelectItem>
+                      <SelectItem value="suspended" className="text-base" disabled>Suspended (Use Ban/Unban)</SelectItem>
                     </SelectContent>
                   </Select>
+                  {selectedUser.status === USER_STATUS.SUSPENDED && (
+                    <p className="text-sm text-neutral-500 mt-2">
+                      User is suspended. Use Unban action to reactivate.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -742,24 +802,48 @@ export default function AdminUsersPage() {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog open={isBanDialogOpen} onOpenChange={setIsBanDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogTitle>Ban User</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete <strong>{userToDelete?.firstName} {userToDelete?.lastName}</strong>? 
-              This action cannot be undone and will permanently remove all their data.
+              Are you sure you want to ban <strong>{userToBan?.firstName} {userToBan?.lastName}</strong>? 
+              This will suspend their account and prevent them from accessing the platform. 
+              You can unban them later if needed.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={isLoadingAction}>Cancel</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDeleteUser}
+              onClick={handleBanUser}
               disabled={isLoadingAction}
               className="bg-red-500 hover:bg-red-600 text-white"
             >
               {isLoadingAction && <Loader2 className="size-4 mr-2 animate-spin" />}
-              Delete
+              Ban User
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={isUnbanDialogOpen} onOpenChange={setIsUnbanDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unban User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to unban <strong>{userToBan?.firstName} {userToBan?.lastName}</strong>? 
+              This will reactivate their account and allow them to access the platform again.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isLoadingAction}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleUnbanUser}
+              disabled={isLoadingAction}
+              className="bg-green-500 hover:bg-green-600 text-white"
+            >
+              {isLoadingAction && <Loader2 className="size-4 mr-2 animate-spin" />}
+              Unban User
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

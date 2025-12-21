@@ -28,17 +28,36 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const isProfileEndpoint = response.config.url?.includes('/auth/me') || 
+                             response.config.url?.includes('/auth/profile');
+    
+    if (isProfileEndpoint && (response.data?.status === 'suspended' || response.data?.user?.status === 'suspended')) {
+      if (typeof window !== 'undefined' && window.location.pathname !== '/suspended') {
+        window.location.href = '/suspended';
+      }
+    }
+    return response;
+  },
   (error) => {
     const message = error.response?.data?.message || 
                    error.response?.data?.error || 
                    error.message || 
                    'An error occurred';
     
+    if (error.response?.status === 401 && message.includes('not active')) {
+      if (typeof window !== 'undefined' && window.location.pathname !== '/suspended') {
+        window.location.href = '/suspended';
+        return Promise.reject(new Error(message));
+      }
+    }
+    
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
         document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
-        window.location.href = '/login';
+        if (window.location.pathname !== '/suspended') {
+          window.location.href = '/login';
+        }
       }
     }
     

@@ -66,6 +66,12 @@ export default function MainLayout({
     initializeUser();
   }, [initializeUser]);
 
+  useEffect(() => {
+    if (isInitialized && user && user.status === 'suspended' && pathname !== '/suspended') {
+      window.location.href = '/suspended';
+    }
+  }, [user, isInitialized, pathname]);
+
   const getNavSections = (): NavSection[] => {
     if (!user) return [];
     
