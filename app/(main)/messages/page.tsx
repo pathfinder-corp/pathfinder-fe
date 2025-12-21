@@ -1298,7 +1298,7 @@ export default function MessagesPage() {
                       if (other?.role === 'mentor' || selectedConversation.mentorId === other?.id) {
                         router.push('/mentors');
                       } else {
-                        router.push('/mentorship/requests');
+                        router.push('/mentor/requests');
                       }
                     }}
                     className="bg-white text-black hover:bg-neutral-200 h-12! px-6 text-base! font-medium shrink-0"

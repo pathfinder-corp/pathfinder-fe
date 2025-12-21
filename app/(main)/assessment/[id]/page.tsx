@@ -601,7 +601,7 @@ export default function AssessmentDetailPage() {
             size="lg"
             onClick={handleStartAssessment}
             disabled={loadingStates.starting}
-            className="h-16! !px-14 text-xl!"
+            className="h-16! px-14! text-xl!"
           >
             {loadingStates.starting ? (
               <>
@@ -615,6 +615,9 @@ export default function AssessmentDetailPage() {
               </>
             )}
           </Button>
+          <p className="text-center text-xl text-neutral-500 mt-10">
+            AI can make mistakes, make sure to verify important information
+          </p>
         </div>
       </div>
     );
@@ -766,7 +769,7 @@ export default function AssessmentDetailPage() {
               variant="outline"
               onClick={handleCompleteAssessment}
               disabled={loadingStates.completing}
-              className="h-16! text-xl! !border-green-500/50 text-green-400 hover:text-green-400 hover:bg-green-500/10"
+              className="h-16! text-xl! border-green-500/50! text-green-400 hover:text-green-400 hover:bg-green-500/10"
             >
               {loadingStates.completing ? (
                 <>
@@ -784,7 +787,7 @@ export default function AssessmentDetailPage() {
         </div>
       </div>
 
-      <p className="text-center text-xl text-neutral-500 mt-14">
+      <p className="text-center text-xl text-neutral-500 mt-10">
         AI can make mistakes, make sure to verify important information
       </p>
     </div>

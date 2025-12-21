@@ -4,7 +4,11 @@ import type {
   IMentorProfile,
   IUpdateMentorProfileRequest,
   IMentorProfilesParams,
-  IMentorProfilesResponse
+  IMentorProfilesResponse,
+  IMentorDocument,
+  IUploadMentorDocumentRequest,
+  IUpdateMentorDocumentRequest,
+  MentorDocumentType
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
@@ -15,6 +19,73 @@ export const mentorService = {
       return response.data;
     } catch (error) {
       console.error('Create mentor application failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  createApplicationWithDocuments: async (
+    data: ICreateMentorApplicationRequest,
+    documents: Array<{
+      file: File;
+      type: MentorDocumentType;
+      title?: string;
+      description?: string;
+      issuedYear?: number;
+      issuingOrganization?: string;
+    }>
+  ): Promise<IMentorApplication & { 
+    uploadSummary?: { 
+      total: number; 
+      uploaded: number; 
+      failed: number; 
+      failures?: Array<{ filename: string; error: string }>;
+    } 
+  }> => {
+    try {
+      const formData = new FormData();
+
+      formData.append('headline', data.headline);
+      formData.append('bio', data.bio);
+      formData.append('expertise', JSON.stringify(data.expertise));
+      formData.append('skills', JSON.stringify(data.skills));
+      if (data.industries?.length) {
+        formData.append('industries', JSON.stringify(data.industries));
+      }
+      formData.append('languages', JSON.stringify(data.languages));
+      formData.append('yearsExperience', String(data.yearsExperience));
+      if (data.linkedinUrl) formData.append('linkedinUrl', data.linkedinUrl);
+      if (data.portfolioUrl) formData.append('portfolioUrl', data.portfolioUrl);
+      formData.append('motivation', data.motivation);
+
+      if (documents.length > 0) {
+        documents.forEach((doc) => {
+          formData.append('documents', doc.file);
+        });
+
+        const metadata = documents.map((doc) => ({
+          type: doc.type,
+          title: doc.title,
+          description: doc.description,
+          issuedYear: doc.issuedYear,
+          issuingOrganization: doc.issuingOrganization
+        }));
+        formData.append('documentsMetadata', JSON.stringify(metadata));
+      }
+
+      const response = await api.post<IMentorApplication>(
+        '/mentor-applications/with-documents',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Create application with documents failed:', error);
       const message = extractErrorMessage(error);
       if (message) throw new Error(message);
       throw error;
@@ -126,5 +197,220 @@ export const mentorService = {
       if (message) throw new Error(message);
       throw error;
     }
+  },
+
+  getMentorWithDocuments: async (id: string): Promise<IMentorProfile> => {
+    try {
+      const response = await api.get<IMentorProfile>(`/mentor-profiles/${id}/with-documents`);
+      return response.data;
+    } catch (error) {
+      console.error('Get mentor with documents failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getMentorDocuments: async (mentorProfileId: string): Promise<IMentorDocument[]> => {
+    try {
+      const response = await api.get<IMentorDocument[]>(`/mentor-profiles/${mentorProfileId}/documents`);
+      return response.data;
+    } catch (error) {
+      console.error('Get mentor documents failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getMyDocuments: async (): Promise<IMentorDocument[]> => {
+    try {
+      const response = await api.get<IMentorDocument[]>('/mentor-profiles/me/documents');
+      return response.data;
+    } catch (error) {
+      console.error('Get my documents failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  uploadMyDocument: async (data: IUploadMentorDocumentRequest): Promise<IMentorDocument> => {
+    try {
+      const formData = new FormData();
+      formData.append('file', data.file);
+      formData.append('type', data.type);
+      if (data.title) formData.append('title', data.title);
+      if (data.description) formData.append('description', data.description);
+      if (data.issuedYear) formData.append('issuedYear', String(data.issuedYear));
+      if (data.issuingOrganization) formData.append('issuingOrganization', data.issuingOrganization);
+
+      const response = await api.post<IMentorDocument>(
+        '/mentor-profiles/me/documents',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Upload my document failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  updateMyDocument: async (
+    documentId: string,
+    data: IUpdateMentorDocumentRequest
+  ): Promise<IMentorDocument> => {
+    try {
+      const response = await api.patch<IMentorDocument>(
+        `/mentor-profiles/me/documents/${documentId}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Update my document failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  deleteMyDocument: async (documentId: string): Promise<void> => {
+    try {
+      await api.delete(`/mentor-profiles/me/documents/${documentId}`);
+    } catch (error) {
+      console.error('Delete my document failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  uploadDocument: async (
+    applicationId: string, 
+    data: IUploadMentorDocumentRequest
+  ): Promise<IMentorDocument> => {
+    try {
+      const formData = new FormData();
+      formData.append('file', data.file);
+      formData.append('type', data.type);
+      if (data.title) formData.append('title', data.title);
+      if (data.description) formData.append('description', data.description);
+      if (data.issuedYear) formData.append('issuedYear', String(data.issuedYear));
+      if (data.issuingOrganization) formData.append('issuingOrganization', data.issuingOrganization);
+
+      const response = await api.post<IMentorDocument>(
+        `/mentor-applications/${applicationId}/documents`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Upload document failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getDocuments: async (applicationId: string): Promise<IMentorDocument[]> => {
+    try {
+      const response = await api.get<IMentorDocument[]>(
+        `/mentor-applications/${applicationId}/documents`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Get documents failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getDocumentById: async (
+    applicationId: string, 
+    documentId: string
+  ): Promise<IMentorDocument> => {
+    try {
+      const response = await api.get<IMentorDocument>(
+        `/mentor-applications/${applicationId}/documents/${documentId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Get document by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  downloadDocument: async (
+    applicationId: string, 
+    documentId: string
+  ): Promise<Blob> => {
+    try {
+      const response = await api.get(
+        `/mentor-applications/${applicationId}/documents/${documentId}/download`,
+        {
+          responseType: 'blob',
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Download document failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  updateDocument: async (
+    applicationId: string, 
+    documentId: string,
+    data: IUpdateMentorDocumentRequest
+  ): Promise<IMentorDocument> => {
+    try {
+      const response = await api.patch<IMentorDocument>(
+        `/mentor-applications/${applicationId}/documents/${documentId}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Update document failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  deleteDocument: async (
+    applicationId: string, 
+    documentId: string
+  ): Promise<void> => {
+    try {
+      await api.delete(
+        `/mentor-applications/${applicationId}/documents/${documentId}`
+      );
+    } catch (error) {
+      console.error('Delete document failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+  
+  getDocumentViewUrl: (profileId: string, documentId: string): string => {
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
+    return `${baseUrl}/mentor-profiles/${profileId}/documents/${documentId}/view`;
   }
 };

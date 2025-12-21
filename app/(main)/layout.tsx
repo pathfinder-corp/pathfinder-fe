@@ -41,12 +41,12 @@ const LEARNING_NAV: NavItem[] = [
 
 const STUDENT_MENTORSHIP_NAV: NavItem[] = [
   { label: 'Become a Mentor', href: '/mentor', icon: GraduationCap, exact: true },
-  { label: 'My Requests', href: '/mentorship/requests', icon: UserPlus, exact: false },
+  { label: 'My Requests', href: '/mentor/requests', icon: UserPlus, exact: false },
   { label: 'My Application', href: '/mentor/applications', icon: FileText, exact: false },
 ];
 
 const MENTOR_MENTORSHIP_NAV: NavItem[] = [
-  { label: 'My Requests', href: '/mentorship/requests', icon: UserPlus, exact: false },
+  { label: 'My Requests', href: '/mentor/requests', icon: UserPlus, exact: false },
   { label: 'My Application', href: '/mentor/applications', icon: FileText, exact: false },
   { label: 'My Profile', href: '/mentor/profile', icon: GraduationCap, exact: true },
 ];
@@ -172,7 +172,7 @@ export default function MainLayout({
       </header>
 
       {shouldShowSidebar && (
-        <aside className="hidden lg:block fixed left-0 top-24 bottom-0 w-[22rem] border-r border-neutral-800 bg-neutral-950/50 backdrop-blur-sm overflow-y-auto">
+        <aside className="hidden lg:block fixed left-0 top-24 bottom-0 w-88 border-r border-neutral-800 bg-neutral-950/50 backdrop-blur-sm overflow-y-auto">
           <nav className="p-6">
             {navSections.map((section, index) => (
               <div key={section.title}>
@@ -254,7 +254,7 @@ export default function MainLayout({
         </>
       )}
 
-      <main className={`${shouldShowSidebar ? 'lg:ml-[22rem]' : ''} ${isMessagesPage ? 'pt-24' : 'pt-24'} min-h-screen`}>
+      <main className={`${shouldShowSidebar ? 'lg:ml-88' : ''} ${isMessagesPage ? 'pt-24' : 'pt-24'} min-h-screen`}>
         <div className={`${isMessagesPage ? 'h-[calc(100vh-6rem)]' : 'p-6 lg:p-8'} ${!shouldShowSidebar && !isMessagesPage && !isSettingsPage && !isNotificationsPage ? 'max-w-7xl mx-auto' : ''}`}>
           {children}
         </div>

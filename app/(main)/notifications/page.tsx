@@ -136,7 +136,7 @@ export default function NotificationsPage() {
       case 'request_declined':
       case 'request_cancelled':
       case 'request_expired':
-        router.push('/mentorship/requests');
+        router.push('/mentor/requests');
         break;
       case 'request_accepted':
       case 'mentorship_started':
@@ -158,7 +158,7 @@ export default function NotificationsPage() {
         }
         break;
       case 'mentorship_ended':
-        router.push('/mentorship/requests');
+        router.push('/mentor/requests');
         break;
       default:
         break;

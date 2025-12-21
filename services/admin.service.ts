@@ -20,7 +20,22 @@ import type {
   IReviewMentorApplicationPayload,
   IAuditLogsResponse,
   IAuditLogsParams,
-  IIPStatisticsResponse
+  IIPStatisticsResponse,
+  IAdminDocument,
+  IAdminDocumentDetail,
+  IVerifyDocumentPayload,
+  IDocumentStats,
+  IAdminPendingDocument,
+  IAdminMentorsResponse,
+  IAdminMentorsParams,
+  IAdminMentor,
+  IAdminMentorStats,
+  IRevokeMentorPayload,
+  IAdminMentorshipsResponse,
+  IAdminMentorshipsParams,
+  IAdminMentorship,
+  IAdminMentorshipStats,
+  IForceEndMentorshipPayload
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
@@ -280,6 +295,194 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Get audit logs failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getApplicationDocuments: async (applicationId: string): Promise<IAdminDocument[]> => {
+    try {
+      const response = await api.get<IAdminDocument[]>(
+        `/admin/mentor-applications/${applicationId}/documents`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Get application documents failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getDocumentById: async (applicationId: string, documentId: string): Promise<IAdminDocumentDetail> => {
+    try {
+      const response = await api.get<IAdminDocumentDetail>(
+        `/admin/mentor-applications/${applicationId}/documents/${documentId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Get document by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  verifyDocument: async (
+    applicationId: string, 
+    documentId: string, 
+    payload: IVerifyDocumentPayload
+  ): Promise<IAdminDocument> => {
+    try {
+      const response = await api.post<IAdminDocument>(
+        `/admin/mentor-applications/${applicationId}/documents/${documentId}/verify`,
+        payload
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Verify document failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getDocumentStats: async (applicationId: string): Promise<IDocumentStats> => {
+    try {
+      const response = await api.get<IDocumentStats>(
+        `/admin/mentor-applications/${applicationId}/documents-stats`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Get document stats failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  downloadDocument: async (applicationId: string, documentId: string): Promise<Blob> => {
+    try {
+      const response = await api.get(
+        `/admin/mentor-applications/${applicationId}/documents/${documentId}/download`,
+        { responseType: 'blob' }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Download document failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getDocumentDownloadUrl: (applicationId: string, documentId: string): string => {
+    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
+    return `${baseUrl}/admin/mentor-applications/${applicationId}/documents/${documentId}/download`;
+  },
+
+  getPendingDocuments: async (): Promise<IAdminPendingDocument[]> => {
+    try {
+      const response = await api.get<IAdminPendingDocument[]>('/admin/documents/pending');
+      return response.data;
+    } catch (error) {
+      console.error('Get pending documents failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getMentors: async (params?: IAdminMentorsParams): Promise<IAdminMentorsResponse> => {
+    try {
+      const response = await api.get<IAdminMentorsResponse>('/admin/mentors', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Get mentors failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getMentorStats: async (): Promise<IAdminMentorStats> => {
+    try {
+      const response = await api.get<IAdminMentorStats>('/admin/mentors/stats');
+      return response.data;
+    } catch (error) {
+      console.error('Get mentor stats failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getMentorById: async (id: string): Promise<IAdminMentor> => {
+    try {
+      const response = await api.get<IAdminMentor>(`/admin/mentors/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Get mentor by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  revokeMentorStatus: async (userId: string, payload: IRevokeMentorPayload): Promise<void> => {
+    try {
+      await api.post(`/admin/users/${userId}/revoke-mentor`, payload);
+    } catch (error) {
+      console.error('Revoke mentor status failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+  
+  getMentorships: async (params?: IAdminMentorshipsParams): Promise<IAdminMentorshipsResponse> => {
+    try {
+      const response = await api.get<IAdminMentorshipsResponse>('/admin/mentorships', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Get mentorships failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getMentorshipStats: async (): Promise<IAdminMentorshipStats> => {
+    try {
+      const response = await api.get<IAdminMentorshipStats>('/admin/mentorships/stats');
+      return response.data;
+    } catch (error) {
+      console.error('Get mentorship stats failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getMentorshipById: async (id: string): Promise<IAdminMentorship> => {
+    try {
+      const response = await api.get<IAdminMentorship>(`/admin/mentorships/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Get mentorship by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  forceEndMentorship: async (id: string, payload: IForceEndMentorshipPayload): Promise<IAdminMentorship> => {
+    try {
+      const response = await api.post<IAdminMentorship>(`/admin/mentorships/${id}/force-end`, payload);
+      return response.data;
+    } catch (error) {
+      console.error('Force end mentorship failed:', error);
       const message = extractErrorMessage(error);
       if (message) throw new Error(message);
       throw error;

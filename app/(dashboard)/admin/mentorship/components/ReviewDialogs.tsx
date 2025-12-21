@@ -156,8 +156,16 @@ export function DeclineDialog({
             disabled={isLoading || !declineReason.trim()}
             className="bg-red-600 hover:bg-red-700 text-white h-12! text-base"
           >
-            {isLoading && <Loader2 className="size-5 mr-2 animate-spin" />}
-            Decline Application
+            {isLoading ? (
+              <>
+                Processing...
+                <Loader2 className="size-5 animate-spin" />
+              </>
+            ) : (
+              <>
+                Decline Application
+              </>
+            )}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

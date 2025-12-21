@@ -4,8 +4,11 @@ import { AssessmentDifficulty, AssessmentStatus } from './assessment.type';
 import { 
   MentorApplicationStatus,
   IMentorApplication,
-  IMentorApplicationStatusHistory
+  IMentorApplicationStatusHistory,
+  MentorDocumentType,
+  DocumentVerificationStatus
 } from './mentor.type';
+import { MentorshipStatus } from './mentorship.type';
 
 export interface IDashboardOverview {
   totalUsers: number;
@@ -286,3 +289,201 @@ export interface IIPStatistic {
 }
 
 export type IIPStatisticsResponse = IIPStatistic[];
+
+export interface IAdminDocument {
+  id: string;
+  applicationId: string;
+  type: MentorDocumentType;
+  originalFilename: string;
+  mimeType: string;
+  fileSize: number;
+  title: string | null;
+  description: string | null;
+  issuedYear: number | null;
+  issuingOrganization: string | null;
+  verificationStatus: DocumentVerificationStatus;
+  displayOrder: number;
+  createdAt: string;
+  downloadUrl: string;
+  imagekitUrl?: string | null;
+  isImage?: boolean;
+  isPdf?: boolean;
+  isWord?: boolean;
+  isExcel?: boolean;
+  isPowerPoint?: boolean;
+  isOfficeDocument?: boolean;
+}
+
+export interface IAdminDocumentDetail extends IAdminDocument {
+  verificationNotes: string | null;
+  verifiedBy: string | null;
+  verifiedAt: string | null;
+  storedFilename: string;
+  filePath: string;
+}
+
+export interface IVerifyDocumentPayload {
+  verified: boolean;
+  notes?: string;
+}
+
+export interface IDocumentStats {
+  total: number;
+  verified: number;
+  pending: number;
+  rejected: number;
+  byType: {
+    certificate: number;
+    award: number;
+    portfolio: number;
+    recommendation: number;
+    other: number;
+  };
+}
+
+export interface IAdminPendingDocumentUploader {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface IAdminPendingDocumentApplication {
+  id: string;
+  userId: string;
+  status: MentorApplicationStatus;
+}
+
+export interface IAdminPendingDocument {
+  id: string;
+  applicationId: string;
+  type: MentorDocumentType;
+  originalFilename: string;
+  mimeType: string;
+  fileSize: number;
+  title: string | null;
+  description: string | null;
+  issuedYear: number | null;
+  issuingOrganization: string | null;
+  verificationStatus: DocumentVerificationStatus;
+  displayOrder: number;
+  createdAt: string;
+  downloadUrl: string;
+  imagekitUrl?: string | null;
+  isImage?: boolean;
+  isPdf?: boolean;
+  isWord?: boolean;
+  isExcel?: boolean;
+  isPowerPoint?: boolean;
+  isOfficeDocument?: boolean;
+  uploader: IAdminPendingDocumentUploader;
+  application: IAdminPendingDocumentApplication;
+}
+
+export interface IAdminMentorUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  avatar: string | null;
+}
+
+export interface IAdminMentor {
+  id: string;
+  userId: string;
+  user: IAdminMentorUser;
+  headline: string;
+  bio: string;
+  expertise: string[];
+  skills: string[];
+  industries: string[];
+  languages: string[];
+  yearsExperience: number;
+  linkedinUrl: string | null;
+  portfolioUrl: string | null;
+  isActive: boolean;
+  isAcceptingMentees: boolean;
+  maxMentees: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IAdminMentorsResponse {
+  mentors: IAdminMentor[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface IAdminMentorsParams {
+  isActive?: boolean;
+  isAcceptingMentees?: boolean;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface IAdminMentorStats {
+  total: number;
+  active: number;
+  inactive: number;
+  acceptingMentees: number;
+}
+
+export interface IRevokeMentorPayload {
+  reason: string;
+}
+
+export interface IAdminMentorshipUser {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  avatar: string | null;
+}
+
+export interface IAdminMentorship {
+  id: string;
+  mentorId: string;
+  studentId: string;
+  mentor: IAdminMentorshipUser;
+  student: IAdminMentorshipUser;
+  status: MentorshipStatus;
+  startedAt: string;
+  endedAt: string | null;
+  endReason: string | null;
+  endedBy: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IAdminMentorshipsResponse {
+  mentorships: IAdminMentorship[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface IAdminMentorshipsParams {
+  mentorId?: string;
+  menteeId?: string;
+  status?: MentorshipStatus;
+  page?: number;
+  limit?: number;
+}
+
+export interface IAdminMentorshipStats {
+  total: number;
+  active: number;
+  completed: number;
+  cancelled: number;
+}
+
+export interface IForceEndMentorshipPayload {
+  reason: string;
+}

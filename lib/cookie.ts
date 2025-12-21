@@ -1,4 +1,4 @@
-export const setAuthCookie = (token: string, expiresIn: string) => {
+const parseExpiresIn = (expiresIn: string): number => {
   let seconds = 7 * 24 * 60 * 60;
   
   if (expiresIn) {
@@ -21,6 +21,11 @@ export const setAuthCookie = (token: string, expiresIn: string) => {
     }
   }
   
+  return seconds;
+};
+
+export const setAuthCookie = (token: string, expiresIn: string) => {
+  const seconds = parseExpiresIn(expiresIn);
   const isProduction = process.env.NODE_ENV === 'production';
   const secureFlag = isProduction ? '; Secure' : '';
   
@@ -29,8 +34,19 @@ export const setAuthCookie = (token: string, expiresIn: string) => {
   document.cookie = cookieString;
 };
 
+export const setUserRoleCookie = (role: string, expiresIn?: string) => {
+  const seconds = expiresIn ? parseExpiresIn(expiresIn) : 7 * 24 * 60 * 60;
+  const isProduction = process.env.NODE_ENV === 'production';
+  const secureFlag = isProduction ? '; Secure' : '';
+  
+  const cookieString = `user-role=${role}; path=/; max-age=${seconds}; SameSite=Lax${secureFlag}`;
+  
+  document.cookie = cookieString;
+};
+
 export const removeAuthCookie = () => {
   document.cookie = 'auth-token=; path=/; max-age=0';
+  document.cookie = 'user-role=; path=/; max-age=0';
 };
 
 export const getAuthToken = (): string | null => {

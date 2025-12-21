@@ -546,7 +546,7 @@ export default function AdminRoadmapsPage() {
                   <Map className="size-7 text-neutral-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xl font-semibold break-words">
+                  <p className="text-xl font-semibold wrap-break-word">
                     {selectedRoadmap.topic}
                   </p>
                   <p className="text-base text-neutral-400">
@@ -611,7 +611,7 @@ export default function AdminRoadmapsPage() {
               </div>
 
               <div className="pt-2">
-                <Button asChild className="w-full h-14! !text-[1.15rem]">
+                <Button asChild className="w-full h-14! text-[1.15rem]!">
                   <Link href={`/roadmap/${selectedRoadmap.id}`} target="_blank">
                     Open Roadmap
                     <ExternalLink className="size-5" />

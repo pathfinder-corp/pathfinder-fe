@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { motion } from 'motion/react';
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 import { 
   ArrowLeft,
   Briefcase, 
@@ -14,17 +16,26 @@ import {
   Calendar,
   Loader2,
   Send,
-  CheckCircle
+  CheckCircle,
+  FileText,
+  Award,
+  File,
+  UserCheck,
+  Eye,
+  FileSpreadsheet,
+  Presentation,
+  FileType
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { useUserStore } from '@/stores';
 import { mentorService, mentorshipService } from '@/services';
-import type { IMentorProfile } from '@/types';
+import type { IMentorProfile, MentorDocumentType } from '@/types';
 
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
 import { TransitionPanel } from '@/components/motion-primitives/transition-panel';
+import { ProgressiveBlur } from '@/components/motion-primitives/progressive-blur';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -39,12 +50,56 @@ import {
 } from '@/components/ui/dialog';
 import { USER_ROLES } from '@/constants';
 
-type TabType = 'about' | 'background';
+type TabType = 'about' | 'background' | 'credentials';
 
 const TABS: { id: TabType; label: string }[] = [
   { id: 'about', label: 'About' },
   { id: 'background', label: 'Background' },
+  { id: 'credentials', label: 'Credentials' },
 ];
+
+const getDocumentIcon = (type: MentorDocumentType) => {
+  const baseClassName = 'size-6 text-neutral-400';
+  switch (type) {
+    case 'certificate':
+      return <FileText className={baseClassName} />;
+    case 'award':
+      return <Award className={baseClassName} />;
+    case 'portfolio':
+      return <Briefcase className={baseClassName} />;
+    case 'recommendation':
+      return <UserCheck className={baseClassName} />;
+    default:
+      return <File className={baseClassName} />;
+  }
+};
+
+const getFileTypeIcon = (doc: { isPdf?: boolean; isWord?: boolean; isExcel?: boolean; isPowerPoint?: boolean; isOfficeDocument?: boolean; mimeType?: string }) => {
+  const baseClassName = 'size-6 text-neutral-400';
+  if (doc.isPdf) return <FileText className={baseClassName} />;
+  if (doc.isWord) return <FileType className={baseClassName} />;
+  if (doc.isExcel) return <FileSpreadsheet className={baseClassName} />;
+  if (doc.isPowerPoint) return <Presentation className={baseClassName} />;
+  return <File className={baseClassName} />;
+};
+
+const getFileTypeLabel = (doc: { isPdf?: boolean; isWord?: boolean; isExcel?: boolean; isPowerPoint?: boolean; mimeType?: string }) => {
+  if (doc.isPdf) return 'PDF';
+  if (doc.isWord) return 'Word';
+  if (doc.isExcel) return 'Excel';
+  if (doc.isPowerPoint) return 'PowerPoint';
+  return doc.mimeType?.split('/')[1]?.toUpperCase() || 'Document';
+};
+
+const getDocumentTypeLabel = (type: MentorDocumentType) => {
+  switch (type) {
+    case 'certificate': return 'Certificate';
+    case 'award': return 'Award';
+    case 'portfolio': return 'Portfolio';
+    case 'recommendation': return 'Recommendation';
+    default: return 'Document';
+  }
+};
 
 export default function MentorDetailPage() {
   const params = useParams();
@@ -74,7 +129,7 @@ export default function MentorDetailPage() {
 
       try {
         setIsLoading(true);
-        const data = await mentorService.getMentorById(mentorId);
+        const data = await mentorService.getMentorWithDocuments(mentorId);
         setMentor(data);
       } catch (error) {
         const errorMessage = error instanceof Error 
@@ -148,7 +203,7 @@ export default function MentorDetailPage() {
       <div className="min-h-screen bg-neutral-950">
         <PublicHeader />
         <main className="pt-36">
-          <div className="max-w-6xl mx-auto px-6 py-8">
+          <div className="max-w-[1100px] mx-auto px-6 py-8">
             <Skeleton className="h-10 w-40 mb-8 bg-neutral-800" />
             
             <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
@@ -189,7 +244,7 @@ export default function MentorDetailPage() {
       <div className="min-h-screen bg-neutral-950">
         <PublicHeader />
         <main className="pt-36">
-          <div className="max-w-6xl mx-auto px-6 py-20 text-center">
+          <div className="max-w-[1100px] mx-auto px-6 py-20 text-center">
             <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
               <Users className="size-12 text-neutral-500" />
             </div>
@@ -212,7 +267,7 @@ export default function MentorDetailPage() {
       <PublicHeader />
       
       <main className="pt-40 pb-16">
-        <div className="max-w-6xl mx-auto px-6">
+        <div className="max-w-[1100px] mx-auto px-6">
 
           <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
             {mentor.user?.avatar ? (
@@ -438,12 +493,110 @@ export default function MentorDetailPage() {
                     </div>
                   </div>
                 </div>
+
+                <div className="space-y-8">
+                  <div>
+                    <h2 className="text-2xl font-semibold mb-5">Credentials & Documents</h2>
+                    <p className="text-lg text-neutral-400 mb-8">
+                      Verified certificates, awards, and professional documents
+                    </p>
+
+                    {(!mentor.documents || mentor.documents.length === 0) ? (
+                      <div className="text-center py-16 bg-neutral-900/50 rounded-xl border border-neutral-800">
+                        <File className="size-14 text-neutral-600 mx-auto mb-4" />
+                        <p className="text-lg text-neutral-400 mb-2">
+                          No credentials uploaded yet
+                        </p>
+                        <p className="text-base text-neutral-500">
+                          This mentor hasn&apos;t added any documents
+                        </p>
+                      </div>
+                    ) : (
+                      <PhotoProvider>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                          {mentor.documents.map((doc) => {
+                            const isImage = doc.isImage ?? doc.mimeType?.startsWith('image/');
+                            const viewUrl = doc.imagekitUrl || mentorService.getDocumentViewUrl(mentor.id, doc.id);
+
+                            return (
+                              <div
+                                key={doc.id}
+                                className="group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden hover:border-neutral-700 transition-colors"
+                              >
+                                {isImage ? (
+                                  <PhotoView src={viewUrl}>
+                                    <div className="block relative aspect-video bg-neutral-800 overflow-hidden w-full cursor-pointer">
+                                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                                      <img
+                                        src={viewUrl}
+                                        alt={doc.title || doc.originalFilename}
+                                        className="absolute inset-0 size-full object-cover"
+                                      />
+                                      <ProgressiveBlur
+                                        className="pointer-events-none absolute bottom-0 left-0 h-[50%] w-full"
+                                        blurIntensity={0.4}
+                                        animate="visible"
+                                        variants={{
+                                          hidden: { opacity: 0 },
+                                          visible: { opacity: 1 },
+                                        }}
+                                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                                      />
+                                      <motion.div
+                                        className="absolute bottom-0 left-0 right-0 p-3"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                                      >
+                                        <span className="text-base font-medium text-white">
+                                          {getDocumentTypeLabel(doc.type)}
+                                        </span>
+                                      </motion.div>
+                                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <div className="size-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                            <Eye className="size-5 text-white" />
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </PhotoView>
+                                ) : (
+                                  <a
+                                    href={viewUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block aspect-video bg-neutral-800/50 hover:bg-neutral-800/70 transition-colors"
+                                  >
+                                    <div className="size-full flex items-center justify-center">
+                                      <div className="text-center">
+                                        <div className="size-12 rounded-lg bg-neutral-800 flex items-center justify-center mx-auto mb-2 group-hover:bg-neutral-700 transition-colors">
+                                          {getFileTypeIcon(doc)}
+                                        </div>
+                                        <p className="text-base font-medium text-neutral-300 mb-0.5">
+                                          {getFileTypeLabel(doc)}
+                                        </p>
+                                        <p className="text-xs text-neutral-500">
+                                          Click to view
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </a>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </PhotoProvider>
+                    )}
+                  </div>
+                </div>
               </TransitionPanel>
             </div>
 
             <div className="space-y-7">
               <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold mb-5">Contact</h3>
+                <h3 className="text-lg font-semibold mb-5 capitalize">personal contact</h3>
                 
                 <Button
                   size="lg"
@@ -517,7 +670,7 @@ export default function MentorDetailPage() {
               </div>
 
               <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold mb-5">Quick Info</h3>
+                <h3 className="text-lg font-semibold mb-5 capitalize">personal information</h3>
                 <div className="space-y-5">
                   <div className="flex items-center justify-between">
                     <span className="text-lg text-neutral-400">Experience</span>
@@ -551,8 +704,9 @@ export default function MentorDetailPage() {
             </div>
           </div>
         </div>
-        <PublicFooter />
       </main>
+
+      <PublicFooter />
 
       <Dialog open={isConnectDialogOpen} onOpenChange={handleCloseDialog}>
         <DialogContent className="max-w-lg">
@@ -585,7 +739,7 @@ export default function MentorDetailPage() {
                   Close
                 </Button>
                 <Button
-                  onClick={() => router.push('/mentorship/requests')}
+                  onClick={() => router.push('/mentor/requests')}
                   className="h-12! text-base!"
                 >
                   View My Requests
@@ -637,6 +791,7 @@ export default function MentorDetailPage() {
           )}
         </DialogContent>
       </Dialog>
+
     </div>
   );
 }

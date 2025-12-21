@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/dialog';
 
 import { StatusBadge } from './StatusBadge';
+import { DocumentsSection } from './DocumentsSection';
 import { formatDateTime, getStatusBadgeColor, formatStatus, canReview } from './utils';
 import type { ApplicationDetailDialogProps } from './types';
 
@@ -193,6 +194,10 @@ export function ApplicationDetailDialog({
               )}
             </div>
 
+            <Separator className="bg-neutral-800" />
+
+            <DocumentsSection applicationId={application.id} />
+
             {application.reviewer && (
               <>
                 <Separator className="bg-neutral-800" />
@@ -266,24 +271,24 @@ export function ApplicationDetailDialog({
           <div className="p-6 pt-4 border-t border-neutral-800 flex items-center gap-3">
             <Button
               variant="outline"
-              className="flex-1 h-14! text-lg text-red-500 border-red-500/30 hover:bg-red-500/10"
+              className="flex-1 h-14! text-lg text-red-500 border-red-500/30 dark:hover:text-red-400 dark:border-red-400/30 dark:hover:bg-red-500/10"
               onClick={() => {
                 onOpenChange(false);
                 onDecline(application);
               }}
             >
-              <XCircle className="size-6 mr-2" />
               Decline
+              <XCircle className="size-6" />
             </Button>
             <Button
-              className="flex-1 h-14! text-lg bg-green-600 hover:bg-green-700"
+              className="flex-1 h-14! text-lg text-white bg-green-600 hover:bg-green-700"
               onClick={() => {
                 onOpenChange(false);
                 onApprove(application);
               }}
             >
-              <CheckCircle className="size-6 mr-2" />
               Approve
+              <CheckCircle className="size-6" />
             </Button>
           </div>
         )}

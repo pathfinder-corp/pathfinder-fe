@@ -18,8 +18,8 @@ export default function MentorDetailLoading() {
         </div>
       </header>
 
-      <main className="pt-36 pb-16">
-        <div className="max-w-6xl mx-auto px-6">
+      <main className="pt-40 pb-16">
+        <div className="max-w-[1100px] mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
             <Skeleton className="size-40 rounded-xl bg-neutral-800 shrink-0" />
             <div className="flex-1 space-y-5">
@@ -33,9 +33,10 @@ export default function MentorDetailLoading() {
             </div>
           </div>
 
-          <div className="flex gap-4 mb-10 border-b border-neutral-800 pb-1">
-            <Skeleton className="h-12 w-24 bg-neutral-800" />
-            <Skeleton className="h-12 w-32 bg-neutral-800" />
+          <div className="flex gap-1 mb-10 border-b border-neutral-800">
+            <Skeleton className="h-12 w-20 bg-neutral-800" />
+            <Skeleton className="h-12 w-28 bg-neutral-800" />
+            <Skeleton className="h-12 w-28 bg-neutral-800" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -66,7 +67,7 @@ export default function MentorDetailLoading() {
 
             <div className="space-y-7">
               <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6 space-y-5">
-                <Skeleton className="h-6 w-24 bg-neutral-800" />
+                <Skeleton className="h-6 w-32 bg-neutral-800" />
                 <Skeleton className="h-14 w-full bg-neutral-800 rounded-lg" />
                 <Skeleton className="h-px w-full bg-neutral-800" />
                 <Skeleton className="h-5 w-28 bg-neutral-800" />
@@ -77,7 +78,7 @@ export default function MentorDetailLoading() {
               </div>
 
               <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6 space-y-5">
-                <Skeleton className="h-6 w-28 bg-neutral-800" />
+                <Skeleton className="h-6 w-40 bg-neutral-800" />
                 <div className="space-y-4">
                   <div className="flex justify-between">
                     <Skeleton className="h-6 w-28 bg-neutral-800" />

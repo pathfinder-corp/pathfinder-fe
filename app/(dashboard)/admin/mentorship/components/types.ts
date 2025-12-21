@@ -1,10 +1,13 @@
 import type { 
   IMentorApplication, 
   IMentorApplicationDetail,
-  MentorApplicationStatus 
+  MentorApplicationStatus,
+  MentorshipStatus
 } from '@/types';
 
 export type StatusFilter = MentorApplicationStatus | 'all';
+export type MentorStatusFilter = 'all' | 'active' | 'inactive' | 'accepting';
+export type MentorshipStatusFilter = 'all' | MentorshipStatus;
 
 export interface ApplicationsTabProps {
   onViewApplication: (application: IMentorApplication) => void;
@@ -18,6 +21,18 @@ export interface ApplicationsTabProps {
 export interface FlaggedTabProps {
   onViewApplication: (application: IMentorApplication) => void;
   onUnflagApplication: (application: IMentorApplication) => void;
+}
+
+export interface PendingDocumentsTabProps {
+  refreshTrigger?: number;
+}
+
+export interface MentorsTabProps {
+  refreshTrigger?: number;
+}
+
+export interface MentorshipsTabProps {
+  refreshTrigger?: number;
 }
 
 export interface ApplicationDetailDialogProps {

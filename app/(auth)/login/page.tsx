@@ -22,7 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { authService } from '@/services';
-import { setAuthCookie } from '@/lib';
+import { setAuthCookie, setUserRoleCookie } from '@/lib';
 
 const loginSchema = z.object({
   email: z
@@ -42,8 +42,6 @@ export default function LoginPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const setUser = useUserStore((state) => state.setUser);
-
-  const loginService = authService?.login;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -70,12 +68,19 @@ export default function LoginPage() {
   }, [searchParams, router]);
 
   const onSubmit = async (data: LoginFormData) => {
+    if (isLoading) return;
+    
     setIsLoading(true);
 
     try {
-      const response = await loginService?.(data);
+      const response = await authService.login(data);
+
+      if (!response || !response.accessToken) {
+        throw new Error('Invalid response from server');
+      }
 
       setAuthCookie(response.accessToken, response.expiresIn);
+      setUserRoleCookie(response.user.role, response.expiresIn);
 
       if (typeof window !== 'undefined') {
         localStorage.setItem('user', JSON.stringify(response.user));
@@ -100,8 +105,9 @@ export default function LoginPage() {
       toast.error('Login failed', {
         description: errorMessage
       });
-    } finally {
+      
       setIsLoading(false);
+      return;
     }
   };
 

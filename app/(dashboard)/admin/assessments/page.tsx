@@ -597,7 +597,7 @@ export default function AdminAssessmentsPage() {
                   <ClipboardList className="size-7 text-neutral-400" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xl font-semibold break-words">
+                  <p className="text-xl font-semibold wrap-break-word">
                     {selectedAssessment.domain}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
@@ -657,7 +657,7 @@ export default function AdminAssessmentsPage() {
               </div>
 
               {/* <div className="pt-2">
-                <Button asChild className="w-full h-14! !text-[1.15rem]">
+                <Button asChild className="w-full h-14! text-[1.15rem]!">
                   <Link href={`/assessment/${selectedAssessment.id}`} target="_blank">
                     Open Assessment
                     <ExternalLink className="size-5" />

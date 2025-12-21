@@ -1,16 +1,24 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Send, Loader2, Plus, X, GraduationCap, FileText, AlertCircle, Clock } from 'lucide-react';
+import { FilePond, registerPlugin } from 'react-filepond';
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
+import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import { Send, Loader2, Plus, X, GraduationCap, FileText, Clock, Award, Briefcase, File, Trash2, UserCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { mentorService } from '@/services';
 import { useUserStore } from '@/stores';
-import { USER_ROLES } from '@/constants';
-import type { ICreateMentorApplicationRequest, IMentorApplication, MentorApplicationStatus } from '@/types';
+import { USER_ROLES, DOCUMENT_TYPES } from '@/constants';
+import { formatFileSize } from '@/lib';
+import type { ICreateMentorApplicationRequest, IMentorApplication, MentorApplicationStatus, MentorDocumentType } from '@/types';
+
+import 'filepond/dist/filepond.min.css';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,6 +32,50 @@ import {
   SelectItem, 
   SelectContent 
 } from '@/components/ui/select';
+
+registerPlugin(
+  FilePondPluginFileValidateType,
+  FilePondPluginFileValidateSize,
+  FilePondPluginImagePreview
+);
+
+interface PendingDocument {
+  id: string;
+  file: File;
+  type: MentorDocumentType;
+  title: string;
+}
+
+const getDocumentIcon = (iconName: string, className: string = 'size-5') => {
+  switch (iconName) {
+    case 'FileText':
+      return <FileText className={className} />;
+    case 'Award':
+      return <Award className={className} />;
+    case 'Briefcase':
+      return <Briefcase className={className} />;
+    case 'UserCheck':
+      return <UserCheck className={className} />;
+    default:
+      return <File className={className} />;
+  }
+};
+
+const getDocumentTypeIcon = (type: MentorDocumentType) => {
+  const baseClassName = 'size-5 text-neutral-400';
+  switch (type) {
+    case 'certificate':
+      return <FileText className={baseClassName} />;
+    case 'award':
+      return <Award className={baseClassName} />;
+    case 'portfolio':
+      return <Briefcase className={baseClassName} />;
+    case 'recommendation':
+      return <UserCheck className={baseClassName} />;
+    default:
+      return <File className={baseClassName} />;
+  }
+};
 
 const EXPERIENCE_OPTIONS = [
   { value: 1, label: '1 year' },
@@ -52,6 +104,7 @@ type MentorApplicationFormData = z.infer<typeof mentorApplicationSchema>;
 export default function MentorApplicationPage() {
   const router = useRouter();
   const { user, isInitialized } = useUserStore();
+  const pondRef = useRef<FilePond | null>(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isCheckingApplication, setIsCheckingApplication] = useState<boolean>(true);
@@ -66,6 +119,12 @@ export default function MentorApplicationPage() {
   const [newSkill, setNewSkill] = useState<string>('');
   const [newIndustry, setNewIndustry] = useState<string>('');
   const [newLanguage, setNewLanguage] = useState<string>('');
+
+  const [pendingDocuments, setPendingDocuments] = useState<PendingDocument[]>([]);
+  const [currentFile, setCurrentFile] = useState<File | null>(null);
+  const [currentDocType, setCurrentDocType] = useState<MentorDocumentType>('certificate');
+  const [currentDocTitle, setCurrentDocTitle] = useState<string>('');
+  const [uploadProgress, setUploadProgress] = useState<string>('');
 
   const {
     register,
@@ -151,7 +210,34 @@ export default function MentorApplicationPage() {
     }
   };
 
+  const addDocument = () => {
+    if (!currentFile) {
+      toast.error('Please select a file first');
+      return;
+    }
+
+    const newDoc: PendingDocument = {
+      id: crypto.randomUUID(),
+      file: currentFile,
+      type: currentDocType,
+      title: currentDocTitle || currentFile.name,
+    };
+
+    setPendingDocuments(prev => [...prev, newDoc]);
+    setCurrentFile(null);
+    setCurrentDocType('certificate');
+    setCurrentDocTitle('');
+    if (pondRef.current) {
+      pondRef.current.removeFiles();
+    }
+  };
+
+  const removeDocument = (id: string) => {
+    setPendingDocuments(prev => prev.filter(doc => doc.id !== id));
+  };
+
   const onSubmit = async (data: MentorApplicationFormData) => {
+
     if (expertise.length === 0) {
       toast.error('Please add at least one area of expertise');
       return;
@@ -181,9 +267,43 @@ export default function MentorApplicationPage() {
         motivation: data.motivation
       };
 
-      await mentorService.createApplication(requestData);
+      if (pendingDocuments.length > 0) {
+        setUploadProgress(`Submitting application with ${pendingDocuments.length} document(s)...`);
+        
+        const documentsData = pendingDocuments.map(doc => ({
+          file: doc.file,
+          type: doc.type,
+          title: doc.title,
+        }));
+
+        const application = await mentorService.createApplicationWithDocuments(
+          requestData,
+          documentsData
+        );
+
+        if (application.uploadSummary && application.uploadSummary.failed > 0) {
+          toast.warning(
+            `Application submitted but ${application.uploadSummary.failed} of ${application.uploadSummary.total} document(s) failed`,
+            {
+              description: 'You can upload them later from your application page.',
+              duration: 5000,
+            }
+          );
+        } else {
+          toast.success(
+            `Application submitted successfully with ${pendingDocuments.length} document(s)!`,
+            {
+              description: 'Your application is now pending review.',
+            }
+          );
+        }
+      } else {
+        await mentorService.createApplication(requestData);
+        toast.success('Application submitted successfully!', {
+          description: 'Your application is now pending review.',
+        });
+      }
       
-      toast.success('Application submitted successfully!');
       router.push('/mentor/applications');
     } catch (error) {
       const errorMessage = error instanceof Error 
@@ -194,6 +314,7 @@ export default function MentorApplicationPage() {
       });
     } finally {
       setIsLoading(false);
+      setUploadProgress('');
     }
   };
 
@@ -203,7 +324,6 @@ export default function MentorApplicationPage() {
         return (
           <Badge className="px-4 py-2 text-base bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
             Pending Review
-            <Clock className="size-4" />
           </Badge>
         );
       case 'under_review':
@@ -504,6 +624,130 @@ export default function MentorApplicationPage() {
           )}
         </div>
 
+        <div className="space-y-5 p-7 bg-neutral-900/50 border border-neutral-800 rounded-xl">
+          <div>
+            <Label className="text-xl flex items-center gap-2">
+              <FileText className="size-6" />
+              Supporting Documents
+            </Label>
+            <p className="text-lg text-neutral-400 mt-2">
+              Upload certificates, awards, or portfolio items to strengthen your application (optional)
+            </p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="filepond-wrapper">
+              <FilePond
+                ref={pondRef}
+                files={currentFile ? [currentFile] : []}
+                onupdatefiles={(fileItems) => {
+                  const file = fileItems[0]?.file as File | undefined;
+                  setCurrentFile(file || null);
+                }}
+                allowMultiple={false}
+                maxFiles={1}
+                maxFileSize="5MB"
+                acceptedFileTypes={[
+                  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+                  'application/pdf',
+                  'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                  'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                  'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet', 'application/vnd.oasis.opendocument.presentation'
+                ]}
+                labelIdle='<span class="filepond--label-action">Browse</span> or drag & drop your file here'
+                labelFileTypeNotAllowed="Invalid file type"
+                fileValidateTypeLabelExpectedTypes="Expects images, PDF, Word, Excel, PowerPoint or OpenDocument"
+                labelMaxFileSizeExceeded="File is too large"
+                labelMaxFileSize="Maximum file size is 5MB"
+                credits={false}
+                stylePanelLayout="compact"
+                className="filepond-dark"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-lg">Document Type</Label>
+                <Select 
+                  value={currentDocType} 
+                  onValueChange={(value) => setCurrentDocType(value as MentorDocumentType)}
+                >
+                  <SelectTrigger className="h-14! text-lg!">
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {DOCUMENT_TYPES.map((type) => (
+                      <SelectItem key={type.value} value={type.value} className="text-lg!">
+                        <div className="flex items-center gap-2">
+                          {getDocumentIcon(type.iconName)}
+                          {type.label}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-lg">Title (Optional)</Label>
+                <Input
+                  value={currentDocTitle}
+                  onChange={(e) => setCurrentDocTitle(e.target.value)}
+                  placeholder="e.g., AWS Certificate"
+                  className="h-14! text-lg!"
+                />
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={addDocument}
+              disabled={!currentFile}
+              className="w-full h-14! text-lg!"
+            >
+              Add Document
+              <Plus className="size-5" />
+            </Button>
+          </div>
+
+          {pendingDocuments.length > 0 && (
+            <div className="space-y-3 pt-4 border-t border-neutral-800">
+              <p className="text-lg font-medium text-neutral-300">
+                Documents to upload ({pendingDocuments.length})
+              </p>
+              {pendingDocuments.map((doc) => (
+                <div 
+                  key={doc.id}
+                  className="flex items-center gap-4 p-4 bg-neutral-800/50 rounded-lg border border-neutral-700/50"
+                >
+                  <div className="size-12 rounded-lg bg-neutral-700/50 flex items-center justify-center shrink-0">
+                    {getDocumentTypeIcon(doc.type)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-lg font-medium truncate">{doc.title}</p>
+                    <div className="flex items-center gap-2 text-base text-neutral-400">
+                      <span className="capitalize">{doc.type}</span>
+                      <span>•</span>
+                      <span>{formatFileSize(doc.file.size)}</span>
+                    </div>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-10 text-red-500 hover:text-red-400 dark:hover:bg-red-500/10"
+                    onClick={() => removeDocument(doc.id)}
+                  >
+                    <Trash2 className="size-5" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <Button 
           type="submit" 
           disabled={isLoading}
@@ -511,7 +755,7 @@ export default function MentorApplicationPage() {
         >
           {isLoading ? (
             <>
-              Submitting application...
+              {uploadProgress || 'Submitting application...'}
               <Loader2 className="size-6 animate-spin" />
             </>
           ) : (

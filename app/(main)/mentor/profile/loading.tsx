@@ -70,6 +70,31 @@ export default function MentorProfileLoading() {
         </div>
 
         <Skeleton className="h-16 w-full bg-neutral-800 rounded-lg" />
+
+        <Skeleton className="h-px w-full mt-12 bg-neutral-800" />
+
+        <div className="flex items-center justify-between mt-10 mb-8">
+          <div className="flex items-center gap-4">
+            <Skeleton className="size-14 rounded-xl bg-neutral-800" />
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-48 bg-neutral-800" />
+              <Skeleton className="h-5 w-64 bg-neutral-800" />
+            </div>
+          </div>
+          <Skeleton className="h-12 w-44 bg-neutral-800 rounded-lg" />
+        </div>
+
+        <div className="grid grid-cols-4 gap-4 mb-8">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} className="h-24 w-full bg-neutral-800 rounded-xl" />
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {[...Array(2)].map((_, i) => (
+            <Skeleton key={i} className="h-44 w-full bg-neutral-800 rounded-xl" />
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -7,17 +7,22 @@ import {
   ClipboardList, 
   TrendingUp,
   TrendingDown,
-  Share2
+  Share2,
+  GraduationCap,
+  Handshake
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
   AreaChart, 
   Area, 
+  BarChart,
+  Bar,
   XAxis, 
   YAxis, 
   CartesianGrid, 
   Tooltip, 
-  ResponsiveContainer
+  ResponsiveContainer,
+  Cell
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 
@@ -26,7 +31,9 @@ import type {
   IDashboardOverview, 
   IDashboardUsers, 
   IDashboardRoadmaps, 
-  IDashboardAssessments 
+  IDashboardAssessments,
+  IAdminMentorStats,
+  IAdminMentorshipStats
 } from '@/types';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -108,6 +115,8 @@ export default function AdminDashboardPage() {
   const [usersData, setUsersData] = useState<IDashboardUsers | null>(null);
   const [roadmapsData, setRoadmapsData] = useState<IDashboardRoadmaps | null>(null);
   const [assessmentsData, setAssessmentsData] = useState<IDashboardAssessments | null>(null);
+  const [mentorStats, setMentorStats] = useState<IAdminMentorStats | null>(null);
+  const [mentorshipStats, setMentorshipStats] = useState<IAdminMentorshipStats | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeChart, setActiveChart] = useState<'users' | 'roadmaps' | 'assessments'>('users');
 
@@ -115,17 +124,21 @@ export default function AdminDashboardPage() {
     try {
       setIsLoading(true);
       
-      const [overviewRes, usersRes, roadmapsRes, assessmentsRes] = await Promise.all([
+      const [overviewRes, usersRes, roadmapsRes, assessmentsRes, mentorStatsRes, mentorshipStatsRes] = await Promise.all([
         adminService.getDashboardOverview(),
         adminService.getDashboardUsers(),
         adminService.getDashboardRoadmaps(),
-        adminService.getDashboardAssessments()
+        adminService.getDashboardAssessments(),
+        adminService.getMentorStats(),
+        adminService.getMentorshipStats()
       ]);
 
       setOverview(overviewRes);
       setUsersData(usersRes);
       setRoadmapsData(roadmapsRes);
       setAssessmentsData(assessmentsRes);
+      setMentorStats(mentorStatsRes);
+      setMentorshipStats(mentorshipStatsRes);
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -275,6 +288,128 @@ export default function AdminDashboardPage() {
             </ResponsiveContainer>
           </div>
         )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-neutral-800 rounded-lg">
+                <GraduationCap className="size-6" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-semibold">Mentors</h3>
+                <p className="text-base text-neutral-400">Platform mentors overview</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-4xl font-bold">{mentorStats?.total || 0}</p>
+              <p className="text-md text-neutral-500 capitalize">total mentors</p>
+            </div>
+          </div>
+          {isLoading ? (
+            <Skeleton className="h-[180px] w-full bg-neutral-800 rounded-lg" />
+          ) : (
+            <div className="h-[180px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={[
+                    { name: 'Active', value: mentorStats?.active || 0, fill: '#ffffff' },
+                    { name: 'Inactive', value: mentorStats?.inactive || 0, fill: '#737373' },
+                    { name: 'Accepting', value: mentorStats?.acceptingMentees || 0, fill: '#06b6d4' },
+                  ]}
+                  layout="vertical"
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#404040" horizontal={false} />
+                  <XAxis type="number" stroke="#737373" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis 
+                    type="category" 
+                    dataKey="name" 
+                    stroke="#737373" 
+                    fontSize={14} 
+                    tickLine={false} 
+                    axisLine={false}
+                    width={80}
+                  />
+                  <Tooltip 
+                    content={<CustomTooltip />}
+                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                  />
+                  <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={28}>
+                    {[
+                      { name: 'Active', value: mentorStats?.active || 0, fill: '#ffffff' },
+                      { name: 'Inactive', value: mentorStats?.inactive || 0, fill: '#737373' },
+                      { name: 'Accepting', value: mentorStats?.acceptingMentees || 0, fill: '#06b6d4' },
+                    ].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
+
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-neutral-800 rounded-lg">
+                <Handshake className="size-6" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-semibold">Mentorships</h3>
+                <p className="text-base text-neutral-400">Active relationships</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-4xl font-bold">{mentorshipStats?.total || 0}</p>
+              <p className="text-md text-neutral-500 capitalize">total mentorships</p>
+            </div>
+          </div>
+          {isLoading ? (
+            <Skeleton className="h-[180px] w-full bg-neutral-800 rounded-lg" />
+          ) : (
+            <div className="h-[180px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={[
+                    { name: 'Active', value: mentorshipStats?.active || 0, fill: '#ffffff' },
+                    { name: 'Completed', value: mentorshipStats?.completed || 0, fill: '#06b6d4' },
+                    { name: 'Cancelled', value: mentorshipStats?.cancelled || 0, fill: '#a855f7' },
+                  ]}
+                  layout="vertical"
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" stroke="#404040" horizontal={false} />
+                  <XAxis type="number" stroke="#737373" fontSize={12} tickLine={false} axisLine={false} />
+                  <YAxis 
+                    type="category" 
+                    dataKey="name" 
+                    stroke="#737373" 
+                    fontSize={14} 
+                    tickLine={false} 
+                    axisLine={false}
+                    width={80}
+                  />
+                  <Tooltip 
+                    content={<CustomTooltip />}
+                    cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                  />
+                  <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={28}>
+                    {[
+                      { name: 'Active', value: mentorshipStats?.active || 0, fill: '#ffffff' },
+                      { name: 'Completed', value: mentorshipStats?.completed || 0, fill: '#06b6d4' },
+                      { name: 'Cancelled', value: mentorshipStats?.cancelled || 0, fill: '#a855f7' },
+                    ].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

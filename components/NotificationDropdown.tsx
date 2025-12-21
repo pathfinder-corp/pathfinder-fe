@@ -127,7 +127,7 @@ export function NotificationDropdown() {
       case 'request_declined':
       case 'request_cancelled':
       case 'request_expired':
-        router.push('/mentorship/requests');
+        router.push('/mentor/requests');
         break;
       case 'request_accepted':
       case 'mentorship_started':
@@ -149,7 +149,7 @@ export function NotificationDropdown() {
         }
         break;
       case 'mentorship_ended':
-        router.push('/mentorship/requests');
+        router.push('/mentor/requests');
         break;
       default:
         break;

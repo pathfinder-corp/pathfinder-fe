@@ -171,3 +171,131 @@
   scrollbar-width: thin;
   scrollbar-color: oklch(0.4 0 0) transparent;
 }
+
+.filepond-dark .filepond--panel-root {
+  background-color: #262626;
+  border: 2px dashed #404040;
+  border-radius: 12px;
+}
+
+.filepond-dark .filepond--drop-label {
+  color: #a3a3a3;
+  font-size: 1.125rem;
+}
+
+.filepond-dark .filepond--drop-label label {
+  cursor: pointer;
+}
+
+.filepond-dark .filepond--label-action {
+  color: white;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.filepond-dark .filepond--item-panel {
+  background-color: #404040;
+  border-radius: 8px;
+}
+
+.filepond-dark .filepond--file-action-button {
+  cursor: pointer;
+}
+
+.filepond-dark .filepond--file {
+  color: white;
+}
+
+.filepond-dark .filepond--file-info-main,
+.filepond-dark .filepond--file-info-sub {
+  color: #e5e5e5;
+}
+
+.filepond-dark .filepond--image-preview-wrapper {
+  background-color: #262626;
+}
+
+.filepond--root {
+  margin-bottom: 0;
+}
+
+.PhotoView-Portal {
+  --photo-view-bg: rgba(10, 10, 10, 0.95);
+}
+
+.PhotoView-Slider__BannerWrap {
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent) !important;
+  padding: 16px 20px !important;
+}
+
+.PhotoView-Slider__Counter {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #a3a3a3 !important;
+  opacity: 1 !important;
+}
+
+.PhotoView-Slider__BannerRight {
+  gap: 8px !important;
+}
+
+.PhotoView-Slider__toolbarIcon {
+  width: 34px !important;
+  height: 34px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 50% !important;
+  backdrop-filter: blur(8px) !important;
+  opacity: 1 !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.PhotoView-Slider__toolbarIcon:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.PhotoView-Slider__toolbarIcon svg {
+  width: 20px !important;
+  height: 20px !important;
+  fill: white !important;
+}
+
+.PhotoView-Slider__ArrowLeft,
+.PhotoView-Slider__ArrowRight {
+  width: 35px !important;
+  height: 35px !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 50% !important;
+  backdrop-filter: blur(8px) !important;
+  opacity: 1 !important;
+  transition: background-color 0.2s ease, transform 0.2s ease !important;
+}
+
+.PhotoView-Slider__ArrowLeft {
+  margin-left: 10px !important;
+}
+
+.PhotoView-Slider__ArrowRight {
+  margin-right: 10px !important;
+}
+
+.PhotoView-Slider__ArrowLeft:hover,
+.PhotoView-Slider__ArrowRight:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  transform: scale(1.05) !important;
+}
+
+.PhotoView-Slider__ArrowLeft svg,
+.PhotoView-Slider__ArrowRight svg {
+  width: 24px !important;
+  height: 24px !important;
+  fill: white !important;
+}
+
+.PhotoView__Photo {
+  border-radius: 8px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+}
+
+.PhotoView-Slider__Backdrop {
+  background-color: var(--photo-view-bg) !important;
+}

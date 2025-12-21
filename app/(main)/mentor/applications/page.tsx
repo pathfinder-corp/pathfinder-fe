@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { 
   GraduationCap, 
@@ -12,13 +12,15 @@ import {
   Linkedin,
   Globe,
   Briefcase,
-  Calendar
+  Calendar,
+  FileUp,
+  FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { mentorService } from '@/services';
 import { useUserStore } from '@/stores';
-import type { IMentorApplication, MentorApplicationStatus } from '@/types';
+import type { IMentorApplication, MentorApplicationStatus, IMentorDocument } from '@/types';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -34,6 +36,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { DocumentUploadDialog, DocumentList } from '../components';
 
 export default function MyApplicationsPage() {
   const router = useRouter();
@@ -44,12 +47,40 @@ export default function MyApplicationsPage() {
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState<boolean>(false);
   const [applicationToWithdraw, setApplicationToWithdraw] = useState<IMentorApplication | null>(null);
   const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
+  
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState<boolean>(false);
+  const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
+  const [documentsByApplication, setDocumentsByApplication] = useState<Record<string, IMentorDocument[]>>({});
+
+  const fetchDocuments = useCallback(async (applicationId: string) => {
+    try {
+      const docs = await mentorService.getDocuments(applicationId);
+      setDocumentsByApplication(prev => ({
+        ...prev,
+        [applicationId]: docs
+      }));
+    } catch (error) {
+      console.error('Failed to fetch documents:', error);
+    }
+  }, []);
 
   const fetchApplications = async () => {
     try {
       setIsLoading(true);
       const data = await mentorService.getMyApplications();
       setApplications(data || []);
+      
+      const docsMap: Record<string, IMentorDocument[]> = {};
+      for (const app of data || []) {
+        if (app.documents && app.documents.length > 0) {
+          docsMap[app.id] = app.documents;
+        } else {
+          fetchDocuments(app.id);
+        }
+      }
+      if (Object.keys(docsMap).length > 0) {
+        setDocumentsByApplication(prev => ({ ...prev, ...docsMap }));
+      }
       
       const hasApprovedApplication = data?.some(app => app.status === 'approved');
       if (hasApprovedApplication && user?.role === 'student') {
@@ -194,7 +225,7 @@ export default function MyApplicationsPage() {
           {applications.map((application) => (
             <div 
               key={application.id}
-              className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden"
+              className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden mb-5 last:mb-0"
             >
               <div className="p-7 border-b border-neutral-800">
                 <div className="flex items-start gap-5">
@@ -348,26 +379,42 @@ export default function MyApplicationsPage() {
                   </div>
                 )}
 
-                {application.status === 'declined' && application.declineReason && (
-                  <div className="p-5 bg-red-500/10 border border-red-500/30 rounded-lg">
-                    <p className="text-base font-medium text-red-400 mb-2">Decline Reason:</p>
-                    <p className="text-lg text-neutral-300">{application.declineReason}</p>
+                <Separator className="bg-neutral-800" />
+                
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-2">
+                      <FileText className="size-5" />
+                      Supporting Documents
+                    </h4>
+                    {canWithdraw(application.status) && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedApplicationId(application.id);
+                          setIsUploadDialogOpen(true);
+                        }}
+                        className="h-10! text-base!"
+                      >
+                        Upload Document
+                        <FileUp className="size-5" />
+                      </Button>
+                    )}
                   </div>
-                )}
-
-                {application.status === 'approved' && (
-                  <div className="p-5 bg-green-500/10 border border-green-500/30 rounded-lg">
-                    <p className="text-lg text-green-400 flex items-center gap-2">
-                      <CheckCircle className="size-6" />
-                      Congratulations! Your application has been approved. You are now a mentor!
-                    </p>
-                  </div>
-                )}
+                  
+                  <DocumentList
+                    applicationId={application.id}
+                    documents={documentsByApplication[application.id] || []}
+                    onDocumentsChange={() => fetchDocuments(application.id)}
+                    canEdit={canWithdraw(application.status)}
+                  />
+                </div>
               </div>
 
               <div className="p-7 border-t border-neutral-800 bg-neutral-900/30">
                 <div className="flex items-center justify-between">
-                  <p className="text-base text-neutral-500">
+                  <p className="text-lg text-neutral-500">
                     {canWithdraw(application.status) 
                       ? 'You can withdraw this application if you want to submit a new one'
                       : application.status === 'approved' 
@@ -392,8 +439,8 @@ export default function MyApplicationsPage() {
                           setIsWithdrawDialogOpen(true);
                         }}
                       >
-                        <Trash2 className="size-5 mr-2" />
                         Withdraw Application
+                        <Trash2 className="size-5" />
                       </Button>
                     )}
                     {(application.status === 'declined' || application.status === 'withdrawn') && (
@@ -401,8 +448,8 @@ export default function MyApplicationsPage() {
                         onClick={() => router.push('/mentor')}
                         className="h-12! text-base!"
                       >
-                        <Plus className="size-5 mr-2" />
                         Submit New Application
+                        <Plus className="size-5" />
                       </Button>
                     )}
                   </div>
@@ -417,7 +464,7 @@ export default function MyApplicationsPage() {
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl flex items-center gap-2.5">
-              <Trash2 className="size-7 text-red-500" />
+              <Trash2 className="size-7" />
               Withdraw Application
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base">
@@ -435,12 +482,28 @@ export default function MyApplicationsPage() {
               disabled={isWithdrawing}
               className="bg-red-600 hover:bg-red-700 text-white h-12! text-base!"
             >
-              {isWithdrawing && <Loader2 className="size-5 mr-2 animate-spin" />}
               Withdraw Application
+              {isWithdrawing && <Loader2 className="size-5 animate-spin" />}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {selectedApplicationId && (
+        <DocumentUploadDialog
+          applicationId={selectedApplicationId}
+          open={isUploadDialogOpen}
+          onOpenChange={(open) => {
+            setIsUploadDialogOpen(open);
+            if (!open) setSelectedApplicationId(null);
+          }}
+          onDocumentUploaded={() => {
+            if (selectedApplicationId) {
+              fetchDocuments(selectedApplicationId);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

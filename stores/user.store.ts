@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import type { IUserStore, IUser } from '@/types';
 import { authService } from '@/services';
+import { setUserRoleCookie, removeAuthCookie } from '@/lib';
 
 export const useUserStore = create<IUserStore>()(
   persist(
@@ -14,6 +15,7 @@ export const useUserStore = create<IUserStore>()(
         set({ user, isAuthenticated: true });
         if (typeof window !== 'undefined') {
           localStorage.setItem('user', JSON.stringify(user));
+          setUserRoleCookie(user.role);
         }
       },
 
@@ -21,7 +23,7 @@ export const useUserStore = create<IUserStore>()(
         set({ user: null, isAuthenticated: false });
         if (typeof window !== 'undefined') {
           localStorage.removeItem('user');
-          document.cookie = 'auth-token=; path=/; max-age=0';
+          removeAuthCookie();
         }
       },
 
@@ -36,6 +38,7 @@ export const useUserStore = create<IUserStore>()(
             try {
               const user = JSON.parse(userStr);
               set({ user, isAuthenticated: true, isInitialized: true });
+              setUserRoleCookie(user.role);
               
               const profile = await authService.getProfile();
               const updatedUser: IUser = {
@@ -54,6 +57,7 @@ export const useUserStore = create<IUserStore>()(
               };
               set({ user: updatedUser });
               localStorage.setItem('user', JSON.stringify(updatedUser));
+              setUserRoleCookie(updatedUser.role);
             } catch (error) {
               console.error('Failed to initialize user:', error);
               set({ user: null, isAuthenticated: false, isInitialized: true });
@@ -84,6 +88,7 @@ export const useUserStore = create<IUserStore>()(
           set({ user, isAuthenticated: true });
           if (typeof window !== 'undefined') {
             localStorage.setItem('user', JSON.stringify(user));
+            setUserRoleCookie(user.role);
           }
         } catch (error) {
           console.error('Failed to refresh user:', error);

@@ -5,7 +5,10 @@ import {
   Users,
   ShieldAlert,
   Network,
-  FileText
+  FileText,
+  FileClock,
+  GraduationCap,
+  Handshake
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
@@ -22,16 +25,22 @@ import {
   FlaggedTab,
   IPStatisticsTab,
   AuditLogsTab,
+  PendingDocumentsTab,
+  MentorsTab,
+  MentorshipsTab,
   ApplicationDetailDialog,
   ApproveDialog,
   DeclineDialog
 } from './components';
 
-type ActiveTab = 'applications' | 'flagged' | 'ip-statistics' | 'audit-logs';
+type ActiveTab = 'applications' | 'pending-documents' | 'flagged' | 'mentors' | 'mentorships' | 'ip-statistics' | 'audit-logs';
 
 const TABS = [
   { id: 'applications' as const, label: 'Applications', icon: Users },
+  { id: 'pending-documents' as const, label: 'Pending Docs', icon: FileClock },
   { id: 'flagged' as const, label: 'Flagged', icon: ShieldAlert },
+  { id: 'mentors' as const, label: 'Mentors', icon: GraduationCap },
+  { id: 'mentorships' as const, label: 'Mentorships', icon: Handshake },
   { id: 'ip-statistics' as const, label: 'IP Statistics', icon: Network },
   { id: 'audit-logs' as const, label: 'Audit Logs', icon: FileText },
 ];
@@ -178,10 +187,13 @@ export default function AdminMentorshipPage() {
           onDecline={handleOpenDeclineDialog}
           refreshTrigger={refreshTrigger}
         />
+        <PendingDocumentsTab refreshTrigger={refreshTrigger} />
         <FlaggedTab
           onViewApplication={handleViewApplication}
           onUnflagApplication={() => {}}
         />
+        <MentorsTab refreshTrigger={refreshTrigger} />
+        <MentorshipsTab refreshTrigger={refreshTrigger} />
         <IPStatisticsTab />
         <AuditLogsTab />
       </TransitionPanel>

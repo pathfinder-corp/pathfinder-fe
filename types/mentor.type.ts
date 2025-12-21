@@ -1,4 +1,5 @@
 import { SortOrder } from './table.type';
+import { DOCUMENT_TYPES } from '@/constants';
 
 export type MentorApplicationStatus = 
   | 'pending' 
@@ -7,6 +8,10 @@ export type MentorApplicationStatus =
   | 'approved' 
   | 'declined' 
   | 'withdrawn';
+
+export type MentorDocumentType = (typeof DOCUMENT_TYPES)[number]['value'];
+
+export type DocumentVerificationStatus = 'pending' | 'verified' | 'rejected';
 
 export interface IMentorApplicationUser {
   id: string;
@@ -44,6 +49,7 @@ export interface IMentorApplication {
   user: IMentorApplicationUser;
   status: MentorApplicationStatus;
   applicationData: IMentorApplicationData;
+  documents?: IMentorDocument[];
   declineReason: string | null;
   decidedAt: string | null;
   createdAt: string;
@@ -69,6 +75,7 @@ export interface IMentorProfile extends IMentorCoreData {
   isActive: boolean;
   isAcceptingMentees: boolean;
   maxMentees: number;
+  documents?: IMentorDocument[];
   createdAt: string;
   updatedAt: string;
 }
@@ -111,4 +118,46 @@ export interface IMentorApplicationStatusHistory {
   newStatus: MentorApplicationStatus;
   reason: string | null;
   createdAt: string;
+}
+
+export interface IMentorDocument {
+  id: string;
+  applicationId: string;
+  type: MentorDocumentType;
+  originalFilename: string;
+  mimeType: string;
+  fileSize: number;
+  title: string | null;
+  imagekitUrl?: string | null;
+  description: string | null;
+  issuedYear: number | null;
+  issuingOrganization: string | null;
+  verificationStatus: DocumentVerificationStatus;
+  displayOrder: number;
+  createdAt: string;
+  downloadUrl: string;
+  isImage?: boolean;
+  isPdf?: boolean;
+  isWord?: boolean;
+  isExcel?: boolean;
+  isPowerPoint?: boolean;
+  isOfficeDocument?: boolean;
+}
+
+export interface IUploadMentorDocumentRequest {
+  file: File;
+  type: MentorDocumentType;
+  title?: string;
+  description?: string;
+  issuedYear?: number;
+  issuingOrganization?: string;
+}
+
+export interface IUpdateMentorDocumentRequest {
+  type?: MentorDocumentType;
+  title?: string;
+  description?: string;
+  issuedYear?: number;
+  issuingOrganization?: string;
+  displayOrder?: number;
 }
