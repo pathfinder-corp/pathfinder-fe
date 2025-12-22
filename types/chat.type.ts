@@ -44,6 +44,9 @@ export interface IChatConversation {
   unreadCount?: number;
   createdAt: string;
   mentorshipStatus?: MentorshipStatus;
+  mentorshipEndReason?: string;
+  mentorshipEndedBy?: string;
+  mentorshipEndedAt?: string;
 }
 
 export interface IGetMessagesResponse {
@@ -52,6 +55,9 @@ export interface IGetMessagesResponse {
   nextCursor: string | null;
   mentorshipStatus?: MentorshipStatus;
   mentorshipId?: string;
+  mentorshipEndReason?: string;
+  mentorshipEndedBy?: string;
+  mentorshipEndedAt?: string;
 }
 
 export interface IGetMessagesParams {

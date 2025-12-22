@@ -6,6 +6,14 @@ type TypingCallback = (data: { conversationId: string; userId: string; isTyping:
 type ReadCallback = (data: { conversationId: string; messageIds: string[]; readBy: string }) => void;
 type MentorshipEndedCallback = (data: { mentorshipId: string; status: string; endReason?: string; endedBy?: string; endedAt?: Date }) => void;
 type MentorshipStartedCallback = (data: { mentorshipId: string; status: string; conversationId: string }) => void;
+type ConversationMentorshipCallback = (data: { 
+  conversationId: string; 
+  mentorshipId: string; 
+  status: string; 
+  endReason?: string; 
+  endedBy?: string; 
+  endedAt?: string;
+}) => void;
 type ConnectionCallback = () => void;
 
 class SocketService {
@@ -15,6 +23,7 @@ class SocketService {
   private readCallbacks: Map<string, ReadCallback[]> = new Map();
   private mentorshipEndedCallbacks: MentorshipEndedCallback[] = [];
   private mentorshipStartedCallbacks: MentorshipStartedCallback[] = [];
+  private conversationMentorshipCallbacks: Map<string, ConversationMentorshipCallback[]> = new Map();
   private connectionCallbacks: ConnectionCallback[] = [];
   private disconnectionCallbacks: ConnectionCallback[] = [];
 
@@ -105,6 +114,21 @@ class SocketService {
 
     this.socket.on('mentorship:started', (data: { mentorshipId: string; status: string; conversationId: string }) => {
       this.mentorshipStartedCallbacks.forEach(cb => cb(data));
+    });
+
+    this.socket.on('conversation:mentorship', (data: { 
+      conversationId: string; 
+      mentorshipId: string; 
+      status: string; 
+      endReason?: string; 
+      endedBy?: string; 
+      endedAt?: string;
+    }) => {
+      const callbacks = this.conversationMentorshipCallbacks.get(data.conversationId) || [];
+      callbacks.forEach(cb => cb(data));
+      
+      const globalCallbacks = this.conversationMentorshipCallbacks.get('*') || [];
+      globalCallbacks.forEach(cb => cb(data));
     });
   }
 
@@ -250,6 +274,21 @@ class SocketService {
       const index = this.mentorshipStartedCallbacks.indexOf(callback);
       if (index > -1) {
         this.mentorshipStartedCallbacks.splice(index, 1);
+      }
+    };
+  }
+
+  onConversationMentorship(conversationId: string, callback: ConversationMentorshipCallback): () => void {
+    const callbacks = this.conversationMentorshipCallbacks.get(conversationId) || [];
+    callbacks.push(callback);
+    this.conversationMentorshipCallbacks.set(conversationId, callbacks);
+
+    return () => {
+      const cbs = this.conversationMentorshipCallbacks.get(conversationId) || [];
+      const index = cbs.indexOf(callback);
+      if (index > -1) {
+        cbs.splice(index, 1);
+        this.conversationMentorshipCallbacks.set(conversationId, cbs);
       }
     };
   }

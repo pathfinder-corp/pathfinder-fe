@@ -157,7 +157,10 @@ export default function MessagesPage() {
                   ...conv,
                   lastMessage: lastMsg,
                   lastMessageAt: lastMsg.createdAt,
-                  mentorshipStatus
+                  mentorshipStatus,
+                  mentorshipEndReason: conv.mentorshipEndReason,
+                  mentorshipEndedBy: conv.mentorshipEndedBy,
+                  mentorshipEndedAt: conv.mentorshipEndedAt
                 };
               }
             } catch (err) {
@@ -172,7 +175,10 @@ export default function MessagesPage() {
           
           return {
             ...conv,
-            mentorshipStatus
+            mentorshipStatus,
+            mentorshipEndReason: conv.mentorshipEndReason,
+            mentorshipEndedBy: conv.mentorshipEndedBy,
+            mentorshipEndedAt: conv.mentorshipEndedAt
           };
         })
       );
@@ -227,7 +233,10 @@ export default function MessagesPage() {
               ? { 
                   ...conv, 
                   mentorshipStatus: data.mentorshipStatus as MentorshipStatus,
-                  mentorshipId: data.mentorshipId || conv.mentorshipId
+                  mentorshipId: data.mentorshipId || conv.mentorshipId,
+                  mentorshipEndReason: data.mentorshipEndReason,
+                  mentorshipEndedBy: data.mentorshipEndedBy,
+                  mentorshipEndedAt: data.mentorshipEndedAt
                 }
               : conv
           )
@@ -238,7 +247,10 @@ export default function MessagesPage() {
             prev ? {
               ...prev,
               mentorshipStatus: data.mentorshipStatus as MentorshipStatus,
-              mentorshipId: data.mentorshipId || prev.mentorshipId
+              mentorshipId: data.mentorshipId || prev.mentorshipId,
+              mentorshipEndReason: data.mentorshipEndReason,
+              mentorshipEndedBy: data.mentorshipEndedBy,
+              mentorshipEndedAt: data.mentorshipEndedAt
             } : null
           );
         }
@@ -397,10 +409,43 @@ export default function MessagesPage() {
       }
     });
 
+    const unsubConversationMentorship = socketService.onConversationMentorship(conversationId, (data) => {
+      const status = data.status as MentorshipStatus;
+      
+      setConversations(prev => 
+        prev.map(conv => 
+          conv.id === conversationId
+            ? {
+                ...conv,
+                mentorshipId: data.mentorshipId,
+                mentorshipStatus: status,
+                mentorshipEndReason: data.endReason,
+                mentorshipEndedBy: data.endedBy,
+                mentorshipEndedAt: data.endedAt
+              }
+            : conv
+        )
+      );
+
+      if (selectedConversation?.id === conversationId) {
+        setSelectedConversation(prev => 
+          prev ? {
+            ...prev,
+            mentorshipId: data.mentorshipId,
+            mentorshipStatus: status,
+            mentorshipEndReason: data.endReason,
+            mentorshipEndedBy: data.endedBy,
+            mentorshipEndedAt: data.endedAt
+          } : null
+        );
+      }
+    });
+
     return () => {
       unsubMessage();
       unsubTyping();
       unsubRead();
+      unsubConversationMentorship();
     };
   }, [selectedConversation?.id, currentUserId]);
 
@@ -494,17 +539,33 @@ export default function MessagesPage() {
     });
 
     const unsubMentorshipEnded = socketService.onMentorshipEnded((data) => {
+      const endedAtString = data.endedAt 
+        ? (typeof data.endedAt === 'string' ? data.endedAt : data.endedAt.toISOString())
+        : undefined;
+      
       setConversations(prev => 
         prev.map(conv => 
           conv.mentorshipId === data.mentorshipId
-            ? { ...conv, mentorshipStatus: 'ended' as const }
+            ? { 
+                ...conv, 
+                mentorshipStatus: 'ended' as const,
+                mentorshipEndReason: data.endReason,
+                mentorshipEndedBy: data.endedBy,
+                mentorshipEndedAt: endedAtString
+              }
             : conv
         )
       );
 
       if (selectedConversation?.mentorshipId === data.mentorshipId) {
         setSelectedConversation(prev => 
-          prev ? { ...prev, mentorshipStatus: 'ended' as const } : null
+          prev ? { 
+            ...prev, 
+            mentorshipStatus: 'ended' as const,
+            mentorshipEndReason: data.endReason,
+            mentorshipEndedBy: data.endedBy,
+            mentorshipEndedAt: endedAtString
+          } : null
         );
       }
     });
@@ -513,35 +574,23 @@ export default function MessagesPage() {
       try {
         await fetchConversations();
         
-        if (selectedConversation?.id === data.conversationId) {
-          await fetchMessages(data.conversationId);
-        }
+        const updatedConversations = await chatService.getConversations();
+        const newConversation = updatedConversations.find(
+          conv => conv.mentorshipId === data.mentorshipId && conv.mentorshipStatus === 'active'
+        );
+        
+        setSelectedConversation(prev => {
+          if (prev?.mentorshipStatus === 'ended' && newConversation) {
+            fetchMessages(newConversation.id);
+            return newConversation;
+          } else if (prev?.id === data.conversationId) {
+            fetchMessages(data.conversationId);
+            return prev;
+          }
+          return prev;
+        });
       } catch (error) {
         console.error('Failed to refresh conversation after mentorship started:', error);
-      }
-      
-      setConversations(prev => 
-        prev.map(conv => {
-          if (conv.id === data.conversationId || conv.mentorshipId === data.mentorshipId) {
-            return {
-              ...conv,
-              mentorshipId: data.mentorshipId,
-              mentorshipStatus: 'active' as const
-            };
-          }
-          return conv;
-        })
-      );
-
-      if (selectedConversation?.id === data.conversationId || 
-          selectedConversation?.mentorshipId === data.mentorshipId) {
-        setSelectedConversation(prev => 
-          prev ? { 
-            ...prev, 
-            mentorshipId: data.mentorshipId,
-            mentorshipStatus: 'active' as const 
-          } : null
-        );
       }
     });
 
@@ -581,7 +630,10 @@ export default function MessagesPage() {
                 ? { 
                     ...conv, 
                     mentorshipStatus: data.mentorshipStatus as MentorshipStatus,
-                    mentorshipId: data.mentorshipId || conv.mentorshipId
+                    mentorshipId: data.mentorshipId || conv.mentorshipId,
+                    mentorshipEndReason: data.mentorshipEndReason,
+                    mentorshipEndedBy: data.mentorshipEndedBy,
+                    mentorshipEndedAt: data.mentorshipEndedAt
                   }
                 : conv
             )
@@ -591,7 +643,10 @@ export default function MessagesPage() {
             prev ? {
               ...prev,
               mentorshipStatus: data.mentorshipStatus as MentorshipStatus,
-              mentorshipId: data.mentorshipId || prev.mentorshipId
+              mentorshipId: data.mentorshipId || prev.mentorshipId,
+              mentorshipEndReason: data.mentorshipEndReason,
+              mentorshipEndedBy: data.mentorshipEndedBy,
+              mentorshipEndedAt: data.mentorshipEndedAt
             } : null
           );
         }
@@ -1114,7 +1169,7 @@ export default function MessagesPage() {
                         </p>
                         <div className="flex items-center gap-2">
                           {conversation.mentorshipStatus === 'ended' && (
-                            <Badge variant="outline" className="text-xs px-2 py-0.5 border-neutral-600 text-neutral-500">
+                            <Badge variant="outline" className="text-xs px-2 py-1 border-neutral-600 text-neutral-500">
                               Ended
                             </Badge>
                           )}
@@ -1195,53 +1250,55 @@ export default function MessagesPage() {
                 })()}
               </div>
               
-              <div className="flex items-center gap-1">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="size-12">
-                      <MoreVertical className="size-6" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56">
-                    {(() => {
-                      if (!selectedConversation) return null;
-                      const other = getOtherParticipant(selectedConversation);
-                      if (!other) return null;
-                      
-                      const hasViewProfile = other?.role === 'mentor' && selectedConversation?.mentorProfileId;
-                      const hasEndMentorship = selectedConversation.mentorshipStatus !== 'ended';
-                      
-                      return (
-                        <>
-                          {hasViewProfile && (
-                            <DropdownMenuItem 
-                              className="text-lg py-3"
-                              onClick={() => {
-                                router.push(`/mentors/${selectedConversation.mentorProfileId}`);
-                              }}
-                            >
-                              <Eye className="size-5" />
-                              View profile
-                            </DropdownMenuItem>
-                          )}
-                          {hasEndMentorship && (
-                            <>
-                              {hasViewProfile && <DropdownMenuSeparator />}
+              {(selectedConversation.mentorshipStatus === 'active' || selectedConversation.mentorshipStatus === 'cancelled' || !selectedConversation.mentorshipStatus) ? (
+                <div className="flex items-center gap-1">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon" className="size-12">
+                        <MoreVertical className="size-6" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-56">
+                      {(() => {
+                        if (!selectedConversation) return null;
+                        const other = getOtherParticipant(selectedConversation);
+                        if (!other) return null;
+                        
+                        const hasViewProfile = other?.role === 'mentor' && selectedConversation?.mentorProfileId;
+                        const hasEndMentorship = selectedConversation.mentorshipStatus === 'active';
+                        
+                        return (
+                          <>
+                            {hasViewProfile && (
                               <DropdownMenuItem 
-                                className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
-                                onClick={() => setIsEndMentorshipDialogOpen(true)}
+                                className="text-lg py-3"
+                                onClick={() => {
+                                  router.push(`/mentors/${selectedConversation.mentorProfileId}`);
+                                }}
                               >
-                                <X className="size-5 text-red-500" />
-                                End mentorship
+                                <Eye className="size-5" />
+                                View profile
                               </DropdownMenuItem>
-                            </>
-                          )}
-                        </>
-                      );
-                    })()}
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
+                            )}
+                            {hasEndMentorship && (
+                              <>
+                                {hasViewProfile && <DropdownMenuSeparator />}
+                                <DropdownMenuItem 
+                                  className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
+                                  onClick={() => setIsEndMentorshipDialogOpen(true)}
+                                >
+                                  <X className="size-5 text-red-500" />
+                                  End mentorship
+                                </DropdownMenuItem>
+                              </>
+                            )}
+                          </>
+                        );
+                      })()}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ) : null}
             </div>
 
             <ScrollArea className="flex-1" ref={messagesContainerRef}>
@@ -1495,9 +1552,25 @@ export default function MessagesPage() {
                     <p className="text-lg font-medium text-neutral-300">
                       Mentorship Ended
                     </p>
-                    <p className="text-base text-neutral-500 mt-1">
-                      This conversation is now read-only. You can reconnect to continue chatting.
-                    </p>
+                    <div className="text-base text-neutral-500 mt-1 space-y-1">
+                      {selectedConversation.mentorshipEndReason && (
+                        <p>
+                          <span className="font-medium">Reason: </span>
+                          {selectedConversation.mentorshipEndReason}
+                        </p>
+                      )}
+                      {selectedConversation.mentorshipEndedAt && (
+                        <p>
+                          <span className="font-medium">Ended on: </span>
+                          {format(parseISO(selectedConversation.mentorshipEndedAt), 'MMM dd, yyyy HH:mm')}
+                        </p>
+                      )}
+                      {!selectedConversation.mentorshipEndReason && !selectedConversation.mentorshipEndedAt && (
+                        <p>
+                          This conversation is now read-only. You can reconnect to continue chatting.
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <Button
                     onClick={() => {
