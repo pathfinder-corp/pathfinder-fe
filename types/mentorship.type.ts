@@ -6,7 +6,7 @@ export type MentorshipRequestStatus =
   | 'expired';
 
 export type MentorshipRequestRole = 'as_student' | 'as_mentor';
-export type MentorshipStatus = 'active' | 'ended';
+export type MentorshipStatus = 'active' | 'ended' | 'cancelled';
 
 export interface IMentorshipRequestUser {
   id: string;

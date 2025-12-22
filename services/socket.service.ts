@@ -4,6 +4,8 @@ import type { IChatMessage } from '@/types';
 type MessageCallback = (message: IChatMessage) => void;
 type TypingCallback = (data: { conversationId: string; userId: string; isTyping: boolean }) => void;
 type ReadCallback = (data: { conversationId: string; messageIds: string[]; readBy: string }) => void;
+type MentorshipEndedCallback = (data: { mentorshipId: string; status: string; endReason?: string; endedBy?: string; endedAt?: Date }) => void;
+type MentorshipStartedCallback = (data: { mentorshipId: string; status: string; conversationId: string }) => void;
 type ConnectionCallback = () => void;
 
 class SocketService {
@@ -11,6 +13,8 @@ class SocketService {
   private messageCallbacks: Map<string, MessageCallback[]> = new Map();
   private typingCallbacks: Map<string, TypingCallback[]> = new Map();
   private readCallbacks: Map<string, ReadCallback[]> = new Map();
+  private mentorshipEndedCallbacks: MentorshipEndedCallback[] = [];
+  private mentorshipStartedCallbacks: MentorshipStartedCallback[] = [];
   private connectionCallbacks: ConnectionCallback[] = [];
   private disconnectionCallbacks: ConnectionCallback[] = [];
 
@@ -42,7 +46,7 @@ class SocketService {
     });
 
     this.socket.onAny((eventName, ...args) => {
-      console.log('Socket event received:', eventName, args);
+      // console.log('Socket event received:', eventName, args);
     });
 
     this.socket.on('message:new', (message: IChatMessage) => {
@@ -53,23 +57,7 @@ class SocketService {
       globalCallbacks.forEach(cb => cb(message));
     });
 
-    this.socket.on('newMessage', (message: IChatMessage) => {
-      const callbacks = this.messageCallbacks.get(message.conversationId) || [];
-      callbacks.forEach(cb => cb(message));
-      
-      const globalCallbacks = this.messageCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(message));
-    });
-
-    this.socket.on('message', (message: IChatMessage) => {
-      const callbacks = this.messageCallbacks.get(message.conversationId) || [];
-      callbacks.forEach(cb => cb(message));
-      
-      const globalCallbacks = this.messageCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(message));
-    });
-
-    this.socket.on('message:updated', (message: IChatMessage) => {
+    this.socket.on('message:edited', (message: IChatMessage) => {
       const callbacks = this.messageCallbacks.get(message.conversationId) || [];
       callbacks.forEach(cb => cb(message));
       
@@ -85,31 +73,7 @@ class SocketService {
       globalCallbacks.forEach(cb => cb(message));
     });
 
-    this.socket.on('typing:indicator', (data: { conversationId: string; userId: string; isTyping: boolean }) => {
-      const callbacks = this.typingCallbacks.get(data.conversationId) || [];
-      callbacks.forEach(cb => cb(data));
-      
-      const globalCallbacks = this.typingCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(data));
-    });
-
-    this.socket.on('typing', (data: { conversationId: string; userId: string; isTyping: boolean }) => {
-      const callbacks = this.typingCallbacks.get(data.conversationId) || [];
-      callbacks.forEach(cb => cb(data));
-      
-      const globalCallbacks = this.typingCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(data));
-    });
-
-    this.socket.on('userTyping', (data: { conversationId: string; userId: string; isTyping: boolean }) => {
-      const callbacks = this.typingCallbacks.get(data.conversationId) || [];
-      callbacks.forEach(cb => cb(data));
-      
-      const globalCallbacks = this.typingCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(data));
-    });
-
-    this.socket.on('messages:marked_read', (data: { conversationId: string; messageIds: string[]; readBy: string }) => {
+    this.socket.on('messages:read', (data: { conversationId: string; messageIds: string[]; readBy: string }) => {
       const callbacks = this.readCallbacks.get(data.conversationId) || [];
       callbacks.forEach(cb => cb(data));
       
@@ -117,7 +81,6 @@ class SocketService {
       globalCallbacks.forEach(cb => cb(data));
     });
 
-    // Handle typing:start event from backend
     this.socket.on('typing:start', (data: { conversationId: string; userId: string }) => {
       const typingData = { ...data, isTyping: true };
       const callbacks = this.typingCallbacks.get(data.conversationId) || [];
@@ -127,7 +90,6 @@ class SocketService {
       globalCallbacks.forEach(cb => cb(typingData));
     });
 
-    // Handle typing:stop event from backend
     this.socket.on('typing:stop', (data: { conversationId: string; userId: string }) => {
       const typingData = { ...data, isTyping: false };
       const callbacks = this.typingCallbacks.get(data.conversationId) || [];
@@ -135,6 +97,14 @@ class SocketService {
       
       const globalCallbacks = this.typingCallbacks.get('*') || [];
       globalCallbacks.forEach(cb => cb(typingData));
+    });
+
+    this.socket.on('mentorship:ended', (data: { mentorshipId: string; status: string; endReason?: string; endedBy?: string; endedAt?: Date }) => {
+      this.mentorshipEndedCallbacks.forEach(cb => cb(data));
+    });
+
+    this.socket.on('mentorship:started', (data: { mentorshipId: string; status: string; conversationId: string }) => {
+      this.mentorshipStartedCallbacks.forEach(cb => cb(data));
     });
   }
 
@@ -171,15 +141,15 @@ class SocketService {
     }
   }
 
-  editMessage(messageId: string, content: string): void {
+  editMessage(conversationId: string, messageId: string, content: string): void {
     if (this.socket?.connected) {
-      this.socket.emit('message:edit', { messageId, content });
+      this.socket.emit('message:edit', { conversationId, messageId, content });
     }
   }
 
-  deleteMessage(messageId: string): void {
+  deleteMessage(conversationId: string, messageId: string): void {
     if (this.socket?.connected) {
-      this.socket.emit('message:delete', { messageId });
+      this.socket.emit('message:delete', { conversationId, messageId });
     }
   }
 
@@ -260,6 +230,26 @@ class SocketService {
       const index = this.disconnectionCallbacks.indexOf(callback);
       if (index > -1) {
         this.disconnectionCallbacks.splice(index, 1);
+      }
+    };
+  }
+
+  onMentorshipEnded(callback: MentorshipEndedCallback): () => void {
+    this.mentorshipEndedCallbacks.push(callback);
+    return () => {
+      const index = this.mentorshipEndedCallbacks.indexOf(callback);
+      if (index > -1) {
+        this.mentorshipEndedCallbacks.splice(index, 1);
+      }
+    };
+  }
+
+  onMentorshipStarted(callback: MentorshipStartedCallback): () => void {
+    this.mentorshipStartedCallbacks.push(callback);
+    return () => {
+      const index = this.mentorshipStartedCallbacks.indexOf(callback);
+      if (index > -1) {
+        this.mentorshipStartedCallbacks.splice(index, 1);
       }
     };
   }

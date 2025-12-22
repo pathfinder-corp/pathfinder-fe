@@ -819,8 +819,8 @@ export default function AdminUsersPage() {
               disabled={isLoadingAction}
               className="bg-red-500 hover:bg-red-600 text-white"
             >
-              {isLoadingAction && <Loader2 className="size-4 mr-2 animate-spin" />}
               Ban User
+              {isLoadingAction && <Loader2 className="size-4 animate-spin" />}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
@@ -842,8 +842,8 @@ export default function AdminUsersPage() {
               disabled={isLoadingAction}
               className="bg-green-500 hover:bg-green-600 text-white"
             >
-              {isLoadingAction && <Loader2 className="size-4 mr-2 animate-spin" />}
               Unban User
+              {isLoadingAction && <Loader2 className="size-4 animate-spin" />}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

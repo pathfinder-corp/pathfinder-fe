@@ -235,13 +235,13 @@ export function NotificationDropdown() {
           )}
         </div>
 
-        <ScrollArea className={!isLoading && notifications.length === 0 ? "h-48" : "flex-1 min-h-0"}>
+        <ScrollArea className="flex-1 min-h-0">
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
               <Loader2 className="size-7 animate-spin text-neutral-400" />
             </div>
           ) : notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-neutral-500">
+            <div className="absolute top-0 left-0 size-full flex flex-col items-center justify-center text-neutral-500">
               <Bell className="size-10 mb-3 opacity-40" />
               <p className="text-lg">No notifications yet</p>
             </div>

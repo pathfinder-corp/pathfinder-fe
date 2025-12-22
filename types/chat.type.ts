@@ -33,6 +33,7 @@ export interface IChatConversation {
   id: string;
   mentorshipId: string;
   mentorId?: string;
+  mentorProfileId?: string;
   studentId?: string;
   participant1Id: string;
   participant2Id: string;
@@ -49,6 +50,8 @@ export interface IGetMessagesResponse {
   messages: IChatMessage[];
   hasMore: boolean;
   nextCursor: string | null;
+  mentorshipStatus?: MentorshipStatus;
+  mentorshipId?: string;
 }
 
 export interface IGetMessagesParams {

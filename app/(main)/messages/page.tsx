@@ -145,19 +145,8 @@ export default function MessagesPage() {
       
       const updatedConversations = await Promise.all(
         data.map(async (conv) => {
-          let mentorshipStatus: MentorshipStatus = 'active';
           
-          try {
-            const mentorship = await mentorshipService.getMentorshipById(conv.mentorshipId);
-            mentorshipStatus = mentorship.status;
-          } catch (err) {
-            const errorMessage = err instanceof Error 
-              ? err.message 
-              : 'Failed to fetch mentorship status';
-            toast.error('Failed to fetch mentorship status', {
-              description: errorMessage,
-            });
-          }
+          const mentorshipStatus: MentorshipStatus = (conv.mentorshipStatus || 'active') as MentorshipStatus;
           
           if (!conv.lastMessage) {
             try {
@@ -231,11 +220,44 @@ export default function MessagesPage() {
         before: cursor,
       });
       
+      if (data.mentorshipStatus && data.mentorshipId) {
+        setConversations(prev => 
+          prev.map(conv => 
+            conv.id === conversationId
+              ? { 
+                  ...conv, 
+                  mentorshipStatus: data.mentorshipStatus as MentorshipStatus,
+                  mentorshipId: data.mentorshipId || conv.mentorshipId
+                }
+              : conv
+          )
+        );
+        
+        if (selectedConversation?.id === conversationId) {
+          setSelectedConversation(prev => 
+            prev ? {
+              ...prev,
+              mentorshipStatus: data.mentorshipStatus as MentorshipStatus,
+              mentorshipId: data.mentorshipId || prev.mentorshipId
+            } : null
+          );
+        }
+      }
+      
       if (cursor) {
         setMessages(prev => [...data.messages, ...prev]);
         prevMessagesLengthRef.current += data.messages.length;
       } else {
         setMessages(data.messages);
+        
+        const unreadMessageIds = data.messages
+          .filter(m => m.senderId !== currentUserId && !m.readAt)
+          .map(m => m.id);
+        
+        if (unreadMessageIds.length > 0) {
+          socketService.markAsRead(conversationId, unreadMessageIds);
+        }
+        
         requestAnimationFrame(() => {
           messagesEndRef.current?.scrollIntoView({ behavior: 'instant' });
         });
@@ -255,7 +277,7 @@ export default function MessagesPage() {
       setIsLoadingMore(false);
       shouldScrollRef.current = true;
     }
-  }, []);
+  }, [currentUserId, selectedConversation?.id]);
 
   useEffect(() => {
     if (token && currentUserId) {
@@ -319,13 +341,33 @@ export default function MessagesPage() {
 
     const unsubMessage = socketService.onMessage(conversationId, (message) => {
       setMessages(prev => {
-        if (prev.some(m => m.id === message.id)) {
+        const existingIndex = prev.findIndex(m => m.id === message.id);
+        if (existingIndex !== -1) {
+          const existingMessage = prev[existingIndex];
+          const isOwn = message.senderId === currentUserId;
+          
+          if (isOwn && existingMessage.readAt) {
+            return prev.map(m => 
+              m.id === message.id 
+                ? { ...message, readAt: existingMessage.readAt }
+                : m
+            );
+          }
+        
+          if (!isOwn && existingMessage.readAt) {
+            return prev.map(m => 
+              m.id === message.id 
+                ? { ...message, readAt: existingMessage.readAt }
+                : m
+            );
+          }
+          
           return prev.map(m => m.id === message.id ? message : m);
         }
         return [...prev, message];
       });
       
-      if (message.senderId !== currentUserId) {
+      if (message.senderId !== currentUserId && !message.isDeleted && !message.isEdited && !message.readAt) {
         socketService.markAsRead(conversationId, [message.id]);
       }
     });
@@ -342,13 +384,16 @@ export default function MessagesPage() {
 
     const unsubRead = socketService.onRead(conversationId, (data) => {
       if (data.readBy !== currentUserId) {
-        setMessages(prev => 
-          prev.map(m => 
-            data.messageIds.includes(m.id) 
-              ? { ...m, readAt: new Date().toISOString() } 
-              : m
-          )
-        );
+        setMessages(prev => {
+          const updated = prev.map(m => {
+            if (data.messageIds.includes(m.id) && m.senderId === currentUserId) {
+              const newReadAt = m.readAt || new Date().toISOString();
+              return { ...m, readAt: newReadAt };
+            }
+            return m;
+          });
+          return updated;
+        });
       }
     });
 
@@ -367,11 +412,16 @@ export default function MessagesPage() {
       setConversations(prev => 
         prev.map(conv => {
           if (conv.id === message.conversationId) {
-            const shouldIncrement = message.senderId !== currentUserId && conv.id !== selectedId;
+            const isNewMessage = !message.isEdited && !message.isDeleted;
+            const isLastMessage = conv.lastMessage?.id === message.id;
+            const shouldUpdateLastMessage = isNewMessage || (isLastMessage && message.isEdited);
+            
+            const shouldIncrement = isNewMessage && message.senderId !== currentUserId && conv.id !== selectedId;
+            
             return {
               ...conv,
-              lastMessage: message,
-              lastMessageAt: message.createdAt,
+              lastMessage: shouldUpdateLastMessage ? message : conv.lastMessage,
+              lastMessageAt: shouldUpdateLastMessage ? message.createdAt : conv.lastMessageAt,
               unreadCount: shouldIncrement ? (conv.unreadCount || 0) + 1 : 0,
             };
           }
@@ -384,13 +434,33 @@ export default function MessagesPage() {
       
       if (selectedId && message.conversationId === selectedId) {
         setMessages(prev => {
-          if (prev.some(m => m.id === message.id)) {
+          const existingIndex = prev.findIndex(m => m.id === message.id);
+          if (existingIndex !== -1) {
+            const existingMessage = prev[existingIndex];
+            const isOwn = message.senderId === currentUserId;
+            
+            if (isOwn && existingMessage.readAt) {
+              return prev.map(m => 
+                m.id === message.id 
+                  ? { ...message, readAt: existingMessage.readAt }
+                  : m
+              );
+            }
+            
+            if (!isOwn && existingMessage.readAt) {
+              return prev.map(m => 
+                m.id === message.id 
+                  ? { ...message, readAt: existingMessage.readAt }
+                  : m
+              );
+            }
+            
             return prev.map(m => m.id === message.id ? message : m);
           }
           return [...prev, message];
         });
         
-        if (message.senderId !== currentUserId) {
+        if (message.senderId !== currentUserId && !message.isDeleted && !message.isEdited && !message.readAt) {
           socketService.markAsRead(selectedId, [message.id]);
         }
       }
@@ -406,11 +476,83 @@ export default function MessagesPage() {
       }
     });
 
+    const unsubGlobalRead = socketService.onRead('*', (data) => {
+      if (selectedId && data.conversationId === selectedId) {
+        if (data.readBy !== currentUserId) {
+          setMessages(prev => {
+            const updated = prev.map(m => {
+              if (data.messageIds.includes(m.id) && m.senderId === currentUserId) {
+                const newReadAt = m.readAt || new Date().toISOString();
+                return { ...m, readAt: newReadAt };
+              }
+              return m;
+            });
+            return updated;
+          });
+        }
+      }
+    });
+
+    const unsubMentorshipEnded = socketService.onMentorshipEnded((data) => {
+      setConversations(prev => 
+        prev.map(conv => 
+          conv.mentorshipId === data.mentorshipId
+            ? { ...conv, mentorshipStatus: 'ended' as const }
+            : conv
+        )
+      );
+
+      if (selectedConversation?.mentorshipId === data.mentorshipId) {
+        setSelectedConversation(prev => 
+          prev ? { ...prev, mentorshipStatus: 'ended' as const } : null
+        );
+      }
+    });
+
+    const unsubMentorshipStarted = socketService.onMentorshipStarted(async (data) => {
+      try {
+        await fetchConversations();
+        
+        if (selectedConversation?.id === data.conversationId) {
+          await fetchMessages(data.conversationId);
+        }
+      } catch (error) {
+        console.error('Failed to refresh conversation after mentorship started:', error);
+      }
+      
+      setConversations(prev => 
+        prev.map(conv => {
+          if (conv.id === data.conversationId || conv.mentorshipId === data.mentorshipId) {
+            return {
+              ...conv,
+              mentorshipId: data.mentorshipId,
+              mentorshipStatus: 'active' as const
+            };
+          }
+          return conv;
+        })
+      );
+
+      if (selectedConversation?.id === data.conversationId || 
+          selectedConversation?.mentorshipId === data.mentorshipId) {
+        setSelectedConversation(prev => 
+          prev ? { 
+            ...prev, 
+            mentorshipId: data.mentorshipId,
+            mentorshipStatus: 'active' as const 
+          } : null
+        );
+      }
+    });
+
     return () => {
       unsubGlobal();
       unsubTyping();
+      unsubGlobalRead();
+      unsubMentorshipEnded();
+      unsubMentorshipStarted();
     };
-  }, [currentUserId, selectedConversation?.id]);
+  }, [currentUserId, selectedConversation?.id, selectedConversation?.mentorshipId, fetchConversations, fetchMessages]);
 
   useEffect(() => {
     const currentLength = messages.length;
@@ -431,6 +573,29 @@ export default function MessagesPage() {
     const pollInterval = setInterval(async () => {
       try {
         const data = await chatService.getMessages(selectedConversation.id, { limit: 10 });
+        
+        if (data.mentorshipStatus && data.mentorshipId) {
+          setConversations(prev => 
+            prev.map(conv => 
+              conv.id === selectedConversation.id
+                ? { 
+                    ...conv, 
+                    mentorshipStatus: data.mentorshipStatus as MentorshipStatus,
+                    mentorshipId: data.mentorshipId || conv.mentorshipId
+                  }
+                : conv
+            )
+          );
+          
+          setSelectedConversation(prev => 
+            prev ? {
+              ...prev,
+              mentorshipStatus: data.mentorshipStatus as MentorshipStatus,
+              mentorshipId: data.mentorshipId || prev.mentorshipId
+            } : null
+          );
+        }
+        
         const newMessages = data.messages;
         
         setMessages(prev => {
@@ -610,21 +775,38 @@ export default function MessagesPage() {
   };
 
   const handleEditMessage = useCallback(async () => {
-    if (!editingMessage || !editContent.trim()) return;
+    if (!editingMessage || !editContent.trim() || !selectedConversation) return;
+    
+    if (selectedConversation.mentorshipStatus === 'ended') {
+      toast.error('Cannot edit messages. This mentorship has ended.');
+      return;
+    }
     
     try {
-      const updatedMessage = await chatService.editMessage(editingMessage.id, {
+      const optimisticMessage = {
+        ...editingMessage,
         content: editContent.trim(),
-      });
+        isEdited: true,
+        editedAt: new Date().toISOString(),
+      };
       
       setMessages(prev => 
-        prev.map(m => m.id === editingMessage.id ? updatedMessage : m)
+        prev.map(m => m.id === editingMessage.id ? optimisticMessage : m)
       );
       
       setIsEditDialogOpen(false);
       setEditingMessage(null);
       setEditContent('');
+      
+      await chatService.editMessage(editingMessage.id, {
+        content: editContent.trim(),
+      });
+      
     } catch (error) {
+      setMessages(prev => 
+        prev.map(m => m.id === editingMessage.id ? editingMessage : m)
+      );
+      
       const errorMessage = error instanceof Error 
         ? error.message 
         : 'Failed to edit message';
@@ -632,25 +814,38 @@ export default function MessagesPage() {
         description: errorMessage,
       });
     }
-  }, [editingMessage, editContent]);
+  }, [editingMessage, editContent, selectedConversation]);
 
   const handleDeleteMessage = useCallback(async () => {
-    if (!deletingMessage) return;
+    if (!deletingMessage || !selectedConversation) return;
+    
+    if (selectedConversation.mentorshipStatus === 'ended') {
+      toast.error('Cannot delete messages. This mentorship has ended.');
+      return;
+    }
     
     try {
-      await chatService.deleteMessage(deletingMessage.id);
+      const optimisticMessage = {
+        ...deletingMessage,
+        isDeleted: true,
+        deletedAt: new Date().toISOString(),
+        content: 'This message was deleted',
+      };
       
       setMessages(prev => 
-        prev.map(m => 
-          m.id === deletingMessage.id 
-            ? { ...m, isDeleted: true, content: 'This message was deleted' } 
-            : m
-        )
+        prev.map(m => m.id === deletingMessage.id ? optimisticMessage : m)
       );
       
       setIsDeleteDialogOpen(false);
       setDeletingMessage(null);
+      
+      await chatService.deleteMessage(deletingMessage.id);
+      
     } catch (error) {
+      setMessages(prev => 
+        prev.map(m => m.id === deletingMessage.id ? deletingMessage : m)
+      );
+      
       const errorMessage = error instanceof Error 
         ? error.message 
         : 'Failed to delete message';
@@ -658,7 +853,7 @@ export default function MessagesPage() {
         description: errorMessage,
       });
     }
-  }, [deletingMessage]);
+  }, [deletingMessage, selectedConversation]);
 
   const handleEndMentorship = useCallback(async () => {
     if (!selectedConversation || !endMentorshipReason.trim()) return;
@@ -805,8 +1000,8 @@ export default function MessagesPage() {
         <div className="h-24 px-5 flex items-center justify-between border-b border-neutral-800">
           <h1 className="text-3xl font-bold">Messages</h1>
           <div className="flex items-center gap-2">
-            <span className={`size-2.5 rounded-full ${isSocketConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-            <span className="text-sm text-neutral-500">
+            <span className={`size-3 rounded-full ${isSocketConnected ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
+            <span className="text-md text-neutral-500">
               {isSocketConnected ? 'Connected' : 'Disconnected'}
             </span>
           </div>
@@ -1008,30 +1203,42 @@ export default function MessagesPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
-                    <DropdownMenuItem 
-                      className="text-lg py-3"
-                      onClick={() => {
-                        const other = getOtherParticipant(selectedConversation);
-                        if (other?.role === 'mentor') {
-                          router.push(`/mentors/${selectedConversation.mentorshipId}`);
-                        }
-                      }}
-                    >
-                      <Eye className="size-5" />
-                      View profile
-                    </DropdownMenuItem>
-                    {selectedConversation.mentorshipStatus !== 'ended' && (
-                      <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem 
-                          className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
-                          onClick={() => setIsEndMentorshipDialogOpen(true)}
-                        >
-                          <X className="size-5 text-red-500" />
-                          End mentorship
-                        </DropdownMenuItem>
-                      </>
-                    )}
+                    {(() => {
+                      if (!selectedConversation) return null;
+                      const other = getOtherParticipant(selectedConversation);
+                      if (!other) return null;
+                      
+                      const hasViewProfile = other?.role === 'mentor' && selectedConversation?.mentorProfileId;
+                      const hasEndMentorship = selectedConversation.mentorshipStatus !== 'ended';
+                      
+                      return (
+                        <>
+                          {hasViewProfile && (
+                            <DropdownMenuItem 
+                              className="text-lg py-3"
+                              onClick={() => {
+                                router.push(`/mentors/${selectedConversation.mentorProfileId}`);
+                              }}
+                            >
+                              <Eye className="size-5" />
+                              View profile
+                            </DropdownMenuItem>
+                          )}
+                          {hasEndMentorship && (
+                            <>
+                              {hasViewProfile && <DropdownMenuSeparator />}
+                              <DropdownMenuItem 
+                                className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
+                                onClick={() => setIsEndMentorshipDialogOpen(true)}
+                              >
+                                <X className="size-5 text-red-500" />
+                                End mentorship
+                              </DropdownMenuItem>
+                            </>
+                          )}
+                        </>
+                      );
+                    })()}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
@@ -1174,7 +1381,7 @@ export default function MessagesPage() {
                                     </p>
                                   </div>
                                   
-                                  {isOwn && !message.isDeleted && (
+                                  {isOwn && !message.isDeleted && selectedConversation.mentorshipStatus !== 'ended' && (
                                     <div className="absolute -left-24 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
                                       <Button
                                         variant="ghost"
@@ -1219,11 +1426,11 @@ export default function MessagesPage() {
                             </div>
                             
                             <div className={`flex items-center gap-2 mt-2 ${isOwn ? 'justify-end mr-14' : 'justify-start ml-14'}`}>
-                              <span className="text-base text-neutral-500">
+                              <span className="text-md text-neutral-500">
                                 {formatMessageTime(message.createdAt)}
                               </span>
                               {message.isEdited && (
-                                <span className="text-sm text-neutral-500">(edited)</span>
+                                <span className="text-md text-neutral-500 capitalize">(edited)</span>
                               )}
                               {isOwn && !message.isDeleted && getStatusIcon(message)}
                             </div>
@@ -1487,8 +1694,8 @@ export default function MessagesPage() {
             >
               {isEndingMentorship ? (
                 <>
-                  <Loader2 className="size-5 mr-2 animate-spin" />
                   Ending...
+                  <Loader2 className="size-5 animate-spin" />
                 </>
               ) : (
                 'End Mentorship'
