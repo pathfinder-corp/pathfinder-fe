@@ -525,8 +525,8 @@ export default function AdminAssessmentsPage() {
         </Table>
 
         {!isLoading && totalAssessments > 0 && (
-          <div className="px-7 py-5 border-t border-neutral-800 flex items-center justify-between">
-            <span className="text-lg text-neutral-400">
+          <div className="px-7 py-5 border-t border-neutral-800 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+            <span className="text-lg text-neutral-400 whitespace-nowrap">
               Showing {startIndex} to {endIndex} of {totalAssessments} assessment{totalAssessments > 1 ? 's' : ''}
             </span>
             

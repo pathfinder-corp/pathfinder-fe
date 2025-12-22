@@ -125,6 +125,7 @@ export default function MessagesPage() {
 
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState<boolean>(false);
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
+  const [uploadCaption, setUploadCaption] = useState<string>('');
   const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const currentUserId = user?.id;
@@ -1160,7 +1161,7 @@ export default function MessagesPage() {
         <button
           type="button"
           onClick={() => window.open(message.attachmentUrl!, '_blank', 'noopener,noreferrer')}
-          className={`w-full max-w-md flex items-center gap-3 px-4 py-3 rounded-2xl border ${
+          className={`w-full max-w-md flex items-center gap-3 px-4 py-3 rounded-2xl border cursor-pointer ${
             isOwn
               ? 'border-neutral-300/80 bg-white/90 text-neutral-900 hover:bg-white'
               : 'border-neutral-700 bg-neutral-900/60 text-neutral-50 hover:bg-neutral-900'
@@ -1171,10 +1172,6 @@ export default function MessagesPage() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{fileName}</p>
-            <p className="text-xs text-neutral-400">
-              {message.attachmentMimeType || 'File'}{' '}
-              {message.attachmentSize ? `• ${formatFileSize(message.attachmentSize)}` : null}
-            </p>
           </div>
         </button>
       );
@@ -1581,9 +1578,11 @@ export default function MessagesPage() {
                                       <div className="space-y-3">
                                         {renderAttachment(message, isOwn)}
                                         {(() => {
-                                          const isImage = message.type === 'image';
+                                          const isAttachment =
+                                            message.type === 'image' ||
+                                            message.type === 'file';
                                           const isFilenameOnly =
-                                            isImage &&
+                                            isAttachment &&
                                             message.attachmentFileName &&
                                             message.content === message.attachmentFileName;
                                           const shouldShowCaption =
