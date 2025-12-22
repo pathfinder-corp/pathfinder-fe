@@ -286,7 +286,7 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
                           className="size-10 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="size-10 rounded-full bg-linear-to-br from-amber-600 to-amber-700 flex items-center justify-center text-sm font-bold shrink-0">
+                        <div className="size-10 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold shrink-0">
                           {mentorship.mentor?.firstName?.[0] || ''}{mentorship.mentor?.lastName?.[0] || ''}
                         </div>
                       )}
@@ -310,7 +310,7 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
                           className="size-10 rounded-full object-cover"
                         />
                       ) : (
-                        <div className="size-10 rounded-full bg-linear-to-br from-blue-600 to-blue-700 flex items-center justify-center text-sm font-bold shrink-0">
+                        <div className="size-10 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold shrink-0">
                           {mentorship.student?.firstName?.[0] || ''}{mentorship.student?.lastName?.[0] || ''}
                         </div>
                       )}
@@ -359,7 +359,7 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
                               className="text-lg py-3 text-red-500 focus:text-red-500 dark:hover:bg-red-500/10"
                             >
                               <XCircle className="size-5 text-red-500" />
-                              Force end mentorship
+                              End mentorship
                             </DropdownMenuItem>
                           </>
                         )}

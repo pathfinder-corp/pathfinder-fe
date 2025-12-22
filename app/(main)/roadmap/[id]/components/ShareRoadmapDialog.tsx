@@ -339,11 +339,16 @@ export function ShareRoadmapDialog({
                             disabled={isInviting}
                           >
                             {isInviting ? (
-                              <Loader2 className="size-5 animate-spin" />
+                              <>
+                                Inviting...
+                                <Loader2 className="size-5 animate-spin" />
+                              </>
                             ) : (
-                              <UserPlus className="size-5" />
+                              <>
+                                Invite
+                                <UserPlus className="size-5" />
+                              </>
                             )}
-                            Invite
                           </Button>
                         </div>
                       ))}
