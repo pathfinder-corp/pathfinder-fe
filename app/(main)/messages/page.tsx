@@ -4,6 +4,8 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
 import { 
   Search, 
   Send, 
@@ -18,14 +20,24 @@ import {
   Loader2,
   Eye,
   UserX,
-  UserPlus
+  UserPlus,
+  Paperclip,
+  FileText
 } from 'lucide-react';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 import { useUserStore } from '@/stores';
 import { chatService, socketService, mentorshipService } from '@/services';
-import { getAuthToken } from '@/lib/cookie';
+import { getAuthToken, formatFileSize } from '@/lib';
 import type { IChatConversation, IChatMessage, IChatParticipant, MentorshipStatus } from '@/types';
+
+import { FilePond, registerPlugin } from 'react-filepond';
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
+import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+
+import 'filepond/dist/filepond.min.css';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -58,6 +70,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+
+registerPlugin(
+  FilePondPluginFileValidateType,
+  FilePondPluginFileValidateSize,
+  FilePondPluginImagePreview
+);
 
 export default function MessagesPage() {
   const router = useRouter();
@@ -104,6 +122,10 @@ export default function MessagesPage() {
   const typingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const isAutoLoadingRef = useRef<boolean>(false);
   const messageInputRef = useRef<HTMLInputElement>(null);
+
+  const [isUploadDialogOpen, setIsUploadDialogOpen] = useState<boolean>(false);
+  const [uploadFiles, setUploadFiles] = useState<File[]>([]);
+  const [isUploading, setIsUploading] = useState<boolean>(false);
 
   const currentUserId = user?.id;
 
@@ -822,6 +844,62 @@ export default function MessagesPage() {
     }
   }, [messageInput, selectedConversation, replyingTo, stopTypingIndicator]);
 
+  const handleUploadAttachment = useCallback(async () => {
+    if (!selectedConversation || uploadFiles.length === 0) return;
+    
+    if (selectedConversation.mentorshipStatus === 'ended') {
+      toast.error('Cannot send attachments. This mentorship has ended.');
+      return;
+    }
+
+    const file = uploadFiles[0];
+
+    try {
+      setIsUploading(true);
+
+      const message = await chatService.uploadAttachment(
+        selectedConversation.id,
+        file,
+        uploadCaption
+      );
+
+      setMessages(prev => {
+        if (prev.some(m => m.id === message.id)) return prev;
+        return [...prev, message];
+      });
+
+      setConversations(prev => 
+        prev.map(conv => {
+          if (conv.id === selectedConversation.id) {
+            return {
+              ...conv,
+              lastMessage: message,
+              lastMessageAt: message.createdAt,
+            };
+          }
+          return conv;
+        })
+      );
+
+      setIsUploadDialogOpen(false);
+      setUploadFiles([]);
+      setUploadCaption('');
+
+      requestAnimationFrame(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to upload attachment';
+      toast.error('Failed to upload attachment', {
+        description: errorMessage,
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  }, [selectedConversation, uploadFiles, uploadCaption]);
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -1040,6 +1118,70 @@ export default function MessagesPage() {
       return <span key={index}>{part}</span>;
     });
   }, []);
+
+  const renderAttachment = (message: IChatMessage, isOwn: boolean) => {
+    if (message.type === 'image' && message.attachmentUrl) {
+      const src = message.attachmentThumbnailUrl || message.attachmentUrl;
+      const alt = message.attachmentFileName || 'Image attachment';
+      return (
+        <div className="space-y-2">
+          <PhotoView src={message.attachmentUrl!}>
+            <button
+              type="button"
+              className="block overflow-hidden rounded-2xl border border-neutral-700/60 bg-neutral-900/40 max-w-md cursor-pointer"
+            >
+              <div className="relative w-full max-w-md aspect-video bg-neutral-900">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={src}
+                  alt={alt}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </button>
+          </PhotoView>
+          {message.attachmentFileName && (
+            <p className="text-sm text-neutral-400 truncate">
+              {message.attachmentFileName}
+              {message.attachmentSize ? (
+                <span className="ml-2 text-neutral-500">
+                  ({formatFileSize(message.attachmentSize)})
+                </span>
+              ) : null}
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    if (message.type === 'file' && message.attachmentUrl) {
+      const fileName = message.attachmentFileName || 'Download file';
+      return (
+        <button
+          type="button"
+          onClick={() => window.open(message.attachmentUrl!, '_blank', 'noopener,noreferrer')}
+          className={`w-full max-w-md flex items-center gap-3 px-4 py-3 rounded-2xl border ${
+            isOwn
+              ? 'border-neutral-300/80 bg-white/90 text-neutral-900 hover:bg-white'
+              : 'border-neutral-700 bg-neutral-900/60 text-neutral-50 hover:bg-neutral-900'
+          } transition-colors text-left`}
+        >
+          <div className="flex size-10 items-center justify-center rounded-xl bg-neutral-800/80 text-neutral-100 shrink-0">
+            <FileText className="size-5" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium">{fileName}</p>
+            <p className="text-xs text-neutral-400">
+              {message.attachmentMimeType || 'File'}{' '}
+              {message.attachmentSize ? `• ${formatFileSize(message.attachmentSize)}` : null}
+            </p>
+          </div>
+        </button>
+      );
+    }
+
+    return null;
+  };
 
   useEffect(() => {
     if (isOtherTyping) {
@@ -1343,8 +1485,9 @@ export default function MessagesPage() {
                     <p className="text-neutral-500 text-base mt-2">Start the conversation!</p>
                   </div>
                 ) : (
-                  <div className="space-y-5">
-                    <AnimatePresence initial={false}>
+                  <PhotoProvider>
+                    <div className="space-y-5">
+                      <AnimatePresence initial={false}>
                       {messages.map((message, index) => {
                         if (message.isSystemMessage || message.type === 'system') return null;
                         
@@ -1430,12 +1573,32 @@ export default function MessagesPage() {
                                           : 'bg-neutral-800 text-neutral-100 rounded-bl-md'
                                     }`}
                                   >
-                                    <p className="text-lg leading-relaxed whitespace-pre-wrap wrap-break-word">
-                                      {message.isDeleted 
-                                        ? message.content 
-                                        : renderMessageContent(message.content, isOwn)
-                                      }
-                                    </p>
+                                    {message.isDeleted ? (
+                                      <p className="text-lg leading-relaxed whitespace-pre-wrap wrap-break-word">
+                                        {message.content}
+                                      </p>
+                                    ) : (
+                                      <div className="space-y-3">
+                                        {renderAttachment(message, isOwn)}
+                                        {(() => {
+                                          const isImage = message.type === 'image';
+                                          const isFilenameOnly =
+                                            isImage &&
+                                            message.attachmentFileName &&
+                                            message.content === message.attachmentFileName;
+                                          const shouldShowCaption =
+                                            !!message.content && !isFilenameOnly;
+
+                                          if (!shouldShowCaption) return null;
+
+                                          return (
+                                            <p className="text-lg leading-relaxed whitespace-pre-wrap wrap-break-word">
+                                              {renderMessageContent(message.content, isOwn)}
+                                            </p>
+                                          );
+                                        })()}
+                                      </div>
+                                    )}
                                   </div>
                                   
                                   {isOwn && !message.isDeleted && selectedConversation.mentorshipStatus !== 'ended' && (
@@ -1494,10 +1657,10 @@ export default function MessagesPage() {
                           </motion.div>
                         );
                       })}
-                    </AnimatePresence>
-                    
-                    <AnimatePresence>
-                      {isOtherTyping && (
+                      </AnimatePresence>
+                      
+                      <AnimatePresence>
+                        {isOtherTyping && (
                         <motion.div 
                           className="flex gap-4 flex-row"
                           initial={{ opacity: 0, y: 10 }}
@@ -1533,11 +1696,12 @@ export default function MessagesPage() {
                             </div>
                           </div>
                         </motion.div>
-                      )}
-                    </AnimatePresence>
-                    
-                    <div ref={messagesEndRef} />
-                  </div>
+                        )}
+                      </AnimatePresence>
+                      
+                      <div ref={messagesEndRef} />
+                    </div>
+                  </PhotoProvider>
                 )}
               </div>
             </ScrollArea>
@@ -1610,6 +1774,15 @@ export default function MessagesPage() {
                 )}
                 
                 <div className="flex items-center gap-4">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="size-12 text-neutral-400 hover:text-white hover:bg-neutral-800/70"
+                    onClick={() => setIsUploadDialogOpen(true)}
+                  >
+                    <Paperclip className="size-6" />
+                  </Button>
                   <div className="flex-1 relative">
                     <Input
                       ref={messageInputRef}
@@ -1772,6 +1945,104 @@ export default function MessagesPage() {
                 </>
               ) : (
                 'End Mentorship'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isUploadDialogOpen}
+        onOpenChange={(open) => {
+          setIsUploadDialogOpen(open);
+          if (!open) {
+            setUploadFiles([]);
+            setUploadCaption('');
+          }
+        }}
+      >
+        <DialogContent className="bg-neutral-900 border-neutral-800 max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              <Paperclip className="size-5" />
+              Attach file or image
+            </DialogTitle>
+            <DialogDescription className="text-lg text-neutral-400">
+              Upload images or documents to share in this conversation. Maximum size 5MB.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-5">
+            <div className="filepond-wrapper">
+              <FilePond
+                files={uploadFiles}
+                onupdatefiles={(items) => {
+                  setUploadFiles(items.map(item => item.file as File));
+                }}
+                allowMultiple={false}
+                maxFiles={1}
+                maxFileSize="5MB"
+                acceptedFileTypes={[
+                  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+                  'application/pdf',
+                  'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                  'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                  'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet', 'application/vnd.oasis.opendocument.presentation'
+                ]}
+                labelIdle='<span class="filepond--label-action">Browse</span> or drag & drop'
+                labelFileTypeNotAllowed="Invalid file type"
+                fileValidateTypeLabelExpectedTypes="Expects images, PDF, Word, Excel, PowerPoint or OpenDocument"
+                labelMaxFileSizeExceeded="File is too large"
+                labelMaxFileSize="Maximum file size is 5MB"
+                credits={false}
+                stylePanelLayout="compact"
+                className="filepond-dark"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-base font-medium">
+                Caption <span className="text-neutral-500">(optional)</span>
+              </label>
+              <Textarea
+                value={uploadCaption}
+                onChange={(e) => setUploadCaption(e.target.value)}
+                placeholder="Add a note or description for this attachment..."
+                className="min-h-[90px] bg-neutral-800 border-neutral-700 text-lg resize-none"
+                maxLength={10000}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setIsUploadDialogOpen(false);
+                setUploadFiles([]);
+                setUploadCaption('');
+              }}
+              disabled={isUploading}
+              className="h-11! text-base!"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUploadAttachment}
+              disabled={uploadFiles.length === 0 || isUploading}
+              className="h-11! text-base!"
+            >
+              {isUploading ? (
+                <>
+                  Uploading...
+                  <Loader2 className="size-5 animate-spin" />
+                </>
+              ) : (
+                <>
+                  Send Attachment
+                  <Send className="size-5 ml-1" />
+                </>
               )}
             </Button>
           </DialogFooter>

@@ -27,6 +27,11 @@ export interface IChatMessage {
   createdAt: string;
   updatedAt: string;
   isSystemMessage?: boolean;
+  attachmentUrl?: string;
+  attachmentThumbnailUrl?: string;
+  attachmentFileName?: string;
+  attachmentMimeType?: string;
+  attachmentSize?: number;
 }
 
 export interface IChatConversation {

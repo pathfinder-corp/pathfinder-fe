@@ -57,6 +57,36 @@ export const chatService = {
     }
   },
 
+  uploadAttachment: async (
+    conversationId: string,
+    file: File,
+    caption?: string
+  ): Promise<IChatMessage> => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      if (caption && caption.trim()) {
+        formData.append('caption', caption.trim());
+      }
+
+      const response = await api.post<IChatMessage>(
+        `/chat/conversations/${conversationId}/messages/attachment`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Upload chat attachment failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
   sendMessage: async (
     conversationId: string,
     data: ISendChatMessageRequest
