@@ -76,6 +76,12 @@ export default function RoadmapPage() {
       const response = await roadmapService.createRoadmap(requestData);
       
       toast.success('Create roadmap successfully!');
+      
+      const isFirstRoadmap = localStorage.getItem('roadmap-tour-completed') !== 'true';
+      if (isFirstRoadmap) {
+        sessionStorage.setItem('start-roadmap-tour', 'true');
+      }
+      
       router.push(`/roadmap/${response.id}`);
     } catch (error) {
       const errorMessage = error instanceof Error 
@@ -111,7 +117,10 @@ export default function RoadmapPage() {
         </>
       )}
 
-      <form onSubmit={handleSubmit(onSubmit)} className="w-232 space-y-7 mt-6">
+      <form 
+        onSubmit={handleSubmit(onSubmit)} 
+        className="w-232 space-y-7 mt-6"
+      >
         <div className="space-y-3">
           <Label htmlFor="topic" className="text-xl">
             Topic <span className="text-red-500">*</span>

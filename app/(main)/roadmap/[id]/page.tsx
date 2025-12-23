@@ -2,13 +2,15 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Eye, Calendar, Zap, Maximize2, Clock, RotateCcw, ArrowLeft, Sparkles, Share2 } from 'lucide-react';
+import { Calendar, Zap, Maximize2, Clock, RotateCcw, ArrowLeft, Sparkles, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { IRoadmapResponse } from '@/types';
 import type { Node, Edge } from '@xyflow/react';
 import { roadmapService } from '@/services';
 import { convertRoadmapToFlow, extractTitle } from '@/lib';
 import { useRoadmapStore, useUserStore } from '@/stores';
+import { useTour, type TourStep } from '@/hooks';
+import type { INodeDetail, IChatMessage, LoadingStates } from './types';
 
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -29,13 +31,14 @@ import {
 import RoadmapFlow from './RoadmapFlow';
 import DetailLoading from './loading';
 import { AIChatInterface, RoadmapNodeDetail, ShareRoadmapDialog } from './components';
-import type { INodeDetail, IChatMessage, LoadingStates } from './types';
+
 
 export default function RoadmapDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useUserStore();
   const { setIsViewMode, reset: resetRoadmapStore } = useRoadmapStore();
+  const { startTour } = useTour('roadmap-tour-completed');
   const roadmapId = params.id as string;
 
   const [roadmap, setRoadmap] = useState<IRoadmapResponse | null>(null);
@@ -259,6 +262,150 @@ export default function RoadmapDetailPage() {
 
   const handleResetView = () => setResetTrigger(prev => prev + 1);
 
+  useEffect(() => {
+    if (loadingStates.initial || !roadmap || nodes.length === 0) return;
+
+    const shouldStartTour = sessionStorage.getItem('start-roadmap-tour') === 'true';
+    if (!shouldStartTour) return;
+
+    sessionStorage.removeItem('start-roadmap-tour');
+
+    const waitForElement = (selector: string, maxAttempts = 20, interval = 200): Promise<Element | null> => {
+      return new Promise((resolve) => {
+        let attempts = 0;
+        const checkElement = () => {
+          const element = document.querySelector(selector);
+          if (element) {
+            resolve(element);
+          } else if (attempts < maxAttempts) {
+            attempts++;
+            setTimeout(checkElement, interval);
+          } else {
+            resolve(null);
+          }
+        };
+        checkElement();
+      });
+    };
+
+    const startTourWhenReady = async () => {
+      try {
+        const flowContainer = await waitForElement('[data-driver="roadmap-flow-container"]');
+        const shareButton = await waitForElement('[data-driver="share-roadmap-button"]');
+        const resetButton = await waitForElement('[data-driver="reset-view-button"]');
+        const maximizeButton = await waitForElement('[data-driver="maximize-button"]');
+        const summarySection = await waitForElement('[data-driver="roadmap-summary"]');
+        const milestonesSection = await waitForElement('[data-driver="roadmap-milestones"]');
+        
+        if (!flowContainer) {
+          console.warn('Roadmap flow container not found, skipping tour');
+          return;
+        }
+
+        const firstPhaseNode = nodes.find(node => node.id.startsWith('phase-'));
+        const firstStepNode = nodes.find(node => node.id.startsWith('step-'));
+        const targetNode = firstStepNode || firstPhaseNode;
+
+        let targetNodeElement = null;
+        if (targetNode) {
+          targetNodeElement = await waitForElement(`[data-driver="roadmap-node-${targetNode.id}"]`, 30, 200);
+        }
+
+        const tourSteps: TourStep[] = [
+          {
+            element: '[data-driver="roadmap-flow-container"]',
+            popover: {
+              title: 'Welcome to Your Learning Roadmap!',
+              description: 'This is your personalized learning roadmap. You can pan around by dragging and zoom with your mouse wheel.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+        ];
+
+        if (summarySection) {
+          tourSteps.push({
+            element: '[data-driver="roadmap-summary"]',
+            popover: {
+              title: 'Roadmap Summary',
+              description: 'Click here to view the recommended cadence, duration, and success tips for this learning roadmap.',
+              side: 'bottom',
+              align: 'center',
+            },
+          });
+        }
+
+        if (shareButton) {
+          tourSteps.push({
+            element: '[data-driver="share-roadmap-button"]',
+            popover: {
+              title: 'Share Your Roadmap',
+              description: 'Click here to share your roadmap with others or make it public.',
+              side: 'left',
+              align: 'center',
+            },
+          });
+        }
+
+        if (resetButton) {
+          tourSteps.push({
+            element: '[data-driver="reset-view-button"]',
+            popover: {
+              title: 'Reset View',
+              description: 'Click this button to reset the roadmap view to its initial position and zoom level.',
+              side: 'bottom',
+              align: 'center',
+            },
+          });
+        }
+
+        if (maximizeButton) {
+          tourSteps.push({
+            element: '[data-driver="maximize-button"]',
+            popover: {
+              title: 'Maximize View',
+              description: 'Click this button to open the roadmap in a full-screen view for better navigation.',
+              side: 'bottom',
+              align: 'center',
+            },
+          });
+        }
+
+        if (targetNode && targetNodeElement) {
+          tourSteps.push({
+            element: `[data-driver="roadmap-node-${targetNode.id}"]`,
+            popover: {
+              title: 'Explore Learning Steps',
+              description: 'Click on any node (phase or step) to see detailed information, resources, and activities.',
+              side: 'right',
+              align: 'center',
+            },
+          });
+        }
+
+        if (milestonesSection) {
+          tourSteps.push({
+            element: '[data-driver="roadmap-milestones"]',
+            popover: {
+              title: 'Important Milestones',
+              description: 'Review the key milestones and success criteria to track your progress throughout the learning journey.',
+              side: 'top',
+              align: 'center',
+            },
+          });
+        }
+
+        setTimeout(() => {
+          startTour(tourSteps);
+        }, 300);
+      } catch (error) {
+        console.error('Error starting tour:', error);
+      }
+    };
+
+    startTourWhenReady();
+  }, [loadingStates.initial, roadmap, nodes, startTour]);
+
   if (loadingStates.initial) return <DetailLoading />;
   if (!roadmap) return null;
 
@@ -293,6 +440,7 @@ export default function RoadmapDetailPage() {
             size="lg"
             className="flex items-center gap-2 h-14! text-lg!"
             onClick={() => setIsShareDialogOpen(true)}
+            data-driver="share-roadmap-button"
           >
             Share
             <Share2 className="size-5" />
@@ -304,6 +452,7 @@ export default function RoadmapDetailPage() {
           type="single" 
           collapsible
           className="bg-neutral-900/50 border border-neutral-800 rounded-lg"
+          data-driver="roadmap-summary"
         >
           <AccordionItem value="summary" className="border-0">
             <AccordionTrigger className="px-6 pt-6 pb-3 hover:no-underline">
@@ -340,7 +489,10 @@ export default function RoadmapDetailPage() {
         </Accordion>
       )}
 
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg overflow-hidden">
+      <div 
+        className="bg-neutral-900/50 border border-neutral-800 rounded-lg overflow-hidden"
+        data-driver="roadmap-flow-container"
+      >
         <div className="flex items-center justify-between p-5 border-b border-neutral-800">
           <h2 className="text-2xl font-semibold">Learning Roadmap</h2>
           
@@ -351,13 +503,14 @@ export default function RoadmapDetailPage() {
               className="h-10!"
               onClick={handleResetView}
               title="Reset view to initial position"
+              data-driver="reset-view-button"
             >
               <RotateCcw className="size-5" />
             </Button>
             
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="outline" size="sm" className="h-10!">
+                <Button variant="outline" size="sm" className="h-10!" data-driver="maximize-button">
                   <Maximize2 className="size-5" />
                 </Button>
               </SheetTrigger>
@@ -392,7 +545,7 @@ export default function RoadmapDetailPage() {
       </div>
 
       {roadmap.milestones && roadmap.milestones.length > 0 && (
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-7">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-7" data-driver="roadmap-milestones">
           <h2 className="text-3xl font-semibold mb-5">Important milestones</h2>
           <div className="grid gap-4">
             {roadmap.milestones.map((milestone, index) => (

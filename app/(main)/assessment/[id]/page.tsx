@@ -25,6 +25,7 @@ import {
 import { toast } from 'sonner';
 import { assessmentService } from '@/services';
 import type { IAssessment, IAssessmentResult } from '@/types';
+import { useTour, type TourStep } from '@/hooks';
 
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -52,6 +53,7 @@ type AnswerState = {
 export default function AssessmentDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { startTour } = useTour('assessment-tour-completed');
   const assessmentId = params.id as string;
 
   const [assessment, setAssessment] = useState<IAssessment | null>(null);
@@ -191,6 +193,8 @@ export default function AssessmentDetailPage() {
       setResult(resultData);
       setAssessment(prev => prev ? { ...prev, status: 'completed' } : null);
       toast.success('Assessment completed!');
+      
+      sessionStorage.setItem('start-assessment-tour', 'true');
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -239,6 +243,116 @@ export default function AssessmentDetailPage() {
     
     return `${baseStyle} border-neutral-800 bg-neutral-900/30 opacity-50`;
   };
+
+  useEffect(() => {
+    if (assessment?.status !== 'completed' || !result) return;
+
+    const shouldStartTour = sessionStorage.getItem('start-assessment-tour') === 'true';
+    if (!shouldStartTour) return;
+
+    sessionStorage.removeItem('start-assessment-tour');
+
+    const waitForElement = (selector: string, maxAttempts = 20, interval = 200): Promise<Element | null> => {
+      return new Promise((resolve) => {
+        let attempts = 0;
+        const checkElement = () => {
+          const element = document.querySelector(selector);
+          if (element) {
+            resolve(element);
+          } else if (attempts < maxAttempts) {
+            attempts++;
+            setTimeout(checkElement, interval);
+          } else {
+            resolve(null);
+          }
+        };
+        checkElement();
+      });
+    };
+
+    const startTourWhenReady = async () => {
+      try {
+        const scoreCard = await waitForElement('[data-driver="assessment-score-card"]');
+        const resultsBreakdown = await waitForElement('[data-driver="assessment-results-breakdown"]');
+        const summarySection = await waitForElement('[data-driver="assessment-summary"]');
+        const suggestedRoadmaps = await waitForElement('[data-driver="assessment-suggested-roadmaps"]');
+        const questionBreakdown = await waitForElement('[data-driver="assessment-question-breakdown"]');
+        
+        if (!scoreCard) {
+          console.warn('Assessment score card not found, skipping tour');
+          return;
+        }
+
+        const tourSteps: TourStep[] = [
+          {
+            element: '[data-driver="assessment-score-card"]',
+            popover: {
+              title: 'Your Assessment Results!',
+              description: 'Here\'s your overall score and performance. Review your results to understand your strengths and areas for improvement.',
+              side: 'bottom',
+              align: 'center',
+            },
+          },
+        ];
+
+        if (resultsBreakdown) {
+          tourSteps.push({
+            element: '[data-driver="assessment-results-breakdown"]',
+            popover: {
+              title: 'Results Breakdown',
+              description: 'See a detailed breakdown of your correct and incorrect answers with visual progress indicators.',
+              side: 'top',
+              align: 'center',
+            },
+          });
+        }
+
+        if (summarySection) {
+          tourSteps.push({
+            element: '[data-driver="assessment-summary"]',
+            popover: {
+              title: 'Detailed Summary',
+              description: 'Get insights into your strengths, weaknesses, topics to review, and personalized study recommendations.',
+              side: 'top',
+              align: 'center',
+            },
+          });
+        }
+
+        if (suggestedRoadmaps) {
+          tourSteps.push({
+            element: '[data-driver="assessment-suggested-roadmaps"]',
+            popover: {
+              title: 'Suggested Roadmaps',
+              description: 'Explore personalized learning roadmaps based on your assessment results to continue your learning journey.',
+              side: 'top',
+              align: 'center',
+            },
+          });
+        }
+
+        if (questionBreakdown) {
+          tourSteps.push({
+            element: '[data-driver="assessment-question-breakdown"]',
+            popover: {
+              title: 'Question Breakdown',
+              description: 'Review each question with explanations to understand why answers were correct or incorrect.',
+              side: 'top',
+              align: 'center',
+            },
+          });
+        }
+
+        setTimeout(() => {
+          startTour(tourSteps);
+        }, 300);
+      } catch (error) {
+        console.error('Error starting assessment tour:', error);
+      }
+    };
+
+    startTourWhenReady();
+  }, [assessment?.status, result, startTour]);
 
   if (loadingStates.initial) {
     return (
@@ -292,7 +406,7 @@ export default function AssessmentDetailPage() {
 
     return (
       <div className="max-w-5xl mx-auto py-10 px-4">
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-10 mb-8">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-10 mb-8" data-driver="assessment-score-card">
           <div className="flex flex-col md:flex-row items-center gap-10">
             <div className="shrink-0">
               <CircularProgress
@@ -324,7 +438,7 @@ export default function AssessmentDetailPage() {
           </div>
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8" data-driver="assessment-results-breakdown">
           <h2 className="text-2xl font-bold mb-6">Results Breakdown</h2>
           <div className="space-y-5">
             <div className="flex items-center justify-between">
@@ -361,7 +475,7 @@ export default function AssessmentDetailPage() {
         </div>
 
         {result.summary && (
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
+          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8" data-driver="assessment-summary">
             <h2 className="text-2xl font-bold mb-6">Summary of your Assessment</h2>
             <div className="space-y-7">
               {result.summary.overallAssessment && (
@@ -444,7 +558,7 @@ export default function AssessmentDetailPage() {
         )}
 
         {result.suggestedRoadmaps && result.suggestedRoadmaps.length > 0 && (
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
+          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8" data-driver="assessment-suggested-roadmaps">
             <div className="mb-6">
               <h2 className="text-2xl font-bold">Suggested Roadmaps</h2>
               <p className="text-base text-neutral-400">
@@ -475,7 +589,7 @@ export default function AssessmentDetailPage() {
           </div>
         )}
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8" data-driver="assessment-question-breakdown">
           <h2 className="text-2xl font-bold mb-7">Question Breakdown</h2>
           <div className="max-h-[500px] overflow-y-auto pr-2 space-y-6 custom-scrollbar">
             {result.questionBreakdown.map((q, index) => (

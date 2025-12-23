@@ -46,7 +46,9 @@ export function AIChatInterface({
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-81.5px)]">
+    <div 
+      className="flex flex-col h-[calc(100vh-81.5px)]"
+    >
       {chatMessages.length === 0 && (
         <div className="p-6 border-b border-neutral-800 bg-neutral-900/30">
           <p className="-mt-4 text-xl text-neutral-400 mb-4">Suggested questions:</p>
@@ -100,14 +102,14 @@ export function AIChatInterface({
             onKeyDown={handleKeyDown}
             placeholder="Ask a question about this step..."
             rows={2}
-            className="custom-scrollbar flex-1 min-h-[3.5rem] max-h-[3.5rem] resize-none bg-neutral-900 border-neutral-800 text-xl!"
+            className="custom-scrollbar flex-1 min-h-14 max-h-14 resize-none bg-neutral-900 border-neutral-800 text-xl!"
             disabled={isLoading}
           />
           <Button
             onClick={onSendMessage}
             disabled={!chatInput.trim() || isLoading}
             size="icon"
-            className="size-[3.5rem] bg-white text-neutral-950 hover:bg-neutral-200"
+            className="size-14 bg-white text-neutral-950 hover:bg-neutral-200"
           >
             <Send className="size-6" />
           </Button>
