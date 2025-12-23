@@ -379,7 +379,7 @@ export default function MentorDetailPage() {
                 )}
                 {mentor.isAcceptingMentees && (
                   <Badge variant="outline" className="py-2 px-4 text-base border-green-500/50 text-green-400">
-                    Accepting students
+                    Accepting Students
                   </Badge>
                 )}
                 {!mentor.isAcceptingMentees && (
