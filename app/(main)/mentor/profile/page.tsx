@@ -213,6 +213,9 @@ export default function MentorProfilePage() {
   const [documentToDelete, setDocumentToDelete] = useState<IMentorDocument | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
 
+  const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState<boolean>(false);
+  const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
@@ -469,6 +472,35 @@ export default function MentorProfilePage() {
       toast.error(errorMessage);
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleWithdrawAsMentor = async () => {
+    try {
+      setIsWithdrawing(true);
+      await mentorService.withdrawAsMentor();
+
+      try {
+        await refreshUser();
+      } catch (refreshError) {
+        console.error('Failed to refresh user after mentor withdraw:', refreshError);
+      }
+
+      toast.success('You have withdrawn from being a mentor.', {
+        description: 'Your account is now a student account.',
+      });
+
+      router.replace('/mentor');
+    } catch (error) {
+      const errorMessage = error instanceof Error
+        ? error.message
+        : 'Failed to withdraw as mentor';
+      toast.error('Failed to withdraw as mentor', {
+        description: errorMessage,
+      });
+    } finally {
+      setIsWithdrawing(false);
+      setIsWithdrawDialogOpen(false);
     }
   };
 
@@ -1003,6 +1035,33 @@ export default function MentorProfilePage() {
         )}
       </div>
 
+      <div className="w-232 mt-8">
+        <Separator className="bg-neutral-800 mb-8" />
+        <div className="p-5 bg-red-950/30 border border-red-800/60 rounded-xl flex items-center justify-between gap-6">
+          <div className="flex items-start gap-4">
+            <div className="size-12 rounded-xl bg-red-900/40 border border-red-700/60 flex items-center justify-center shrink-0">
+              <AlertCircle className="size-7 text-red-400" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-semibold text-white">
+                Stop being a mentor
+              </h2>
+              <p className="text-base text-neutral-400 mt-0.5 max-w-3xl">
+                You will no longer appear in mentor search or be able to accept new mentees. 
+                You must end all active mentorships before you can withdraw as a mentor.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => setIsWithdrawDialogOpen(true)}
+            className="h-12! text-base! dark:border-red-500/60 text-red-500 dark:hover:bg-red-500/10 dark:hover:text-red-400 shrink-0"
+          >
+            Withdraw as mentor
+          </Button>
+        </div>
+      </div>
+
       <Dialog open={isUploadDialogOpen} onOpenChange={setIsUploadDialogOpen}>
         <DialogContent className="max-w-lg max-h-[90vh] p-0">
           <DialogHeader className="p-6 pb-0">
@@ -1276,6 +1335,36 @@ export default function MentorProfilePage() {
                 </>
               ) : (
                 'Delete'
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-xl">Stop being a mentor</AlertDialogTitle>
+            <AlertDialogDescription className="text-base">
+              Are you sure you want to stop being a mentor?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isWithdrawing}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleWithdrawAsMentor}
+              disabled={isWithdrawing}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isWithdrawing ? (
+                <>
+                  Processing...
+                  <Loader2 className="size-4 animate-spin" />
+                </>
+              ) : (
+                'Confirm'
               )}
             </AlertDialogAction>
           </AlertDialogFooter>

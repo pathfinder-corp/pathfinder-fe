@@ -408,6 +408,17 @@ export const mentorService = {
       throw error;
     }
   },
+
+  withdrawAsMentor: async (): Promise<void> => {
+    try {
+      await api.delete('/mentor-profiles/me');
+    } catch (error) {
+      console.error('Withdraw as mentor failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
   
   getDocumentViewUrl: (profileId: string, documentId: string): string => {
     const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
