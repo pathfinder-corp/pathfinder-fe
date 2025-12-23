@@ -306,7 +306,7 @@ export default function RoadmapDetailPage() {
           className="bg-neutral-900/50 border border-neutral-800 rounded-lg"
         >
           <AccordionItem value="summary" className="border-0">
-            <AccordionTrigger className="px-6 pt-6 pb-3 hover:no-underline">
+            <AccordionTrigger className="px-6 pt-6 pb-6 hover:no-underline">
               <h2 className="text-3xl font-semibold">Summary</h2>
             </AccordionTrigger>
             

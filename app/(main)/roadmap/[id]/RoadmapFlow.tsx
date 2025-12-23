@@ -39,22 +39,22 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
     if (nodes.length === 0) {
       return [[-500, -500], [1500, 2000]];
     }
-  
+
     let minX = Infinity;
     let maxX = -Infinity;
     let minY = Infinity;
     let maxY = -Infinity;
-  
+
     nodes.forEach(node => {
       const nodeWidth = 380;
       const nodeHeight = 180;
-      
+
       minX = Math.min(minX, node.position.x);
       maxX = Math.max(maxX, node.position.x + nodeWidth);
       minY = Math.min(minY, node.position.y);
       maxY = Math.max(maxY, node.position.y + nodeHeight);
     });
-  
+
     const padding = 400;
     return [
       [minX - padding, minY - padding],
@@ -66,7 +66,7 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
-
+  
   const handleNodeClick = useCallback(
     (_event: React.MouseEvent, node: Node) => {
       if (onNodeClick) {
@@ -96,7 +96,8 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
         centerToStartNode();
       }, 100);
     }
-  }, [nodes.length, centerToStartNode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes.length]);
 
   useEffect(() => {
     if (resetTrigger && resetTrigger > 0) {
@@ -134,7 +135,7 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
         size={1}
         color="#606060"
       />
-    </ReactFlow>
+      </ReactFlow>
   );
 }
 

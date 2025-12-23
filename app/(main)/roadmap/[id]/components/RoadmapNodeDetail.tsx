@@ -55,7 +55,7 @@ export function RoadmapNodeDetail({ node }: IRoadmapNodeDetailProps) {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2.5">
                         <span className="text-base font-semibold px-3 py-1.5 bg-neutral-800 text-neutral-300 rounded">
-                          {resource.type}
+                          {resource.type.toUpperCase()}
                         </span>
                       </div>
                       <h4 className="text-xl font-semibold text-white group-hover:text-neutral-200 transition-colors">
