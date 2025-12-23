@@ -49,14 +49,14 @@ export function ConversationList({
   return (
     <div className="w-[360px] border-r border-neutral-800 flex flex-col bg-neutral-900/50">
       <div className="h-24 px-5 flex items-center justify-between border-b border-neutral-800">
-        <h1 className="text-3xl font-bold">Messages</h1>
+        <h1 className="text-4xl font-bold">Messages</h1>
         <div className="flex items-center gap-2">
           <span
             className={`size-3 rounded-full ${
               isSocketConnected ? 'bg-green-500' : 'bg-red-500'
             } animate-pulse`}
           />
-          <span className="text-md text-neutral-500">
+          <span className="text-lg text-neutral-500">
             {isSocketConnected ? 'Connected' : 'Disconnected'}
           </span>
         </div>
@@ -69,7 +69,7 @@ export function ConversationList({
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-12 h-14 bg-neutral-800/50 border-neutral-700 text-lg"
+            className="pl-12 h-14 bg-neutral-800/50 border-neutral-700 text-xl"
           />
           {searchQuery && (
             <button
@@ -101,11 +101,11 @@ export function ConversationList({
               <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-5">
                 <MessageCircle className="size-8 text-neutral-500" />
               </div>
-              <p className="text-lg text-neutral-400">
+              <p className="text-xl text-neutral-400">
                 {searchQuery ? 'No conversations found' : 'No conversations yet'}
               </p>
               {!searchQuery && (
-                <p className="text-base text-neutral-500 mt-2">
+                <p className="text-lg text-neutral-500 mt-2">
                   Connect with a mentor to start chatting
                 </p>
               )}
@@ -155,15 +155,15 @@ export function ConversationList({
 
                   <div className="flex-1 min-w-0 overflow-hidden">
                     <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-semibold text-lg truncate max-w-[180px]">
+                      <span className="font-semibold text-xl truncate max-w-[180px]">
                         {other.firstName} {other.lastName}
                       </span>
-                      <span className="text-base text-neutral-500 shrink-0">
+                      <span className="text-lg text-neutral-500 shrink-0">
                         {formatConversationTime(conversation.lastMessageAt)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-base text-neutral-400 truncate max-w-[220px]">
+                      <p className="text-lg text-neutral-400 truncate max-w-[220px]">
                         {conversation.lastMessage?.senderId === currentUserId && (
                           <span className="text-neutral-500">You: </span>
                         )}
