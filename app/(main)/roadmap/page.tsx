@@ -34,6 +34,8 @@ export default function RoadmapPage() {
   const searchParams = useSearchParams();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [experienceLevel, setExperienceLevel] = useState<string>('');
+  const [learningPace, setLearningPace] = useState<string>('');
   const [timeframe, setTimeframe] = useState<TimeframeValue>({
     amount: undefined,
     unit: 'month',
@@ -133,11 +135,22 @@ export default function RoadmapPage() {
             <Label htmlFor="experienceLevel" className="text-xl">
               Experience
             </Label>
-            <Select onValueChange={value => setValue('experienceLevel', value as any)}>
+            <Select value={experienceLevel} onValueChange={value => {
+              if (value === 'none') {
+                setExperienceLevel('');
+                setValue('experienceLevel', undefined);
+              } else {
+                setExperienceLevel(value);
+                setValue('experienceLevel', value as any);
+              }
+            }}>
               <SelectTrigger className="w-full h-20! text-xl! px-6!">
                 <SelectValue placeholder="Select experience" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none" className="text-xl! text-neutral-500">
+                  None
+                </SelectItem>
                 <SelectItem value="beginner" className="text-xl!">
                   Beginner
                 </SelectItem>
@@ -167,11 +180,22 @@ export default function RoadmapPage() {
             <Label htmlFor="learningPace" className="text-xl">
               Learning Pace
             </Label>
-            <Select onValueChange={value => setValue('learningPace', value as any)}>
+            <Select value={learningPace} onValueChange={value => {
+              if (value === 'none') {
+                setLearningPace('');
+                setValue('learningPace', undefined);
+              } else {
+                setLearningPace(value);
+                setValue('learningPace', value as any);
+              }
+            }}>
               <SelectTrigger className="w-full h-20! text-xl! px-6!">
                 <SelectValue placeholder="Select learning pace" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none" className="text-xl! text-neutral-500">
+                  None
+                </SelectItem>
                 <SelectItem value="flexible" className="text-xl!">
                   Flexible
                 </SelectItem>
