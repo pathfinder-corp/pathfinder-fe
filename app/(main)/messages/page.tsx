@@ -1460,7 +1460,15 @@ export default function MessagesPage() {
                                   })()}
                                   
                                   {isOwn && !message.isDeleted && selectedConversation.mentorshipStatus !== 'ended' && (
-                                    <div className="absolute -left-24 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
+                                    <div className="absolute -left-28 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="size-10 text-neutral-400 hover:text-white"
+                                        onClick={() => setReplyingTo(message)}
+                                      >
+                                        <Reply className="size-4" />
+                                      </Button>
                                       <Button
                                         variant="ghost"
                                         size="icon"

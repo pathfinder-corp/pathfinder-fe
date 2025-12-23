@@ -57,7 +57,7 @@ class SocketService {
     });
 
     this.socket.onAny((eventName, ...args) => {
-      // console.log('Socket event received:', eventName, args);
+      console.log('Socket event received:', eventName, args);
     });
 
     this.socket.on('message:new', (message: IChatMessage) => {
