@@ -15,6 +15,7 @@ type ConversationMentorshipCallback = (data: {
   endedAt?: string;
 }) => void;
 type ConnectionCallback = () => void;
+type UserStatusCallback = (data: { userId: string; isOnline: boolean }) => void;
 
 class SocketService {
   private socket: Socket | null = null;
@@ -26,6 +27,7 @@ class SocketService {
   private conversationMentorshipCallbacks: Map<string, ConversationMentorshipCallback[]> = new Map();
   private connectionCallbacks: ConnectionCallback[] = [];
   private disconnectionCallbacks: ConnectionCallback[] = [];
+  private userStatusCallbacks: UserStatusCallback[] = [];
 
   connect(token: string, userId: string): void {
     if (this.socket?.connected) {
@@ -129,6 +131,18 @@ class SocketService {
       
       const globalCallbacks = this.conversationMentorshipCallbacks.get('*') || [];
       globalCallbacks.forEach(cb => cb(data));
+    });
+
+    this.socket.on('user:online', (data: { userId: string }) => {
+      this.userStatusCallbacks.forEach(cb => cb({ userId: data.userId, isOnline: true }));
+    });
+
+    this.socket.on('user:offline', (data: { userId: string }) => {
+      this.userStatusCallbacks.forEach(cb => cb({ userId: data.userId, isOnline: false }));
+    });
+
+    this.socket.on('user:status', (data: { userId: string; isOnline: boolean }) => {
+      this.userStatusCallbacks.forEach(cb => cb({ userId: data.userId, isOnline: data.isOnline }));
     });
   }
 
@@ -289,6 +303,16 @@ class SocketService {
       if (index > -1) {
         cbs.splice(index, 1);
         this.conversationMentorshipCallbacks.set(conversationId, cbs);
+      }
+    };
+  }
+
+  onUserStatus(callback: UserStatusCallback): () => void {
+    this.userStatusCallbacks.push(callback);
+    return () => {
+      const index = this.userStatusCallbacks.indexOf(callback);
+      if (index > -1) {
+        this.userStatusCallbacks.splice(index, 1);
       }
     };
   }

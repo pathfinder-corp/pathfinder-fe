@@ -7,18 +7,14 @@ import { motion, AnimatePresence } from 'motion/react';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import { 
-  Search, 
   Send, 
-  MoreVertical,
   MessageCircle,
   Check,
   CheckCheck,
-  X,
   Edit2,
   Trash2,
   Reply,
   Loader2,
-  Eye,
   UserX,
   UserPlus,
   Paperclip,
@@ -26,9 +22,9 @@ import {
 } from 'lucide-react';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { toast } from 'sonner';
-import { useUserStore } from '@/stores';
+import { useUserStore, usePresenceStore } from '@/stores';
 import { chatService, socketService, mentorshipService } from '@/services';
-import { getAuthToken, formatFileSize } from '@/lib';
+import { getAuthToken, formatFileSize, getInitials } from '@/lib';
 import type { IChatConversation, IChatMessage, IChatParticipant, MentorshipStatus } from '@/types';
 
 import { FilePond, registerPlugin } from 'react-filepond';
@@ -71,6 +67,10 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
+import { ConversationList } from './components/ConversationList';
+import { ChatHeader } from './components/ChatHeader';
+import { MessageInputBar } from './components/MessageInputBar';
+
 registerPlugin(
   FilePondPluginFileValidateType,
   FilePondPluginFileValidateSize,
@@ -81,6 +81,7 @@ export default function MessagesPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useUserStore();
+  const { setUserOnline, setManyUsersOnline, isUserOnline } = usePresenceStore();
   
   const token = useMemo(() => getAuthToken(), []);
   
@@ -205,6 +206,17 @@ export default function MessagesPage() {
           };
         })
       );
+
+      const presenceSeed: Record<string, boolean> = {};
+      updatedConversations.forEach((conv) => {
+        if (conv.participant1?.id && typeof conv.participant1.isOnline === 'boolean') {
+          presenceSeed[conv.participant1.id] = conv.participant1.isOnline;
+        }
+        if (conv.participant2?.id && typeof conv.participant2.isOnline === 'boolean') {
+          presenceSeed[conv.participant2.id] = conv.participant2.isOnline;
+        }
+      });
+      setManyUsersOnline(presenceSeed);
       
       updatedConversations.sort((a, b) => 
         new Date(b.lastMessageAt || b.createdAt).getTime() - 
@@ -230,7 +242,7 @@ export default function MessagesPage() {
     } finally {
       setIsLoadingConversations(false);
     }
-  }, [searchParams]);
+  }, [searchParams, setManyUsersOnline]);
 
   const fetchMessages = useCallback(async (conversationId: string, cursor?: string) => {
     try {
@@ -279,6 +291,17 @@ export default function MessagesPage() {
         }
       }
       
+      const presenceSeed: Record<string, boolean> = {};
+      data.messages.forEach((msg) => {
+        if (msg.sender?.id && typeof msg.sender.isOnline === 'boolean') {
+          presenceSeed[msg.sender.id] = msg.sender.isOnline;
+        }
+        if (msg.parentMessage?.sender?.id && typeof msg.parentMessage.sender.isOnline === 'boolean') {
+          presenceSeed[msg.parentMessage.sender.id] = msg.parentMessage.sender.isOnline;
+        }
+      });
+      setManyUsersOnline(presenceSeed);
+
       if (cursor) {
         setMessages(prev => [...data.messages, ...prev]);
         prevMessagesLengthRef.current += data.messages.length;
@@ -312,7 +335,7 @@ export default function MessagesPage() {
       setIsLoadingMore(false);
       shouldScrollRef.current = true;
     }
-  }, [currentUserId, selectedConversation?.id]);
+  }, [currentUserId, selectedConversation?.id, setManyUsersOnline]);
 
   useEffect(() => {
     if (token && currentUserId) {
@@ -325,6 +348,10 @@ export default function MessagesPage() {
       const unsubDisconnect = socketService.onDisconnect(() => {
         setIsSocketConnected(false);
       });
+
+      const unsubUserStatus = socketService.onUserStatus(({ userId, isOnline }) => {
+        setUserOnline(userId, isOnline);
+      });
       
       if (socketService.isConnected()) {
         setIsSocketConnected(true);
@@ -333,10 +360,11 @@ export default function MessagesPage() {
       return () => {
         unsubConnect();
         unsubDisconnect();
+        unsubUserStatus();
         socketService.disconnect();
       };
     }
-  }, [token, currentUserId]);
+  }, [token, currentUserId, setUserOnline]);
 
   useEffect(() => {
     if (!isSocketConnected) {
@@ -1074,14 +1102,6 @@ export default function MessagesPage() {
     return <Check className="size-4 text-neutral-400" />;
   };
 
-  const filteredConversations = conversations.filter(conv => {
-    if (!searchQuery.trim()) return true;
-    const other = getOtherParticipant(conv);
-    if (!other) return false;
-    const fullName = `${other.firstName} ${other.lastName}`.toLowerCase();
-    return fullName.includes(searchQuery.toLowerCase());
-  });
-
   const isOtherTyping = Array.from(typingUsers.values()).some(isTyping => isTyping);
 
   const renderMessageContent = useCallback((content: string, isOwn: boolean) => {
@@ -1190,255 +1210,76 @@ export default function MessagesPage() {
 
   return (
     <div className="h-full flex overflow-hidden bg-neutral-950">
-      <div className="w-[360px] border-r border-neutral-800 flex flex-col bg-neutral-900/50">
-        <div className="h-24 px-5 flex items-center justify-between border-b border-neutral-800">
-          <h1 className="text-3xl font-bold">Messages</h1>
-          <div className="flex items-center gap-2">
-            <span className={`size-3 rounded-full ${isSocketConnected ? 'bg-green-500' : 'bg-red-500'} animate-pulse`} />
-            <span className="text-md text-neutral-500">
-              {isSocketConnected ? 'Connected' : 'Disconnected'}
-            </span>
-          </div>
-        </div>
-        
-        <div className="px-4 mt-5 mb-3">
-          <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-neutral-500" />
-            <Input
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-12 h-14 bg-neutral-800/50 border-neutral-700 text-lg"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
-              >
-                <X className="size-5" />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <ScrollArea className="flex-1">
-          <div className="p-3">
-            {isLoadingConversations ? (
-              <div className="space-y-2.5">
-                {[...Array(5)].map((_, i) => (
-                  <div key={i} className="flex items-start gap-4 p-4">
-                    <Skeleton className="size-14 rounded-full bg-neutral-800" />
-                    <div className="flex-1 space-y-2.5">
-                      <Skeleton className="h-5 w-36 bg-neutral-800" />
-                      <Skeleton className="h-4 w-52 bg-neutral-800" />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : filteredConversations.length === 0 ? (
-              <div className="py-20 text-center">
-                <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-5">
-                  <MessageCircle className="size-8 text-neutral-500" />
-                </div>
-                <p className="text-lg text-neutral-400">
-                  {searchQuery ? 'No conversations found' : 'No conversations yet'}
-                </p>
-                {!searchQuery && (
-                  <p className="text-base text-neutral-500 mt-2">
-                    Connect with a mentor to start chatting
-                  </p>
-                )}
-              </div>
-            ) : (
-              filteredConversations.map((conversation) => {
-                const other = getOtherParticipant(conversation);
-                if (!other) return null;
-                
-                const isActive = selectedConversation?.id === conversation.id;
-                
-                return (
-                  <button
-                    key={conversation.id}
-                    onClick={() => {
-                      setSelectedConversation(conversation);
-                      setConversations(prev => 
-                        prev.map(c => c.id === conversation.id ? { ...c, unreadCount: 0 } : c)
-                      );
-                    }}
-                    className={`w-full flex items-start gap-4 p-4 rounded-xl transition-colors text-left cursor-pointer ${
-                      isActive 
-                        ? 'bg-neutral-800' 
-                        : 'hover:bg-neutral-800/50'
-                    }`}
-                  >
-                    <div className="relative shrink-0">
-                      {other.avatar ? (
-                        <div className="relative size-14 rounded-full overflow-hidden">
-                          <Image
-                            src={other.avatar}
-                            alt={`${other.firstName} ${other.lastName}`}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="size-14 rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-base font-bold">
-                          {other.firstName[0]}{other.lastName[0]}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex-1 min-w-0 overflow-hidden">
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <span className="font-semibold text-lg truncate max-w-[180px]">
-                          {other.firstName} {other.lastName}
-                        </span>
-                        <span className="text-base text-neutral-500 shrink-0">
-                          {formatConversationTime(conversation.lastMessageAt)}
-                        </span>
-                      </div>
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-base text-neutral-400 truncate max-w-[220px]">
-                          {conversation.lastMessage?.senderId === currentUserId && (
-                            <span className="text-neutral-500">You: </span>
-                          )}
-                          {conversation.lastMessage?.isDeleted 
-                            ? 'Message deleted' 
-                            : conversation.lastMessage?.content || 'No messages yet'}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          {conversation.mentorshipStatus === 'ended' && (
-                            <Badge variant="outline" className="text-xs px-2 py-1 border-neutral-600 text-neutral-500">
-                              Ended
-                            </Badge>
-                          )}
-                          <AnimatePresence mode="wait">
-                            {conversation.unreadCount && conversation.unreadCount > 0 && (
-                              <motion.div
-                                key={`unread-${conversation.id}`}
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 1 }}
-                                exit={{ scale: 0, opacity: 0 }}
-                                transition={{ duration: 0.2, type: "spring", stiffness: 200 }}
-                              >
-                                <Badge className="bg-white text-black text-sm px-2 py-1 h-6 min-w-6 flex items-center justify-center rounded-full">
-                                  {conversation.unreadCount}
-                                </Badge>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                      </div>
-                    </div>
-                  </button>
-                );
-              })
-            )}
-          </div>
-        </ScrollArea>
-      </div>
+      <ConversationList
+        conversations={conversations}
+        selectedConversation={selectedConversation}
+        currentUserId={currentUserId}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        isLoadingConversations={isLoadingConversations}
+        onSelectConversation={(conversation) => {
+          setSelectedConversation(conversation);
+          setConversations((prev) =>
+            prev.map((c) =>
+              c.id === conversation.id ? { ...c, unreadCount: 0 } : c,
+            ),
+          );
+        }}
+        getOtherParticipant={getOtherParticipant}
+        formatConversationTime={formatConversationTime}
+        isUserOnline={isUserOnline}
+        isSocketConnected={isSocketConnected}
+      />
 
       <div className="flex-1 flex flex-col">
         {selectedConversation ? (
           <>
-            <div className="h-24 px-6 flex items-center justify-between border-b border-neutral-800 bg-neutral-900/30">
-              <div className="flex items-center gap-4">
-                {(() => {
-                  const other = getOtherParticipant(selectedConversation);
-                  if (!other) return null;
-                  
-                  return (
-                    <>
-                      <div className="relative">
-                        {other.avatar ? (
-                          <div className="relative size-14 rounded-full overflow-hidden">
-                            <Image
-                              src={other.avatar}
-                              alt={`${other.firstName} ${other.lastName}`}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="size-14 rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-base font-bold">
-                            {other.firstName[0]}{other.lastName[0]}
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-2xl">
-                          {other.firstName} {other.lastName}
-                        </p>
-                        <div className="text-lg text-neutral-400">
-                          {isOtherTyping ? (
-                            <p className="text-green-500 flex items-center gap-1.5">
-                              Typing
-                              <span className="flex gap-1">
-                                <span className="size-1.5 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                <span className="size-1.5 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                <span className="size-1.5 bg-green-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                              </span>
-                            </p>
-                          ) : (
-                            getOtherParticipantRole(selectedConversation) || 'Online'
-                          )}
-                        </div>
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-              
-              {(selectedConversation.mentorshipStatus === 'active' || selectedConversation.mentorshipStatus === 'cancelled' || !selectedConversation.mentorshipStatus) ? (
-                <div className="flex items-center gap-1">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon" className="size-12">
-                        <MoreVertical className="size-6" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
-                      {(() => {
-                        if (!selectedConversation) return null;
-                        const other = getOtherParticipant(selectedConversation);
-                        if (!other) return null;
-                        
-                        const hasViewProfile = other?.role === 'mentor' && selectedConversation?.mentorProfileId;
-                        const hasEndMentorship = selectedConversation.mentorshipStatus === 'active';
-                        
-                        return (
-                          <>
-                            {hasViewProfile && (
-                              <DropdownMenuItem 
-                                className="text-lg py-3"
-                                onClick={() => {
-                                  router.push(`/mentors/${selectedConversation.mentorProfileId}`);
-                                }}
-                              >
-                                <Eye className="size-5" />
-                                View profile
-                              </DropdownMenuItem>
-                            )}
-                            {hasEndMentorship && (
-                              <>
-                                {hasViewProfile && <DropdownMenuSeparator />}
-                                <DropdownMenuItem 
-                                  className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
-                                  onClick={() => setIsEndMentorshipDialogOpen(true)}
-                                >
-                                  <X className="size-5 text-red-500" />
-                                  End mentorship
-                                </DropdownMenuItem>
-                              </>
-                            )}
-                          </>
-                        );
-                      })()}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              ) : null}
-            </div>
+            {(() => {
+              const other = getOtherParticipant(selectedConversation);
+              const onlineFromParticipant =
+                other && typeof other.isOnline === 'boolean'
+                  ? other.isOnline
+                  : undefined;
+              const onlineFromStore = other ? isUserOnline(other.id) : undefined;
+              const isOnline = onlineFromStore ?? onlineFromParticipant;
+
+              const statusLabel = (() => {
+                if (!other) return '';
+                const roleLabel = getOtherParticipantRole(selectedConversation);
+                if (typeof isOnline === 'boolean') {
+                  return isOnline ? 'Online' : 'Offline';
+                }
+                return roleLabel || 'Online';
+              })();
+
+              const mentorshipStatus = selectedConversation.mentorshipStatus;
+              const canViewProfile =
+                !!other?.role &&
+                other.role === 'mentor' &&
+                user?.role === 'student' &&
+                !!selectedConversation.mentorProfileId;
+              const canEndMentorship = mentorshipStatus === 'active';
+
+              return (
+                <ChatHeader
+                  other={other}
+                  isOtherTyping={isOtherTyping}
+                  statusLabel={statusLabel}
+                  isOnline={isOnline}
+                  mentorshipStatus={mentorshipStatus}
+                  canViewProfile={canViewProfile}
+                  canEndMentorship={canEndMentorship}
+                  onViewProfile={() => {
+                    if (selectedConversation.mentorProfileId) {
+                      router.push(`/mentors/${selectedConversation.mentorProfileId}`);
+                    }
+                  }}
+                  onOpenEndMentorship={() =>
+                    setIsEndMentorshipDialogOpen(true)
+                  }
+                />
+              );
+            })()}
 
             <ScrollArea className="flex-1" ref={messagesContainerRef}>
               <div className="p-6">
@@ -1561,15 +1402,31 @@ export default function MessagesPage() {
                                 )}
                                 
                                 <div className="relative">
-                                  <div
-                                    className={`px-5 py-4 rounded-2xl ${
-                                      message.isDeleted
-                                        ? 'bg-neutral-800/50 text-neutral-500 italic'
-                                        : isOwn
-                                          ? 'bg-white text-neutral-900 rounded-br-md'
-                                          : 'bg-neutral-800 text-neutral-100 rounded-bl-md'
-                                    }`}
-                                  >
+                                  {(() => {
+                                    const isAttachment =
+                                      message.type === 'image' ||
+                                      message.type === 'file';
+                                    const isFilenameOnly =
+                                      isAttachment &&
+                                      message.attachmentFileName &&
+                                      message.content === message.attachmentFileName;
+                                    const isFileOnlyAttachment =
+                                      message.type === 'file' &&
+                                      !!message.attachmentUrl &&
+                                      (!message.content || isFilenameOnly);
+
+                                    const bubbleBaseClass = message.isDeleted
+                                      ? 'bg-neutral-800/50 text-neutral-500 italic'
+                                      : isOwn
+                                        ? 'bg-white text-neutral-900 rounded-br-md'
+                                        : 'bg-neutral-800 text-neutral-100 rounded-bl-md';
+
+                                    const bubblePaddingClass = isFileOnlyAttachment ? '' : 'px-5 py-4';
+
+                                    return (
+                                      <div
+                                        className={`rounded-2xl ${bubbleBaseClass} ${bubblePaddingClass}`.trim()}
+                                      >
                                     {message.isDeleted ? (
                                       <p className="text-lg leading-relaxed whitespace-pre-wrap wrap-break-word">
                                         {message.content}
@@ -1598,7 +1455,9 @@ export default function MessagesPage() {
                                         })()}
                                       </div>
                                     )}
-                                  </div>
+                                      </div>
+                                    );
+                                  })()}
                                   
                                   {isOwn && !message.isDeleted && selectedConversation.mentorshipStatus !== 'ended' && (
                                     <div className="absolute -left-24 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
@@ -1628,7 +1487,7 @@ export default function MessagesPage() {
                                     </div>
                                   )}
                                   
-                                  {!isOwn && !message.isDeleted && (
+                                  {!isOwn && !message.isDeleted && selectedConversation.mentorshipStatus !== 'ended' && (
                                     <div className="absolute -right-12 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
                                       <Button
                                         variant="ghost"
@@ -1752,60 +1611,16 @@ export default function MessagesPage() {
                 </div>
               </div>
             ) : (
-              <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
-                {replyingTo && (
-                  <div className="flex items-center justify-between mb-4 px-5 py-3 bg-neutral-800/50 rounded-lg">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-neutral-400 mb-1">
-                        Replying to {replyingTo.sender?.firstName || 'User'}
-                      </p>
-                      <p className="text-base text-neutral-300 truncate">{replyingTo.content}</p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="size-10 text-neutral-400 hover:text-white shrink-0"
-                      onClick={() => setReplyingTo(null)}
-                    >
-                      <X className="size-5" />
-                    </Button>
-                  </div>
-                )}
-                
-                <div className="flex items-center gap-4">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="size-12 text-neutral-400 hover:text-white hover:bg-neutral-800/70"
-                    onClick={() => setIsUploadDialogOpen(true)}
-                  >
-                    <Paperclip className="size-6" />
-                  </Button>
-                  <div className="flex-1 relative">
-                    <Input
-                      ref={messageInputRef}
-                      placeholder="Type a message..."
-                      value={messageInput}
-                      onChange={(e) => handleInputChange(e.target.value)}
-                      onKeyDown={handleKeyPress}
-                      onBlur={() => {
-                        if (!messageInput.trim()) {
-                          stopTypingIndicator();
-                        }
-                      }}
-                      className="h-16! pr-14 bg-neutral-800/50 border-neutral-700 text-xl!"
-                    />
-                  </div>
-                  <Button 
-                    onClick={handleSendMessage}
-                    disabled={!messageInput.trim()}
-                    className="size-14 rounded-full bg-white text-black hover:bg-neutral-200 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Send className="size-7" />
-                  </Button>
-                </div>
-              </div>
+              <MessageInputBar
+                messageInput={messageInput}
+                onChange={handleInputChange}
+                onKeyPress={handleKeyPress}
+                onSend={handleSendMessage}
+                disabledSend={!messageInput.trim()}
+                onOpenUploadDialog={() => setIsUploadDialogOpen(true)}
+                replyingTo={replyingTo}
+                onCancelReply={() => setReplyingTo(null)}
+              />
             )}
           </>
         ) : (

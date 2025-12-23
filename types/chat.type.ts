@@ -8,6 +8,7 @@ export interface IChatParticipant {
   lastName: string;
   avatar: string | null;
   role?: 'mentor' | 'student';
+  isOnline?: boolean;
 }
 
 export interface IChatMessage {
@@ -94,4 +95,12 @@ export interface ISocketReadEvent {
   conversationId: string;
   messageIds: string[];
   readBy: string;
+}
+
+export interface IPresenceState {
+  onlineUsers: Record<string, boolean>;
+  setUserOnline: (userId: string, isOnline: boolean) => void;
+  setManyUsersOnline: (statuses: Record<string, boolean>) => void;
+  isUserOnline: (userId?: string | null) => boolean | undefined;
+  reset: () => void;
 }

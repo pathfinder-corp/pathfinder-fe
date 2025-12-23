@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { 
   LayoutDashboard, 
   Users, 
@@ -14,7 +15,8 @@ import {
 import { useUserStore } from '@/stores';
 import { USER_ROLES } from '@/constants';
 import { toast } from 'sonner';
-import { cn } from '@/lib/utils';
+import { cn, getInitials } from '@/lib/utils';
+
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -107,7 +109,7 @@ export default function AdminLayout({
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-[22rem] border-r border-neutral-800 bg-neutral-950 flex flex-col fixed inset-y-0 left-0">
+      <aside className="w-88 border-r border-neutral-800 bg-neutral-950 flex flex-col fixed inset-y-0 left-0">
         <div className="p-7 border-b border-neutral-800">
           <Link 
             href="/" 
@@ -146,9 +148,22 @@ export default function AdminLayout({
 
         <div className="p-7 border-t border-neutral-800">
           <div className="flex items-center gap-4">
-            <div className="size-14 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold">
-              {user.firstName[0]}{user.lastName[0]}
-            </div>
+            {user.avatar ? (
+              <div className="relative size-14 rounded-full overflow-hidden">
+                <Image
+                  src={user.avatar}
+                  alt={`${user.firstName} ${user.lastName}`}
+                  fill
+                  sizes="56px"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            ) : (
+              <div className="size-14 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold">
+                {getInitials(user.firstName, user.lastName)}
+              </div>
+            )}
             <div className="flex-1 min-w-0">
               <p className="text-xl font-medium truncate">
                 {user.firstName} {user.lastName}
@@ -159,7 +174,7 @@ export default function AdminLayout({
         </div>
       </aside>
 
-      <main className="flex-1 ml-[22rem] p-8 overflow-auto min-h-screen">
+      <main className="flex-1 ml-88 p-8 overflow-auto min-h-screen">
         <Breadcrumb className="mb-6">
           <BreadcrumbList className="text-xl">
             <BreadcrumbItem>
