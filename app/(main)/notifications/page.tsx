@@ -160,6 +160,12 @@ export default function NotificationsPage() {
       case 'mentorship_ended':
         router.push('/mentor/requests');
         break;
+      case 'mentor_role_granted':
+        router.push('/mentor/profile');
+        break;
+      case 'mentor_role_revoked':
+        router.push('/mentor/applications');
+        break;
       default:
         break;
     }
@@ -185,6 +191,9 @@ export default function NotificationsPage() {
         return <MessageCircle className={className} />;
       case 'mentorship_started':
       case 'mentorship_ended':
+        return <Users className={className} />;
+      case 'mentor_role_granted':
+      case 'mentor_role_revoked':
         return <Users className={className} />;
       default:
         return <AlertCircle className={className} />;
@@ -222,6 +231,10 @@ export default function NotificationsPage() {
         return <Badge className={`${baseClasses} bg-green-500/20 text-green-400 border-green-500/30`}>Started</Badge>;
       case 'mentorship_ended':
         return <Badge className={`${baseClasses} bg-neutral-500/20 text-neutral-400 border-neutral-500/30`}>Ended</Badge>;
+      case 'mentor_role_granted':
+        return <Badge className={`${baseClasses} bg-blue-500/20 text-blue-400 border-blue-500/30`}>Mentor Role Granted</Badge>;
+      case 'mentor_role_revoked':
+        return <Badge className={`${baseClasses} bg-red-500/20 text-red-400 border-red-500/30`}>Mentor Role Revoked</Badge>;
       default:
         return <Badge className={`${baseClasses} bg-neutral-500/20 text-neutral-400 border-neutral-500/30`}>System</Badge>;
     }

@@ -22,10 +22,15 @@ export default function MentorDetailLoading() {
         <div className="max-w-[1100px] mx-auto px-6">
           <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
             <Skeleton className="size-40 rounded-xl bg-neutral-800 shrink-0" />
-            <div className="flex-1 space-y-5">
-              <Skeleton className="h-14 w-80 bg-neutral-800" />
-              <Skeleton className="h-8 w-full max-w-lg bg-neutral-800" />
-              <Skeleton className="h-6 w-56 bg-neutral-800" />
+            <div className="flex-1">
+              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
+                <div className="space-y-3">
+                  <Skeleton className="h-14 w-80 bg-neutral-800" />
+                  <Skeleton className="h-8 w-full max-w-lg bg-neutral-800" />
+                  <Skeleton className="h-6 w-56 bg-neutral-800" />
+                </div>
+                <Skeleton className="h-9 w-32 bg-neutral-800 rounded-full" />
+              </div>
               <div className="flex gap-3">
                 <Skeleton className="h-10 w-32 bg-neutral-800 rounded-full" />
                 <Skeleton className="h-10 w-36 bg-neutral-800 rounded-full" />

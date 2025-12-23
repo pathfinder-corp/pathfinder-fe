@@ -42,6 +42,8 @@ export default function MyApplicationsPage() {
   const router = useRouter();
   const { user, refreshUser } = useUserStore();
   
+  const isMentor = user?.role === 'mentor';
+  
   const [applications, setApplications] = useState<IMentorApplication[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState<boolean>(false);
@@ -90,6 +92,18 @@ export default function MyApplicationsPage() {
       const errorMessage = error instanceof Error 
         ? error.message 
         : 'Failed to load applications';
+
+      const normalized = errorMessage.toLowerCase();
+      if (normalized.includes('forbidden')) {
+        try {
+          await refreshUser();
+        } catch (refreshError) {
+          console.error('Failed to refresh user after forbidden:', refreshError);
+        }
+        router.replace('/mentor');
+        return;
+      }
+
       toast.error('Failed to load applications', {
         description: errorMessage,
       });
@@ -204,22 +218,41 @@ export default function MyApplicationsPage() {
       <p className="text-2xl text-neutral-500 mb-10">Track the status of your mentor applications</p>
 
       {applications.length === 0 ? (
-        <div className="w-232 text-center py-20">
-          <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
-            <GraduationCap className="size-12 text-neutral-500" />
+        isMentor ? (
+          <div className="w-232 text-center py-20">
+            <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+              <GraduationCap className="size-12 text-neutral-500" />
+            </div>
+            <h2 className="text-3xl font-semibold mb-4">You&apos;re already a mentor</h2>
+            <p className="text-xl text-neutral-400 mb-10">
+              Your account has been upgraded to mentor. Manage your mentor profile and start accepting students.
+            </p>
+            <Button 
+              onClick={() => router.push('/mentor/profile')}
+              className="h-16! text-xl! px-10!"
+            >
+              Go to Mentor Profile
+              <Plus className="size-7" />
+            </Button>
           </div>
-          <h2 className="text-3xl font-semibold mb-4">No application yet</h2>
-          <p className="text-xl text-neutral-400 mb-10">
-            You haven&apos;t submitted any mentor application. Start your journey to become a mentor today!
-          </p>
-          <Button 
-            onClick={() => router.push('/mentor')}
-            className="h-16! text-xl! px-10!"
-          >
-            Apply to Become a Mentor
-            <Plus className="size-7" />
-          </Button>
-        </div>
+        ) : (
+          <div className="w-232 text-center py-20">
+            <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+              <GraduationCap className="size-12 text-neutral-500" />
+            </div>
+            <h2 className="text-3xl font-semibold mb-4">No application yet</h2>
+            <p className="text-xl text-neutral-400 mb-10">
+              You haven&apos;t submitted any mentor application. Start your journey to become a mentor today!
+            </p>
+            <Button 
+              onClick={() => router.push('/mentor')}
+              className="h-16! text-xl! px-10!"
+            >
+              Apply to Become a Mentor
+              <Plus className="size-7" />
+            </Button>
+          </div>
+        )
       ) : (
         <div className="w-232">
           {applications.map((application) => (
@@ -418,7 +451,7 @@ export default function MyApplicationsPage() {
                     {canWithdraw(application.status) 
                       ? 'You can withdraw this application if you want to submit a new one'
                       : application.status === 'approved' 
-                        ? 'Visit your mentor profile to start accepting mentees'
+                        ? 'Visit your mentor profile to start accepting students'
                         : 'This application has been processed'}
                   </p>
                   <div className="flex items-center gap-3">

@@ -7,6 +7,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useUserStore } from '@/stores';
 import { Menu, X, LogOut, Settings, LayoutDashboard, MessageCircle, Bell } from 'lucide-react';
 import { toast } from 'sonner';
+import { getInitials } from '@/lib';
 
 import { Button } from './ui/button';
 import { UserMenu } from './UserMenu';
@@ -46,10 +47,6 @@ function MobileUserSection({ onClose }: { onClose: () => void }) {
     }
   };
 
-  const getInitials = () => {
-    return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-  };
-
   const menuItems = [
     ...(user.role === USER_ROLES.ADMIN
       ? [{ icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' }]
@@ -74,7 +71,7 @@ function MobileUserSection({ onClose }: { onClose: () => void }) {
           </div>
         ) : (
           <div className="size-16 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 border-2 border-neutral-600 flex items-center justify-center text-xl font-bold">
-            {getInitials()}
+            {getInitials(user.firstName, user.lastName)}
           </div>
         )}
         <div className="flex-1 min-w-0">

@@ -182,7 +182,7 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
         <div className="relative flex-1 max-w-xl">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-6 text-neutral-400" />
           <Input
-            placeholder="Search by mentor or mentee name..."
+            placeholder="Search by mentor or student name..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-14 h-14! text-lg! bg-neutral-900/50 border-neutral-800"
@@ -220,7 +220,7 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
                 Mentor
               </TableHead>
               <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[220px]">
-                Mentee
+                Student
               </TableHead>
               <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[120px]">
                 Status
@@ -474,7 +474,7 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
               </div>
 
               <div className="p-4 bg-neutral-800/50 rounded-lg">
-                <p className="text-sm text-neutral-500 mb-3">Mentee</p>
+                <p className="text-sm text-neutral-500 mb-3">Student</p>
                 <div className="flex items-center gap-3">
                   {selectedMentorship.student?.avatar ? (
                     <Image  
@@ -544,7 +544,7 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
               Force End Mentorship
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base">
-              This will immediately end the mentorship relationship. Both the mentor and mentee will be notified.
+              This will immediately end the mentorship relationship. Both the mentor and student will be notified.
             </AlertDialogDescription>
           </AlertDialogHeader>
           
@@ -558,7 +558,7 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-neutral-500">Mentee:</span>
+                  <span className="text-neutral-500">Student:</span>
                   <span className="font-medium">
                     {mentorshipToEnd.student?.firstName} {mentorshipToEnd.student?.lastName}
                   </span>

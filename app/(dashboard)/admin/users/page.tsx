@@ -747,12 +747,12 @@ export default function AdminUsersPage() {
                 <div>
                   <label className="text-base text-neutral-400 mb-2 block">Role</label>
                   <Select value={editRole} onValueChange={(v) => setEditRole(v as typeof editRole)}>
-                    <SelectTrigger className="h-12 text-base">
+                    <SelectTrigger className="h-12! text-lg!">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="student" className="text-base">Student</SelectItem>
-                      <SelectItem value="mentor" className="text-base">Mentor</SelectItem>
+                      <SelectItem value="student" className="text-lg!">Student</SelectItem>
+                      <SelectItem value="mentor" className="text-lg!">Mentor</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -764,13 +764,13 @@ export default function AdminUsersPage() {
                     onValueChange={(v) => setEditStatus(v as typeof editStatus)}
                     disabled={selectedUser.status === USER_STATUS.SUSPENDED}
                   >
-                    <SelectTrigger className="h-12 text-base">
+                    <SelectTrigger className="h-12! text-lg!">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active" className="text-base">Active</SelectItem>
-                      <SelectItem value="inactive" className="text-base">Inactive</SelectItem>
-                      <SelectItem value="suspended" className="text-base" disabled>Suspended (Use Ban/Unban)</SelectItem>
+                      <SelectItem value="active" className="text-lg!">Active</SelectItem>
+                      <SelectItem value="inactive" className="text-lg!">Inactive</SelectItem>
+                      <SelectItem value="suspended" className="text-lg!" disabled>Suspended (Use Ban/Unban)</SelectItem>
                     </SelectContent>
                   </Select>
                   {selectedUser.status === USER_STATUS.SUSPENDED && (

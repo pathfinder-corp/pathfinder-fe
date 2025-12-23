@@ -12,7 +12,9 @@ export type NotificationType =
   | 'meeting_cancelled'
   | 'meeting_reminder'
   | 'mentorship_started'
-  | 'mentorship_ended';
+  | 'mentorship_ended'
+  | 'mentor_role_granted'
+  | 'mentor_role_revoked';
 
 export interface INotification {
   id: string;

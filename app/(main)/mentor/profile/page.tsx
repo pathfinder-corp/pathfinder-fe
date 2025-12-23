@@ -35,6 +35,7 @@ import { mentorService } from '@/services';
 import { formatFileSize } from '@/lib';
 import { DOCUMENT_TYPES } from '@/constants';
 import type { IMentorProfile, IUpdateMentorProfileRequest, IMentorDocument, MentorDocumentType, DocumentVerificationStatus } from '@/types';
+import { useUserStore } from '@/stores';
 
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
@@ -146,20 +147,20 @@ const EXPERIENCE_OPTIONS = [
 ];
 
 const MAX_MENTEES_OPTIONS = [
-  { value: 1, label: '1 mentee' },
-  { value: 2, label: '2 mentees' },
-  { value: 3, label: '3 mentees' },
-  { value: 5, label: '5 mentees' },
-  { value: 10, label: '10 mentees' },
-  { value: 20, label: '20 mentees' },
-  { value: 50, label: '50+ mentees' },
+  { value: 1, label: '1 student' },
+  { value: 2, label: '2 students' },
+  { value: 3, label: '3 students' },
+  { value: 5, label: '5 students' },
+  { value: 10, label: '10 students' },
+  { value: 20, label: '20 students' },
+  { value: 50, label: '50+ students' },
 ];
 
 const mentorProfileSchema = z.object({
   headline: z.string().min(10, 'Headline must be at least 10 characters').max(100, 'Headline must be less than 100 characters'),
   bio: z.string().min(50, 'Bio must be at least 50 characters').max(1000, 'Bio must be less than 1000 characters'),
   yearsExperience: z.number().min(1, 'Please select your experience'),
-  maxMentees: z.number().min(1, 'Please select max mentees'),
+  maxMentees: z.number().min(1, 'Please select max students'),
   linkedinUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
   portfolioUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
   isAcceptingMentees: z.boolean(),
@@ -169,6 +170,7 @@ type MentorProfileFormData = z.infer<typeof mentorProfileSchema>;
 
 export default function MentorProfilePage() {
   const router = useRouter();
+  const { refreshUser } = useUserStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -271,6 +273,18 @@ export default function MentorProfilePage() {
         const errorMessage = error instanceof Error 
           ? error.message 
           : 'Failed to fetch mentor profile';
+
+        const normalized = errorMessage.toLowerCase();
+        if (normalized.includes('forbidden')) {
+          try {
+            await refreshUser();
+          } catch (refreshError) {
+            console.error('Failed to refresh user after forbidden:', refreshError);
+          }
+          router.replace('/mentor/applications');
+          return;
+        }
+
         toast.error('Failed to fetch mentor profile', {
           description: errorMessage,
         });
@@ -281,7 +295,7 @@ export default function MentorProfilePage() {
     };
 
     fetchProfile();
-  }, [reset, fetchDocuments]);
+  }, [reset, fetchDocuments, refreshUser, router]);
 
   const addItem = (
     value: string, 
@@ -521,7 +535,7 @@ export default function MentorProfilePage() {
         <div className="flex items-center gap-4">
           {isAcceptingMentees ? (
             <Badge className="bg-green-500/20 text-green-400 border-green-500/30 py-2 px-4 text-base">
-              Accepting Mentees
+              Accepting Students
             </Badge>
           ) : (
             <Badge className="bg-neutral-500/20 text-neutral-400 border-neutral-500/30 py-2 px-4 text-base">
@@ -567,7 +581,7 @@ export default function MentorProfilePage() {
           </Label>
           <Textarea
             {...register('bio')}
-            placeholder="Tell potential mentees about yourself, your background, and mentoring style..."
+            placeholder="Tell potential students about yourself, your background, and mentoring style..."
             className="w-full min-h-[160px] text-lg! px-6! py-5!"
           />
           {errors.bio && (
@@ -602,14 +616,14 @@ export default function MentorProfilePage() {
 
           <div className="space-y-3">
             <Label className="text-xl">
-              Max Mentees <span className="text-red-500">*</span>
+              Max Students <span className="text-red-500">*</span>
             </Label>
             <Select 
               value={String(selectedMaxMentees)} 
               onValueChange={(value) => setValue('maxMentees', Number(value))}
             >
               <SelectTrigger className="w-full h-20! text-xl! px-6!">
-                <SelectValue placeholder="Select max mentees" />
+                <SelectValue placeholder="Select max students" />
               </SelectTrigger>
               <SelectContent>
                 {MAX_MENTEES_OPTIONS.map((option) => (
@@ -858,7 +872,7 @@ export default function MentorProfilePage() {
             <File className="size-16 text-neutral-600 mx-auto mb-4" />
             <h3 className="text-2xl font-semibold mb-2">No Documents Yet</h3>
             <p className="text-lg text-neutral-400 mb-6">
-              Upload documents to strengthen your profile and build trust with mentees
+              Upload documents to strengthen your profile and build trust with students
             </p>
             <Button
               onClick={() => setIsUploadDialogOpen(true)}

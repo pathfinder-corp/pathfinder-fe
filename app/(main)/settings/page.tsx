@@ -1,13 +1,13 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { 
-  User, 
-  Lock, 
-  Loader2, 
+import {
+  User,
+  Lock,
+  Loader2,
   Save,
   Eye,
   EyeOff,
@@ -15,11 +15,16 @@ import {
   AlertCircle,
   Mail
 } from 'lucide-react';
+import { FilePond, registerPlugin } from 'react-filepond';
+import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
+import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { useUserStore } from '@/stores';
-import { authService } from '@/services';
+import { authService, userService } from '@/services';
 import type { IUserProfile } from '@/types';
+import { getInitials } from '@/lib';
 
 import { TransitionPanel } from '@/components/motion-primitives/transition-panel';
 import { Button } from '@/components/ui/button';
@@ -33,6 +38,9 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import 'filepond/dist/filepond.min.css';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
 
 type ActiveTab = 'profile' | 'password';
 
@@ -64,8 +72,14 @@ const passwordSchema = z.object({
 type ProfileFormData = z.infer<typeof profileSchema>;
 type PasswordFormData = z.infer<typeof passwordSchema>;
 
+registerPlugin(
+  FilePondPluginFileValidateType,
+  FilePondPluginFileValidateSize,
+  FilePondPluginImagePreview,
+);
+
 export default function SettingsPage() {
-  const { user, setUser } = useUserStore();
+  const { setUser } = useUserStore();
   
   const [activeTab, setActiveTab] = useState<ActiveTab>('profile');
   const activeIndex = TABS.findIndex(tab => tab.id === activeTab);
@@ -79,6 +93,9 @@ export default function SettingsPage() {
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
   const [isResendingVerification, setIsResendingVerification] = useState<boolean>(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState<boolean>(false);
+  const [avatarFiles, setAvatarFiles] = useState<any[]>([]);
+  const avatarPondRef = useRef<FilePond | null>(null);
 
   const profileForm = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
@@ -105,6 +122,17 @@ export default function SettingsPage() {
       
       profileForm.setValue('firstName', data.firstName);
       profileForm.setValue('lastName', data.lastName);
+
+      if (data.avatar) {
+        setAvatarFiles([
+          {
+            source: data.avatar,
+            options: { type: 'local' },
+          },
+        ]);
+      } else {
+        setAvatarFiles([]);
+      }
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -255,7 +283,96 @@ export default function SettingsPage() {
                     View your account details
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-5">
+                <CardContent className="space-y-6">
+                  <div className="flex flex-col md:flex-row md:items-center gap-5 mb-3">
+                    <div className="w-34">
+                      <FilePond
+                        ref={avatarPondRef}
+                        files={avatarFiles}
+                        onupdatefiles={(fileItems) => {
+                          setAvatarFiles(
+                            fileItems.map((fileItem: any) => {
+                              if (fileItem.source && typeof fileItem.source === 'string') {
+                                return {
+                                  source: fileItem.source,
+                                  options: { type: 'local' },
+                                };
+                              }
+
+                              return fileItem.file;
+                            }),
+                          );
+                        }}
+                        allowMultiple={false}
+                        maxFiles={1}
+                        acceptedFileTypes={['image/*']}
+                        labelIdle={'Drag & Drop your picture or <span class="filepond--label-action">Browse</span>'}
+                        imagePreviewHeight={150}
+                        stylePanelLayout="compact circle"
+                        styleLoadIndicatorPosition="center bottom"
+                        styleProgressIndicatorPosition="right bottom"
+                        styleButtonRemoveItemPosition="left bottom"
+                        styleButtonProcessItemPosition="right bottom"
+                        credits={false}
+                        server={{
+                          load: (source, load, error) => {
+                            fetch(source as string)
+                              .then((res) => res.blob())
+                              .then(load)
+                              .catch(() => error('Failed to load avatar'));
+                          },
+                          process: (_fieldName, file, _metadata, load, error) => {
+                            if (!(file instanceof File)) {
+                              load('done');
+                              return {
+                                abort: () => {},
+                              };
+                            }
+
+                            (async () => {
+                              try {
+                                setIsUploadingAvatar(true);
+                                const updatedUser = await userService.uploadAvatar(file as File);
+
+                                setUser(updatedUser);
+                                setProfile(prev =>
+                                  prev ? { ...prev, avatar: updatedUser.avatar ?? null } : null,
+                                );
+
+                                if (updatedUser.avatar) {
+                                  setAvatarFiles([
+                                    {
+                                      source: updatedUser.avatar,
+                                      options: { type: 'local' },
+                                    },
+                                  ]);
+                                }
+
+                                toast.success('Avatar updated successfully');
+                                load('done');
+                              } catch (e) {
+                                const message =
+                                  e instanceof Error ? e.message : 'Failed to upload avatar';
+                                toast.error('Failed to upload avatar', {
+                                  description: message,
+                                });
+                                error(message);
+                              } finally {
+                                setIsUploadingAvatar(false);
+                              }
+                            })();
+
+                            return {
+                              abort: () => {}
+                            };
+                          },
+                        }}
+                        className="filepond-dark"
+                      />
+                    </div>
+                  </div>
+                  <Separator className="bg-neutral-800" />
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                     <div className="space-y-2">
                       <Label className="text-neutral-400 text-base">Email</Label>

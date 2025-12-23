@@ -23,6 +23,7 @@ import type {
   MentorshipRequestStatus,
   MentorshipRequestRole 
 } from '@/types';
+import { getInitials } from '@/lib';
 
 import { TransitionPanel } from '@/components/motion-primitives/transition-panel';
 import { Button } from '@/components/ui/button';
@@ -215,10 +216,6 @@ export default function MentorshipRequestsPage() {
       default:
         return null;
     }
-  };
-
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
   };
 
   const formatRelativeTime = (dateStr: string) => {

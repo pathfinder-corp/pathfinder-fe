@@ -616,7 +616,7 @@ export default function MentorApplicationPage() {
           </Label>
           <Textarea
             {...register('motivation')}
-            placeholder="Share your motivation for becoming a mentor and how you plan to help mentees..."
+            placeholder="Share your motivation for becoming a mentor and how you plan to help students..."
             className="w-full min-h-[160px] text-lg! px-6! py-5!"
           />
           {errors.motivation && (

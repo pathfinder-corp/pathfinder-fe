@@ -169,7 +169,7 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
             <SelectItem value="all" className="text-lg">All Mentors</SelectItem>
             <SelectItem value="active" className="text-lg">Active</SelectItem>
             <SelectItem value="inactive" className="text-lg">Inactive</SelectItem>
-            <SelectItem value="accepting" className="text-lg">Accepting Mentees</SelectItem>
+            <SelectItem value="accepting" className="text-lg">Accepting Students</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -410,11 +410,11 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
                       <p className="text-xl font-semibold">{selectedMentor.yearsExperience} years</p>
                     </div>
                     <div>
-                      <p className="text-base text-neutral-500 mb-1">Max Mentees</p>
+                      <p className="text-base text-neutral-500 mb-1">Max Students</p>
                       <p className="text-xl font-semibold">{selectedMentor.maxMentees}</p>
                     </div>
                     <div>
-                      <p className="text-base text-neutral-500 mb-1">Accepting Mentees</p>
+                      <p className="text-base text-neutral-500 mb-1">Accepting Students</p>
                       <p className="text-lg">
                         {selectedMentor.isAcceptingMentees ? (
                           <span className="text-green-400">Yes</span>

@@ -31,6 +31,7 @@ import { format, parseISO } from 'date-fns';
 import { useUserStore } from '@/stores';
 import { mentorService, mentorshipService } from '@/services';
 import type { IMentorProfile, MentorDocumentType } from '@/types';
+import { getInitials } from '@/lib';
 
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
@@ -147,10 +148,6 @@ export default function MentorDetailPage() {
     fetchMentor();
   }, [mentorId, router]);
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
-  };
-
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return 'N/A';
     try {
@@ -204,33 +201,92 @@ export default function MentorDetailPage() {
         <PublicHeader />
         <main className="pt-36">
           <div className="max-w-[1100px] mx-auto px-6 py-8">
-            <Skeleton className="h-10 w-40 mb-8 bg-neutral-800" />
-            
             <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
               <Skeleton className="size-40 rounded-xl bg-neutral-800 shrink-0" />
-              <div className="flex-1 space-y-4">
-                <Skeleton className="h-10 w-72 bg-neutral-800" />
-                <Skeleton className="h-6 w-full max-w-lg bg-neutral-800" />
-                <Skeleton className="h-5 w-48 bg-neutral-800" />
+              <div className="flex-1">
+                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
+                  <div className="space-y-3">
+                    <Skeleton className="h-14 w-80 bg-neutral-800" />
+                    <Skeleton className="h-8 w-full max-w-lg bg-neutral-800" />
+                    <Skeleton className="h-6 w-56 bg-neutral-800" />
+                  </div>
+                  <Skeleton className="h-9 w-32 bg-neutral-800 rounded-full" />
+                </div>
                 <div className="flex gap-3">
-                  <Skeleton className="h-8 w-28 bg-neutral-800 rounded-full" />
-                  <Skeleton className="h-8 w-32 bg-neutral-800 rounded-full" />
+                  <Skeleton className="h-10 w-32 bg-neutral-800 rounded-full" />
+                  <Skeleton className="h-10 w-36 bg-neutral-800 rounded-full" />
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-4 mb-6 border-b border-neutral-800 pb-1">
-              <Skeleton className="h-10 w-20 bg-neutral-800" />
-              <Skeleton className="h-10 w-28 bg-neutral-800" />
+            <div className="flex gap-1 mb-10 border-b border-neutral-800">
+              <Skeleton className="h-12 w-20 bg-neutral-800" />
+              <Skeleton className="h-12 w-28 bg-neutral-800" />
+              <Skeleton className="h-12 w-28 bg-neutral-800" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-6">
-                <Skeleton className="h-48 w-full bg-neutral-800 rounded-lg" />
-                <Skeleton className="h-32 w-full bg-neutral-800 rounded-lg" />
+              <div className="lg:col-span-2 space-y-8">
+                <div>
+                  <Skeleton className="h-8 w-36 mb-5 bg-neutral-800" />
+                  <div className="space-y-3">
+                    <Skeleton className="h-6 w-full bg-neutral-800" />
+                    <Skeleton className="h-6 w-full bg-neutral-800" />
+                    <Skeleton className="h-6 w-3/4 bg-neutral-800" />
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-2">
+                  <Skeleton className="size-10 rounded bg-neutral-800" />
+                  <Skeleton className="size-10 rounded bg-neutral-800" />
+                </div>
+
+                <div className="pt-4">
+                  <Skeleton className="h-5 w-20 mb-4 bg-neutral-800" />
+                  <div className="flex gap-2.5">
+                    <Skeleton className="h-10 w-28 bg-neutral-800 rounded-full" />
+                    <Skeleton className="h-10 w-32 bg-neutral-800 rounded-full" />
+                    <Skeleton className="h-10 w-24 bg-neutral-800 rounded-full" />
+                  </div>
+                </div>
               </div>
-              <div className="space-y-6">
-                <Skeleton className="h-64 w-full bg-neutral-800 rounded-lg" />
+
+              <div className="space-y-7">
+                <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6 space-y-5">
+                  <Skeleton className="h-6 w-32 bg-neutral-800" />
+                  <Skeleton className="h-14 w-full bg-neutral-800 rounded-lg" />
+                  <Skeleton className="h-px w-full bg-neutral-800" />
+                  <Skeleton className="h-5 w-28 bg-neutral-800" />
+                  <div className="space-y-3">
+                    <Skeleton className="h-6 w-full bg-neutral-800" />
+                    <Skeleton className="h-6 w-full bg-neutral-800" />
+                  </div>
+                </div>
+
+                <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6 space-y-5">
+                  <Skeleton className="h-6 w-40 bg-neutral-800" />
+                  <div className="space-y-4">
+                    <div className="flex justify-between">
+                      <Skeleton className="h-6 w-28 bg-neutral-800" />
+                      <Skeleton className="h-6 w-20 bg-neutral-800" />
+                    </div>
+                    <Skeleton className="h-px w-full bg-neutral-800" />
+                    <div className="flex justify-between">
+                      <Skeleton className="h-6 w-24 bg-neutral-800" />
+                      <Skeleton className="h-6 w-12 bg-neutral-800" />
+                    </div>
+                    <Skeleton className="h-px w-full bg-neutral-800" />
+                    <div className="flex justify-between">
+                      <Skeleton className="h-6 w-28 bg-neutral-800" />
+                      <Skeleton className="h-6 w-16 bg-neutral-800" />
+                    </div>
+                    <Skeleton className="h-px w-full bg-neutral-800" />
+                    <div className="flex justify-between">
+                      <Skeleton className="h-6 w-20 bg-neutral-800" />
+                      <Skeleton className="h-8 w-24 bg-neutral-800 rounded-full" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -270,22 +326,22 @@ export default function MentorDetailPage() {
         <div className="max-w-[1100px] mx-auto px-6">
 
           <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
-            {mentor.user?.avatar ? (
-              <div className="relative size-40 rounded-xl overflow-hidden border border-neutral-800 shrink-0">
-                <Image
-                  src={mentor.user.avatar}
-                  alt={`${mentor.user?.firstName} ${mentor.user?.lastName}`}
-                  fill
-                  sizes="160px"
-                  className="object-cover"
-                  priority
-                />
-              </div>
-            ) : (
-              <div className="size-40 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-4xl font-bold shrink-0">
-                {getInitials(mentor.user?.firstName || '', mentor.user?.lastName || '')}
-              </div>
-            )}
+          {mentor.user?.avatar ? (
+            <div className="relative size-40 rounded-xl overflow-hidden shrink-0">
+              <Image
+                src={mentor.user.avatar}
+                alt={`${mentor.user?.firstName} ${mentor.user?.lastName}`}
+                fill
+                sizes="160px"
+                className="object-cover"
+                priority
+              />
+            </div>
+          ) : (
+            <div className="size-40 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-4xl font-bold shrink-0">
+              {getInitials(mentor.user?.firstName || '', mentor.user?.lastName || '')}
+            </div>
+          )}
 
             <div className="flex-1">
               <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
@@ -323,7 +379,7 @@ export default function MentorDetailPage() {
                 )}
                 {mentor.isAcceptingMentees && (
                   <Badge variant="outline" className="py-2 px-4 text-base border-green-500/50 text-green-400">
-                    Accepting mentees
+                    Accepting students
                   </Badge>
                 )}
                 {!mentor.isAcceptingMentees && (
@@ -374,7 +430,7 @@ export default function MentorDetailPage() {
                 <div className="space-y-8">
                   <div>
                     <h2 className="text-2xl font-semibold mb-5">About Me</h2>
-                    <p className="text-lg text-neutral-300 leading-relaxed whitespace-pre-line">
+                    <p className="text-lg text-neutral-300 leading-relaxed whitespace-pre-line wrap-break-word">
                       {mentor.bio || 'This mentor hasn\'t added a bio yet.'}
                     </p>
                   </div>
@@ -502,7 +558,7 @@ export default function MentorDetailPage() {
                     </p>
 
                     {(!mentor.documents || mentor.documents.length === 0) ? (
-                      <div className="text-center py-16 bg-neutral-900/50 rounded-xl border border-neutral-800">
+                      <div className="text-center py-16">
                         <File className="size-14 text-neutral-600 mx-auto mb-4" />
                         <p className="text-lg text-neutral-400 mb-2">
                           No credentials uploaded yet
@@ -627,7 +683,7 @@ export default function MentorDetailPage() {
 
                 {user && user.role === USER_ROLES.STUDENT && !mentor.isAcceptingMentees && (
                   <p className="text-base text-neutral-500 text-center">
-                    This mentor is currently not accepting new mentees
+                    This mentor is currently not accepting new students
                   </p>
                 )}
 
@@ -683,7 +739,7 @@ export default function MentorDetailPage() {
                   </div>
                   <Separator className="bg-neutral-800" />
                   <div className="flex items-center justify-between">
-                    <span className="text-lg text-neutral-400">Max Mentees</span>
+                    <span className="text-lg text-neutral-400">Max Students</span>
                     <span className="text-lg font-medium">{mentor.maxMentees || 'N/A'}</span>
                   </div>
                   <Separator className="bg-neutral-800" />

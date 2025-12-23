@@ -22,6 +22,7 @@ import { useUserStore } from '@/stores';
 import { mentorService } from '@/services';
 import type { IMentorProfile, IMentorProfilesParams } from '@/types';
 import { ITEMS_PER_PAGE, USER_ROLES } from '@/constants';
+import { getInitials } from '@/lib';
 
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
@@ -156,10 +157,6 @@ export default function MentorsPage() {
 
   const hasActiveFilters = expertiseFilter || skillsFilter || industriesFilter || languagesFilter;
 
-  const getInitials = (firstName: string, lastName: string) => {
-    return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
-  };
-
   const renderMentorCard = (mentor: IMentorProfile) => (
     <div
       key={mentor.id}
@@ -178,7 +175,7 @@ export default function MentorsPage() {
         
         <div className="absolute -bottom-10 left-6">
           {mentor.user?.avatar ? (
-            <div className="relative size-20 rounded-2xl overflow-hidden border-4 border-neutral-950 shadow-xl">
+            <div className="relative size-20 rounded-2xl overflow-hidden shadow-xl">
               <Image
                 src={mentor.user.avatar}
                 alt={`${mentor.user?.firstName} ${mentor.user?.lastName}`}
@@ -188,7 +185,7 @@ export default function MentorsPage() {
               />
             </div>
           ) : (
-            <div className="size-20 rounded-2xl bg-linear-to-br from-neutral-700 to-neutral-800 border-4 border-neutral-950 flex items-center justify-center text-xl font-bold shadow-xl">
+            <div className="size-20 rounded-2xl bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold shadow-xl">
               {getInitials(mentor.user?.firstName || '', mentor.user?.lastName || '')}
             </div>
           )}

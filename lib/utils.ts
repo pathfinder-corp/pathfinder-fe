@@ -69,3 +69,7 @@ export function formatFileSize(bytes: number) {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
+
+export function getInitials(firstName: string, lastName: string) {
+  return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
+};

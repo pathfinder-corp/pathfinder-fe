@@ -9,6 +9,7 @@ import { useUserStore } from '@/stores';
 import { authService } from '@/services';
 import { toast } from 'sonner';
 import { USER_ROLES } from '@/constants';
+import { getInitials } from '@/lib';
 
 export function UserMenu() {
   const router = useRouter();
@@ -37,10 +38,6 @@ export function UserMenu() {
     }
   };
 
-  const getInitials = () => {
-    return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
-  };
-
   return (
     <div className="relative">
       <button
@@ -60,7 +57,7 @@ export function UserMenu() {
           </div>
         ) : (
           <div className="size-14 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 border-2 border-neutral-600 flex items-center justify-center text-lg font-bold">
-            {getInitials()}
+            {getInitials(user.firstName, user.lastName)}
           </div>
         )}
       </button>

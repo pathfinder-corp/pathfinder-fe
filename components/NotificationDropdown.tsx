@@ -151,6 +151,12 @@ export function NotificationDropdown() {
       case 'mentorship_ended':
         router.push('/mentor/requests');
         break;
+      case 'mentor_role_granted':
+        router.push('/mentor/profile');
+        break;
+      case 'mentor_role_revoked':
+        router.push('/mentor/applications');
+        break;
       default:
         break;
     }
@@ -178,6 +184,9 @@ export function NotificationDropdown() {
         return <MessageCircle className={className} />;
       case 'mentorship_started':
       case 'mentorship_ended':
+        return <Users className={className} />;
+      case 'mentor_role_granted':
+      case 'mentor_role_revoked':
         return <Users className={className} />;
       default:
         return <AlertCircle className={className} />;
