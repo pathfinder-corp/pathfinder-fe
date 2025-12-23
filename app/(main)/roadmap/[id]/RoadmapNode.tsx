@@ -18,7 +18,7 @@ export interface RoadmapNodeData {
   duration: string;
 }
 
-function RoadmapNode({ data }: NodeProps<any>) {
+function RoadmapNode({ data, id }: NodeProps<any>) {
   const { label, description, status, duration } = data;
 
   const getStatusConfig = () => {
@@ -72,6 +72,7 @@ function RoadmapNode({ data }: NodeProps<any>) {
                 config.bg,
                 'hover:scale-[1.03] cursor-pointer hover:shadow-2xl'
               )}
+              data-driver={`roadmap-node-${id || 'unknown'}`}
             >
               <div className="flex items-start gap-4">
                 <div className={cn('mt-1 shrink-0', config.textColor)}>

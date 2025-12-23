@@ -66,7 +66,7 @@ export function AIChatInterface({
 
       <ScrollArea className="h-[calc(100vh-165px)] p-6">
         <div className="space-y-4">
-          {chatMessages.map((message) => (
+          {chatMessages.map(message => (
             <ChatMessage key={message.id} message={message} />
           ))}
 
@@ -76,12 +76,7 @@ export function AIChatInterface({
                 <Bot className="size-6 text-black" />
               </div>
               <div className="max-w-[75%] rounded-lg p-5 bg-neutral-900 border border-neutral-800">
-                <TextShimmer
-                  as="span"
-                  className="text-lg"
-                  duration={1}
-                  spread={4}
-                >
+                <TextShimmer as="span" className="text-lg" duration={1} spread={4}>
                   AI is thinking...
                 </TextShimmer>
               </div>
@@ -96,7 +91,7 @@ export function AIChatInterface({
         <div className="flex items-start gap-3 mb-3">
           <Textarea
             value={chatInput}
-            onChange={(e) => onInputChange(e.target.value)}
+            onChange={e => onInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask a question about this step..."
             rows={2}
@@ -107,13 +102,17 @@ export function AIChatInterface({
             onClick={onSendMessage}
             disabled={!chatInput.trim() || isLoading}
             size="icon"
-            className="size-[3.5rem] bg-white text-neutral-950 hover:bg-neutral-200"
+            className="size-14 bg-white text-neutral-950 hover:bg-neutral-200"
           >
             <Send className="size-6" />
           </Button>
         </div>
         <p className="text-lg text-neutral-500 flex items-center gap-1.5">
-          Press <Kbd>Enter</Kbd> to send, <KbdGroup><Kbd>Shift</Kbd> + <Kbd>Enter</Kbd></KbdGroup> for new line
+          Press <Kbd>Enter</Kbd> to send,{' '}
+          <KbdGroup>
+            <Kbd>Shift</Kbd> + <Kbd>Enter</Kbd>
+          </KbdGroup>{' '}
+          for new line
         </p>
       </div>
     </div>
