@@ -32,10 +32,10 @@ export function MessageInputBar({
       {replyingTo && (
         <div className="flex items-center justify-between mb-4 px-5 py-3 bg-neutral-800/50 rounded-lg">
           <div className="flex-1 min-w-0">
-            <p className="text-sm text-neutral-400 mb-1">
+            <p className="text-base text-neutral-400 mb-1">
               Replying to {replyingTo.sender?.firstName || 'User'}
             </p>
-            <p className="text-base text-neutral-300 truncate">
+            <p className="text-lg text-neutral-300 truncate">
               {replyingTo.content}
             </p>
           </div>
@@ -66,7 +66,7 @@ export function MessageInputBar({
             value={messageInput}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={onKeyPress}
-            className="h-16! pr-14 bg-neutral-800/50 border-neutral-700 text-xl!"
+            className="h-16! pr-14 bg-neutral-800/50 border-neutral-700 text-2xl!"
           />
         </div>
         <Button

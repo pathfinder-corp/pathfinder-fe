@@ -24,7 +24,7 @@ import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 import { useUserStore, usePresenceStore } from '@/stores';
 import { chatService, socketService, mentorshipService } from '@/services';
-import { getAuthToken, formatFileSize, getInitials } from '@/lib';
+import { getAuthToken, formatFileSize } from '@/lib';
 import type { IChatConversation, IChatMessage, IChatParticipant, MentorshipStatus } from '@/types';
 
 import { FilePond, registerPlugin } from 'react-filepond';
@@ -1319,8 +1319,8 @@ export default function MessagesPage() {
                     <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mb-5">
                       <MessageCircle className="size-10 text-neutral-500" />
                     </div>
-                    <p className="text-neutral-400 text-xl">No messages yet</p>
-                    <p className="text-neutral-500 text-base mt-2">Start the conversation!</p>
+                    <p className="text-neutral-400 text-2xl">No messages yet</p>
+                    <p className="text-neutral-500 text-lg mt-2">Start the conversation!</p>
                   </div>
                 ) : (
                   <PhotoProvider>
@@ -1428,7 +1428,7 @@ export default function MessagesPage() {
                                         className={`rounded-2xl ${bubbleBaseClass} ${bubblePaddingClass}`.trim()}
                                       >
                                     {message.isDeleted ? (
-                                      <p className="text-lg leading-relaxed whitespace-pre-wrap wrap-break-word">
+                                      <p className="text-xl leading-relaxed whitespace-pre-wrap wrap-break-word">
                                         {message.content}
                                       </p>
                                     ) : (
@@ -1448,7 +1448,7 @@ export default function MessagesPage() {
                                           if (!shouldShowCaption) return null;
 
                                           return (
-                                            <p className="text-lg leading-relaxed whitespace-pre-wrap wrap-break-word">
+                                            <p className="text-xl leading-relaxed whitespace-pre-wrap wrap-break-word">
                                               {renderMessageContent(message.content, isOwn)}
                                             </p>
                                           );
@@ -1460,7 +1460,7 @@ export default function MessagesPage() {
                                   })()}
                                   
                                   {isOwn && !message.isDeleted && selectedConversation.mentorshipStatus !== 'ended' && (
-                                    <div className="absolute -left-28 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
+                                    <div className="absolute -left-35 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5">
                                       <Button
                                         variant="ghost"
                                         size="icon"
@@ -1512,11 +1512,11 @@ export default function MessagesPage() {
                             </div>
                             
                             <div className={`flex items-center gap-2 mt-2 ${isOwn ? 'justify-end mr-14' : 'justify-start ml-14'}`}>
-                              <span className="text-md text-neutral-500">
+                              <span className="text-lg text-neutral-500">
                                 {formatMessageTime(message.createdAt)}
                               </span>
                               {message.isEdited && (
-                                <span className="text-md text-neutral-500 capitalize">(edited)</span>
+                                <span className="text-lg text-neutral-500 capitalize">(edited)</span>
                               )}
                               {isOwn && !message.isDeleted && getStatusIcon(message)}
                             </div>
@@ -1579,10 +1579,10 @@ export default function MessagesPage() {
                     <UserX className="size-7 text-neutral-400" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-lg font-medium text-neutral-300">
+                    <p className="text-xl font-medium text-neutral-300">
                       Mentorship Ended
                     </p>
-                    <div className="text-base text-neutral-500 mt-1 space-y-1">
+                    <div className="text-lg text-neutral-500 mt-1 space-y-1">
                       {selectedConversation.mentorshipEndReason && (
                         <p>
                           <span className="font-medium">Reason: </span>
@@ -1634,11 +1634,11 @@ export default function MessagesPage() {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
-                <MessageCircle className="size-12 text-neutral-500" />
+              <div className="size-28 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+                <MessageCircle className="size-14 text-neutral-500" />
               </div>
-              <h2 className="text-3xl font-semibold mb-3">Your Messages</h2>
-              <p className="text-neutral-400 text-xl max-w-sm">
+              <h2 className="text-4xl font-semibold mb-3">Your Messages</h2>
+              <p className="text-neutral-400 text-2xl max-w-sm">
                 {isLoadingConversations 
                   ? 'Loading conversations...'
                   : conversations.length === 0

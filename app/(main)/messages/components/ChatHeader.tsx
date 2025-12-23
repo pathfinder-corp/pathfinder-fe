@@ -85,10 +85,10 @@ export function ChatHeader({
           )}
         </div>
         <div>
-          <p className="font-semibold text-2xl">
-            {other.firstName} {other.lastName} <span className="text-neutral-500 text-xl capitalize">({other.role})</span>
+          <p className="font-semibold text-3xl">
+            {other.firstName} {other.lastName} <span className="text-neutral-500 text-2xl capitalize">({other.role})</span>
           </p>
-          <div className="text-lg text-neutral-400">
+          <div className="text-xl text-neutral-400">
             {isOtherTyping ? (
               <p className="text-green-500 flex items-center gap-1.5">
                 Typing
