@@ -318,6 +318,7 @@ export default function AssessmentDetailPage() {
         const summarySection = await waitForElement('[data-driver="assessment-summary"]');
         const suggestedRoadmaps = await waitForElement('[data-driver="assessment-suggested-roadmaps"]');
         const questionBreakdown = await waitForElement('[data-driver="assessment-question-breakdown"]');
+        const attemptHistory = await waitForElement('[data-driver="assessment-attempt-history"]');
 
         if (!scoreCard) {
           console.warn('Assessment score card not found, skipping tour');
@@ -383,6 +384,19 @@ export default function AssessmentDetailPage() {
               title: 'Question Breakdown',
               description:
                 'Review each question with explanations to understand why answers were correct or incorrect.',
+              side: 'top',
+              align: 'center',
+            },
+          });
+        }
+
+        if (attemptHistory) {
+          tourSteps.push({
+            element: '[data-driver="assessment-attempt-history"]',
+            popover: {
+              title: 'Attempt History',
+              description:
+                'Track your progress across multiple attempts. View your best score, average performance, and detailed history of all attempts.',
               side: 'top',
               align: 'center',
             },
@@ -694,7 +708,10 @@ export default function AssessmentDetailPage() {
         </div>
 
         {history && history.totalAttempts > 1 && (
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
+          <div
+            className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8"
+            data-driver="assessment-attempt-history"
+          >
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold flex items-center gap-3">
                 <HistoryIcon className="size-7" />
