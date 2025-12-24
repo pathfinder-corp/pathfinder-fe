@@ -9,7 +9,8 @@ import {
   TrendingDown,
   Share2,
   GraduationCap,
-  Handshake
+  Handshake,
+  MessageSquare
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { 
@@ -22,7 +23,10 @@ import {
   CartesianGrid, 
   Tooltip, 
   ResponsiveContainer,
-  Cell
+  Cell,
+  PieChart,
+  Pie,
+  Legend
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 
@@ -33,10 +37,16 @@ import type {
   IDashboardRoadmaps, 
   IDashboardAssessments,
   IAdminMentorStats,
-  IAdminMentorshipStats
+  IAdminMentorshipStats,
+  IAdminContactStats
 } from '@/types';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  ChartContainer,
+  ChartTooltipContent,
+  type ChartConfig,
+} from '@/components/ui/chart';
 
 function CustomTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {
@@ -53,6 +63,44 @@ function CustomTooltip({ active, payload, label }: any) {
   }
   return null;
 }
+
+const statusChartConfig = {
+  pending: {
+    label: "Pending",
+    color: "#eab308",
+  },
+  inProgress: {
+    label: "In Progress",
+    color: "#3b82f6",
+  },
+  resolved: {
+    label: "Resolved",
+    color: "#22c55e",
+  },
+  closed: {
+    label: "Closed",
+    color: "#737373",
+  },
+} satisfies ChartConfig;
+
+const typeChartConfig = {
+  general: {
+    label: "General",
+    color: "#737373",
+  },
+  suspended: {
+    label: "Suspended",
+    color: "#ef4444",
+  },
+  feedback: {
+    label: "Feedback",
+    color: "#a855f7",
+  },
+  support: {
+    label: "Support",
+    color: "#3b82f6",
+  },
+} satisfies ChartConfig;
 
 interface IStatCardProps {
   title: string;
@@ -117,6 +165,7 @@ export default function AdminDashboardPage() {
   const [assessmentsData, setAssessmentsData] = useState<IDashboardAssessments | null>(null);
   const [mentorStats, setMentorStats] = useState<IAdminMentorStats | null>(null);
   const [mentorshipStats, setMentorshipStats] = useState<IAdminMentorshipStats | null>(null);
+  const [contactStats, setContactStats] = useState<IAdminContactStats | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeChart, setActiveChart] = useState<'users' | 'roadmaps' | 'assessments'>('users');
 
@@ -124,13 +173,14 @@ export default function AdminDashboardPage() {
     try {
       setIsLoading(true);
       
-      const [overviewRes, usersRes, roadmapsRes, assessmentsRes, mentorStatsRes, mentorshipStatsRes] = await Promise.all([
+      const [overviewRes, usersRes, roadmapsRes, assessmentsRes, mentorStatsRes, mentorshipStatsRes, contactStatsRes] = await Promise.all([
         adminService.getDashboardOverview(),
         adminService.getDashboardUsers(),
         adminService.getDashboardRoadmaps(),
         adminService.getDashboardAssessments(),
         adminService.getMentorStats(),
-        adminService.getMentorshipStats()
+        adminService.getMentorshipStats(),
+        adminService.getContactStats()
       ]);
 
       setOverview(overviewRes);
@@ -139,6 +189,7 @@ export default function AdminDashboardPage() {
       setAssessmentsData(assessmentsRes);
       setMentorStats(mentorStatsRes);
       setMentorshipStats(mentorshipStatsRes);
+      setContactStats(contactStatsRes);
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
@@ -178,8 +229,8 @@ export default function AdminDashboardPage() {
 
   const chartConfig = {
     users: { label: 'User Registrations', color: '#ffffff' },
-    roadmaps: { label: 'Roadmaps Created', color: '#06b6d4' },
-    assessments: { label: 'Assessments Created', color: '#a855f7' }
+    roadmaps: { label: 'Roadmaps Created', color: '#ffffff' },
+    assessments: { label: 'Assessments Created', color: '#ffffff' }
   };
 
   return (
@@ -250,6 +301,14 @@ export default function AdminDashboardPage() {
 
         {isLoading ? (
           <Skeleton className="h-[350px] w-full bg-neutral-800 rounded-lg" />
+        ) : chartDataMap[activeChart].length === 0 ? (
+          <div className="h-[350px] flex items-center justify-center">
+            <div className="text-center">
+              <TrendingUp className="size-12 text-neutral-500 mx-auto mb-3" />
+              <p className="text-lg text-neutral-400">No activity data available</p>
+              <p className="text-sm text-neutral-500 mt-1">Activity trends will appear here once data is available</p>
+            </div>
+          </div>
         ) : (
           <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -309,6 +368,14 @@ export default function AdminDashboardPage() {
           </div>
           {isLoading ? (
             <Skeleton className="h-[180px] w-full bg-neutral-800 rounded-lg" />
+          ) : (mentorStats?.total === 0 || !mentorStats ? (
+            <div className="h-[180px] flex items-center justify-center">
+              <div className="text-center">
+                <GraduationCap className="size-10 text-neutral-500 mx-auto mb-2" />
+                <p className="text-base text-neutral-400">No mentors yet</p>
+                <p className="text-xs text-neutral-500 mt-1">Mentor data will appear here</p>
+              </div>
+            </div>
           ) : (
             <div className="h-[180px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -348,7 +415,7 @@ export default function AdminDashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          )}
+          ))}
         </div>
 
         <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
@@ -369,14 +436,21 @@ export default function AdminDashboardPage() {
           </div>
           {isLoading ? (
             <Skeleton className="h-[180px] w-full bg-neutral-800 rounded-lg" />
+          ) : (mentorshipStats?.total === 0 || !mentorshipStats ? (
+            <div className="h-[180px] flex items-center justify-center">
+              <div className="text-center">
+                <Handshake className="size-10 text-neutral-500 mx-auto mb-2" />
+                <p className="text-base text-neutral-400">No mentorships yet</p>
+                <p className="text-xs text-neutral-500 mt-1">Mentorship data will appear here</p>
+              </div>
+            </div>
           ) : (
             <div className="h-[180px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={[
                     { name: 'Active', value: mentorshipStats?.active || 0, fill: '#ffffff' },
-                    { name: 'Completed', value: mentorshipStats?.completed || 0, fill: '#06b6d4' },
-                    { name: 'Cancelled', value: mentorshipStats?.cancelled || 0, fill: '#a855f7' },
+                    { name: 'Completed', value: mentorshipStats?.completed || 0, fill: '#06b6d4' }
                   ]}
                   layout="vertical"
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
@@ -399,8 +473,7 @@ export default function AdminDashboardPage() {
                   <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={28}>
                     {[
                       { name: 'Active', value: mentorshipStats?.active || 0, fill: '#ffffff' },
-                      { name: 'Completed', value: mentorshipStats?.completed || 0, fill: '#06b6d4' },
-                      { name: 'Cancelled', value: mentorshipStats?.cancelled || 0, fill: '#a855f7' },
+                      { name: 'Completed', value: mentorshipStats?.completed || 0, fill: '#06b6d4' }
                     ].map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
@@ -408,7 +481,139 @@ export default function AdminDashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          )}
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-neutral-800 rounded-lg">
+                <MessageSquare className="size-6" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-semibold">Contact Messages</h3>
+                <p className="text-base text-neutral-400">Messages by status</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-4xl font-bold">{contactStats?.total || 0}</p>
+              <p className="text-md text-neutral-500 capitalize">total messages</p>
+            </div>
+          </div>
+          {isLoading ? (
+            <Skeleton className="h-[250px] w-full bg-neutral-800 rounded-lg" />
+          ) : (contactStats?.total === 0 || !contactStats ? (
+            <div className="h-[250px] flex items-center justify-center">
+              <div className="text-center">
+                <MessageSquare className="size-12 text-neutral-500 mx-auto mb-3" />
+                <p className="text-lg text-neutral-400">No contact messages yet</p>
+                <p className="text-sm text-neutral-500 mt-1">Messages will appear here once received</p>
+              </div>
+            </div>
+          ) : (
+            <div className="h-[250px]">
+              <ChartContainer
+                config={statusChartConfig}
+                className="mx-auto aspect-square max-h-[250px]"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Tooltip
+                      cursor={false}
+                      content={<ChartTooltipContent hideLabel />}
+                    />
+                    <Pie
+                      data={[
+                        { name: 'pending', value: contactStats?.pending || 0, fill: '#eab308' },
+                        { name: 'inProgress', value: contactStats?.inProgress || 0, fill: '#3b82f6' },
+                        { name: 'resolved', value: contactStats?.resolved || 0, fill: '#22c55e' },
+                        { name: 'closed', value: contactStats?.closed || 0, fill: '#737373' },
+                      ]}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={60}
+                    >
+                      {[
+                        { name: 'pending', value: contactStats?.pending || 0, fill: '#eab308' },
+                        { name: 'inProgress', value: contactStats?.inProgress || 0, fill: '#3b82f6' },
+                        { name: 'resolved', value: contactStats?.resolved || 0, fill: '#22c55e' },
+                        { name: 'closed', value: contactStats?.closed || 0, fill: '#737373' },
+                      ].map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-neutral-800 rounded-lg">
+                <MessageSquare className="size-6" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-semibold">Contact Messages</h3>
+                <p className="text-base text-neutral-400">Messages by type</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-4xl font-bold">{contactStats?.total || 0}</p>
+              <p className="text-md text-neutral-500 capitalize">total messages</p>
+            </div>
+          </div>
+          {isLoading ? (
+            <Skeleton className="h-[250px] w-full bg-neutral-800 rounded-lg" />
+          ) : (contactStats?.total === 0 || !contactStats ? (
+            <div className="h-[250px] flex items-center justify-center">
+              <div className="text-center">
+                <MessageSquare className="size-12 text-neutral-500 mx-auto mb-3" />
+                <p className="text-lg text-neutral-400">No contact messages yet</p>
+                <p className="text-sm text-neutral-500 mt-1">Messages will appear here once received</p>
+              </div>
+            </div>
+          ) : (
+            <div className="h-[250px]">
+              <ChartContainer
+                config={typeChartConfig}
+                className="mx-auto aspect-square max-h-[250px]"
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Tooltip
+                      cursor={false}
+                      content={<ChartTooltipContent hideLabel />}
+                    />
+                    <Pie
+                      data={[
+                        { name: 'general', value: contactStats?.byType.general || 0, fill: '#737373' },
+                        { name: 'suspended', value: contactStats?.byType.suspended || 0, fill: '#ef4444' },
+                        { name: 'feedback', value: contactStats?.byType.feedback || 0, fill: '#a855f7' },
+                        { name: 'support', value: contactStats?.byType.support || 0, fill: '#3b82f6' },
+                      ]}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={60}
+                    >
+                      {[
+                        { name: 'general', value: contactStats?.byType.general || 0, fill: '#737373' },
+                        { name: 'suspended', value: contactStats?.byType.suspended || 0, fill: '#ef4444' },
+                        { name: 'feedback', value: contactStats?.byType.feedback || 0, fill: '#a855f7' },
+                        { name: 'support', value: contactStats?.byType.support || 0, fill: '#3b82f6' },
+                      ].map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                    </Pie>
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -424,16 +629,23 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
+          ) : (!usersData?.byRole || usersData.byRole.length === 0 ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center">
+                <Users className="size-8 text-neutral-500 mx-auto mb-2" />
+                <p className="text-sm text-neutral-400">No user data available</p>
+              </div>
+            </div>
           ) : (
             <div className="space-y-5">
-              {usersData?.byRole.map((item) => (
+              {usersData.byRole.map((item) => (
                 <div key={item.role} className="flex items-center justify-between">
                   <span className="text-lg text-neutral-300 capitalize">{item.role}</span>
                   <span className="text-lg font-semibold">{item.count}</span>
                 </div>
               ))}
             </div>
-          )}
+          ))}
         </div>
 
         <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
@@ -447,13 +659,20 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
+          ) : (!usersData?.byStatus || usersData.byStatus.length === 0 ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center">
+                <Users className="size-8 text-neutral-500 mx-auto mb-2" />
+                <p className="text-sm text-neutral-400">No user status data available</p>
+              </div>
+            </div>
           ) : (
             <div className="space-y-5">
-              {usersData?.byStatus.map((item) => (
+              {usersData.byStatus.map((item) => (
                 <div key={item.status} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`size-3 rounded-full ${
-                      item.status === 'active' ? 'bg-green-400' : 'bg-red-400'
+                      item.status === 'active' ? 'bg-green-500' : 'bg-red-500'
                     }`} />
                     <span className="text-lg text-neutral-300 capitalize">{item.status}</span>
                   </div>
@@ -461,7 +680,7 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          )}
+          ))}
         </div>
 
         <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
@@ -475,9 +694,16 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
+          ) : (!assessmentsData?.byDifficulty || assessmentsData.byDifficulty.length === 0 ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center">
+                <ClipboardList className="size-8 text-neutral-500 mx-auto mb-2" />
+                <p className="text-sm text-neutral-400">No assessment data available</p>
+              </div>
+            </div>
           ) : (
             <div className="space-y-5">
-              {assessmentsData?.byDifficulty.map((item) => (
+              {assessmentsData.byDifficulty.map((item) => (
                 <div key={item.difficulty} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`size-3 rounded-full ${
@@ -490,7 +716,7 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          )}
+          ))}
         </div>
       </div>
 
@@ -506,9 +732,16 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
+          ) : (!roadmapsData?.popularTopics || roadmapsData.popularTopics.length === 0 ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center">
+                <Map className="size-8 text-neutral-500 mx-auto mb-2" />
+                <p className="text-sm text-neutral-400">No roadmap topics available</p>
+              </div>
+            </div>
           ) : (
             <div className="space-y-5">
-              {roadmapsData?.popularTopics.slice(0, 5).map((item, index) => (
+              {roadmapsData.popularTopics.slice(0, 5).map((item, index) => (
                 <div key={item.topic} className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <span className="text-base text-neutral-500 w-6">{index + 1}.</span>
@@ -520,7 +753,7 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          )}
+          ))}
         </div>
 
         <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
@@ -534,9 +767,16 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
+          ) : (!assessmentsData?.popularDomains || assessmentsData.popularDomains.length === 0 ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="text-center">
+                <ClipboardList className="size-8 text-neutral-500 mx-auto mb-2" />
+                <p className="text-sm text-neutral-400">No assessment domains available</p>
+              </div>
+            </div>
           ) : (
             <div className="space-y-5">
-              {assessmentsData?.popularDomains.slice(0, 5).map((item, index) => (
+              {assessmentsData.popularDomains.slice(0, 5).map((item, index) => (
                 <div key={item.domain} className="flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <span className="text-base text-neutral-500 w-6">{index + 1}.</span>
@@ -548,7 +788,7 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          )}
+          ))}
         </div>
       </div>
     </div>

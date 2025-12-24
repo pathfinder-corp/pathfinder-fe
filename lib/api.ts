@@ -45,6 +45,8 @@ api.interceptors.response.use(
                    error.message || 
                    'An error occurred';
     
+    const isContactEndpoint = error.config?.url?.includes('/contact');
+    
     if (error.response?.status === 401 && message.includes('not active')) {
       if (typeof window !== 'undefined' && window.location.pathname !== '/suspended') {
         window.location.href = '/suspended';
@@ -52,10 +54,10 @@ api.interceptors.response.use(
       }
     }
     
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && !isContactEndpoint) {
       if (typeof window !== 'undefined') {
         document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
-        if (window.location.pathname !== '/suspended') {
+        if (window.location.pathname !== '/suspended' && window.location.pathname !== '/contact') {
           window.location.href = '/login';
         }
       }

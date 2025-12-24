@@ -10,7 +10,8 @@ import {
   Map, 
   ClipboardList,
   ChevronLeft,
-  Book
+  Book,
+  MessageSquare
 } from 'lucide-react';
 import { useUserStore } from '@/stores';
 import { USER_ROLES } from '@/constants';
@@ -57,6 +58,11 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Mentorship',
     href: '/admin/mentorship',
     icon: <Book className="size-7" />
+  },
+  {
+    label: 'Contacts',
+    href: '/admin/contact',
+    icon: <MessageSquare className="size-7" />
   }
 ];
 
@@ -86,7 +92,8 @@ export default function AdminLayout({
       users: 'Users',
       roadmaps: 'Roadmaps',
       assessments: 'Assessments',
-      mentorship: 'Mentorship'
+      mentorship: 'Mentorship',
+      contact: 'Contact'
     };
 
     let currentPath = '';

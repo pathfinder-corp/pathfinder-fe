@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { MoreVertical, Eye, X } from 'lucide-react';
+import { MoreVertical, Eye, X, Search } from 'lucide-react';
 
 import type { IChatParticipant, MentorshipStatus } from '@/types';
 
@@ -22,6 +22,7 @@ type ChatHeaderProps = {
   canEndMentorship: boolean;
   onViewProfile: () => void;
   onOpenEndMentorship: () => void;
+  onOpenSearch: () => void;
 };
 
 export function ChatHeader({
@@ -33,7 +34,8 @@ export function ChatHeader({
   canViewProfile,
   canEndMentorship,
   onViewProfile,
-  onOpenEndMentorship
+  onOpenEndMentorship,
+  onOpenSearch
 }: ChatHeaderProps) {
   if (!other) {
     return null;
@@ -42,6 +44,7 @@ export function ChatHeader({
   const canShowMenu =
     mentorshipStatus === 'active' ||
     mentorshipStatus === 'cancelled' ||
+    mentorshipStatus === 'ended' ||
     !mentorshipStatus;
 
   const handleClickProfile = () => {
@@ -123,6 +126,13 @@ export function ChatHeader({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem
+                className="text-lg py-3"
+                onClick={onOpenSearch}
+              >
+                <Search className="size-5" />
+                Search
+              </DropdownMenuItem>
               {canViewProfile && (
                 <DropdownMenuItem
                   className="text-lg py-3"
@@ -134,7 +144,7 @@ export function ChatHeader({
               )}
               {canEndMentorship && (
                 <>
-                  {canViewProfile && <DropdownMenuSeparator />}
+                  {(canViewProfile || true) && <DropdownMenuSeparator />}
                   <DropdownMenuItem
                     className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
                     onClick={onOpenEndMentorship}

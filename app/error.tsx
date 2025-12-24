@@ -3,9 +3,10 @@
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { motion } from 'motion/react';
-import { Home, RefreshCw, AlertTriangle, Bug, ArrowLeft } from 'lucide-react';
+import { Bug, ArrowLeft } from 'lucide-react';
 
 import { PublicHeader } from '@/components/PublicHeader';
+import { PublicFooter } from '@/components/PublicFooter';
 import { Button } from '@/components/ui/button';
 
 interface ErrorProps {
@@ -96,7 +97,6 @@ export default function Error({ error, reset }: ErrorProps) {
               className="w-full sm:w-auto rounded-full bg-white text-neutral-950 hover:bg-neutral-200 text-xl px-10 py-8 cursor-pointer"
             >
               Try Again
-              <RefreshCw className="size-5" />
             </Button>
             
             <Button
@@ -107,7 +107,6 @@ export default function Error({ error, reset }: ErrorProps) {
             >
               <Link href="/">
                 Go Home
-                <Home className="size-5" />
               </Link>
             </Button>
           </motion.div>
@@ -131,7 +130,7 @@ export default function Error({ error, reset }: ErrorProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="mt-16 pt-10 border-t border-neutral-800"
+            className="mt-8 pt-10 border-t border-neutral-800"
           >
             <p className="text-neutral-500 mb-6">Need help? Contact our support team:</p>
             <Link
@@ -143,6 +142,7 @@ export default function Error({ error, reset }: ErrorProps) {
           </motion.div>
         </div>
       </main>
+      <PublicFooter />
     </div>
   );
 }

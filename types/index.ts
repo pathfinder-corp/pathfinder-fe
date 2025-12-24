@@ -9,3 +9,4 @@ export * from './mentor.type';
 export * from './mentorship.type';
 export * from './notification.type';
 export * from './chat.type';
+export * from './contact.type';

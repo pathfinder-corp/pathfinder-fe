@@ -57,6 +57,28 @@ export const chatService = {
     }
   },
 
+  searchMessages: async (
+    conversationId: string,
+    params: { q: string; limit?: number; before?: string }
+  ): Promise<IGetMessagesResponse> => {
+    try {
+      const queryParams = new URLSearchParams();
+      queryParams.append('q', params.q);
+      if (params.limit) queryParams.append('limit', String(params.limit));
+      if (params.before) queryParams.append('before', params.before);
+
+      const response = await api.get<IGetMessagesResponse>(
+        `/chat/conversations/${conversationId}/messages/search?${queryParams.toString()}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Search messages failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
   uploadAttachment: async (
     conversationId: string,
     file: File,
