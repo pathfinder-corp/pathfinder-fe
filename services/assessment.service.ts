@@ -3,7 +3,8 @@ import type {
   ICreateAssessmentRequest,
   ISubmitAnswerRequest,
   ISubmitAnswerResponse,
-  IAssessmentResult
+  IAssessmentResult,
+  IAssessmentHistory
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
@@ -101,6 +102,30 @@ export const assessmentService = {
       return response.data;
     } catch (error) {
       console.error('Get results failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  retakeAssessment: async (id: string): Promise<IAssessment> => {
+    try {
+      const response = await api.post<IAssessment>(`/assessments/${id}/retake`);
+      return response.data;
+    } catch (error) {
+      console.error('Retake assessment failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getAssessmentHistory: async (id: string): Promise<IAssessmentHistory> => {
+    try {
+      const response = await api.get<IAssessmentHistory>(`/assessments/${id}/history`);
+      return response.data;
+    } catch (error) {
+      console.error('Get assessment history failed:', error);
       const message = extractErrorMessage(error);
       if (message) throw new Error(message);
       throw error;

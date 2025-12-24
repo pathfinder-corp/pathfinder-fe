@@ -20,7 +20,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
@@ -56,6 +56,7 @@ type HistoryItem = {
   title: string;
   createdAt: string;
   data: IRoadmapResponse | IAssessment;
+  attempts?: IAssessment[]; // For grouped assessments
 };
 
 export default function HistoryPage() {
@@ -79,25 +80,46 @@ export default function HistoryPage() {
 
   useEffect(() => {
     loadInitialData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
+    // Group assessments by original ID
+    const groupedAssessments = new globalThis.Map<string, IAssessment[]>();
+
+    assessments.forEach(assessment => {
+      const rootId = assessment.originalAssessmentId || assessment.id;
+      if (!groupedAssessments.has(rootId)) {
+        groupedAssessments.set(rootId, []);
+      }
+      groupedAssessments.get(rootId)!.push(assessment);
+    });
+
+    // Sort attempts within each group
+    groupedAssessments.forEach(attempts => {
+      attempts.sort((a, b) => a.attemptNumber - b.attemptNumber);
+    });
+
+    // Create history items with grouped assessments (use latest attempt for display)
     const allItems: HistoryItem[] = [
       ...roadmaps.map(r => ({
         id: r.id,
         type: 'roadmap' as const,
         title: r.topic,
         createdAt: r.createdAt,
-        data: r
+        data: r,
       })),
-      ...assessments.map(a => ({
-        id: a.id,
-        type: 'assessment' as const,
-        title: a.domain,
-        createdAt: a.createdAt,
-        data: a
-      }))
+      ...Array.from(groupedAssessments.values()).map(attempts => {
+        const latestAttempt = attempts[attempts.length - 1];
+        return {
+          id: latestAttempt.originalAssessmentId || latestAttempt.id,
+          type: 'assessment' as const,
+          title: latestAttempt.domain,
+          createdAt: latestAttempt.createdAt,
+          data: latestAttempt,
+          attempts: attempts, // Store all attempts for display
+        };
+      }),
     ].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
     let filtered = allItems;
@@ -107,9 +129,7 @@ export default function HistoryPage() {
     }
 
     if (searchQuery.trim()) {
-      filtered = filtered.filter(item =>
-        searchVietnamese(item.title, searchQuery)
-      );
+      filtered = filtered.filter(item => searchVietnamese(item.title, searchQuery));
     }
 
     setFilteredItems(filtered);
@@ -122,20 +142,18 @@ export default function HistoryPage() {
   const loadInitialData = async () => {
     try {
       updateLoadingState('initial', true);
-      
+
       const [roadmapsData, assessmentsData] = await Promise.all([
         roadmapService.getAllRoadmaps(1, ITEMS_PER_PAGE),
-        assessmentService.getAllAssessments()
+        assessmentService.getAllAssessments(),
       ]);
-      
+
       setRoadmaps(roadmapsData);
       setAssessments(assessmentsData);
       setHasNextPage(roadmapsData.length === ITEMS_PER_PAGE);
       setPage(1);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to fetch data';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch data';
       toast.error('Failed to fetch data', {
         description: errorMessage,
       });
@@ -151,7 +169,7 @@ export default function HistoryPage() {
       updateLoadingState('loadMore', true);
       const nextPage = page + 1;
       const roadmapsData = await roadmapService.getAllRoadmaps(nextPage, ITEMS_PER_PAGE);
-      
+
       if (roadmapsData.length > 0) {
         setRoadmaps(prev => [...prev, ...roadmapsData]);
         setPage(nextPage);
@@ -160,9 +178,7 @@ export default function HistoryPage() {
         setHasNextPage(false);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load more roadmaps';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load more roadmaps';
       toast.error('Failed to load more roadmaps', {
         description: errorMessage,
       });
@@ -174,7 +190,7 @@ export default function HistoryPage() {
   const handleDelete = async (item: HistoryItem) => {
     try {
       updateLoadingState('delete', true);
-      
+
       if (item.type === 'roadmap') {
         await roadmapService.deleteRoadmap(item.id);
         setRoadmaps(prev => prev.filter(r => r.id !== item.id));
@@ -185,9 +201,7 @@ export default function HistoryPage() {
         toast.success('Assessment deleted successfully');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : `Failed to delete ${item.type}`;
+      const errorMessage = error instanceof Error ? error.message : `Failed to delete ${item.type}`;
       toast.error('Failed to delete', {
         description: errorMessage,
       });
@@ -201,15 +215,13 @@ export default function HistoryPage() {
     try {
       updateLoadingState('deleteAll', true);
       await roadmapService.deleteAllRoadmaps();
-      
+
       setRoadmaps([]);
       setPage(1);
       setHasNextPage(false);
       toast.success('All roadmaps deleted successfully');
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to delete all roadmaps';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete all roadmaps';
       toast.error('Failed to delete all roadmaps', {
         description: errorMessage,
       });
@@ -258,146 +270,170 @@ export default function HistoryPage() {
     }
   };
 
-  const renderHistoryCard = useCallback((item: HistoryItem) => {
-    const isRoadmap = item.type === 'roadmap';
-    const roadmapData = isRoadmap ? item.data as IRoadmapResponse : null;
-    const assessmentData = !isRoadmap ? item.data as IAssessment : null;
+  const renderHistoryCard = useCallback(
+    (item: HistoryItem) => {
+      const isRoadmap = item.type === 'roadmap';
+      const roadmapData = isRoadmap ? (item.data as IRoadmapResponse) : null;
+      const assessmentData = !isRoadmap ? (item.data as IAssessment) : null;
+      const hasMultipleAttempts = item.attempts && item.attempts.length > 1;
+      const latestAttempt = item.attempts ? item.attempts[item.attempts.length - 1] : assessmentData;
 
-    return (
-      <div
-        key={`${item.type}-${item.id}`}
-        className="group relative bg-neutral-900/50 border border-neutral-800 rounded-xl p-7 hover:border-neutral-700 transition-all duration-300 cursor-pointer h-full flex flex-col"
-        onClick={() => router.push(isRoadmap ? `/roadmap/${item.id}` : `/assessment/${item.id}`)}
-      >
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1 min-w-0">
-            <h3 className="text-2xl font-semibold mb-2 line-clamp-2">
-              {item.title}
-            </h3>
-            <div className="flex items-center gap-2 text-lg text-neutral-500">
-              <Calendar className="size-5" />
-              <span>{formatTimeAgo(item.createdAt)}</span>
+      return (
+        <div
+          key={`${item.type}-${item.id}`}
+          className="group relative bg-neutral-900/50 border border-neutral-800 rounded-xl p-7 hover:border-neutral-700 transition-all duration-300 cursor-pointer h-full flex flex-col"
+          onClick={() => router.push(isRoadmap ? `/roadmap/${item.id}` : `/assessment/${latestAttempt?.id}`)}
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-start gap-3 mb-2">
+                <h3 className="text-2xl font-semibold line-clamp-2 flex-1">{item.title}</h3>
+              </div>
+              <div className="flex items-center gap-2 text-lg text-neutral-500">
+                <Calendar className="size-5" />
+                <span>{formatTimeAgo(item.createdAt)}</span>
+              </div>
             </div>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 size-10"
+                >
+                  <MoreVertical className="size-6" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-46">
+                <DropdownMenuItem
+                  onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+                    e.stopPropagation();
+                    router.push(isRoadmap ? `/roadmap/${item.id}` : `/assessment/${latestAttempt?.id}`);
+                  }}
+                  className="text-lg py-3"
+                >
+                  View {item.type}
+                </DropdownMenuItem>
+                {!isRoadmap && (
+                  <DropdownMenuItem
+                    onClick={async (e: React.MouseEvent<HTMLDivElement>) => {
+                      e.stopPropagation();
+                      try {
+                        const newAssessment = await assessmentService.retakeAssessment(item.id);
+                        toast.success(`Starting attempt ${newAssessment.attemptNumber}!`);
+                        router.push(`/assessment/${newAssessment.id}`);
+                      } catch (error) {
+                        const errorMessage = error instanceof Error ? error.message : 'Failed to retake assessment';
+                        toast.error(errorMessage);
+                      } finally {
+                      }
+                    }}
+                    className="text-lg py-3"
+                  >
+                    Retake assessment
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem
+                  onClick={(e: React.MouseEvent<HTMLDivElement>) => {
+                    e.stopPropagation();
+                    setDeleteItem(item);
+                  }}
+                  className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
+                >
+                  Delete {item.type}
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-    
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild onClick={(e: React.MouseEvent<HTMLButtonElement>) => e.stopPropagation()}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0 size-10"
-              >
-                <MoreVertical className="size-6" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-52">
-              <DropdownMenuItem
-                onClick={(e: React.MouseEvent<HTMLDivElement>) => {
-                  e.stopPropagation();
-                  router.push(isRoadmap ? `/roadmap/${item.id}` : `/assessment/${item.id}`);
-                }}
-                className="text-lg py-3"
-              >
-                View {item.type}
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={(e: React.MouseEvent<HTMLDivElement>) => {
-                  e.stopPropagation();
-                  setDeleteItem(item);
-                }}
-                className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
-              >
-                Delete {item.type}
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-    
-        {isRoadmap && roadmapData && (
-          <>
-            <div className="space-y-2.5 flex-1">
-              {roadmapData.experienceLevel && (
-                <div className="flex items-center gap-2">
-                  <span className="text-lg text-neutral-500">Level:</span>
-                  <span className="text-lg capitalize text-neutral-300">
-                    {roadmapData.experienceLevel}
+
+          {isRoadmap && roadmapData && (
+            <>
+              <div className="space-y-2.5 flex-1">
+                {roadmapData.experienceLevel && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg text-neutral-500">Level:</span>
+                    <span className="text-lg capitalize text-neutral-300">{roadmapData.experienceLevel}</span>
+                  </div>
+                )}
+                {roadmapData.learningPace && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg text-neutral-500">Pace:</span>
+                    <span className="text-lg capitalize text-neutral-300">{roadmapData.learningPace}</span>
+                  </div>
+                )}
+                {roadmapData.timeframe && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg text-neutral-500">Timeframe:</span>
+                    <span className="text-lg text-neutral-300">{roadmapData.timeframe}</span>
+                  </div>
+                )}
+              </div>
+
+              {roadmapData.phases && (
+                <div className="mt-4 pt-4 border-t border-neutral-800">
+                  <span className="text-lg text-neutral-400">
+                    {roadmapData.phases.length} phases •{' '}
+                    {roadmapData.phases.reduce((acc, phase) => acc + (phase.steps?.length || 0), 0)} steps
                   </span>
                 </div>
               )}
-              {roadmapData.learningPace && (
-                <div className="flex items-center gap-2">
-                  <span className="text-lg text-neutral-500">Pace:</span>
-                  <span className="text-lg capitalize text-neutral-300">
-                    {roadmapData.learningPace}
-                  </span>
+            </>
+          )}
+
+          {!isRoadmap && latestAttempt && (
+            <>
+              <div className="space-y-3 flex-1">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <Badge
+                    variant="outline"
+                    className={`capitalize py-2 px-3 text-base ${getDifficultyColor(latestAttempt.difficulty)}`}
+                  >
+                    {latestAttempt.difficulty}
+                  </Badge>
+                  <Badge
+                    variant="outline"
+                    className={`capitalize py-2 px-3 text-base ${getStatusColor(latestAttempt.status)}`}
+                  >
+                    {latestAttempt.status.replace('_', ' ')}
+                  </Badge>
+                  {latestAttempt.attemptNumber > 0 && (
+                    <Badge variant="outline" className="py-2 px-3 text-base border-purple-500/30 text-purple-400">
+                      {latestAttempt.attemptNumber} {latestAttempt.attemptNumber === 1 ? 'Attempt' : 'Attempts'}
+                    </Badge>
+                  )}
                 </div>
-              )}
-              {roadmapData.timeframe && (
                 <div className="flex items-center gap-2">
-                  <span className="text-lg text-neutral-500">Timeframe:</span>
+                  <span className="text-lg text-neutral-500">Questions:</span>
+                  <span className="text-lg text-neutral-300">{latestAttempt.questionCount}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg text-neutral-500">Answered:</span>
                   <span className="text-lg text-neutral-300">
-                    {roadmapData.timeframe}
+                    {latestAttempt.answeredCount} / {latestAttempt.questionCount}
                   </span>
                 </div>
-              )}
-            </div>
-    
-            {roadmapData.phases && (
+              </div>
+
               <div className="mt-4 pt-4 border-t border-neutral-800">
-                <span className="text-lg text-neutral-400">
-                  {roadmapData.phases.length} phases • {' '}
-                  {roadmapData.phases.reduce((acc, phase) => acc + (phase.steps?.length || 0), 0)} steps
-                </span>
+                <div className="w-full bg-neutral-800 rounded-full h-2.5">
+                  <div
+                    className="bg-white h-2.5 rounded-full transition-all"
+                    style={{ width: `${(latestAttempt.answeredCount / latestAttempt.questionCount) * 100}%` }}
+                  />
+                </div>
               </div>
-            )}
-          </>
-        )}
-
-        {!isRoadmap && assessmentData && (
-          <>
-            <div className="space-y-3 flex-1">
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className={`capitalize py-2 px-3 text-base ${getDifficultyColor(assessmentData.difficulty)}`}>
-                  {assessmentData.difficulty}
-                </Badge>
-                <Badge variant="outline" className={`capitalize py-2 px-3 text-base ${getStatusColor(assessmentData.status)}`}>
-                  {assessmentData.status.replace('_', ' ')}
-                </Badge>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lg text-neutral-500">Questions:</span>
-                <span className="text-lg text-neutral-300">
-                  {assessmentData.questionCount}
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-lg text-neutral-500">Answered:</span>
-                <span className="text-lg text-neutral-300">
-                  {assessmentData.answeredCount} / {assessmentData.questionCount}
-                </span>
-              </div>
-            </div>
-
-            <div className="mt-4 pt-4 border-t border-neutral-800">
-              <div className="w-full bg-neutral-800 rounded-full h-2.5">
-                <div 
-                  className="bg-white h-2.5 rounded-full transition-all"
-                  style={{ width: `${(assessmentData.answeredCount / assessmentData.questionCount) * 100}%` }}
-                />
-              </div>
-            </div>
-          </>
-        )}
-      </div>
-    );
-  }, [router, formatTimeAgo]);
+            </>
+          )}
+        </div>
+      );
+    },
+    [router, formatTimeAgo],
+  );
 
   const totalItems = roadmaps.length + assessments.length;
-  const displayCount = filterType === 'all' 
-    ? totalItems 
-    : filterType === 'roadmap' 
-      ? roadmaps.length 
-      : assessments.length;
+  const displayCount =
+    filterType === 'all' ? totalItems : filterType === 'roadmap' ? roadmaps.length : assessments.length;
 
   const activeIndex = TABS.findIndex(tab => tab.id === filterType);
 
@@ -406,11 +442,9 @@ export default function HistoryPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-6xl font-bold mb-3">History</h1>
-          <p className="text-2xl text-neutral-400">
-            View all your roadmaps and assessments
-          </p>
+          <p className="text-2xl text-neutral-400">View all your roadmaps and assessments</p>
         </div>
-        
+
         {roadmaps.length >= 2 && (
           <Button
             onClick={() => setIsDeleteAllOpen(true)}
@@ -430,7 +464,7 @@ export default function HistoryPage() {
         <Input
           placeholder="Search..."
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+          onChange={e => setSearchQuery(e.target.value)}
           disabled={loadingStates.initial}
           className="pl-14 h-16! text-lg! bg-neutral-900/50 border-neutral-800"
         />
@@ -442,16 +476,28 @@ export default function HistoryPage() {
         ) : (
           <p className="text-lg text-neutral-400">
             {searchQuery ? (
-              <>Found <span className="font-semibold text-white">{filteredItems.length}</span> item{filteredItems.length > 1 ? 's' : ''}</>
+              <>
+                Found <span className="font-semibold text-white">{filteredItems.length}</span> item
+                {filteredItems.length > 1 ? 's' : ''}
+              </>
             ) : (
-              <>You have <span className="font-semibold text-white">{displayCount}</span> {filterType === 'all' ? (displayCount > 1 ? 'items' : 'item') : (displayCount > 1 ? filterType + 's' : filterType)}</>
+              <>
+                You have <span className="font-semibold text-white">{displayCount}</span>{' '}
+                {filterType === 'all'
+                  ? displayCount > 1
+                    ? 'items'
+                    : 'item'
+                  : displayCount > 1
+                  ? filterType + 's'
+                  : filterType}
+              </>
             )}
           </p>
         )}
       </div>
 
       <div className="flex items-center gap-1 border-b border-neutral-800 mb-6">
-        {TABS.map((tab) => {
+        {TABS.map(tab => {
           const Icon = tab.icon;
           const isActive = filterType === tab.id;
           return (
@@ -459,18 +505,13 @@ export default function HistoryPage() {
               key={tab.id}
               onClick={() => setFilterType(tab.id)}
               className={`cursor-pointer relative flex items-center gap-2 px-5 py-4 text-lg font-medium transition-colors ${
-                isActive
-                  ? 'text-white'
-                  : 'text-neutral-500 hover:text-neutral-300'
+                isActive ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'
               }`}
             >
               <Icon className="size-5" />
               {tab.label}
               {isActive && (
-                <motion.span 
-                  layoutId="activeHistoryTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" 
-                />
+                <motion.span layoutId="activeHistoryTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" />
               )}
             </button>
           );
@@ -486,7 +527,7 @@ export default function HistoryPage() {
           exit: { opacity: 0, y: 20, filter: 'blur(4px)' },
         }}
       >
-        {TABS.map((tab) => (
+        {TABS.map(tab => (
           <div key={tab.id}>
             {loadingStates.initial && <HistoryLoading />}
 
@@ -565,11 +606,14 @@ export default function HistoryPage() {
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl">Confirm delete all roadmaps</AlertDialogTitle>
             <AlertDialogDescription className="text-base">
-              Are you sure you want to delete <strong>all {roadmaps.length} roadmaps</strong>? This action cannot be undone and all your learning roadmaps will be permanently removed.
+              Are you sure you want to delete <strong>all {roadmaps.length} roadmaps</strong>? This action cannot be
+              undone and all your learning roadmaps will be permanently removed.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={loadingStates.deleteAll} className="h-11! text-base">Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={loadingStates.deleteAll} className="h-11! text-base">
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteAll}
               disabled={loadingStates.deleteAll}
@@ -583,4 +627,3 @@ export default function HistoryPage() {
     </div>
   );
 }
-

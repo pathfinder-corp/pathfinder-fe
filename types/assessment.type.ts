@@ -11,6 +11,8 @@ export interface IAssessmentQuestion {
 
 export interface IAssessment {
   id: string;
+  originalAssessmentId?: string | null;
+  attemptNumber: number;
   domain: string;
   difficulty: AssessmentDifficulty;
   questionCount: number;
@@ -73,4 +75,27 @@ export interface IAssessmentResult {
   questionBreakdown: IQuestionBreakdown[];
   suggestedRoadmaps: ISuggestedRoadmap[];
   completedAt: string;
+}
+
+export interface IAssessmentAttemptSummary {
+  id: string;
+  attemptNumber: number;
+  status: AssessmentStatus;
+  score?: number | null;
+  correctCount?: number | null;
+  totalQuestions: number;
+  createdAt: string;
+  completedAt?: string | null;
+}
+
+export interface IAssessmentHistory {
+  originalAssessmentId: string;
+  domain: string;
+  difficulty: AssessmentDifficulty;
+  totalAttempts: number;
+  attempts: IAssessmentAttemptSummary[];
+  bestScore?: number | null;
+  latestScore?: number | null;
+  firstAttemptDate: string;
+  latestAttemptDate: string;
 }

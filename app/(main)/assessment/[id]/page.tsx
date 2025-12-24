@@ -20,11 +20,12 @@ import {
   BookOpen,
   ExternalLink,
   Target,
-  Map
+  Map,
+  History as HistoryIcon
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { assessmentService } from '@/services';
-import type { IAssessment, IAssessmentResult } from '@/types';
+import type { IAssessment, IAssessmentResult, IAssessmentHistory } from '@/types';
 import { useTour, type TourStep } from '@/hooks';
 import { useUserStore } from '@/stores';
 
@@ -39,6 +40,8 @@ type LoadingStates = {
   starting: boolean;
   submitting: boolean;
   completing: boolean;
+  retaking: boolean;
+  loadingHistory: boolean;
 };
 
 type AnswerState = {
@@ -60,6 +63,7 @@ export default function AssessmentDetailPage() {
 
   const [assessment, setAssessment] = useState<IAssessment | null>(null);
   const [result, setResult] = useState<IAssessmentResult | null>(null);
+  const [history, setHistory] = useState<IAssessmentHistory | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<AnswerState>({});
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
@@ -69,6 +73,8 @@ export default function AssessmentDetailPage() {
     starting: false,
     submitting: false,
     completing: false,
+    retaking: false,
+    loadingHistory: false,
   });
 
   const updateLoadingState = useCallback((key: keyof LoadingStates, value: boolean) => {
@@ -206,6 +212,43 @@ export default function AssessmentDetailPage() {
       updateLoadingState('completing', false);
     }
   };
+
+  const handleRetake = async () => {
+    try {
+      updateLoadingState('retaking', true);
+      const newAssessment = await assessmentService.retakeAssessment(assessmentId);
+      toast.success(`Starting attempt ${newAssessment.attemptNumber}!`);
+      router.push(`/assessment/${newAssessment.id}`);
+    } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to create retake';
+      toast.error(errorMessage);
+    } finally {
+      updateLoadingState('retaking', false);
+    }
+  };
+
+  const loadHistory = async () => {
+    try {
+      updateLoadingState('loadingHistory', true);
+      const historyData = await assessmentService.getAssessmentHistory(assessmentId);
+      setHistory(historyData);
+    } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to load history';
+      toast.error(errorMessage);
+    } finally {
+      updateLoadingState('loadingHistory', false);
+    }
+  };
+
+  useEffect(() => {
+    if (assessment?.status === 'completed') {
+      loadHistory();
+    }
+  }, [assessment?.status]);
 
   const currentQuestion = assessment?.questions[currentQuestionIndex];
   const currentAnswer = currentQuestion ? answers[currentQuestion.id] : null;
@@ -645,15 +688,114 @@ export default function AssessmentDetailPage() {
           </div>
         </div>
 
+        {history && history.totalAttempts > 1 && (
+          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold flex items-center gap-3">
+                <HistoryIcon className="size-7" />
+                Attempt History
+              </h2>
+              <Badge variant="outline" className="text-lg px-4 py-2">
+                {history.totalAttempts} Attempts
+              </Badge>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+              <div className="bg-neutral-800/50 rounded-xl p-5">
+                <p className="text-sm text-neutral-400 mb-2">Best Score</p>
+                <p className="text-3xl font-bold text-green-400">
+                  {history.bestScore !== null && history.bestScore !== undefined ? `${history.bestScore.toFixed(1)}%` : 'N/A'}
+                </p>
+              </div>
+              <div className="bg-neutral-800/50 rounded-xl p-5">
+                <p className="text-sm text-neutral-400 mb-2">Latest Score</p>
+                <p className="text-3xl font-bold text-blue-400">
+                  {history.latestScore !== null && history.latestScore !== undefined ? `${history.latestScore.toFixed(1)}%` : 'N/A'}
+                </p>
+              </div>
+              <div className="bg-neutral-800/50 rounded-xl p-5">
+                <p className="text-sm text-neutral-400 mb-2">Current Attempt</p>
+                <p className="text-3xl font-bold">{assessment.attemptNumber}</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              {history.attempts.map((attempt, index) => {
+                const isCurrentAttempt = attempt.id === assessmentId;
+                return (
+                  <div 
+                    key={attempt.id}
+                    className={`flex items-center justify-between p-5 rounded-xl border transition-all ${
+                      isCurrentAttempt 
+                        ? 'border-blue-500 bg-blue-500/10' 
+                        : 'border-neutral-800 bg-neutral-900/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className={`flex items-center justify-center size-12 rounded-full font-bold text-xl ${
+                        isCurrentAttempt ? 'bg-blue-500 text-white' : 'bg-neutral-800 text-neutral-400'
+                      }`}>
+                        {attempt.attemptNumber}
+                      </div>
+                      <div>
+                        <p className="text-lg font-medium">
+                          Attempt {attempt.attemptNumber}
+                          {isCurrentAttempt && (
+                            <Badge className="ml-3 bg-blue-500 text-white">Current</Badge>
+                          )}
+                        </p>
+                        <p className="text-sm text-neutral-400">
+                          {new Date(attempt.createdAt).toLocaleDateString()} at {new Date(attempt.createdAt).toLocaleTimeString()}
+                        </p>
+                      </div>
+                    </div>
+                    {attempt.status === 'completed' && attempt.score !== null && attempt.score !== undefined ? (
+                      <div className="text-right">
+                        <p className="text-2xl font-bold">{Number(attempt.score).toFixed(1)}%</p>
+                        <p className="text-sm text-neutral-400">
+                          {attempt.correctCount}/{attempt.totalQuestions} correct
+                        </p>
+                      </div>
+                    ) : (
+                      <Badge variant="outline" className="text-neutral-400">
+                        {attempt.status === 'in_progress' ? 'In Progress' : 'Not Started'}
+                      </Badge>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-wrap items-center justify-center gap-4">
+          <Button 
+            variant="outline" 
+            size="lg"
+            onClick={handleRetake}
+            disabled={loadingStates.retaking}
+            className="h-16! text-xl!"
+          >
+            {loadingStates.retaking ? (
+              <>
+                <Loader2 className="size-6 animate-spin" />
+                Creating Retake...
+              </>
+            ) : (
+              <>
+                Retake Assessment
+                <RotateCcw className="size-6" />
+              </>
+            )}
+          </Button>
           <Button 
             variant="outline" 
             size="lg"
             onClick={() => router.push('/assessment')}
             className="h-16! text-xl!"
           >
-            Try Again
-            <RotateCcw className="size-6" />
+            New Assessment
+            <Sparkles className="size-6" />
           </Button>
           <Button 
             size="lg"
