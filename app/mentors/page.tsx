@@ -1,35 +1,34 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import {
-  Search,
-  Users,
-  Briefcase,
-  Globe,
-  Linkedin,
-  ExternalLink,
-  X,
-  SlidersHorizontal,
-  ArrowRight,
-  GraduationCap,
-  MessageSquareShare,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { useDebounceValue } from 'usehooks-ts';
-import { useUserStore } from '@/stores';
-import { mentorService } from '@/services';
-import type { IMentorProfile, IMentorProfilesParams } from '@/types';
 import { ITEMS_PER_PAGE, USER_ROLES } from '@/constants';
 import { getInitials } from '@/lib';
+import { mentorService } from '@/services';
+import { useUserStore } from '@/stores';
+import type { IMentorProfile, IMentorProfilesParams } from '@/types';
+import {
+  ArrowRight,
+  Briefcase,
+  Globe,
+  GraduationCap,
+  MessageSquareShare,
+  Search,
+  SlidersHorizontal,
+  Users,
+  X
+} from 'lucide-react';
+import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { useDebounceValue } from 'usehooks-ts';
 
-import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
+import { PublicHeader } from '@/components/PublicHeader';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -41,13 +40,13 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
+  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetFooter,
 } from '@/components/ui/sheet';
-import { Label } from '@/components/ui/label';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
+import { FaLinkedinIn } from 'react-icons/fa6';
 
 const EXPERIENCE_OPTIONS = [
   { value: '0', label: 'Any experience' },
@@ -291,7 +290,7 @@ export default function MentorsPage() {
               onClick={(e) => e.stopPropagation()}
               className="rounded-lg bg-neutral-800/50 p-2.5 text-neutral-400 transition-all hover:bg-blue-500/20 hover:text-blue-400"
             >
-              <Linkedin className="size-5" />
+              <FaLinkedinIn className="size-5" />
             </a>
           )}
           {mentor.portfolioUrl && (
@@ -302,7 +301,7 @@ export default function MentorsPage() {
               onClick={(e) => e.stopPropagation()}
               className="rounded-lg bg-neutral-800/50 p-2.5 text-neutral-400 transition-all hover:bg-purple-500/20 hover:text-purple-400"
             >
-              <ExternalLink className="size-5" />
+              <Globe className="size-5" />
             </a>
           )}
         </div>

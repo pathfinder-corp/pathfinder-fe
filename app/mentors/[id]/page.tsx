@@ -1,55 +1,49 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { motion } from 'motion/react';
-import { PhotoProvider, PhotoView } from 'react-photo-view';
-import 'react-photo-view/dist/react-photo-view.css';
-import {
-  ArrowLeft,
-  Briefcase,
-  Globe,
-  Linkedin,
-  ExternalLink,
-  Users,
-  Calendar,
-  Loader2,
-  Send,
-  CheckCircle,
-  FileText,
-  Award,
-  File,
-  UserCheck,
-  Eye,
-  FileSpreadsheet,
-  Presentation,
-  FileType,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { format, parseISO } from 'date-fns';
-import { useUserStore } from '@/stores';
-import { mentorService, mentorshipService } from '@/services';
-import type {
-  IMentorProfile,
-  MentorDocumentType,
-  IMentorReview,
-  IMentorship,
-} from '@/types';
 import { USER_ROLES } from '@/constants';
 import { getInitials } from '@/lib';
+import { mentorService, mentorshipService } from '@/services';
+import { useUserStore } from '@/stores';
+import type {
+  IMentorProfile,
+  IMentorReview,
+  IMentorship,
+  MentorDocumentType,
+} from '@/types';
+import { format, parseISO } from 'date-fns';
+import {
+  ArrowLeft,
+  Award,
+  Briefcase,
+  Calendar,
+  CheckCircle,
+  ExternalLink,
+  Eye,
+  File,
+  FileSpreadsheet,
+  FileText,
+  FileType,
+  Globe,
+  Loader2,
+  Presentation,
+  Send,
+  UserCheck,
+  Users,
+} from 'lucide-react';
+import { motion } from 'motion/react';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { PhotoProvider, PhotoView } from 'react-photo-view';
+import 'react-photo-view/dist/react-photo-view.css';
+import { toast } from 'sonner';
 
-import { ReviewsList } from './components/ReviewsList';
-import { ReviewForm } from './components/ReviewForm';
-import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
-import { TransitionPanel } from '@/components/motion-primitives/transition-panel';
+import { PublicHeader } from '@/components/PublicHeader';
 import { ProgressiveBlur } from '@/components/motion-primitives/progressive-blur';
-import { Button } from '@/components/ui/button';
+import { TransitionPanel } from '@/components/motion-primitives/transition-panel';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -57,6 +51,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
+import { FaLinkedinIn } from 'react-icons/fa6';
+import { ReviewForm } from './components/ReviewForm';
+import { ReviewsList } from './components/ReviewsList';
 
 type TabType = 'about' | 'background' | 'credentials' | 'reviews';
 
@@ -589,7 +589,7 @@ export default function MentorDetailPage() {
                     </p>
                   </div>
 
-                  {(mentor.linkedinUrl || mentor.portfolioUrl) && (
+                  {/* {(mentor.linkedinUrl || mentor.portfolioUrl) && (
                     <div className="flex items-center gap-5 pt-2">
                       {mentor.linkedinUrl && (
                         <a
@@ -598,7 +598,7 @@ export default function MentorDetailPage() {
                           rel="noopener noreferrer"
                           className="flex items-center gap-2 text-lg text-neutral-400 transition-colors hover:text-white"
                         >
-                          <Linkedin className="size-6" />
+                          <FaLinkedinIn className="size-6" />
                         </a>
                       )}
                       {mentor.portfolioUrl && (
@@ -612,7 +612,7 @@ export default function MentorDetailPage() {
                         </a>
                       )}
                     </div>
-                  )}
+                  )} */}
 
                   {mentor.skills && mentor.skills.length > 0 && (
                     <div className="pt-4">
@@ -907,7 +907,7 @@ export default function MentorDetailPage() {
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 text-lg text-neutral-300 transition-colors hover:text-white"
                           >
-                            <Linkedin className="size-5" />
+                            <FaLinkedinIn className="size-5" />
                             LinkedIn
                             <ExternalLink className="ml-auto size-4 text-neutral-500" />
                           </a>

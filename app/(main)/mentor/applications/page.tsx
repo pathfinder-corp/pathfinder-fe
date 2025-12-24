@@ -1,35 +1,30 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import {
-  GraduationCap,
-  Loader2,
-  Plus,
-  CheckCircle,
-  Trash2,
-  ExternalLink,
-  Linkedin,
-  Globe,
-  Briefcase,
-  Calendar,
-  FileUp,
-  FileText,
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { format, parseISO } from 'date-fns';
 import { mentorService } from '@/services';
 import { useUserStore } from '@/stores';
 import type {
   IMentorApplication,
-  MentorApplicationStatus,
   IMentorDocument,
+  MentorApplicationStatus,
 } from '@/types';
+import { format, parseISO } from 'date-fns';
+import {
+  Briefcase,
+  Calendar,
+  CheckCircle,
+  ExternalLink,
+  FileText,
+  FileUp,
+  Globe,
+  GraduationCap,
+  Loader2,
+  Plus,
+  Trash2
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Separator } from '@/components/ui/separator';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -40,7 +35,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { DocumentUploadDialog, DocumentList } from '../components';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
+import { FaLinkedinIn } from 'react-icons/fa6';
+import { DocumentList, DocumentUploadDialog } from '../components';
 
 export default function MyApplicationsPage() {
   const router = useRouter();
@@ -455,7 +455,7 @@ export default function MyApplicationsPage() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-2 text-lg text-blue-400 transition-colors hover:text-blue-300"
                       >
-                        <Linkedin className="size-6" />
+                        <FaLinkedinIn className="size-6" />
                         LinkedIn Profile
                         <ExternalLink className="size-5" />
                       </a>

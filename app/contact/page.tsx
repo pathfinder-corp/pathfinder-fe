@@ -38,9 +38,9 @@ const CONTACT_INFO = [
   {
     icon: Mail,
     title: 'Email Us',
-    value: 'support@pathfinder.ai',
+    value: 'support@pathfinder.powof.tech',
     description: "We'll respond within 24 hours",
-    href: 'mailto:support@pathfinder.ai',
+    href: 'mailto:support@pathfinder.powof.tech',
   },
   {
     icon: Phone,
@@ -53,8 +53,8 @@ const CONTACT_INFO = [
     icon: MapPin,
     title: 'Visit Us',
     value: 'Ho Chi Minh City, Vietnam',
-    description: 'Innovation District, Tech Park',
-    href: 'https://maps.google.com',
+    description: '1 Vo Van Ngan Street, Thu Duc Ward',
+    href: 'https://maps.app.goo.gl/sgFthvayPCJNGtSQ7',
   },
   {
     icon: Clock,
@@ -402,7 +402,7 @@ export default function ContactPage() {
                   ))}
                 </Accordion>
 
-                <div className="mt-10 rounded-2xl border border-neutral-800 bg-linear-to-br from-neutral-900 to-neutral-900/50 p-8">
+                {/* <div className="mt-10 rounded-2xl border border-neutral-800 bg-linear-to-br from-neutral-900 to-neutral-900/50 p-8">
                   <h3 className="mb-3 text-2xl font-semibold">
                     Still have questions?
                   </h3>
@@ -420,7 +420,7 @@ export default function ContactPage() {
                       <ArrowRight className="size-5" />
                     </a>
                   </Button>
-                </div>
+                </div> */}
               </motion.div>
             </div>
           </div>

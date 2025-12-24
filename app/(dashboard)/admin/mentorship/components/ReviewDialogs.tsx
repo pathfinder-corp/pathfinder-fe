@@ -55,7 +55,7 @@ export function ApproveDialog({
 
         <div className="space-y-5 py-2">
           <div>
-            <Label htmlFor="admin-notes" className="text-lg">
+            <Label htmlFor="admin-notes" className="text-xl">
               Admin Notes (optional)
             </Label>
             <Textarea
@@ -63,7 +63,7 @@ export function ApproveDialog({
               placeholder="Add any internal notes..."
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
-              className="mt-2 min-h-[100px] border-neutral-800 bg-neutral-900/50 text-lg"
+              className="mt-2 min-h-[100px] border-neutral-800 bg-neutral-900/50 text-lg!"
             />
           </div>
         </div>

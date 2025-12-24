@@ -209,7 +209,7 @@ export default function MainLayout({
               href="/"
               className="text-4xl font-bold tracking-tight transition-colors hover:text-neutral-300"
             >
-              Pathfinder. AI
+              Pathfinder.
             </Link>
           </div>
 

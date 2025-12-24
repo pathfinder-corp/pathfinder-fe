@@ -1,16 +1,24 @@
 'use client';
 
 import Link from 'next/link';
-import { Github, Linkedin, Twitter } from 'lucide-react';
+import { FaGithub, FaLinkedinIn, FaXTwitter } from 'react-icons/fa6';
 
 const SOCIAL_LINKS = [
-  { icon: Github, href: 'https://github.com/pathfinder', label: 'GitHub' },
   {
-    icon: Linkedin,
-    href: 'https://linkedin.com/company/pathfinder',
+    icon: FaGithub,
+    href: 'https://github.com/pathfinder-corp',
+    label: 'GitHub',
+  },
+  {
+    icon: FaLinkedinIn,
+    href: 'https://linkedin.com/',
     label: 'LinkedIn',
   },
-  { icon: Twitter, href: 'https://twitter.com/pathfinder', label: 'Twitter' },
+  {
+    icon: FaXTwitter,
+    href: 'https://twitter.com/',
+    label: 'Twitter',
+  },
 ];
 
 const FOOTER_LINKS = {
