@@ -1,5 +1,4 @@
 export { ApplicationsTab } from './ApplicationsTab';
-export { FlaggedTab } from './FlaggedTab';
 export { IPStatisticsTab } from './IPStatisticsTab';
 export { AuditLogsTab } from './AuditLogsTab';
 export { PendingDocumentsTab } from './PendingDocumentsTab';
