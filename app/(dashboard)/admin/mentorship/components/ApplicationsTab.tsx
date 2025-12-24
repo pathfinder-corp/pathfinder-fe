@@ -11,7 +11,6 @@ import {
   XCircle,
   FlagOff,
   FileSearch,
-  AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { adminService } from '@/services';
@@ -263,9 +262,6 @@ export function ApplicationsTab({
                           {application.user?.email || 'N/A'}
                         </p>
                       </div>
-                      {application.isFlagged && (
-                        <AlertTriangle className="size-5 text-orange-400 shrink-0" />
-                      )}
                     </div>
                   </TableCell>
                   <TableCell>
