@@ -18,10 +18,13 @@ import {
   UserX,
   UserPlus,
   Paperclip,
-  FileText
+  FileText,
+  Search,
+  X,
 } from 'lucide-react';
 import { format, isToday, isYesterday, parseISO } from 'date-fns';
 import { toast } from 'sonner';
+import { useDebounceValue } from 'usehooks-ts';
 import { useUserStore, usePresenceStore } from '@/stores';
 import { chatService, socketService, mentorshipService } from '@/services';
 import { getAuthToken, formatFileSize } from '@/lib';
@@ -128,6 +131,15 @@ export default function MessagesPage() {
   const [uploadFiles, setUploadFiles] = useState<File[]>([]);
   const [uploadCaption, setUploadCaption] = useState<string>('');
   const [isUploading, setIsUploading] = useState<boolean>(false);
+
+  const [searchInConversationQuery, setSearchInConversationQuery] = useState<string>('');
+  const [debouncedSearchQuery] = useDebounceValue(searchInConversationQuery, 500);
+  const [isSearchingMessages, setIsSearchingMessages] = useState<boolean>(false);
+  const [searchResults, setSearchResults] = useState<IChatMessage[]>([]);
+  const [searchHasMore, setSearchHasMore] = useState<boolean>(false);
+  const [searchNextCursor, setSearchNextCursor] = useState<string | null>(null);
+  const [isSearchDialogOpen, setIsSearchDialogOpen] = useState<boolean>(false);
+  const [highlightedMessageId, setHighlightedMessageId] = useState<string | null>(null);
 
   const currentUserId = user?.id;
 
@@ -1208,6 +1220,88 @@ export default function MessagesPage() {
     }
   }, [isOtherTyping]);
 
+  const runSearchMessages = useCallback(
+    async (reset: boolean) => {
+      if (!selectedConversation) {
+        return;
+      }
+
+      const trimmedQuery = debouncedSearchQuery.trim();
+      if (!trimmedQuery) {
+        setSearchResults([]);
+        setSearchHasMore(false);
+        setSearchNextCursor(null);
+        return;
+      }
+
+      try {
+        setIsSearchingMessages(true);
+        const response = await chatService.searchMessages(selectedConversation.id, {
+          q: trimmedQuery,
+          limit: 50,
+          before: reset ? undefined : searchNextCursor || undefined,
+        });
+
+        setSearchResults((prev) =>
+          reset ? response.messages : [...prev, ...response.messages],
+        );
+        setSearchHasMore(response.hasMore);
+        setSearchNextCursor(response.nextCursor ?? null);
+      } catch (error) {
+        const errorMessage = error instanceof Error
+          ? error.message
+          : 'Failed to search messages';
+        toast.error('Failed to search messages', {
+          description: errorMessage,
+        });
+      } finally {
+        setIsSearchingMessages(false);
+      }
+    },
+    [selectedConversation, debouncedSearchQuery, searchNextCursor],
+  );
+
+  useEffect(() => {
+    if (isSearchDialogOpen && debouncedSearchQuery.trim()) {
+      runSearchMessages(true);
+    } else if (!debouncedSearchQuery.trim()) {
+      setSearchResults([]);
+      setSearchHasMore(false);
+      setSearchNextCursor(null);
+    }
+  }, [debouncedSearchQuery, isSearchDialogOpen, runSearchMessages]);
+
+  const handleSearchMessagesLoadMore = useCallback(() => {
+    if (!searchHasMore || !searchNextCursor || isSearchingMessages || !selectedConversation) {
+      return;
+    }
+    runSearchMessages(false);
+  }, [runSearchMessages, searchHasMore, searchNextCursor, isSearchingMessages, selectedConversation]);
+
+  const handleJumpToMessage = useCallback((messageId: string) => {
+    setIsSearchDialogOpen(false);
+    setHighlightedMessageId(messageId);
+
+    requestAnimationFrame(() => {
+      const element = document.getElementById(`message-${messageId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        toast.info('Message is not loaded in the current view');
+      }
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!highlightedMessageId) return;
+
+    const timeoutId = setTimeout(() => {
+      setHighlightedMessageId(null);
+    }, 2500);
+
+    return () => clearTimeout(timeoutId);
+  }, [highlightedMessageId]);
+
   return (
     <div className="h-full flex overflow-hidden bg-neutral-950">
       <ConversationList
@@ -1277,6 +1371,7 @@ export default function MessagesPage() {
                   onOpenEndMentorship={() =>
                     setIsEndMentorshipDialogOpen(true)
                   }
+                  onOpenSearch={() => setIsSearchDialogOpen(true)}
                 />
               );
             })()}
@@ -1334,10 +1429,15 @@ export default function MessagesPage() {
                           messages[index + 1]?.senderId !== message.senderId;
                         const other = getOtherParticipant(selectedConversation);
                         
+                        const isHighlighted = highlightedMessageId === message.id;
+
                         return (
                           <motion.div 
                             key={message.id} 
-                            className="group"
+                            id={`message-${message.id}`}
+                            className={`group transition-colors duration-300 ${
+                              isHighlighted ? 'rounded-2xl bg-neutral-800/60' : ''
+                            }`}
                             initial={{ opacity: 0, x: isOwn ? 30 : -30, scale: 0.95 }}
                             animate={{ opacity: 1, x: 0, scale: 1 }}
                             exit={{ opacity: 0, x: isOwn ? 30 : -30, scale: 0.95 }}
@@ -1866,6 +1966,150 @@ export default function MessagesPage() {
                   <Send className="size-5 ml-1" />
                 </>
               )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={isSearchDialogOpen}
+        onOpenChange={(open) => {
+          setIsSearchDialogOpen(open);
+          if (!open) {
+            setSearchInConversationQuery('');
+            setSearchResults([]);
+            setSearchHasMore(false);
+            setSearchNextCursor(null);
+          }
+        }}
+      >
+        <DialogContent className="bg-neutral-900 border-neutral-800 max-w-2xl max-h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-2xl flex items-center gap-2">
+              Search in conversation
+            </DialogTitle>
+            <DialogDescription className="text-lg text-neutral-400">
+              Search for messages in this conversation
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 flex-1 flex flex-col min-h-0">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-neutral-500" />
+              <Input
+                placeholder="Search messages..."
+                value={searchInConversationQuery}
+                onChange={(event) => setSearchInConversationQuery(event.target.value)}
+                className="pl-12 h-12! bg-neutral-800 border-neutral-700 text-base!"
+                autoFocus
+              />
+              {searchInConversationQuery && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSearchInConversationQuery('');
+                    setSearchResults([]);
+                    setSearchHasMore(false);
+                    setSearchNextCursor(null);
+                  }}
+                  className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+                >
+                  <X className="size-4" />
+                </button>
+              )}
+            </div>
+
+            {searchInConversationQuery.trim() && (
+              <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                <div className="flex items-center justify-between py-3 border-b border-neutral-800 shrink-0">
+                  <p className="text-lg font-medium text-neutral-200">
+                    Search results for{' '}
+                    <span className="text-white">&quot;{searchInConversationQuery.trim()}&quot;</span>
+                  </p>
+                  {searchResults.length > 0 && (
+                    <span className="text-md text-neutral-500">
+                      {searchResults.length} result{searchResults.length === 1 ? '' : 's'}
+                    </span>
+                  )}
+                </div>
+                <ScrollArea className="flex-1">
+                  <div className="py-3 space-y-2.5">
+                    {isSearchingMessages && searchResults.length === 0 ? (
+                      <div className="flex items-center justify-center py-8">
+                        <Loader2 className="size-6 animate-spin text-neutral-400" />
+                      </div>
+                    ) : searchResults.length === 0 && debouncedSearchQuery.trim() ? (
+                      <p className="text-md text-neutral-500 text-center py-8">
+                        No messages found
+                      </p>
+                    ) : searchResults.length === 0 ? (
+                      <p className="text-md text-neutral-500 text-center py-8">
+                        Start typing to search...
+                      </p>
+                    ) : (
+                      <>
+                        {searchResults.map((message) => (
+                          <button
+                            key={message.id}
+                            type="button"
+                            onClick={() => handleJumpToMessage(message.id)}
+                            className="w-full text-left px-3 py-2.5 rounded-xl hover:bg-neutral-800/80 transition-colors cursor-pointer"
+                          >
+                            <div className="flex items-center justify-between gap-3 mb-1.5">
+                              <p className="text-sm font-medium text-neutral-200 truncate">
+                                {message.sender?.firstName} {message.sender?.lastName}
+                              </p>
+                              <span className="text-xs text-neutral-500 shrink-0">
+                                {format(parseISO(message.createdAt), 'MMM dd, yyyy HH:mm')}
+                              </span>
+                            </div>
+                            <p className="text-sm text-neutral-400 line-clamp-2">
+                              {message.content}
+                            </p>
+                          </button>
+                        ))}
+                        {searchHasMore && (
+                          <div className="flex justify-center pt-2">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              disabled={isSearchingMessages}
+                              onClick={handleSearchMessagesLoadMore}
+                              className="h-10! text-base! text-neutral-400 hover:text-white"
+                            >
+                              {isSearchingMessages ? (
+                                <>
+                                  Loading...
+                                  <Loader2 className="size-5 animate-spin" />
+                                </>
+                              ) : (
+                                'Load more results'
+                              )}
+                            </Button>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setIsSearchDialogOpen(false);
+                setSearchInConversationQuery('');
+                setSearchResults([]);
+                setSearchHasMore(false);
+                setSearchNextCursor(null);
+              }}
+              className="h-11! text-base!"
+            >
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
