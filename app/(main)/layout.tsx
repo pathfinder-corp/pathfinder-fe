@@ -11,7 +11,8 @@ import {
   ClipboardList,
   GraduationCap,
   FileText,
-  UserPlus
+  UserPlus,
+  Users,
 } from 'lucide-react';
 import { useUserStore, useRoadmapStore } from '@/stores';
 
@@ -42,11 +43,13 @@ const LEARNING_NAV: NavItem[] = [
 const STUDENT_MENTORSHIP_NAV: NavItem[] = [
   { label: 'Become a Mentor', href: '/mentor', icon: GraduationCap, exact: true },
   { label: 'My Requests', href: '/mentor/requests', icon: UserPlus, exact: false },
+  { label: 'My Mentorships', href: '/mentor/mentorships', icon: Users, exact: false },
   { label: 'My Application', href: '/mentor/applications', icon: FileText, exact: false },
 ];
 
 const MENTOR_MENTORSHIP_NAV: NavItem[] = [
   { label: 'My Requests', href: '/mentor/requests', icon: UserPlus, exact: false },
+  { label: 'My Mentorships', href: '/mentor/mentorships', icon: Users, exact: false },
   { label: 'My Application', href: '/mentor/applications', icon: FileText, exact: false },
   { label: 'My Profile', href: '/mentor/profile', icon: GraduationCap, exact: true },
 ];
