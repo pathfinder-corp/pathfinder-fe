@@ -320,7 +320,7 @@ export function PendingDocumentsTab({ refreshTrigger = 0 }: PendingDocumentsTabP
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-xl flex items-center gap-2">
-              {selectedDocument && getDocumentIcon(selectedDocument.type)}
+              {/* {selectedDocument && getDocumentIcon(selectedDocument.type)} */}
               Document Details
             </DialogTitle>
             <DialogDescription className="text-base">

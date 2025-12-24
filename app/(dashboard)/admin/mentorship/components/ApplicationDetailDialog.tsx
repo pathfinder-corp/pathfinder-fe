@@ -12,6 +12,7 @@ import {
   User,
   History
 } from 'lucide-react';
+import Image from 'next/image';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,9 +53,20 @@ export function ApplicationDetailDialog({
         <ScrollArea className="max-h-[calc(90vh-180px)]">
           <div className="p-6 space-y-6">
             <div className="flex items-start gap-4">
-              <div className="size-16 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold shrink-0">
-                {application.user?.firstName?.[0] || ''}{application.user?.lastName?.[0] || ''}
-              </div>
+              {application.user?.avatar ? (
+                <div className="relative size-16 rounded-full overflow-hidden shrink-0">
+                  <Image 
+                    src={application.user.avatar} 
+                    alt={`${application.user?.firstName} ${application.user?.lastName}`}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="size-16 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold shrink-0">
+                  {application.user?.firstName?.[0] || ''}{application.user?.lastName?.[0] || ''}
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <p className="text-2xl font-semibold">
@@ -73,14 +85,14 @@ export function ApplicationDetailDialog({
 
             <div>
               <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-2">Bio</h4>
-              <p className="text-lg text-neutral-300 leading-relaxed">
+              <p className="text-lg text-neutral-300 leading-relaxed wrap-break-word">
                 {application.applicationData?.bio || 'No bio provided'}
               </p>
             </div>
 
             <div>
               <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-2">Motivation</h4>
-              <p className="text-lg text-neutral-300 leading-relaxed">
+              <p className="text-lg text-neutral-300 leading-relaxed wrap-break-word">
                 {application.applicationData?.motivation || 'No motivation provided'}
               </p>
             </div>
