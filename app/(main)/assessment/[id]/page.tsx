@@ -2,10 +2,10 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Loader2, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
   Check,
   CheckCircle2,
   XCircle,
@@ -21,7 +21,7 @@ import {
   ExternalLink,
   Target,
   Map,
-  History as HistoryIcon
+  History as HistoryIcon,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { assessmentService } from '@/services';
@@ -93,9 +93,7 @@ export default function AssessmentDetailPage() {
           setResult(resultData);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : 'Failed to load assessment';
+        const errorMessage = error instanceof Error ? error.message : 'Failed to load assessment';
         toast.error(errorMessage);
         router.push('/history');
       } finally {
@@ -116,9 +114,7 @@ export default function AssessmentDetailPage() {
       setQuestionStartTime(Date.now());
       toast.success('Assessment started! Good luck!');
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to start assessment';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to start assessment';
       toast.error(errorMessage);
     } finally {
       updateLoadingState('starting', false);
@@ -137,11 +133,11 @@ export default function AssessmentDetailPage() {
 
     try {
       updateLoadingState('submitting', true);
-      
+
       const response = await assessmentService.submitAnswer(assessmentId, {
         questionId: currentQuestion.id,
         selectedAnswerIndex: selectedOption,
-        timeSpent
+        timeSpent,
       });
 
       setAnswers(prev => ({
@@ -151,19 +147,20 @@ export default function AssessmentDetailPage() {
           isSubmitted: true,
           isCorrect: response.isCorrect,
           correctAnswerIndex: response.correctAnswerIndex,
-          timeSpent
-        }
+          timeSpent,
+        },
       }));
 
-      setAssessment(prev => prev ? {
-        ...prev,
-        answeredCount: prev.answeredCount + 1
-      } : null);
-
+      setAssessment(prev =>
+        prev
+          ? {
+              ...prev,
+              answeredCount: prev.answeredCount + 1,
+            }
+          : null,
+      );
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to submit answer';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to submit answer';
       toast.error(errorMessage);
     } finally {
       updateLoadingState('submitting', false);
@@ -199,14 +196,13 @@ export default function AssessmentDetailPage() {
       updateLoadingState('completing', true);
       const resultData = await assessmentService.completeAssessment(assessmentId);
       setResult(resultData);
-      setAssessment(prev => prev ? { ...prev, status: 'completed' } : null);
+      setAssessment(prev => (prev ? { ...prev, status: 'completed' } : null));
       toast.success('Assessment completed!');
-      
+
       sessionStorage.setItem('start-assessment-tour', 'true');
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to complete assessment. Make sure all questions are answered.';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to complete assessment. Make sure all questions are answered.';
       toast.error(errorMessage);
     } finally {
       updateLoadingState('completing', false);
@@ -220,9 +216,7 @@ export default function AssessmentDetailPage() {
       toast.success(`Starting attempt ${newAssessment.attemptNumber}!`);
       router.push(`/assessment/${newAssessment.id}`);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to create retake';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to create retake';
       toast.error(errorMessage);
     } finally {
       updateLoadingState('retaking', false);
@@ -235,9 +229,7 @@ export default function AssessmentDetailPage() {
       const historyData = await assessmentService.getAssessmentHistory(assessmentId);
       setHistory(historyData);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load history';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to load history';
       toast.error(errorMessage);
     } finally {
       updateLoadingState('loadingHistory', false);
@@ -257,16 +249,20 @@ export default function AssessmentDetailPage() {
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
-      case 'easy': return 'bg-green-500/20 text-green-400 border-green-500/30';
-      case 'medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-      case 'hard': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      default: return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
+      case 'easy':
+        return 'bg-green-500/20 text-green-400 border-green-500/30';
+      case 'medium':
+        return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
+      case 'hard':
+        return 'bg-red-500/20 text-red-400 border-red-500/30';
+      default:
+        return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
     }
   };
 
   const getOptionStyle = (index: number) => {
     const baseStyle = 'w-full p-7 rounded-xl border text-left transition-all duration-200 flex items-start gap-6';
-    
+
     if (!currentAnswer?.isSubmitted) {
       if (selectedOption === index) {
         return `${baseStyle} border-neutral-600 bg-white/10`;
@@ -277,15 +273,15 @@ export default function AssessmentDetailPage() {
     if (currentAnswer.isCorrect && currentAnswer.selectedIndex === index) {
       return `${baseStyle} border-green-500 bg-green-500/10`;
     }
-    
+
     if (!currentAnswer.isCorrect && currentAnswer.selectedIndex === index) {
       return `${baseStyle} border-red-500 bg-red-500/10`;
     }
-    
+
     if (!currentAnswer.isCorrect && currentAnswer.correctAnswerIndex === index) {
       return `${baseStyle} border-green-500 bg-green-500/10`;
     }
-    
+
     return `${baseStyle} border-neutral-800 bg-neutral-900/30 opacity-50`;
   };
 
@@ -298,7 +294,7 @@ export default function AssessmentDetailPage() {
     sessionStorage.removeItem('start-assessment-tour');
 
     const waitForElement = (selector: string, maxAttempts = 20, interval = 200): Promise<Element | null> => {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         let attempts = 0;
         const checkElement = () => {
           const element = document.querySelector(selector);
@@ -322,7 +318,7 @@ export default function AssessmentDetailPage() {
         const summarySection = await waitForElement('[data-driver="assessment-summary"]');
         const suggestedRoadmaps = await waitForElement('[data-driver="assessment-suggested-roadmaps"]');
         const questionBreakdown = await waitForElement('[data-driver="assessment-question-breakdown"]');
-        
+
         if (!scoreCard) {
           console.warn('Assessment score card not found, skipping tour');
           return;
@@ -333,7 +329,8 @@ export default function AssessmentDetailPage() {
             element: '[data-driver="assessment-score-card"]',
             popover: {
               title: 'Your Assessment Results!',
-              description: 'Here\'s your overall score and performance. Review your results to understand your strengths and areas for improvement.',
+              description:
+                "Here's your overall score and performance. Review your results to understand your strengths and areas for improvement.",
               side: 'bottom',
               align: 'center',
             },
@@ -345,7 +342,8 @@ export default function AssessmentDetailPage() {
             element: '[data-driver="assessment-results-breakdown"]',
             popover: {
               title: 'Results Breakdown',
-              description: 'See a detailed breakdown of your correct and incorrect answers with visual progress indicators.',
+              description:
+                'See a detailed breakdown of your correct and incorrect answers with visual progress indicators.',
               side: 'top',
               align: 'center',
             },
@@ -357,7 +355,8 @@ export default function AssessmentDetailPage() {
             element: '[data-driver="assessment-summary"]',
             popover: {
               title: 'Detailed Summary',
-              description: 'Get insights into your strengths, weaknesses, topics to review, and personalized study recommendations.',
+              description:
+                'Get insights into your strengths, weaknesses, topics to review, and personalized study recommendations.',
               side: 'top',
               align: 'center',
             },
@@ -369,7 +368,8 @@ export default function AssessmentDetailPage() {
             element: '[data-driver="assessment-suggested-roadmaps"]',
             popover: {
               title: 'Suggested Roadmaps',
-              description: 'Explore personalized learning roadmaps based on your assessment results to continue your learning journey.',
+              description:
+                'Explore personalized learning roadmaps based on your assessment results to continue your learning journey.',
               side: 'top',
               align: 'center',
             },
@@ -381,7 +381,8 @@ export default function AssessmentDetailPage() {
             element: '[data-driver="assessment-question-breakdown"]',
             popover: {
               title: 'Question Breakdown',
-              description: 'Review each question with explanations to understand why answers were correct or incorrect.',
+              description:
+                'Review each question with explanations to understand why answers were correct or incorrect.',
               side: 'top',
               align: 'center',
             },
@@ -406,8 +407,8 @@ export default function AssessmentDetailPage() {
         <Skeleton className="h-6 w-96 mb-8 bg-neutral-800" />
         <Skeleton className="h-[500px] w-full rounded-xl bg-neutral-800" />
       </div>
-      );
-    }
+    );
+  }
 
   if (!assessment) {
     return (
@@ -426,7 +427,7 @@ export default function AssessmentDetailPage() {
   if (assessment.status === 'completed' && result) {
     const scorePercent = Math.round((result.correctCount / result.totalQuestions) * 100);
     const incorrectCount = result.totalQuestions - result.correctCount;
-    
+
     const getScoreColor = () => {
       if (scorePercent >= 80) return 'text-green-400';
       if (scorePercent >= 60) return 'text-yellow-400';
@@ -451,30 +452,24 @@ export default function AssessmentDetailPage() {
 
     return (
       <div className="max-w-5xl mx-auto py-10 px-4">
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-10 mb-8" data-driver="assessment-score-card">
+        <div
+          className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-10 mb-8"
+          data-driver="assessment-score-card"
+        >
           <div className="flex flex-col md:flex-row items-center gap-10">
             <div className="shrink-0">
-              <CircularProgress
-                value={scorePercent}
-                size={140}
-                strokeWidth={12}
-                progressColor={getProgressColor()}
-              >
+              <CircularProgress value={scorePercent} size={140} strokeWidth={12} progressColor={getProgressColor()}>
                 <div className="text-center">
-                  <p className={`text-4xl font-bold ${getScoreColor()}`}>
-                    {scorePercent}%
-                  </p>
+                  <p className={`text-4xl font-bold ${getScoreColor()}`}>{scorePercent}%</p>
                 </div>
               </CircularProgress>
             </div>
 
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-5xl font-bold mb-3">Assessment Complete!</h1>
-              <p className={`text-3xl font-semibold mb-4 ${performance.color}`}>
-                {performance.text}
-              </p>
+              <p className={`text-3xl font-semibold mb-4 ${performance.color}`}>{performance.text}</p>
               <p className="text-2xl text-neutral-400 mb-5">{assessment.domain}</p>
-              
+
               <p className="text-lg text-neutral-300">
                 You scored <span className="font-semibold text-white">{result.correctCount}</span> out of{' '}
                 <span className="font-semibold text-white">{result.totalQuestions}</span> questions correctly
@@ -483,7 +478,10 @@ export default function AssessmentDetailPage() {
           </div>
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8" data-driver="assessment-results-breakdown">
+        <div
+          className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8"
+          data-driver="assessment-results-breakdown"
+        >
           <h2 className="text-2xl font-bold mb-6">Results Breakdown</h2>
           <div className="space-y-5">
             <div className="flex items-center justify-between">
@@ -492,9 +490,11 @@ export default function AssessmentDetailPage() {
                 <span className="text-lg text-neutral-300">Correct</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-lg font-semibold">{result.correctCount} ({Math.round((result.correctCount / result.totalQuestions) * 100)}%)</span>
+                <span className="text-lg font-semibold">
+                  {result.correctCount} ({Math.round((result.correctCount / result.totalQuestions) * 100)}%)
+                </span>
                 <div className="w-56 h-2.5 bg-neutral-800 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-green-500 rounded-full"
                     style={{ width: `${(result.correctCount / result.totalQuestions) * 100}%` }}
                   />
@@ -507,9 +507,11 @@ export default function AssessmentDetailPage() {
                 <span className="text-lg text-neutral-300">Incorrect</span>
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-lg font-semibold">{incorrectCount} ({Math.round((incorrectCount / result.totalQuestions) * 100)}%)</span>
+                <span className="text-lg font-semibold">
+                  {incorrectCount} ({Math.round((incorrectCount / result.totalQuestions) * 100)}%)
+                </span>
                 <div className="w-56 h-2.5 bg-neutral-800 rounded-full overflow-hidden">
-                  <div 
+                  <div
                     className="h-full bg-red-500 rounded-full"
                     style={{ width: `${(incorrectCount / result.totalQuestions) * 100}%` }}
                   />
@@ -520,13 +522,14 @@ export default function AssessmentDetailPage() {
         </div>
 
         {result.summary && (
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8" data-driver="assessment-summary">
+          <div
+            className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8"
+            data-driver="assessment-summary"
+          >
             <h2 className="text-2xl font-bold mb-6">Summary of your Assessment</h2>
             <div className="space-y-7">
               {result.summary.overallAssessment && (
-                <p className="text-lg text-neutral-300 leading-relaxed">
-                  {result.summary.overallAssessment}
-                </p>
+                <p className="text-lg text-neutral-300 leading-relaxed">{result.summary.overallAssessment}</p>
               )}
 
               {result.summary.strengths && result.summary.strengths.length > 0 && (
@@ -603,12 +606,13 @@ export default function AssessmentDetailPage() {
         )}
 
         {result.suggestedRoadmaps && result.suggestedRoadmaps.length > 0 && (
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8" data-driver="assessment-suggested-roadmaps">
+          <div
+            className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8"
+            data-driver="assessment-suggested-roadmaps"
+          >
             <div className="mb-6">
               <h2 className="text-2xl font-bold">Suggested Roadmaps</h2>
-              <p className="text-base text-neutral-400">
-                Explore these roadmaps to improve your understanding
-              </p>
+              <p className="text-base text-neutral-400">Explore these roadmaps to improve your understanding</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {result.suggestedRoadmaps.map((roadmap, idx) => (
@@ -634,16 +638,17 @@ export default function AssessmentDetailPage() {
           </div>
         )}
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8" data-driver="assessment-question-breakdown">
+        <div
+          className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8"
+          data-driver="assessment-question-breakdown"
+        >
           <h2 className="text-2xl font-bold mb-7">Question Breakdown</h2>
           <div className="max-h-[500px] overflow-y-auto pr-2 space-y-6 custom-scrollbar">
             {result.questionBreakdown.map((q, index) => (
-              <div 
+              <div
                 key={q.questionId}
                 className={`p-7 rounded-xl border ${
-                  q.isCorrect 
-                    ? 'border-green-500/30 bg-green-500/5' 
-                    : 'border-red-500/30 bg-red-500/5'
+                  q.isCorrect ? 'border-green-500/30 bg-green-500/5' : 'border-red-500/30 bg-red-500/5'
                 }`}
               >
                 <div className="flex items-start justify-between gap-4 mb-5">
@@ -657,17 +662,17 @@ export default function AssessmentDetailPage() {
                     <XCircle className="size-7 text-red-400 shrink-0" />
                   )}
                 </div>
-                
+
                 <div className="space-y-2.5 mb-5">
                   {q.options.map((opt, optIndex) => (
-                    <div 
+                    <div
                       key={optIndex}
                       className={`text-lg px-5 py-3 rounded-lg ${
                         optIndex === q.correctAnswerIndex
                           ? 'bg-green-500/20 text-green-300'
                           : optIndex === q.selectedAnswerIndex && !q.isCorrect
-                            ? 'bg-red-500/20 text-red-300 line-through'
-                            : 'text-neutral-500'
+                          ? 'bg-red-500/20 text-red-300 line-through'
+                          : 'text-neutral-500'
                       }`}
                     >
                       {opt}
@@ -699,18 +704,22 @@ export default function AssessmentDetailPage() {
                 {history.totalAttempts} Attempts
               </Badge>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <div className="bg-neutral-800/50 rounded-xl p-5">
                 <p className="text-sm text-neutral-400 mb-2">Best Score</p>
                 <p className="text-3xl font-bold text-green-400">
-                  {history.bestScore !== null && history.bestScore !== undefined ? `${history.bestScore.toFixed(1)}%` : 'N/A'}
+                  {history.bestScore !== null && history.bestScore !== undefined
+                    ? `${history.bestScore.toFixed(1)}%`
+                    : 'N/A'}
                 </p>
               </div>
               <div className="bg-neutral-800/50 rounded-xl p-5">
                 <p className="text-sm text-neutral-400 mb-2">Latest Score</p>
                 <p className="text-3xl font-bold text-blue-400">
-                  {history.latestScore !== null && history.latestScore !== undefined ? `${history.latestScore.toFixed(1)}%` : 'N/A'}
+                  {history.latestScore !== null && history.latestScore !== undefined
+                    ? `${history.latestScore.toFixed(1)}%`
+                    : 'N/A'}
                 </p>
               </div>
               <div className="bg-neutral-800/50 rounded-xl p-5">
@@ -723,29 +732,35 @@ export default function AssessmentDetailPage() {
               {history.attempts.map((attempt, index) => {
                 const isCurrentAttempt = attempt.id === assessmentId;
                 return (
-                  <div 
+                  <div
                     key={attempt.id}
+                    onClick={() => {
+                      if (!isCurrentAttempt) {
+                        router.push(`/assessment/${attempt.id}`);
+                      }
+                    }}
                     className={`flex items-center justify-between p-5 rounded-xl border transition-all ${
-                      isCurrentAttempt 
-                        ? 'border-blue-500 bg-blue-500/10' 
-                        : 'border-neutral-800 bg-neutral-900/30'
+                      isCurrentAttempt
+                        ? 'border-blue-500 bg-blue-500/10'
+                        : 'border-neutral-800 bg-neutral-900/30 cursor-pointer hover:border-neutral-600 hover:bg-neutral-900/50'
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <div className={`flex items-center justify-center size-12 rounded-full font-bold text-xl ${
-                        isCurrentAttempt ? 'bg-blue-500 text-white' : 'bg-neutral-800 text-neutral-400'
-                      }`}>
+                      <div
+                        className={`flex items-center justify-center size-12 rounded-full font-bold text-xl ${
+                          isCurrentAttempt ? 'bg-blue-500 text-white' : 'bg-neutral-800 text-neutral-400'
+                        }`}
+                      >
                         {attempt.attemptNumber}
                       </div>
                       <div>
                         <p className="text-lg font-medium">
                           Attempt {attempt.attemptNumber}
-                          {isCurrentAttempt && (
-                            <Badge className="ml-3 bg-blue-500 text-white">Current</Badge>
-                          )}
+                          {isCurrentAttempt && <Badge className="ml-3 bg-blue-500 text-white">Current</Badge>}
                         </p>
                         <p className="text-sm text-neutral-400">
-                          {new Date(attempt.createdAt).toLocaleDateString()} at {new Date(attempt.createdAt).toLocaleTimeString()}
+                          {new Date(attempt.createdAt).toLocaleDateString()} at{' '}
+                          {new Date(attempt.createdAt).toLocaleTimeString()}
                         </p>
                       </div>
                     </div>
@@ -769,8 +784,8 @@ export default function AssessmentDetailPage() {
         )}
 
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="lg"
             onClick={handleRetake}
             disabled={loadingStates.retaking}
@@ -788,20 +803,11 @@ export default function AssessmentDetailPage() {
               </>
             )}
           </Button>
-          <Button 
-            variant="outline" 
-            size="lg"
-            onClick={() => router.push('/assessment')}
-            className="h-16! text-xl!"
-          >
+          <Button variant="outline" size="lg" onClick={() => router.push('/assessment')} className="h-16! text-xl!">
             New Assessment
             <Sparkles className="size-6" />
           </Button>
-          <Button 
-            size="lg"
-            onClick={() => router.push('/history')}
-            className="h-16! text-xl!"
-          >
+          <Button size="lg" onClick={() => router.push('/history')} className="h-16! text-xl!">
             View All History
             <ChevronRight className="size-6" />
           </Button>
@@ -821,11 +827,14 @@ export default function AssessmentDetailPage() {
           <div className="inline-flex items-center justify-center size-28 rounded-full bg-neutral-900/50 border border-neutral-800 mb-10">
             <Sparkles className="size-14 text-white" />
           </div>
-          
+
           <h1 className="text-6xl font-bold mb-6">{assessment.domain}</h1>
-          
+
           <div className="flex items-center justify-center gap-4 mb-12">
-            <Badge variant="outline" className={`capitalize text-lg px-5 py-2 ${getDifficultyColor(assessment.difficulty)}`}>
+            <Badge
+              variant="outline"
+              className={`capitalize text-lg px-5 py-2 ${getDifficultyColor(assessment.difficulty)}`}
+            >
               {assessment.difficulty}
             </Badge>
             <Badge variant="outline" className="capitalize text-lg px-5 py-2 border-neutral-700 text-neutral-300">
@@ -855,7 +864,7 @@ export default function AssessmentDetailPage() {
             </ul>
           </div>
 
-          <Button 
+          <Button
             size="lg"
             onClick={handleStartAssessment}
             disabled={loadingStates.starting}
@@ -885,8 +894,8 @@ export default function AssessmentDetailPage() {
     <div className="w-232 mx-auto py-8">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-5">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={handlePrevQuestion}
             disabled={currentQuestionIndex === 0}
@@ -897,8 +906,8 @@ export default function AssessmentDetailPage() {
           <span className="text-2xl font-medium">
             Question <span className="text-white">{currentQuestionIndex + 1}</span> of {assessment.questionCount}
           </span>
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={handleNextQuestion}
             disabled={currentQuestionIndex >= assessment.questionCount - 1}
@@ -910,7 +919,10 @@ export default function AssessmentDetailPage() {
 
         <div className="flex items-center gap-5">
           <span className="text-xl text-neutral-400">{Math.round(progressPercent)}% complete</span>
-          <Badge variant="outline" className={`capitalize text-lg px-4 py-1.5 ${getDifficultyColor(assessment.difficulty)}`}>
+          <Badge
+            variant="outline"
+            className={`capitalize text-lg px-4 py-1.5 ${getDifficultyColor(assessment.difficulty)}`}
+          >
             {assessment.difficulty}
           </Badge>
         </div>
@@ -920,9 +932,7 @@ export default function AssessmentDetailPage() {
 
       {currentQuestion && (
         <div className="bg-neutral-900/30 border border-neutral-800 rounded-2xl p-12 mb-10">
-          <h2 className="text-2xl font-bold mb-12 leading-relaxed">
-            {currentQuestion.questionText}
-          </h2>
+          <h2 className="text-2xl font-bold mb-12 leading-relaxed">{currentQuestion.questionText}</h2>
 
           <div className="space-y-6">
             {currentQuestion.options.map((option, index) => (
@@ -932,45 +942,48 @@ export default function AssessmentDetailPage() {
                 disabled={currentAnswer?.isSubmitted}
                 className={getOptionStyle(index)}
               >
-                <div className={`
+                <div
+                  className={`
                   size-9 rounded-full border-2 flex items-center justify-center shrink-0
-                  ${!currentAnswer?.isSubmitted && selectedOption === index
-                    ? 'border-white bg-white'
-                    : ''
+                  ${!currentAnswer?.isSubmitted && selectedOption === index ? 'border-white bg-white' : ''}
+                  ${!currentAnswer?.isSubmitted && selectedOption !== index ? 'border-neutral-600' : ''}
+                  ${
+                    currentAnswer?.isSubmitted && currentAnswer.selectedIndex === index && currentAnswer.isCorrect
+                      ? 'border-green-500 bg-green-500'
+                      : ''
                   }
-                  ${!currentAnswer?.isSubmitted && selectedOption !== index
-                    ? 'border-neutral-600'
-                    : ''
+                  ${
+                    currentAnswer?.isSubmitted && currentAnswer.selectedIndex === index && !currentAnswer.isCorrect
+                      ? 'border-red-500 bg-red-500'
+                      : ''
                   }
-                  ${currentAnswer?.isSubmitted && currentAnswer.selectedIndex === index && currentAnswer.isCorrect
-                    ? 'border-green-500 bg-green-500'
-                    : ''
+                  ${
+                    currentAnswer?.isSubmitted && !currentAnswer.isCorrect && currentAnswer.correctAnswerIndex === index
+                      ? 'border-green-500 bg-green-500'
+                      : ''
                   }
-                  ${currentAnswer?.isSubmitted && currentAnswer.selectedIndex === index && !currentAnswer.isCorrect
-                    ? 'border-red-500 bg-red-500'
-                    : ''
+                  ${
+                    currentAnswer?.isSubmitted &&
+                    currentAnswer.selectedIndex !== index &&
+                    currentAnswer.correctAnswerIndex !== index
+                      ? 'border-neutral-700'
+                      : ''
                   }
-                  ${currentAnswer?.isSubmitted && !currentAnswer.isCorrect && currentAnswer.correctAnswerIndex === index
-                    ? 'border-green-500 bg-green-500'
-                    : ''
-                  }
-                  ${currentAnswer?.isSubmitted && currentAnswer.selectedIndex !== index && currentAnswer.correctAnswerIndex !== index
-                    ? 'border-neutral-700'
-                    : ''
-                  }
-                `}>
+                `}
+                >
                   {currentAnswer?.isSubmitted && currentAnswer.selectedIndex === index ? (
                     currentAnswer.isCorrect ? (
                       <Check className="size-6 text-white" />
                     ) : (
                       <X className="size-6 text-white" />
                     )
-                  ) : currentAnswer?.isSubmitted && !currentAnswer.isCorrect && currentAnswer.correctAnswerIndex === index ? (
+                  ) : currentAnswer?.isSubmitted &&
+                    !currentAnswer.isCorrect &&
+                    currentAnswer.correctAnswerIndex === index ? (
                     <Check className="size-6 text-white" />
                   ) : (
-                    !currentAnswer?.isSubmitted && selectedOption === index && (
-                      <div className="size-3.5 rounded-full bg-neutral-900" />
-                    )
+                    !currentAnswer?.isSubmitted &&
+                    selectedOption === index && <div className="size-3.5 rounded-full bg-neutral-900" />
                   )}
                 </div>
                 <span className="text-xl">{option}</span>
@@ -981,8 +994,8 @@ export default function AssessmentDetailPage() {
       )}
 
       <div className="flex items-center justify-between">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           size="lg"
           onClick={handleSkipQuestion}
           disabled={currentQuestionIndex >= assessment.questionCount - 1 || loadingStates.submitting}
@@ -993,7 +1006,7 @@ export default function AssessmentDetailPage() {
 
         <div className="flex items-center gap-4">
           {!currentAnswer?.isSubmitted ? (
-            <Button 
+            <Button
               size="lg"
               onClick={handleSubmitAnswer}
               disabled={selectedOption === null || loadingStates.submitting}
@@ -1010,11 +1023,7 @@ export default function AssessmentDetailPage() {
             </Button>
           ) : (
             currentQuestionIndex < assessment.questionCount - 1 && (
-              <Button 
-                size="lg"
-                onClick={handleNextQuestion}
-                className="h-16! text-xl!"
-              >
+              <Button size="lg" onClick={handleNextQuestion} className="h-16! text-xl!">
                 Next Question
                 <ChevronRight className="size-6" />
               </Button>
@@ -1022,7 +1031,7 @@ export default function AssessmentDetailPage() {
           )}
 
           {isAllAnswered && (
-            <Button 
+            <Button
               size="lg"
               variant="outline"
               onClick={handleCompleteAssessment}
@@ -1051,4 +1060,3 @@ export default function AssessmentDetailPage() {
     </div>
   );
 }
-

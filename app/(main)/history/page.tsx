@@ -398,7 +398,7 @@ export default function HistoryPage() {
                     {latestAttempt.status.replace('_', ' ')}
                   </Badge>
                   {latestAttempt.attemptNumber > 0 && (
-                    <Badge variant="outline" className="py-2 px-3 text-base border-purple-500/30 text-purple-400">
+                    <Badge variant="outline" className="py-2 px-3 text-base bg-neutral-500/20 text-neutral-400 border-neutral-500/30">
                       {latestAttempt.attemptNumber} {latestAttempt.attemptNumber === 1 ? 'Attempt' : 'Attempts'}
                     </Badge>
                   )}
