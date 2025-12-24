@@ -402,7 +402,7 @@ export default function MentorDetailPage() {
                 )}
                 {!mentor.isAcceptingMentees && (
                   <Badge variant="outline" className="py-2 px-4 text-base border-neutral-600 text-neutral-400">
-                    Not accepting
+                    Not Accepting
                   </Badge>
                 )}
               </div>
