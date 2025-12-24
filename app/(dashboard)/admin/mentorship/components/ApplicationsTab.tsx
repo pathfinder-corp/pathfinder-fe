@@ -1,34 +1,42 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import {
-  Search,
-  MoreVertical,
-  GraduationCap,
-  Eye,
-  X,
-  CheckCircle,
-  XCircle,
-  FlagOff,
-  FileSearch,
-} from 'lucide-react';
-import { toast } from 'sonner';
+import { ITEMS_PER_PAGE } from '@/constants';
 import { adminService } from '@/services';
 import type { IMentorApplication, IMentorApplicationsParams } from '@/types';
-import { ITEMS_PER_PAGE } from '@/constants';
-import { useDebounceValue } from 'usehooks-ts';
+import {
+  CheckCircle,
+  Eye,
+  FileSearch,
+  FlagOff,
+  GraduationCap,
+  MoreVertical,
+  Search,
+  X,
+  XCircle,
+} from 'lucide-react';
 import Image from 'next/image';
+import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
+import { useDebounceValue } from 'usehooks-ts';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Skeleton } from '@/components/ui/skeleton';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
 import {
   Select,
   SelectContent,
@@ -36,15 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-  PaginationEllipsis,
-} from '@/components/ui/pagination';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
@@ -55,8 +55,8 @@ import {
 } from '@/components/ui/table';
 
 import { StatusBadge } from './StatusBadge';
-import { formatDate, canReview, generatePaginationItems } from './utils';
-import type { StatusFilter, ApplicationsTabProps } from './types';
+import type { ApplicationsTabProps, StatusFilter } from './types';
+import { canReview, formatDate, generatePaginationItems } from './utils';
 
 export function ApplicationsTab({
   onViewApplication,
@@ -310,7 +310,10 @@ export function ApplicationsTab({
                     </p>
                   </TableCell>
                   <TableCell className="text-lg text-neutral-300">
-                    {application.applicationData?.yearsExperience ?? 0} years
+                    {application.applicationData?.yearsExperience ?? 0}{' '}
+                    {application.applicationData?.yearsExperience === 1
+                      ? 'year'
+                      : 'years'}
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={application.status} />

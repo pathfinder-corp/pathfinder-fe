@@ -126,7 +126,7 @@ export function DeclineDialog({
 
         <div className="space-y-5 py-2">
           <div>
-            <Label htmlFor="decline-reason" className="text-lg">
+            <Label htmlFor="decline-reason" className="text-xl">
               Decline Reason <span className="text-red-500">*</span>
             </Label>
             <Textarea
@@ -134,11 +134,11 @@ export function DeclineDialog({
               placeholder="Enter the reason for declining..."
               value={declineReason}
               onChange={(e) => setDeclineReason(e.target.value)}
-              className="mt-2 min-h-[100px] border-neutral-800 bg-neutral-900/50 text-lg"
+              className="mt-2 min-h-[100px] border-neutral-800 bg-neutral-900/50 text-lg!"
             />
           </div>
           <div>
-            <Label htmlFor="admin-notes-decline" className="text-lg">
+            <Label htmlFor="admin-notes-decline" className="text-xl">
               Admin Notes (optional)
             </Label>
             <Textarea
@@ -146,7 +146,7 @@ export function DeclineDialog({
               placeholder="Add any internal notes..."
               value={adminNotes}
               onChange={(e) => setAdminNotes(e.target.value)}
-              className="mt-2 min-h-[80px] border-neutral-800 bg-neutral-900/50 text-lg"
+              className="mt-2 min-h-[80px] border-neutral-800 bg-neutral-900/50 text-lg!"
             />
           </div>
         </div>

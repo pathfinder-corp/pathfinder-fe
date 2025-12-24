@@ -683,7 +683,8 @@ export default function MentorDetailPage() {
                       </div>
                       <div>
                         <p className="text-lg font-medium">
-                          {mentor.yearsExperience || 0} years
+                          {mentor.yearsExperience}{' '}
+                          {mentor.yearsExperience === 1 ? 'year' : 'years'}
                         </p>
                         <p className="text-base text-neutral-500">
                           Professional experience
@@ -937,7 +938,8 @@ export default function MentorDetailPage() {
                   <div className="flex items-center justify-between">
                     <span className="text-lg text-neutral-400">Experience</span>
                     <span className="text-lg font-medium">
-                      {mentor.yearsExperience || 0} years
+                      {mentor.yearsExperience}{' '}
+                      {mentor.yearsExperience === 1 ? 'year' : 'years'}
                     </span>
                   </div>
                   <Separator className="bg-neutral-800" />

@@ -11,6 +11,7 @@ import {
   Calendar,
   User,
   History,
+  Flag,
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -120,7 +121,10 @@ export function ApplicationDetailDialog({
                   <span className="text-base">Experience</span>
                 </div>
                 <p className="text-xl font-semibold">
-                  {application.applicationData?.yearsExperience ?? 0} years
+                  {application.applicationData?.yearsExperience ?? 0}{' '}
+                  {application.applicationData?.yearsExperience === 1
+                    ? 'year'
+                    : 'years'}
                 </p>
               </div>
               <div>
@@ -245,6 +249,56 @@ export function ApplicationDetailDialog({
             <Separator className="bg-neutral-800" />
 
             <DocumentsSection applicationId={application.id} />
+
+            {application.contentFlags && Object.keys(application.contentFlags).length > 0 && (
+              <>
+                <Separator className="bg-neutral-800" />
+                <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-5">
+                  <div className="mb-3 flex items-center gap-2">
+                    <Flag className="size-5 text-orange-500" />
+                    <h4 className="text-base font-semibold tracking-wider text-orange-400 uppercase">
+                      Content Flags
+                    </h4>
+                  </div>
+                  <div className="space-y-2">
+                    {(application.contentFlags as any).flagType && (
+                      <div>
+                        <span className="text-base font-medium text-neutral-400">Flag Type: </span>
+                        <span className="text-lg text-neutral-300">
+                          {Array.isArray((application.contentFlags as any).flagType)
+                            ? (application.contentFlags as any).flagType.join(', ')
+                            : (application.contentFlags as any).flagType}
+                        </span>
+                      </div>
+                    )}
+                    {(application.contentFlags as any).flagScore !== undefined && (
+                      <div>
+                        <span className="text-base font-medium text-neutral-400">Flag Score: </span>
+                        <span className="text-lg text-neutral-300">
+                          {(application.contentFlags as any).flagScore}
+                        </span>
+                      </div>
+                    )}
+                    {(application.contentFlags as any).flagReason && (
+                      <div>
+                        <span className="text-base font-medium text-neutral-400">Reason: </span>
+                        <span className="text-lg text-neutral-300">
+                          {(application.contentFlags as any).flagReason}
+                        </span>
+                      </div>
+                    )}
+                    {(application.contentFlags as any).flaggedAt && (
+                      <div>
+                        <span className="text-base font-medium text-neutral-400">Flagged At: </span>
+                        <span className="text-lg text-neutral-300">
+                          {formatDateTime((application.contentFlags as any).flaggedAt)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
 
             {application.reviewer && (
               <>

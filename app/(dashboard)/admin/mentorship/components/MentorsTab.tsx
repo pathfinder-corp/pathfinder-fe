@@ -289,7 +289,8 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
                     </p>
                   </TableCell>
                   <TableCell className="text-lg text-neutral-300">
-                    {mentor.yearsExperience} years
+                    {mentor.yearsExperience}{' '}
+                    {mentor.yearsExperience === 1 ? 'year' : 'years'}
                   </TableCell>
                   <TableCell>
                     <StatusBadge
@@ -459,7 +460,10 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
                         Experience
                       </p>
                       <p className="text-xl font-semibold">
-                        {selectedMentor.yearsExperience} years
+                        {selectedMentor.yearsExperience}{' '}
+                        {selectedMentor.yearsExperience === 1
+                          ? 'year'
+                          : 'years'}
                       </p>
                     </div>
                     <div>

@@ -242,9 +242,9 @@ export default function MentorsPage() {
           <div className="flex items-center gap-2 text-base text-neutral-400">
             <Briefcase className="size-5 text-neutral-500" />
             <span className="font-medium text-white">
-              {mentor.yearsExperience || 0}
+              {mentor.yearsExperience}
             </span>
-            <span>years</span>
+            <span>{mentor.yearsExperience === 1 ? 'year' : 'years'}</span>
           </div>
           {mentor.languages && mentor.languages.length > 0 && (
             <div className="flex items-center gap-2 text-base text-neutral-400">

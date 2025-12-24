@@ -459,7 +459,7 @@ export default function MentorApplicationPage() {
           <Textarea
             {...register('bio')}
             placeholder="Tell us about yourself, your background, and what makes you a great mentor..."
-            className="min-h-[160px] w-full px-6! py-5! text-lg!"
+            className="min-h-[160px] w-full px-6! py-5! text-xl!"
           />
           {errors.bio && (
             <p className="text-lg text-red-500">{errors.bio.message}</p>
@@ -746,7 +746,7 @@ export default function MentorApplicationPage() {
           <Textarea
             {...register('motivation')}
             placeholder="Share your motivation for becoming a mentor and how you plan to help students..."
-            className="min-h-[160px] w-full px-6! py-5! text-lg!"
+            className="min-h-[160px] w-full px-6! py-5! text-xl!"
           />
           {errors.motivation && (
             <p className="text-lg text-red-500">{errors.motivation.message}</p>
