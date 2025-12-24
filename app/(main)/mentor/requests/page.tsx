@@ -425,18 +425,6 @@ export default function MentorshipRequestsPage() {
                               </Button>
                             )}
 
-                            {request.status === 'accepted' && (
-                              <Button
-                                size="sm"
-                                onClick={() => router.push('/messages')}
-                                className="h-10! text-base!"
-                              >
-                                Message
-                                <MessageCircle className="size-5" />
-                              </Button>
-                            )}
-
-
                             {request.status === 'pending' && request.expiresAt && (
                               <span className="text-base text-neutral-500 ml-auto flex items-center gap-1.5">
                                 <Calendar className="size-4" />
