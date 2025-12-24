@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
-import { 
-  Search, 
-  MoreVertical, 
+import {
+  Search,
+  MoreVertical,
   User,
   Loader2,
   Pencil,
@@ -16,22 +16,27 @@ import {
   Ban,
   CheckCircle,
   GraduationCap,
-  AlertTriangle
+  AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { adminService } from '@/services';
-import type { 
-  IAdminUser, 
+import type {
+  IAdminUser,
   IAdminUserDetail,
   IAdminUsersParams,
   UserRole,
   UserStatus,
   SortField,
-  SortOrder
+  SortOrder,
 } from '@/types';
 import { useDebounceValue } from 'usehooks-ts';
-import { ITEMS_PER_PAGE, SORT_ORDER, USER_ROLES, USER_STATUS } from '@/constants';
+import {
+  ITEMS_PER_PAGE,
+  SORT_ORDER,
+  USER_ROLES,
+  USER_STATUS,
+} from '@/constants';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -43,7 +48,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Dialog,
@@ -102,7 +107,9 @@ export default function AdminUsersPage() {
   const [sortBy, setSortBy] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>(SORT_ORDER.DESC);
 
-  const [selectedUser, setSelectedUser] = useState<IAdminUserDetail | null>(null);
+  const [selectedUser, setSelectedUser] = useState<IAdminUserDetail | null>(
+    null
+  );
   const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isBanDialogOpen, setIsBanDialogOpen] = useState<boolean>(false);
@@ -110,13 +117,19 @@ export default function AdminUsersPage() {
   const [userToBan, setUserToBan] = useState<IAdminUser | null>(null);
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
 
-  const [isRevokeMentorDialogOpen, setIsRevokeMentorDialogOpen] = useState<boolean>(false);
+  const [isRevokeMentorDialogOpen, setIsRevokeMentorDialogOpen] =
+    useState<boolean>(false);
   const [userToRevoke, setUserToRevoke] = useState<IAdminUser | null>(null);
   const [revokeReason, setRevokeReason] = useState<string>('');
   const [isRevoking, setIsRevoking] = useState<boolean>(false);
 
-  const [isRoleChangeConfirmDialogOpen, setIsRoleChangeConfirmDialogOpen] = useState<boolean>(false);
-  const [pendingRoleChange, setPendingRoleChange] = useState<{ userId: string; newRole: UserRole; previousRole: UserRole } | null>(null);
+  const [isRoleChangeConfirmDialogOpen, setIsRoleChangeConfirmDialogOpen] =
+    useState<boolean>(false);
+  const [pendingRoleChange, setPendingRoleChange] = useState<{
+    userId: string;
+    newRole: UserRole;
+    previousRole: UserRole;
+  } | null>(null);
 
   const [editRole, setEditRole] = useState<UserRole>(USER_ROLES.STUDENT);
   const [editStatus, setEditStatus] = useState<UserStatus>(USER_STATUS.ACTIVE);
@@ -124,7 +137,7 @@ export default function AdminUsersPage() {
   const fetchUsers = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       const params: IAdminUsersParams = {
         page: currentPage,
         limit: ITEMS_PER_PAGE,
@@ -145,9 +158,8 @@ export default function AdminUsersPage() {
       setTotalPages(response.meta.totalPages);
       setTotalUsers(response.meta.total);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load users';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load users';
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -156,7 +168,9 @@ export default function AdminUsersPage() {
 
   const handleSort = (field: SortField) => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === SORT_ORDER.ASC ? SORT_ORDER.DESC : SORT_ORDER.ASC);
+      setSortOrder(
+        sortOrder === SORT_ORDER.ASC ? SORT_ORDER.DESC : SORT_ORDER.ASC
+      );
     } else {
       setSortBy(field);
       setSortOrder(SORT_ORDER.DESC);
@@ -166,11 +180,13 @@ export default function AdminUsersPage() {
 
   const getSortIcon = (field: SortField) => {
     if (sortBy !== field) {
-      return <ArrowUpDown className="size-5 ml-2 opacity-50" />;
+      return <ArrowUpDown className="ml-2 size-5 opacity-50" />;
     }
-    return sortOrder === SORT_ORDER.ASC 
-      ? <ArrowUp className="size-5 ml-2" />
-      : <ArrowDown className="size-5 ml-2" />;
+    return sortOrder === SORT_ORDER.ASC ? (
+      <ArrowUp className="ml-2 size-5" />
+    ) : (
+      <ArrowDown className="ml-2 size-5" />
+    );
   };
 
   useEffect(() => {
@@ -188,9 +204,8 @@ export default function AdminUsersPage() {
       setSelectedUser(userDetail);
       setIsViewDialogOpen(true);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load user details';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load user details';
       toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
@@ -206,9 +221,8 @@ export default function AdminUsersPage() {
       setEditStatus(userDetail.status);
       setIsEditDialogOpen(true);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load user details';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load user details';
       toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
@@ -218,21 +232,34 @@ export default function AdminUsersPage() {
   const handleSaveEdit = async () => {
     if (!selectedUser) return;
 
-    if (selectedUser.status === USER_STATUS.SUSPENDED && editStatus !== USER_STATUS.SUSPENDED) {
-      toast.error('Cannot change status of suspended user. Please use Unban action instead.');
+    if (
+      selectedUser.status === USER_STATUS.SUSPENDED &&
+      editStatus !== USER_STATUS.SUSPENDED
+    ) {
+      toast.error(
+        'Cannot change status of suspended user. Please use Unban action instead.'
+      );
       return;
     }
 
-    if (editStatus === USER_STATUS.SUSPENDED && selectedUser.status !== USER_STATUS.SUSPENDED) {
-      toast.error('Cannot set status to suspended. Please use Ban action instead.');
+    if (
+      editStatus === USER_STATUS.SUSPENDED &&
+      selectedUser.status !== USER_STATUS.SUSPENDED
+    ) {
+      toast.error(
+        'Cannot set status to suspended. Please use Ban action instead.'
+      );
       return;
     }
 
-    if (selectedUser.role === USER_ROLES.MENTOR && editRole !== USER_ROLES.MENTOR) {
+    if (
+      selectedUser.role === USER_ROLES.MENTOR &&
+      editRole !== USER_ROLES.MENTOR
+    ) {
       setPendingRoleChange({
         userId: selectedUser.id,
         newRole: editRole,
-        previousRole: selectedUser.role
+        previousRole: selectedUser.role,
       });
       setIsRoleChangeConfirmDialogOpen(true);
       return;
@@ -241,34 +268,38 @@ export default function AdminUsersPage() {
     await performRoleUpdate(selectedUser.id, editRole, editStatus);
   };
 
-  const performRoleUpdate = async (userId: string, newRole: UserRole, newStatus: UserStatus) => {
+  const performRoleUpdate = async (
+    userId: string,
+    newRole: UserRole,
+    newStatus: UserStatus
+  ) => {
     try {
       setIsLoadingAction(true);
-      const previousUser = users.find(u => u.id === userId);
+      const previousUser = users.find((u) => u.id === userId);
       const wasMentor = previousUser?.role === USER_ROLES.MENTOR;
-      
+
       await adminService.updateUser(userId, {
         role: newRole,
         status: newStatus,
       });
-      
+
       toast.success('User updated successfully');
-      
+
       if (wasMentor && newRole !== USER_ROLES.MENTOR) {
         toast.info('Mentor profile has been permanently deleted', {
-          description: 'The mentor profile and all associated data have been removed.',
+          description:
+            'The mentor profile and all associated data have been removed.',
           duration: 5000,
         });
       }
-      
+
       setIsEditDialogOpen(false);
       setIsRoleChangeConfirmDialogOpen(false);
       setPendingRoleChange(null);
       fetchUsers();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to update user';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update user';
       toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
@@ -277,7 +308,11 @@ export default function AdminUsersPage() {
 
   const handleConfirmRoleChange = async () => {
     if (!pendingRoleChange) return;
-    await performRoleUpdate(pendingRoleChange.userId, pendingRoleChange.newRole, editStatus);
+    await performRoleUpdate(
+      pendingRoleChange.userId,
+      pendingRoleChange.newRole,
+      editStatus
+    );
   };
 
   const handleBanUser = async () => {
@@ -291,9 +326,8 @@ export default function AdminUsersPage() {
       setUserToBan(null);
       fetchUsers();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to ban user';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to ban user';
       toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
@@ -311,9 +345,8 @@ export default function AdminUsersPage() {
       setUserToBan(null);
       fetchUsers();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to unban user';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to unban user';
       toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
@@ -329,22 +362,23 @@ export default function AdminUsersPage() {
     try {
       setIsRevoking(true);
       await adminService.revokeMentorStatus(userToRevoke.id, {
-        reason: revokeReason.trim()
+        reason: revokeReason.trim(),
       });
-      
+
       toast.success('Mentor status revoked successfully', {
         description: 'The mentor profile has been permanently deleted.',
         duration: 5000,
       });
-      
+
       setIsRevokeMentorDialogOpen(false);
       setUserToRevoke(null);
       setRevokeReason('');
       fetchUsers();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to revoke mentor status';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to revoke mentor status';
       toast.error(errorMessage);
     } finally {
       setIsRevoking(false);
@@ -386,85 +420,93 @@ export default function AdminUsersPage() {
 
   const generatePaginationItems = () => {
     const items: (number | 'ellipsis')[] = [];
-    
+
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) {
         items.push(i);
       }
     } else {
       items.push(1);
-      
+
       if (currentPage > 3) {
         items.push('ellipsis');
       }
-      
+
       const start = Math.max(2, currentPage - 1);
       const end = Math.min(totalPages - 1, currentPage + 1);
-      
+
       for (let i = start; i <= end; i++) {
         items.push(i);
       }
-      
+
       if (currentPage < totalPages - 2) {
         items.push('ellipsis');
       }
-      
+
       items.push(totalPages);
     }
-    
+
     return items;
   };
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-5xl font-bold mb-3">Users</h1>
+        <h1 className="mb-3 text-5xl font-bold">Users</h1>
         <p className="text-xl text-neutral-400">
           Manage all users on the platform
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-5 sm:items-center justify-between">
-        <div className="relative flex-1 max-w-xl">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-6 text-neutral-400" />
+      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+        <div className="relative max-w-xl flex-1">
+          <Search className="absolute top-1/2 left-5 size-6 -translate-y-1/2 text-neutral-400" />
           <Input
             placeholder="Search by name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-14 h-14 text-lg! bg-neutral-900/50 border-neutral-800"
+            className="h-14 border-neutral-800 bg-neutral-900/50 pl-14 text-lg!"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+              className="absolute top-1/2 right-5 -translate-y-1/2 text-neutral-400 hover:text-white"
             >
               <X className="size-5" />
             </button>
           )}
         </div>
 
-        <Select 
-          value={roleFilter} 
+        <Select
+          value={roleFilter}
           onValueChange={(value) => setRoleFilter(value as RoleFilter)}
         >
-          <SelectTrigger className="w-[160px] h-14! text-lg bg-neutral-900/50 border-neutral-800">
+          <SelectTrigger className="h-14! w-[160px] border-neutral-800 bg-neutral-900/50 text-lg">
             <SelectValue placeholder="Role" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all" className="text-lg">All Roles</SelectItem>
-            <SelectItem value="student" className="text-lg">Student</SelectItem>
-            <SelectItem value="mentor" className="text-lg">Mentor</SelectItem>
-            <SelectItem value="admin" className="text-lg">Admin</SelectItem>
+            <SelectItem value="all" className="text-lg">
+              All Roles
+            </SelectItem>
+            <SelectItem value="student" className="text-lg">
+              Student
+            </SelectItem>
+            <SelectItem value="mentor" className="text-lg">
+              Mentor
+            </SelectItem>
+            <SelectItem value="admin" className="text-lg">
+              Admin
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50">
         <Table>
           <TableHeader>
             <TableRow className="border-neutral-800 hover:bg-transparent">
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pl-7 cursor-pointer hover:text-white transition-colors w-[240px]"
+              <TableHead
+                className="w-[240px] cursor-pointer py-5 pl-7 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('firstName')}
               >
                 <div className="flex items-center">
@@ -472,8 +514,8 @@ export default function AdminUsersPage() {
                   {getSortIcon('firstName')}
                 </div>
               </TableHead>
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors"
+              <TableHead
+                className="cursor-pointer py-5 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('email')}
               >
                 <div className="flex items-center">
@@ -481,8 +523,8 @@ export default function AdminUsersPage() {
                   {getSortIcon('email')}
                 </div>
               </TableHead>
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[120px]"
+              <TableHead
+                className="w-[120px] cursor-pointer py-5 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('role')}
               >
                 <div className="flex items-center">
@@ -490,8 +532,8 @@ export default function AdminUsersPage() {
                   {getSortIcon('role')}
                 </div>
               </TableHead>
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[120px]"
+              <TableHead
+                className="w-[120px] cursor-pointer py-5 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('status')}
               >
                 <div className="flex items-center">
@@ -499,8 +541,8 @@ export default function AdminUsersPage() {
                   {getSortIcon('status')}
                 </div>
               </TableHead>
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[160px]"
+              <TableHead
+                className="w-[160px] cursor-pointer py-5 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('createdAt')}
               >
                 <div className="flex items-center">
@@ -508,8 +550,8 @@ export default function AdminUsersPage() {
                   {getSortIcon('createdAt')}
                 </div>
               </TableHead>
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[160px]"
+              <TableHead
+                className="w-[160px] cursor-pointer py-5 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('lastLoginAt')}
               >
                 <div className="flex items-center">
@@ -517,7 +559,7 @@ export default function AdminUsersPage() {
                   {getSortIcon('lastLoginAt')}
                 </div>
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pr-7 text-right w-[100px]">
+              <TableHead className="w-[100px] py-5 pr-7 text-right text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Actions
               </TableHead>
             </TableRow>
@@ -532,36 +574,50 @@ export default function AdminUsersPage() {
                       <Skeleton className="h-5 w-36 bg-neutral-800" />
                     </div>
                   </TableCell>
-                  <TableCell><Skeleton className="h-5 w-52 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-7 w-20 rounded-full bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-7 w-18 rounded-full bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-28 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-28 bg-neutral-800" /></TableCell>
-                  <TableCell className="pr-6"><Skeleton className="size-9 rounded-lg bg-neutral-800 ml-auto" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-52 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-7 w-20 rounded-full bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-7 w-18 rounded-full bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-28 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-28 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell className="pr-6">
+                    <Skeleton className="ml-auto size-9 rounded-lg bg-neutral-800" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : users.length === 0 ? (
               <TableRow className="border-neutral-800 hover:bg-transparent">
                 <TableCell colSpan={7} className="py-16 text-center">
-                  <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+                  <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-neutral-800">
                     <User className="size-8 text-neutral-500" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">No users found</h3>
+                  <h3 className="mb-2 text-xl font-semibold">No users found</h3>
                   <p className="text-neutral-400">
-                    {searchQuery ? 'Try a different search term' : 'No users match the selected filter'}
+                    {searchQuery
+                      ? 'Try a different search term'
+                      : 'No users match the selected filter'}
                   </p>
                 </TableCell>
               </TableRow>
             ) : (
               users.map((user) => (
-                <TableRow 
-                  key={user.id} 
-                  className="border-neutral-800 hover:bg-neutral-800/30 transition-colors"
+                <TableRow
+                  key={user.id}
+                  className="border-neutral-800 transition-colors hover:bg-neutral-800/30"
                 >
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-3">
                       {user.avatar ? (
-                        <div className="relative size-10 rounded-full overflow-hidden shrink-0">
+                        <div className="relative size-10 shrink-0 overflow-hidden rounded-full">
                           <Image
                             src={user.avatar}
                             alt={`${user.firstName} ${user.lastName}`}
@@ -570,32 +626,39 @@ export default function AdminUsersPage() {
                           />
                         </div>
                       ) : (
-                        <div className="size-10 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold shrink-0">
-                          {user.firstName[0]}{user.lastName[0]}
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-sm font-bold">
+                          {user.firstName[0]}
+                          {user.lastName[0]}
                         </div>
                       )}
-                      <span className="font-medium text-base text-neutral-100">
+                      <span className="text-base font-medium text-neutral-100">
                         {user.firstName} {user.lastName}
                       </span>
                     </div>
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-base">
+                  <TableCell className="text-base text-neutral-300">
                     {user.email}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={`py-1.5 px-3 capitalize text-sm ${getRoleBadgeColor(user.role)}`}>
+                    <Badge
+                      variant="outline"
+                      className={`px-3 py-1.5 text-sm capitalize ${getRoleBadgeColor(user.role)}`}
+                    >
                       {user.role}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={`py-1.5 px-3 capitalize text-sm ${getStatusBadgeColor(user.status)}`}>
+                    <Badge
+                      variant="outline"
+                      className={`px-3 py-1.5 text-sm capitalize ${getStatusBadgeColor(user.status)}`}
+                    >
                       {user.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-base">
+                  <TableCell className="text-base text-neutral-300">
                     {formatDate(user.createdAt)}
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-base">
+                  <TableCell className="text-base text-neutral-300">
                     {formatDate(user.lastLoginAt)}
                   </TableCell>
                   <TableCell className="pr-6 text-right">
@@ -606,18 +669,18 @@ export default function AdminUsersPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => handleViewUser(user)}
-                          className="text-base py-2"
+                          className="py-2 text-base"
                         >
                           <Eye className="size-4" />
                           View details
                         </DropdownMenuItem>
                         {user.role !== USER_ROLES.ADMIN && (
                           <>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => handleEditUser(user)}
-                              className="text-base py-2"
+                              className="py-2 text-base"
                             >
                               <Pencil className="size-4" />
                               Edit user
@@ -625,12 +688,12 @@ export default function AdminUsersPage() {
                             {user.role === USER_ROLES.MENTOR && (
                               <>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem 
+                                <DropdownMenuItem
                                   onClick={() => {
                                     setUserToRevoke(user);
                                     setIsRevokeMentorDialogOpen(true);
                                   }}
-                                  className="dark:hover:bg-orange-500/10 transition-colors text-base py-2 text-orange-500 focus:text-orange-500"
+                                  className="py-2 text-base text-orange-500 transition-colors focus:text-orange-500 dark:hover:bg-orange-500/10"
                                 >
                                   <GraduationCap className="size-4 text-orange-500" />
                                   Revoke Mentor
@@ -639,23 +702,23 @@ export default function AdminUsersPage() {
                             )}
                             <DropdownMenuSeparator />
                             {user.status === USER_STATUS.SUSPENDED ? (
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => {
                                   setUserToBan(user);
                                   setIsUnbanDialogOpen(true);
                                 }}
-                                className="dark:hover:bg-green-500/10 transition-colors text-base py-2 text-green-500 focus:text-green-500"
+                                className="py-2 text-base text-green-500 transition-colors focus:text-green-500 dark:hover:bg-green-500/10"
                               >
                                 <CheckCircle className="size-4 text-green-500" />
                                 Unban user
                               </DropdownMenuItem>
                             ) : (
-                              <DropdownMenuItem 
+                              <DropdownMenuItem
                                 onClick={() => {
                                   setUserToBan(user);
                                   setIsBanDialogOpen(true);
                                 }}
-                                className="dark:hover:bg-red-500/10 transition-colors text-base py-2 text-red-500 focus:text-red-500"
+                                className="py-2 text-base text-red-500 transition-colors focus:text-red-500 dark:hover:bg-red-500/10"
                               >
                                 <Ban className="size-4 text-red-500" />
                                 Ban user
@@ -673,25 +736,30 @@ export default function AdminUsersPage() {
         </Table>
 
         {!isLoading && totalUsers > 0 && (
-          <div className="px-6 py-4 border-t border-neutral-800 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <span className="text-base text-neutral-400 whitespace-nowrap">
-              Showing {startIndex} to {endIndex} of {totalUsers} user{totalUsers > 1 ? 's' : ''}
+          <div className="flex flex-col gap-3 border-t border-neutral-800 px-6 py-4 md:flex-row md:items-center md:justify-between">
+            <span className="text-base whitespace-nowrap text-neutral-400">
+              Showing {startIndex} to {endIndex} of {totalUsers} user
+              {totalUsers > 1 ? 's' : ''}
             </span>
-            
+
             {totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious 
+                    <PaginationPrevious
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (currentPage > 1) setCurrentPage(p => p - 1);
+                        if (currentPage > 1) setCurrentPage((p) => p - 1);
                       }}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={
+                        currentPage === 1
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
                     />
                   </PaginationItem>
-                  
+
                   {generatePaginationItems().map((item, index) => (
                     <PaginationItem key={index}>
                       {item === 'ellipsis' ? (
@@ -711,15 +779,20 @@ export default function AdminUsersPage() {
                       )}
                     </PaginationItem>
                   ))}
-                  
+
                   <PaginationItem>
-                    <PaginationNext 
+                    <PaginationNext
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (currentPage < totalPages) setCurrentPage(p => p + 1);
+                        if (currentPage < totalPages)
+                          setCurrentPage((p) => p + 1);
                       }}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={
+                        currentPage === totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -737,12 +810,12 @@ export default function AdminUsersPage() {
               View detailed information about this user
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedUser && (
             <div className="space-y-6">
               <div className="flex items-center gap-4">
                 {selectedUser.avatar ? (
-                  <div className="relative size-16 rounded-full overflow-hidden">
+                  <div className="relative size-16 overflow-hidden rounded-full">
                     <Image
                       src={selectedUser.avatar}
                       alt={`${selectedUser.firstName} ${selectedUser.lastName}`}
@@ -751,46 +824,63 @@ export default function AdminUsersPage() {
                     />
                   </div>
                 ) : (
-                  <div className="size-16 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold">
-                    {selectedUser.firstName[0]}{selectedUser.lastName[0]}
+                  <div className="flex size-16 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-xl font-bold">
+                    {selectedUser.firstName[0]}
+                    {selectedUser.lastName[0]}
                   </div>
                 )}
                 <div>
                   <p className="text-xl font-semibold">
                     {selectedUser.firstName} {selectedUser.lastName}
                   </p>
-                  <p className="text-base text-neutral-400">{selectedUser.email}</p>
+                  <p className="text-base text-neutral-400">
+                    {selectedUser.email}
+                  </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Role</p>
-                  <Badge variant="outline" className={`py-1.5 px-3 capitalize text-sm ${getRoleBadgeColor(selectedUser.role)}`}>
+                  <p className="mb-1 text-base text-neutral-500">Role</p>
+                  <Badge
+                    variant="outline"
+                    className={`px-3 py-1.5 text-sm capitalize ${getRoleBadgeColor(selectedUser.role)}`}
+                  >
                     {selectedUser.role}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Status</p>
-                  <Badge variant="outline" className={`py-1.5 px-3 capitalize text-sm ${getStatusBadgeColor(selectedUser.status)}`}>
+                  <p className="mb-1 text-base text-neutral-500">Status</p>
+                  <Badge
+                    variant="outline"
+                    className={`px-3 py-1.5 text-sm capitalize ${getStatusBadgeColor(selectedUser.status)}`}
+                  >
                     {selectedUser.status}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Roadmaps</p>
-                  <p className="text-lg font-semibold">{selectedUser.roadmapCount}</p>
+                  <p className="mb-1 text-base text-neutral-500">Roadmaps</p>
+                  <p className="text-lg font-semibold">
+                    {selectedUser.roadmapCount}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Assessments</p>
-                  <p className="text-lg font-semibold">{selectedUser.assessmentCount}</p>
+                  <p className="mb-1 text-base text-neutral-500">Assessments</p>
+                  <p className="text-lg font-semibold">
+                    {selectedUser.assessmentCount}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Joined</p>
-                  <p className="text-lg">{formatDate(selectedUser.createdAt)}</p>
+                  <p className="mb-1 text-base text-neutral-500">Joined</p>
+                  <p className="text-lg">
+                    {formatDate(selectedUser.createdAt)}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Last Login</p>
-                  <p className="text-lg">{formatDate(selectedUser.lastLoginAt)}</p>
+                  <p className="mb-1 text-base text-neutral-500">Last Login</p>
+                  <p className="text-lg">
+                    {formatDate(selectedUser.lastLoginAt)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -802,16 +892,14 @@ export default function AdminUsersPage() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl">Edit User</DialogTitle>
-            <DialogDescription>
-              Update user role and status
-            </DialogDescription>
+            <DialogDescription>Update user role and status</DialogDescription>
           </DialogHeader>
-          
+
           {selectedUser && (
             <div className="space-y-6">
               <div className="flex items-center gap-4">
                 {selectedUser.avatar ? (
-                  <div className="relative size-12 rounded-full overflow-hidden">
+                  <div className="relative size-12 overflow-hidden rounded-full">
                     <Image
                       src={selectedUser.avatar}
                       alt={`${selectedUser.firstName} ${selectedUser.lastName}`}
@@ -820,36 +908,50 @@ export default function AdminUsersPage() {
                     />
                   </div>
                 ) : (
-                  <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold">
-                    {selectedUser.firstName[0]}{selectedUser.lastName[0]}
+                  <div className="flex size-12 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-base font-bold">
+                    {selectedUser.firstName[0]}
+                    {selectedUser.lastName[0]}
                   </div>
                 )}
                 <div>
                   <p className="text-base font-semibold">
                     {selectedUser.firstName} {selectedUser.lastName}
                   </p>
-                  <p className="text-sm text-neutral-400">{selectedUser.email}</p>
+                  <p className="text-sm text-neutral-400">
+                    {selectedUser.email}
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="text-base text-neutral-400 mb-2 block">Role</label>
-                  <Select value={editRole} onValueChange={(v) => setEditRole(v as typeof editRole)}>
+                  <label className="mb-2 block text-base text-neutral-400">
+                    Role
+                  </label>
+                  <Select
+                    value={editRole}
+                    onValueChange={(v) => setEditRole(v as typeof editRole)}
+                  >
                     <SelectTrigger className="h-12! text-lg!">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="student" className="text-lg!">Student</SelectItem>
-                      <SelectItem value="mentor" className="text-lg!">Mentor</SelectItem>
+                      <SelectItem value="student" className="text-lg!">
+                        Student
+                      </SelectItem>
+                      <SelectItem value="mentor" className="text-lg!">
+                        Mentor
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div>
-                  <label className="text-base text-neutral-400 mb-2 block">Status</label>
-                  <Select 
-                    value={editStatus} 
+                  <label className="mb-2 block text-base text-neutral-400">
+                    Status
+                  </label>
+                  <Select
+                    value={editStatus}
                     onValueChange={(v) => setEditStatus(v as typeof editStatus)}
                     disabled={selectedUser.status === USER_STATUS.SUSPENDED}
                   >
@@ -857,13 +959,23 @@ export default function AdminUsersPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="active" className="text-lg!">Active</SelectItem>
-                      <SelectItem value="inactive" className="text-lg!">Inactive</SelectItem>
-                      <SelectItem value="suspended" className="text-lg!" disabled>Suspended (Use Ban/Unban)</SelectItem>
+                      <SelectItem value="active" className="text-lg!">
+                        Active
+                      </SelectItem>
+                      <SelectItem value="inactive" className="text-lg!">
+                        Inactive
+                      </SelectItem>
+                      <SelectItem
+                        value="suspended"
+                        className="text-lg!"
+                        disabled
+                      >
+                        Suspended (Use Ban/Unban)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                   {selectedUser.status === USER_STATUS.SUSPENDED && (
-                    <p className="text-sm text-neutral-500 mt-2">
+                    <p className="mt-2 text-sm text-neutral-500">
                       User is suspended. Use Unban action to reactivate.
                     </p>
                   )}
@@ -873,17 +985,14 @@ export default function AdminUsersPage() {
           )}
 
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setIsEditDialogOpen(false)}
               disabled={isLoadingAction}
             >
               Cancel
             </Button>
-            <Button 
-              onClick={handleSaveEdit}
-              disabled={isLoadingAction}
-            >
+            <Button onClick={handleSaveEdit} disabled={isLoadingAction}>
               Save changes
               {isLoadingAction && <Loader2 className="size-4 animate-spin" />}
             </Button>
@@ -896,17 +1005,22 @@ export default function AdminUsersPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Ban User</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to ban <strong>{userToBan?.firstName} {userToBan?.lastName}</strong>? 
-              This will suspend their account and prevent them from accessing the platform. 
-              You can unban them later if needed.
+              Are you sure you want to ban{' '}
+              <strong>
+                {userToBan?.firstName} {userToBan?.lastName}
+              </strong>
+              ? This will suspend their account and prevent them from accessing
+              the platform. You can unban them later if needed.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLoadingAction}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isLoadingAction}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleBanUser}
               disabled={isLoadingAction}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 text-white hover:bg-red-600"
             >
               Ban User
               {isLoadingAction && <Loader2 className="size-4 animate-spin" />}
@@ -920,16 +1034,22 @@ export default function AdminUsersPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Unban User</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to unban <strong>{userToBan?.firstName} {userToBan?.lastName}</strong>? 
-              This will reactivate their account and allow them to access the platform again.
+              Are you sure you want to unban{' '}
+              <strong>
+                {userToBan?.firstName} {userToBan?.lastName}
+              </strong>
+              ? This will reactivate their account and allow them to access the
+              platform again.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLoadingAction}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isLoadingAction}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleUnbanUser}
               disabled={isLoadingAction}
-              className="bg-green-500 hover:bg-green-600 text-white"
+              className="bg-green-500 text-white hover:bg-green-600"
             >
               Unban User
               {isLoadingAction && <Loader2 className="size-4 animate-spin" />}
@@ -938,43 +1058,63 @@ export default function AdminUsersPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={isRoleChangeConfirmDialogOpen} onOpenChange={setIsRoleChangeConfirmDialogOpen}>
+      <AlertDialog
+        open={isRoleChangeConfirmDialogOpen}
+        onOpenChange={setIsRoleChangeConfirmDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <div className="flex items-center gap-3 mb-2">
-              <AlertDialogTitle className="text-2xl">Remove Mentor Role</AlertDialogTitle>
+            <div className="mb-2 flex items-center gap-3">
+              <AlertDialogTitle className="text-2xl">
+                Remove Mentor Role
+              </AlertDialogTitle>
             </div>
             <AlertDialogDescription>
-              Changing role from MENTOR will permanently delete the mentor profile
+              Changing role from MENTOR will permanently delete the mentor
+              profile
             </AlertDialogDescription>
           </AlertDialogHeader>
-          
-          <div className="text-base text-neutral-300 space-y-3 mt-4">
+
+          <div className="mt-4 space-y-3 text-base text-neutral-300">
             <div>
-              Changing <strong>{selectedUser?.firstName} {selectedUser?.lastName}</strong>&apos;s role from{' '}
-              <strong>MENTOR</strong> to{' '}
+              Changing{' '}
+              <strong>
+                {selectedUser?.firstName} {selectedUser?.lastName}
+              </strong>
+              &apos;s role from <strong>MENTOR</strong> to{' '}
               <strong>{pendingRoleChange?.newRole.toUpperCase()}</strong> will{' '}
               <strong>permanently delete</strong> their mentor profile.
             </div>
-            <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-4 space-y-2">
-              <div className="text-base font-semibold text-neutral-300">This action cannot be undone</div>
-              <ul className="text-sm text-neutral-400 space-y-1 list-disc list-inside">
+            <div className="space-y-2 rounded-lg border border-neutral-800 bg-neutral-900/50 p-4">
+              <div className="text-base font-semibold text-neutral-300">
+                This action cannot be undone
+              </div>
+              <ul className="list-inside list-disc space-y-1 text-sm text-neutral-400">
                 <li>All mentor profile data will be permanently deleted</li>
-                <li>Headline, bio, expertise, skills, and other profile information will be lost</li>
+                <li>
+                  Headline, bio, expertise, skills, and other profile
+                  information will be lost
+                </li>
                 <li>Mentor documents will remain in application history</li>
-                <li>Active mentorships will continue but mentor cannot accept new mentees</li>
+                <li>
+                  Active mentorships will continue but mentor cannot accept new
+                  mentees
+                </li>
               </ul>
             </div>
           </div>
-          
+
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLoadingAction} className="h-12! text-base!">
+            <AlertDialogCancel
+              disabled={isLoadingAction}
+              className="h-12! text-base!"
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleConfirmRoleChange}
               disabled={isLoadingAction}
-              className="bg-red-500 hover:bg-red-600 text-white h-12! text-base!"
+              className="h-12! bg-red-500 text-base! text-white hover:bg-red-600"
             >
               Delete Profile & Change Role
               {isLoadingAction && <Loader2 className="size-4 animate-spin" />}
@@ -983,43 +1123,58 @@ export default function AdminUsersPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <Dialog open={isRevokeMentorDialogOpen} onOpenChange={setIsRevokeMentorDialogOpen}>
+      <Dialog
+        open={isRevokeMentorDialogOpen}
+        onOpenChange={setIsRevokeMentorDialogOpen}
+      >
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <div className="flex items-center gap-3 mb-2">
-              <DialogTitle className="text-2xl">Revoke Mentor Status</DialogTitle>
+            <div className="mb-2 flex items-center gap-3">
+              <DialogTitle className="text-2xl">
+                Revoke Mentor Status
+              </DialogTitle>
             </div>
             <DialogDescription>
               Permanently remove mentor status and delete mentor profile
             </DialogDescription>
           </DialogHeader>
-          
-          <div className="text-base text-neutral-300 space-y-3">
+
+          <div className="space-y-3 text-base text-neutral-300">
             <div>
-              Revoking mentor status for <strong>{userToRevoke?.firstName} {userToRevoke?.lastName}</strong> will:
+              Revoking mentor status for{' '}
+              <strong>
+                {userToRevoke?.firstName} {userToRevoke?.lastName}
+              </strong>{' '}
+              will:
             </div>
             <ul className="space-y-2 text-base">
               <li className="flex items-start gap-2">
-                <span className="text-neutral-400 mt-1">•</span>
-                <span>Change their role to <strong>STUDENT</strong></span>
+                <span className="mt-1 text-neutral-400">•</span>
+                <span>
+                  Change their role to <strong>STUDENT</strong>
+                </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-neutral-400 mt-1">•</span>
-                <span><strong>Permanently delete</strong> their mentor profile</span>
+                <span className="mt-1 text-neutral-400">•</span>
+                <span>
+                  <strong>Permanently delete</strong> their mentor profile
+                </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-neutral-400 mt-1">•</span>
+                <span className="mt-1 text-neutral-400">•</span>
                 <span>Send a notification to the user</span>
               </li>
             </ul>
-            <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-4 mt-4">
-              <div className="text-sm text-neutral-300 font-semibold mb-1">This action cannot be undone</div>
+            <div className="mt-4 rounded-lg border border-neutral-800 bg-neutral-900/50 p-4">
+              <div className="mb-1 text-sm font-semibold text-neutral-300">
+                This action cannot be undone
+              </div>
               <div className="text-sm text-neutral-400">
                 All mentor profile data will be permanently deleted.
               </div>
             </div>
           </div>
-          
+
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <label className="text-base font-medium text-neutral-300">
@@ -1027,13 +1182,16 @@ export default function AdminUsersPage() {
               </label>
               <Textarea
                 value={revokeReason}
-                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRevokeReason(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  setRevokeReason(e.target.value)
+                }
                 placeholder="Enter the reason for revoking mentor status (e.g., Violation of community guidelines, Inactive mentor, etc.)"
-                className="min-h-[120px] text-base! resize-none"
+                className="min-h-[120px] resize-none text-base!"
                 disabled={isRevoking}
               />
               <p className="text-sm text-neutral-500">
-                This reason will be included in the notification sent to the user.
+                This reason will be included in the notification sent to the
+                user.
               </p>
             </div>
           </div>
@@ -1054,7 +1212,7 @@ export default function AdminUsersPage() {
             <Button
               onClick={handleRevokeMentor}
               disabled={isRevoking || !revokeReason.trim()}
-              className="bg-red-500 hover:bg-red-600 text-white h-12! text-base!"
+              className="h-12! bg-red-500 text-base! text-white hover:bg-red-600"
             >
               {isRevoking ? (
                 <>

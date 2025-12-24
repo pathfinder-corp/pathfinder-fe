@@ -61,7 +61,7 @@ export default function LoginPage() {
   useEffect(() => {
     if (searchParams.get('registered') === 'true') {
       toast.success('Registration successful!', {
-        description: 'Please login to continue.'
+        description: 'Please login to continue.',
       });
       router.replace('/login');
     }
@@ -69,7 +69,7 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginFormData) => {
     if (isLoading) return;
-    
+
     setIsLoading(true);
 
     try {
@@ -89,10 +89,10 @@ export default function LoginPage() {
       setUser(response.user);
 
       toast.success('Login successful!', {
-        description: `Welcome ${response.user.firstName}!`
+        description: `Welcome ${response.user.firstName}!`,
       });
 
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
 
       router.push('/');
       router.refresh();
@@ -100,12 +100,14 @@ export default function LoginPage() {
       console.error('Login error:', error);
 
       const errorMessage =
-        error instanceof Error ? error.message : 'An error occurred while logging in. Please try again.';
+        error instanceof Error
+          ? error.message
+          : 'An error occurred while logging in. Please try again.';
 
       toast.error('Login failed', {
-        description: errorMessage
+        description: errorMessage,
       });
-      
+
       setIsLoading(false);
       return;
     }
@@ -121,18 +123,20 @@ export default function LoginPage() {
           Enter your email and password to login
         </CardDescription>
       </CardHeader>
-  
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-6">
           <div className="space-y-3">
-            <Label htmlFor="email" className="text-xl">Email address</Label>
+            <Label htmlFor="email" className="text-xl">
+              Email address
+            </Label>
             <Input
               id="email"
               type="email"
               placeholder="user@example.com"
               autoComplete="off"
               disabled={isLoading}
-              className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
+              className={`h-14 border-neutral-800 bg-neutral-900/50 text-xl! focus:border-neutral-600 ${
                 errors.email ? 'border-red-500 focus:border-red-500' : ''
               }`}
               {...register('email')}
@@ -141,9 +145,11 @@ export default function LoginPage() {
               <p className="text-xl text-red-500">{errors.email.message}</p>
             )}
           </div>
-  
+
           <div className="space-y-3">
-            <Label htmlFor="password" className="text-xl">Password</Label>
+            <Label htmlFor="password" className="text-xl">
+              Password
+            </Label>
             <div className="relative">
               <Input
                 id="password"
@@ -151,7 +157,7 @@ export default function LoginPage() {
                 placeholder="••••••••"
                 autoComplete="current-password"
                 disabled={isLoading}
-                className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
+                className={`h-14 border-neutral-800 bg-neutral-900/50 pr-14 text-xl! focus:border-neutral-600 ${
                   errors.password ? 'border-red-500 focus:border-red-500' : ''
                 }`}
                 {...register('password')}
@@ -159,7 +165,7 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer text-neutral-400 transition-colors hover:text-neutral-200"
                 disabled={isLoading}
               >
                 {showPassword ? (
@@ -175,18 +181,18 @@ export default function LoginPage() {
             <div className="text-right">
               <Link
                 href="/forgot-password"
-                className="text-xl text-neutral-400 hover:text-neutral-200 transition-colors"
+                className="text-xl text-neutral-400 transition-colors hover:text-neutral-200"
               >
                 Forgot password?
               </Link>
             </div>
           </div>
         </CardContent>
-  
-        <CardFooter className="flex flex-col space-y-5 mt-8">
+
+        <CardFooter className="mt-8 flex flex-col space-y-5">
           <Button
             type="submit"
-            className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+            className="h-14 w-full bg-neutral-100 text-xl text-neutral-900 hover:bg-neutral-200"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -198,8 +204,8 @@ export default function LoginPage() {
               'Login'
             )}
           </Button>
-  
-          <p className="text-center text-xl text-neutral-400 mb-2">
+
+          <p className="mb-2 text-center text-xl text-neutral-400">
             Don&apos;t have an account?{' '}
             <Link
               href="/register"
@@ -209,7 +215,10 @@ export default function LoginPage() {
             </Link>
           </p>
 
-          <Link href="/" className="text-center text-xl hover:underline text-neutral-400 hover:text-neutral-200 transition-colors">
+          <Link
+            href="/"
+            className="text-center text-xl text-neutral-400 transition-colors hover:text-neutral-200 hover:underline"
+          >
             Back to home
           </Link>
         </CardFooter>

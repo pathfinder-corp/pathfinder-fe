@@ -1,20 +1,20 @@
-"use client"
+'use client';
 
-import React, { useEffect, useRef, useCallback, useState } from 'react'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { cn } from '@/lib/utils'
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import { cn } from '@/lib/utils';
 
 const DefaultLoader = () => (
   <div className="flex justify-center py-4">
-    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+    <div className="border-primary h-6 w-6 animate-spin rounded-full border-b-2"></div>
   </div>
-)
+);
 
 const DefaultEndMessage = () => (
-  <div className="text-center py-4 text-muted-foreground">
+  <div className="text-muted-foreground py-4 text-center">
     <p>No more items to load</p>
   </div>
-)
+);
 
 interface InfiniteScrollProps<T> {
   items: T[];
@@ -57,12 +57,14 @@ export function InfiniteScroll<T>({
   height = 400,
   overscan = 5,
 }: InfiniteScrollProps<T>) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const observerRef = useRef<IntersectionObserver | null>(null)
-  const loadingRef = useRef<HTMLDivElement>(null)
-  const [internalLoading, setInternalLoading] = useState(false)
+  const containerRef = useRef<HTMLDivElement>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadingRef = useRef<HTMLDivElement>(null);
+  const [internalLoading, setInternalLoading] = useState(false);
 
-  const allRows = virtualized ? items.length + (hasNextPage ? 1 : 0) : items.length
+  const allRows = virtualized
+    ? items.length + (hasNextPage ? 1 : 0)
+    : items.length;
 
   const virtualizer = useVirtualizer({
     count: allRows,
@@ -71,157 +73,174 @@ export function InfiniteScroll<T>({
     overscan,
     enabled: virtualized,
     measureElement: (el) => (el as HTMLElement).getBoundingClientRect().height,
-  })
+  });
 
   const handleObserver = useCallback(
     (entries: IntersectionObserverEntry[]) => {
-      const [target] = entries
-      if (target.isIntersecting && hasNextPage && !isLoading && !internalLoading) {
-        setInternalLoading(true)
+      const [target] = entries;
+      if (
+        target.isIntersecting &&
+        hasNextPage &&
+        !isLoading &&
+        !internalLoading
+      ) {
+        setInternalLoading(true);
         Promise.resolve(onLoadMore()).finally(() => {
-          setInternalLoading(false)
-        })
+          setInternalLoading(false);
+        });
       }
     },
     [hasNextPage, isLoading, internalLoading, onLoadMore]
-  )
+  );
 
   const fetchMoreOnBottomReached = useCallback(async () => {
-    if (internalLoading || !hasNextPage) return
-    setInternalLoading(true)
+    if (internalLoading || !hasNextPage) return;
+    setInternalLoading(true);
     try {
-      await Promise.resolve(onLoadMore())
+      await Promise.resolve(onLoadMore());
     } finally {
-      setInternalLoading(false)
+      setInternalLoading(false);
     }
-  }, [hasNextPage, internalLoading, onLoadMore])
+  }, [hasNextPage, internalLoading, onLoadMore]);
 
   useEffect(() => {
     if (virtualized) return;
 
-    const element = loadingRef.current
-    if (!element) return
+    const element = loadingRef.current;
+    if (!element) return;
 
     if (observerRef.current) {
-      observerRef.current.disconnect()
+      observerRef.current.disconnect();
     }
 
     observerRef.current = new IntersectionObserver(handleObserver, {
       root: scrollableTarget ? document.getElementById(scrollableTarget) : null,
       rootMargin: `${threshold}px`,
       threshold: 0.1,
-    })
+    });
 
-    observerRef.current.observe(element)
+    observerRef.current.observe(element);
 
     return () => {
       if (observerRef.current) {
-        observerRef.current.disconnect()
+        observerRef.current.disconnect();
       }
-    }
-  }, [handleObserver, threshold, scrollableTarget, virtualized])
+    };
+  }, [handleObserver, threshold, scrollableTarget, virtualized]);
 
   useEffect(() => {
-    if (!virtualized) return
+    if (!virtualized) return;
 
-    const el = containerRef.current
-    if (!el) return
+    const el = containerRef.current;
+    if (!el) return;
 
     const onScroll = () => {
-      const nearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - threshold
+      const nearBottom =
+        el.scrollTop + el.clientHeight >= el.scrollHeight - threshold;
       if (nearBottom && hasNextPage && !isLoading && !internalLoading) {
-        fetchMoreOnBottomReached()
+        fetchMoreOnBottomReached();
       }
-    }
+    };
 
-    el.addEventListener('scroll', onScroll)
-    onScroll()
+    el.addEventListener('scroll', onScroll);
+    onScroll();
 
     return () => {
-      el.removeEventListener('scroll', onScroll)
-    }
-  }, [virtualized, threshold, hasNextPage, isLoading, internalLoading, fetchMoreOnBottomReached])
+      el.removeEventListener('scroll', onScroll);
+    };
+  }, [
+    virtualized,
+    threshold,
+    hasNextPage,
+    isLoading,
+    internalLoading,
+    fetchMoreOnBottomReached,
+  ]);
 
   useEffect(() => {
     if (initialLoad && items.length === 0 && hasNextPage && !isLoading) {
-      onLoadMore()
+      onLoadMore();
     }
-  }, [initialLoad, items.length, hasNextPage, isLoading, onLoadMore])
+  }, [initialLoad, items.length, hasNextPage, isLoading, onLoadMore]);
 
   const renderItems = () => {
     const renderedItems = items.map((item, index) => (
       <div key={index} className={cn(itemClassName)}>
         {renderItem(item, index)}
       </div>
-    ))
+    ));
 
-    return reverse ? renderedItems.reverse() : renderedItems
-  }
+    return reverse ? renderedItems.reverse() : renderedItems;
+  };
 
   if (virtualized && virtualizer) {
-    const virtualItems = virtualizer.getVirtualItems()
-    const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0
-    const paddingBottom = virtualItems.length > 0
-      ? virtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end
-      : 0
+    const virtualItems = virtualizer.getVirtualItems();
+    const paddingTop = virtualItems.length > 0 ? virtualItems[0].start : 0;
+    const paddingBottom =
+      virtualItems.length > 0
+        ? virtualizer.getTotalSize() - virtualItems[virtualItems.length - 1].end
+        : 0;
 
     return (
       <div
         ref={containerRef}
-        className={cn("overflow-auto")}
+        className={cn('overflow-auto')}
         style={{ height }}
         role="feed"
         aria-busy={isLoading}
         aria-label="Scrollable content list"
       >
-        <div
-          className={cn(className)}
-          style={{ paddingTop, paddingBottom }}
-        >
+        <div className={cn(className)} style={{ paddingTop, paddingBottom }}>
           {virtualItems.map((virtualItem) => {
-            const isLoaderRow = virtualItem.index > items.length - 1
-            const item = items[virtualItem.index]
+            const isLoaderRow = virtualItem.index > items.length - 1;
+            const item = items[virtualItem.index];
 
             return (
               <div
                 key={virtualItem.index}
                 ref={(el) => {
-                  if (el) virtualizer.measureElement(el)
+                  if (el) virtualizer.measureElement(el);
                 }}
                 className={cn(itemClassName)}
               >
                 {isLoaderRow ? (
                   hasNextPage ? (
-                    (isLoading || internalLoading) ? <Loader /> : null
+                    isLoading || internalLoading ? (
+                      <Loader />
+                    ) : null
+                  ) : items.length > 0 ? (
+                    endMessage
                   ) : (
-                    items.length > 0 ? endMessage : (
-                      <div className="text-center py-8 text-muted-foreground">
-                        <p>No items found</p>
-                      </div>
-                    )
+                    <div className="text-muted-foreground py-8 text-center">
+                      <p>No items found</p>
+                    </div>
                   )
                 ) : (
                   renderItem(item, virtualItem.index)
                 )}
               </div>
-            )
+            );
           })}
         </div>
 
         {errorMessage && (
-          <div className="text-center py-4 text-destructive">
+          <div className="text-destructive py-4 text-center">
             {errorMessage}
           </div>
         )}
       </div>
-    )
+    );
   }
 
   return (
     <div
       ref={containerRef}
-      className={cn("space-y-4", className)}
-      style={reverse ? { display: 'flex', flexDirection: 'column-reverse' } : undefined}
+      className={cn('space-y-4', className)}
+      style={
+        reverse
+          ? { display: 'flex', flexDirection: 'column-reverse' }
+          : undefined
+      }
       role="feed"
       aria-busy={isLoading}
       aria-label="Scrollable content list"
@@ -233,20 +252,18 @@ export function InfiniteScroll<T>({
       {isLoading && <Loader />}
 
       {errorMessage && (
-        <div className="text-center py-4 text-destructive">
-          {errorMessage}
-        </div>
+        <div className="text-destructive py-4 text-center">{errorMessage}</div>
       )}
 
       {!hasNextPage && !isLoading && items.length > 0 && endMessage}
 
       {!hasNextPage && !isLoading && items.length === 0 && (
-        <div className="text-center py-8 text-muted-foreground">
+        <div className="text-muted-foreground py-8 text-center">
           <p>No items found</p>
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export type { InfiniteScrollProps }
+export type { InfiniteScrollProps };

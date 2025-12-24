@@ -27,14 +27,19 @@ export default function SuspendedPage() {
   const { user, clearUser } = useUserStore();
   const router = useRouter();
 
-  const [isContactDialogOpen, setIsContactDialogOpen] = useState<boolean>(false);
+  const [isContactDialogOpen, setIsContactDialogOpen] =
+    useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
   const [isCheckingStatus, setIsCheckingStatus] = useState<boolean>(true);
-  const [formData, setFormData] = useState<{ name: string; email: string; message: string }>({
+  const [formData, setFormData] = useState<{
+    name: string;
+    email: string;
+    message: string;
+  }>({
     name: '',
     email: '',
-    message: ''
+    message: '',
   });
 
   useEffect(() => {
@@ -42,12 +47,12 @@ export default function SuspendedPage() {
       try {
         const token = document.cookie
           .split('; ')
-          .find(row => row.startsWith('auth-token='))
+          .find((row) => row.startsWith('auth-token='))
           ?.split('=')[1];
 
         if (token) {
           const profile = await authService.getProfile();
-          
+
           if (profile.status !== 'suspended') {
             clearUser();
             removeAuthCookie();
@@ -75,22 +80,24 @@ export default function SuspendedPage() {
 
   useEffect(() => {
     if (user && isContactDialogOpen) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         name: `${user.firstName} ${user.lastName}`,
-        email: user.email || ''
+        email: user.email || '',
       }));
     }
   }, [user, isContactDialogOpen]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.name || !formData.email || !formData.message) {
       toast.error('Please fill in all required fields');
       return;
@@ -105,19 +112,20 @@ export default function SuspendedPage() {
         message: formData.message.trim(),
         type: 'suspended' as ContactType,
       });
-      
+
       setIsSubmitted(true);
-      toast.success('Message sent successfully! We\'ll review your case and get back to you soon.');
-      
+      toast.success(
+        "Message sent successfully! We'll review your case and get back to you soon."
+      );
+
       setTimeout(() => {
         setIsSubmitted(false);
         setIsContactDialogOpen(false);
         setFormData({ name: '', email: '', message: '' });
       }, 3000);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to send message';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to send message';
       toast.error('Failed to send message', {
         description: errorMessage,
       });
@@ -128,9 +136,9 @@ export default function SuspendedPage() {
 
   if (isCheckingStatus) {
     return (
-      <div className="min-h-screen bg-neutral-950 relative overflow-hidden flex items-center justify-center">
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-neutral-950">
         <div className="text-center">
-          <Loader2 className="size-12 text-neutral-500 mx-auto mb-4 animate-spin" />
+          <Loader2 className="mx-auto mb-4 size-12 animate-spin text-neutral-500" />
           <p className="text-lg text-neutral-400">Checking account status...</p>
         </div>
       </div>
@@ -138,20 +146,20 @@ export default function SuspendedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 relative overflow-hidden flex items-center justify-center">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 size-[500px] bg-linear-to-br from-white/5 via-neutral-500/5 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 size-[400px] bg-linear-to-tl from-neutral-400/5 via-neutral-500/5 to-transparent rounded-full blur-3xl" />
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-neutral-950">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 size-[500px] rounded-full bg-linear-to-br from-white/5 via-neutral-500/5 to-transparent blur-3xl" />
+        <div className="absolute right-1/4 bottom-1/4 size-[400px] rounded-full bg-linear-to-tl from-neutral-400/5 via-neutral-500/5 to-transparent blur-3xl" />
       </div>
 
-      <main className="relative z-10 max-w-2xl mx-auto text-center px-8">
+      <main className="relative z-10 mx-auto max-w-2xl px-8 text-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           className="relative mb-8"
         >
-          <div className="size-32 mx-auto mb-8 rounded-full bg-neutral-800 flex items-center justify-center">
+          <div className="mx-auto mb-8 flex size-32 items-center justify-center rounded-full bg-neutral-800">
             <ShieldX className="size-16 text-neutral-500" />
           </div>
         </motion.div>
@@ -160,10 +168,10 @@ export default function SuspendedPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="text-4xl md:text-6xl font-bold mb-6"
+          className="mb-6 text-4xl font-bold md:text-6xl"
         >
           Access{' '}
-          <span className="text-transparent bg-clip-text bg-linear-to-r from-white to-neutral-400">
+          <span className="bg-linear-to-r from-white to-neutral-400 bg-clip-text text-transparent">
             Denied
           </span>
         </motion.h1>
@@ -172,23 +180,24 @@ export default function SuspendedPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="text-xl md:text-2xl text-neutral-400 mb-12 leading-relaxed max-w-xl mx-auto"
+          className="mx-auto mb-12 max-w-xl text-xl leading-relaxed text-neutral-400 md:text-2xl"
         >
-          Your account has been suspended. Please contact the administrator for support.
+          Your account has been suspended. Please contact the administrator for
+          support.
         </motion.p>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-16 pt-10 border-t border-neutral-800"
+          className="mt-16 border-t border-neutral-800 pt-10"
         >
-          <p className="text-lg text-neutral-500 mb-6">Need help?</p>
+          <p className="mb-6 text-lg text-neutral-500">Need help?</p>
           <Button
             variant="ghost"
             size="lg"
             onClick={() => setIsContactDialogOpen(true)}
-            className="py-7 text-lg rounded-full border border-white/20 bg-white/5 backdrop-blur-xl hover:bg-white/10 hover:border-white/40 shadow-lg shadow-black/20"
+            className="rounded-full border border-white/20 bg-white/5 py-7 text-lg shadow-lg shadow-black/20 backdrop-blur-xl hover:border-white/40 hover:bg-white/10"
           >
             Contact Support
           </Button>
@@ -196,19 +205,23 @@ export default function SuspendedPage() {
       </main>
 
       <Dialog open={isContactDialogOpen} onOpenChange={setIsContactDialogOpen}>
-        <DialogContent className="bg-neutral-900 border-neutral-800 max-w-2xl">
+        <DialogContent className="max-w-2xl border-neutral-800 bg-neutral-900">
           <DialogHeader>
-            <DialogTitle className="text-2xl flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-2xl">
               Contact Support
             </DialogTitle>
             <DialogDescription className="text-lg text-neutral-400">
-              Please provide details about your account suspension. We&apos;ll review your case and respond as soon as possible.
+              Please provide details about your account suspension. We&apos;ll
+              review your case and respond as soon as possible.
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-3">
-              <Label htmlFor="contact-name" className="text-base text-neutral-300">
+              <Label
+                htmlFor="contact-name"
+                className="text-base text-neutral-300"
+              >
                 Full Name <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -217,14 +230,17 @@ export default function SuspendedPage() {
                 placeholder="John Doe"
                 value={formData.name}
                 onChange={handleInputChange}
-                className="h-12! text-base! bg-neutral-800 border-neutral-700"
+                className="h-12! border-neutral-700 bg-neutral-800 text-base!"
                 required
                 disabled={isSubmitting || isSubmitted}
               />
             </div>
 
             <div className="space-y-3">
-              <Label htmlFor="contact-email" className="text-base text-neutral-300">
+              <Label
+                htmlFor="contact-email"
+                className="text-base text-neutral-300"
+              >
                 Email Address <span className="text-red-500">*</span>
               </Label>
               <Input
@@ -234,14 +250,17 @@ export default function SuspendedPage() {
                 placeholder="john@example.com"
                 value={formData.email}
                 onChange={handleInputChange}
-                className="h-12! text-base! bg-neutral-800 border-neutral-700"
+                className="h-12! border-neutral-700 bg-neutral-800 text-base!"
                 required
                 disabled={isSubmitting || isSubmitted}
               />
             </div>
 
             <div className="space-y-3">
-              <Label htmlFor="contact-message" className="text-base text-neutral-300">
+              <Label
+                htmlFor="contact-message"
+                className="text-base text-neutral-300"
+              >
                 Message <span className="text-red-500">*</span>
               </Label>
               <Textarea
@@ -250,7 +269,7 @@ export default function SuspendedPage() {
                 placeholder="Please explain your situation and why you believe your account should be reinstated..."
                 value={formData.message}
                 onChange={handleInputChange}
-                className="min-h-[150px] text-base! bg-neutral-800 border-neutral-700 resize-none"
+                className="min-h-[150px] resize-none border-neutral-700 bg-neutral-800 text-base!"
                 required
                 disabled={isSubmitting || isSubmitted}
               />

@@ -4,16 +4,16 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { useDebounceValue } from 'usehooks-ts';
-import { 
-  Users, 
-  Globe, 
-  Loader2, 
+import {
+  Users,
+  Globe,
+  Loader2,
   Trash2,
   Copy,
   Search,
   UserPlus,
   Mail,
-  User
+  User,
 } from 'lucide-react';
 import { roadmapService, userService } from '@/services';
 import type { ISharedUser, ISearchUserResult } from '@/types';
@@ -53,7 +53,7 @@ export function ShareRoadmapDialog({
   open,
   onOpenChange,
   roadmapId,
-  roadmapTitle
+  roadmapTitle,
 }: IShareRoadmapDialogProps) {
   const [isSharedWithAll, setIsSharedWithAll] = useState<boolean>(false);
   const [sharedUsers, setSharedUsers] = useState<ISharedUser[]>([]);
@@ -89,13 +89,12 @@ export function ShareRoadmapDialog({
         setIsSearching(true);
         const results = await userService.searchUsers(debouncedSearchEmail);
         const filteredResults = results.filter(
-          user => !sharedUsers.some(shared => shared.id === user.id)
+          (user) => !sharedUsers.some((shared) => shared.id === user.id)
         );
         setSearchResults(filteredResults);
       } catch (error) {
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : 'Failed to search users';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to search users';
         toast.error('Failed to search users', {
           description: errorMessage,
         });
@@ -114,9 +113,10 @@ export function ShareRoadmapDialog({
       const data = await roadmapService.getShareSettings(roadmapId);
       setIsSharedWithAll(data.isSharedWithAll);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load sharing settings';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load sharing settings';
       toast.error('Failed to load sharing settings', {
         description: errorMessage,
       });
@@ -131,9 +131,8 @@ export function ShareRoadmapDialog({
       const users = await roadmapService.getSharedUsers(roadmapId);
       setSharedUsers(users);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to fetch shared users';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to fetch shared users';
       toast.error('Failed to fetch shared users', {
         description: errorMessage,
       });
@@ -148,9 +147,10 @@ export function ShareRoadmapDialog({
       const users = await roadmapService.getSharedUsers(roadmapId);
       setSharedUsers(users);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to refresh shared users';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to refresh shared users';
       toast.error('Failed to refresh shared users', {
         description: errorMessage,
       });
@@ -160,17 +160,20 @@ export function ShareRoadmapDialog({
   const handleToggleShareWithAll = async (checked: boolean) => {
     const previousValue = isSharedWithAll;
     setIsSharedWithAll(checked);
-    
+
     try {
       await roadmapService.shareRoadmap(roadmapId, {
-        shareWithAll: checked
+        shareWithAll: checked,
       });
-      toast.success(checked ? 'Roadmap is now public' : 'Roadmap is now private');
+      toast.success(
+        checked ? 'Roadmap is now public' : 'Roadmap is now private'
+      );
     } catch (error) {
       setIsSharedWithAll(previousValue);
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to toggle share with all';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to toggle share with all';
       toast.error('Failed to toggle share with all', {
         description: errorMessage,
       });
@@ -183,13 +186,14 @@ export function ShareRoadmapDialog({
     try {
       setIsRevoking(true);
       await roadmapService.revokeAccess(roadmapId, userToRevoke.id);
-      toast.success(`Access revoked for ${userToRevoke.firstName} ${userToRevoke.lastName}`);
+      toast.success(
+        `Access revoked for ${userToRevoke.firstName} ${userToRevoke.lastName}`
+      );
       setUserToRevoke(null);
       refreshSharedUsers();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to revoke access';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to revoke access';
       toast.error('Failed to revoke access', {
         description: errorMessage,
       });
@@ -208,19 +212,18 @@ export function ShareRoadmapDialog({
     try {
       setIsInviting(true);
       await roadmapService.shareRoadmap(roadmapId, {
-        userIds: [user.id]
+        userIds: [user.id],
       });
       toast.success(`Shared with ${user.firstName} ${user.lastName}`, {
         description: 'User invited successfully',
       });
-      
+
       setSearchEmail('');
       setSearchResults([]);
       refreshSharedUsers();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to share with user';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to share with user';
       toast.error('Failed to share with user', {
         description: errorMessage,
       });
@@ -234,17 +237,19 @@ export function ShareRoadmapDialog({
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: 'numeric'
+      year: 'numeric',
     });
   };
 
   return (
     <>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] p-0 gap-0">
+        <DialogContent className="max-h-[90vh] gap-0 p-0 sm:max-w-[600px]">
           <DialogHeader className="p-6 pb-5">
-            <DialogTitle className="text-3xl font-bold">Share Roadmap</DialogTitle>
-            <DialogDescription className="text-xl text-neutral-400 mt-2">
+            <DialogTitle className="text-3xl font-bold">
+              Share Roadmap
+            </DialogTitle>
+            <DialogDescription className="mt-2 text-xl text-neutral-400">
               Share &quot;{roadmapTitle}&quot; with others or make it public
             </DialogDescription>
           </DialogHeader>
@@ -255,9 +260,9 @@ export function ShareRoadmapDialog({
             </div>
           ) : (
             <ScrollArea className="max-h-[calc(90vh-120px)]">
-              <div className="px-6 pb-6 space-y-6">
+              <div className="space-y-6 px-6 pb-6">
                 <div className="space-y-3">
-                  <label className="text-lg font-semibold flex items-center gap-2">
+                  <label className="flex items-center gap-2 text-lg font-semibold">
                     <Copy className="size-6" />
                     Share Link
                   </label>
@@ -265,7 +270,7 @@ export function ShareRoadmapDialog({
                     <Input
                       readOnly
                       value={`${window.location.origin}/roadmap/${roadmapId}`}
-                      className="flex-1 h-14! text-lg bg-neutral-900/50 border-neutral-800"
+                      className="h-14! flex-1 border-neutral-800 bg-neutral-900/50 text-lg"
                     />
                     <Button
                       onClick={handleCopyLink}
@@ -279,15 +284,18 @@ export function ShareRoadmapDialog({
 
                 <Separator className="bg-neutral-800" />
 
-                <div className="flex items-start justify-between gap-4 p-5 bg-neutral-900/50 border border-neutral-800 rounded-xl hover:border-neutral-700 transition-colors">
-                  <div className="flex items-start gap-3 flex-1">
-                    <div className="p-2.5 bg-neutral-800 rounded-lg">
+                <div className="flex items-start justify-between gap-4 rounded-xl border border-neutral-800 bg-neutral-900/50 p-5 transition-colors hover:border-neutral-700">
+                  <div className="flex flex-1 items-start gap-3">
+                    <div className="rounded-lg bg-neutral-800 p-2.5">
                       <Globe className="size-7 text-neutral-300" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-semibold text-xl mb-1">Public Access</p>
-                      <p className="text-lg text-neutral-400 leading-relaxed">
-                        Anyone with the link can view this roadmap
+                      <p className="mb-1 text-xl font-semibold">
+                        Public Access
+                      </p>
+                      <p className="text-lg leading-relaxed text-neutral-400">
+                        Any authenticated user with the link can view this
+                        roadmap
                       </p>
                     </div>
                   </div>
@@ -301,40 +309,42 @@ export function ShareRoadmapDialog({
                 <Separator className="bg-neutral-800" />
 
                 <div className="space-y-3">
-                  <label className="text-lg font-semibold flex items-center gap-2">
+                  <label className="flex items-center gap-2 text-lg font-semibold">
                     <Mail className="size-6" />
                     Invite by Email
                   </label>
                   <div className="relative">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-6 text-neutral-500" />
+                    <Search className="absolute top-1/2 left-4 size-6 -translate-y-1/2 text-neutral-500" />
                     <Input
                       placeholder="Enter email address (e.g. user@example.com)"
                       value={searchEmail}
                       onChange={(e) => setSearchEmail(e.target.value)}
-                      className="h-14! text-lg bg-neutral-900/50 border-neutral-800 pl-14"
+                      className="h-14! border-neutral-800 bg-neutral-900/50 pl-14 text-lg"
                     />
                     {isSearching && (
-                      <Loader2 className="absolute right-4 top-1/2 -translate-y-1/2 size-6 animate-spin text-neutral-500" />
+                      <Loader2 className="absolute top-1/2 right-4 size-6 -translate-y-1/2 animate-spin text-neutral-500" />
                     )}
                   </div>
 
                   {searchResults.length > 0 && (
-                    <div className="border border-neutral-800 rounded-lg overflow-hidden bg-neutral-900/30">
+                    <div className="overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900/30">
                       {searchResults.map((user) => (
                         <div
                           key={user.id}
-                          className="flex items-center justify-between p-4 hover:bg-neutral-800/50 transition-colors border-b border-neutral-800/50 last:border-b-0"
+                          className="flex items-center justify-between border-b border-neutral-800/50 p-4 transition-colors last:border-b-0 hover:bg-neutral-800/50"
                         >
-                          <div className="flex-1 min-w-0">
-                            <p className="font-medium text-lg truncate">
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-lg font-medium">
                               {user.firstName} {user.lastName}
                             </p>
-                            <p className="text-base text-neutral-400 truncate">{user.email}</p>
+                            <p className="truncate text-base text-neutral-400">
+                              {user.email}
+                            </p>
                           </div>
                           <Button
                             size="sm"
                             variant="outline"
-                            className="h-11! gap-2 ml-3 shrink-0 text-lg px-4"
+                            className="ml-3 h-11! shrink-0 gap-2 px-4 text-lg"
                             onClick={() => handleInviteUser(user)}
                             disabled={isInviting}
                           >
@@ -358,11 +368,11 @@ export function ShareRoadmapDialog({
                   {searchEmail && !isSearching && (
                     <>
                       {!isValidEmailFormat(searchEmail) ? (
-                        <p className="text-lg text-neutral-500 text-center py-3">
+                        <p className="py-3 text-center text-lg text-neutral-500">
                           Please enter a valid email address
                         </p>
                       ) : searchResults.length === 0 ? (
-                        <p className="text-lg text-neutral-500 text-center py-3">
+                        <p className="py-3 text-center text-lg text-neutral-500">
                           No users found with that email
                         </p>
                       ) : null}
@@ -373,7 +383,7 @@ export function ShareRoadmapDialog({
                 <Separator className="bg-neutral-800" />
 
                 <div className="space-y-3">
-                  <label className="text-lg font-semibold flex items-center gap-2">
+                  <label className="flex items-center gap-2 text-lg font-semibold">
                     <Users className="size-6" />
                     Shared with ({sharedUsers.length})
                   </label>
@@ -383,35 +393,39 @@ export function ShareRoadmapDialog({
                       <Loader2 className="size-8 animate-spin text-neutral-400" />
                     </div>
                   ) : sharedUsers.length > 0 ? (
-                    <div className="border border-neutral-800 rounded-lg overflow-hidden bg-neutral-900/30">
+                    <div className="overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900/30">
                       <ScrollArea className="max-h-[300px]">
                         {sharedUsers.map((user, index) => (
                           <div
                             key={user.id}
                             className={`flex items-center justify-between p-4 ${
-                              index !== sharedUsers.length - 1 ? 'border-b border-neutral-800/50' : ''
+                              index !== sharedUsers.length - 1
+                                ? 'border-b border-neutral-800/50'
+                                : ''
                             }`}
                           >
-                            <div className="flex items-center gap-3 flex-1 min-w-0">
+                            <div className="flex min-w-0 flex-1 items-center gap-3">
                               {user.avatar ? (
                                 <Image
                                   src={user.avatar}
                                   alt={`${user.firstName} ${user.lastName}`}
                                   width={44}
                                   height={44}
-                                  className="size-11 rounded-full object-cover shrink-0"
+                                  className="size-11 shrink-0 rounded-full object-cover"
                                 />
                               ) : (
-                                <div className="size-11 rounded-full bg-neutral-700 flex items-center justify-center shrink-0">
+                                <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-neutral-700">
                                   <User className="size-6 text-neutral-400" />
                                 </div>
                               )}
-                              <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-lg truncate">
+                              <div className="min-w-0 flex-1">
+                                <p className="truncate text-lg font-semibold">
                                   {user.firstName} {user.lastName}
                                 </p>
-                                <p className="text-base text-neutral-400 truncate mt-0.5">{user.email}</p>
-                                <p className="text-base text-neutral-500 mt-1">
+                                <p className="mt-0.5 truncate text-base text-neutral-400">
+                                  {user.email}
+                                </p>
+                                <p className="mt-1 text-base text-neutral-500">
                                   Shared {formatSharedDate(user.sharedAt)}
                                 </p>
                               </div>
@@ -419,7 +433,7 @@ export function ShareRoadmapDialog({
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="size-10 dark:hover:bg-red-500/10 hover:text-red-500 transition-colors shrink-0 ml-3"
+                              className="ml-3 size-10 shrink-0 transition-colors hover:text-red-500 dark:hover:bg-red-500/10"
                               onClick={() => setUserToRevoke(user)}
                             >
                               <Trash2 className="size-5" />
@@ -429,10 +443,12 @@ export function ShareRoadmapDialog({
                       </ScrollArea>
                     </div>
                   ) : (
-                    <div className="text-center py-12 text-neutral-400 border border-dashed border-neutral-800 rounded-lg bg-neutral-900/20">
-                      <Users className="size-14 mx-auto mb-3 text-neutral-600" />
-                      <p className="font-medium text-lg">No users shared yet</p>
-                      <p className="text-base mt-1 text-neutral-500">Invite users by entering their email above</p>
+                    <div className="rounded-lg border border-dashed border-neutral-800 bg-neutral-900/20 py-12 text-center text-neutral-400">
+                      <Users className="mx-auto mb-3 size-14 text-neutral-600" />
+                      <p className="text-lg font-medium">No users shared yet</p>
+                      <p className="mt-1 text-base text-neutral-500">
+                        Invite users by entering their email above
+                      </p>
                     </div>
                   )}
                 </div>
@@ -442,10 +458,15 @@ export function ShareRoadmapDialog({
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={!!userToRevoke} onOpenChange={(open) => !open && !isRevoking && setUserToRevoke(null)}>
+      <AlertDialog
+        open={!!userToRevoke}
+        onOpenChange={(open) => !open && !isRevoking && setUserToRevoke(null)}
+      >
         <AlertDialogContent className="sm:max-w-[480px]">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-3xl">Revoke Access</AlertDialogTitle>
+            <AlertDialogTitle className="text-3xl">
+              Revoke Access
+            </AlertDialogTitle>
             <AlertDialogDescription className="text-lg leading-relaxed">
               Are you sure you want to revoke access for{' '}
               <span className="font-semibold text-white">
@@ -461,11 +482,11 @@ export function ShareRoadmapDialog({
             <AlertDialogAction
               onClick={handleRevokeAccess}
               disabled={isRevoking}
-              className="bg-red-600 hover:bg-red-700 text-white h-12! text-lg"
+              className="h-12! bg-red-600 text-lg text-white hover:bg-red-700"
             >
               {isRevoking ? (
                 <>
-                  <Loader2 className="size-6 animate-spin mr-2" />
+                  <Loader2 className="mr-2 size-6 animate-spin" />
                   Revoking...
                 </>
               ) : (

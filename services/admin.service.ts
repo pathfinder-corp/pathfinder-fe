@@ -1,7 +1,7 @@
-import type { 
-  IDashboardOverview, 
-  IDashboardUsers, 
-  IDashboardRoadmaps, 
+import type {
+  IDashboardOverview,
+  IDashboardUsers,
+  IDashboardRoadmaps,
   IDashboardAssessments,
   IAdminUsersResponse,
   IAdminUsersParams,
@@ -41,7 +41,7 @@ import type {
   IAdminContactMessage,
   IAdminContactStats,
   IUpdateContactStatusPayload,
-  IRespondToContactPayload
+  IRespondToContactPayload,
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
@@ -72,7 +72,9 @@ export const adminService = {
 
   getDashboardRoadmaps: async (): Promise<IDashboardRoadmaps> => {
     try {
-      const response = await api.get<IDashboardRoadmaps>('/admin/dashboard/roadmaps');
+      const response = await api.get<IDashboardRoadmaps>(
+        '/admin/dashboard/roadmaps'
+      );
       return response.data;
     } catch (error) {
       console.error('Get dashboard roadmaps failed:', error);
@@ -84,7 +86,9 @@ export const adminService = {
 
   getDashboardAssessments: async (): Promise<IDashboardAssessments> => {
     try {
-      const response = await api.get<IDashboardAssessments>('/admin/dashboard/assessments');
+      const response = await api.get<IDashboardAssessments>(
+        '/admin/dashboard/assessments'
+      );
       return response.data;
     } catch (error) {
       console.error('Get dashboard assessments failed:', error);
@@ -94,9 +98,13 @@ export const adminService = {
     }
   },
 
-  getUsers: async (params?: IAdminUsersParams): Promise<IAdminUsersResponse> => {
+  getUsers: async (
+    params?: IAdminUsersParams
+  ): Promise<IAdminUsersResponse> => {
     try {
-      const response = await api.get<IAdminUsersResponse>('/admin/users', { params });
+      const response = await api.get<IAdminUsersResponse>('/admin/users', {
+        params,
+      });
       return response.data;
     } catch (error) {
       console.error('Get users failed:', error);
@@ -118,9 +126,15 @@ export const adminService = {
     }
   },
 
-  updateUser: async (id: string, payload: IUpdateUserPayload): Promise<IAdminUser> => {
+  updateUser: async (
+    id: string,
+    payload: IUpdateUserPayload
+  ): Promise<IAdminUser> => {
     try {
-      const response = await api.patch<IAdminUser>(`/admin/users/${id}`, payload);
+      const response = await api.patch<IAdminUser>(
+        `/admin/users/${id}`,
+        payload
+      );
       return response.data;
     } catch (error) {
       console.error('Update user failed:', error);
@@ -154,9 +168,14 @@ export const adminService = {
     }
   },
 
-  getRoadmaps: async (params?: IAdminRoadmapsParams): Promise<IAdminRoadmapsResponse> => {
+  getRoadmaps: async (
+    params?: IAdminRoadmapsParams
+  ): Promise<IAdminRoadmapsResponse> => {
     try {
-      const response = await api.get<IAdminRoadmapsResponse>('/admin/roadmaps', { params });
+      const response = await api.get<IAdminRoadmapsResponse>(
+        '/admin/roadmaps',
+        { params }
+      );
       return response.data;
     } catch (error) {
       console.error('Get roadmaps failed:', error);
@@ -168,7 +187,9 @@ export const adminService = {
 
   getRoadmapById: async (id: string): Promise<IAdminRoadmapDetail> => {
     try {
-      const response = await api.get<IAdminRoadmapDetail>(`/admin/roadmaps/${id}`);
+      const response = await api.get<IAdminRoadmapDetail>(
+        `/admin/roadmaps/${id}`
+      );
       return response.data;
     } catch (error) {
       console.error('Get roadmap by id failed:', error);
@@ -189,9 +210,14 @@ export const adminService = {
     }
   },
 
-  getAssessments: async (params?: IAdminAssessmentsParams): Promise<IAdminAssessmentsResponse> => {
+  getAssessments: async (
+    params?: IAdminAssessmentsParams
+  ): Promise<IAdminAssessmentsResponse> => {
     try {
-      const response = await api.get<IAdminAssessmentsResponse>('/admin/assessments', { params });
+      const response = await api.get<IAdminAssessmentsResponse>(
+        '/admin/assessments',
+        { params }
+      );
       return response.data;
     } catch (error) {
       console.error('Get assessments failed:', error);
@@ -203,7 +229,9 @@ export const adminService = {
 
   getAssessmentById: async (id: string): Promise<IAdminAssessmentDetail> => {
     try {
-      const response = await api.get<IAdminAssessmentDetail>(`/admin/assessments/${id}`);
+      const response = await api.get<IAdminAssessmentDetail>(
+        `/admin/assessments/${id}`
+      );
       return response.data;
     } catch (error) {
       console.error('Get assessment by id failed:', error);
@@ -224,9 +252,14 @@ export const adminService = {
     }
   },
 
-  getMentorApplications: async (params?: IMentorApplicationsParams): Promise<IMentorApplicationsResponse> => {
+  getMentorApplications: async (
+    params?: IMentorApplicationsParams
+  ): Promise<IMentorApplicationsResponse> => {
     try {
-      const response = await api.get<IMentorApplicationsResponse>('/admin/mentor-applications', { params });
+      const response = await api.get<IMentorApplicationsResponse>(
+        '/admin/mentor-applications',
+        { params }
+      );
       return response.data;
     } catch (error) {
       console.error('Get mentor applications failed:', error);
@@ -236,9 +269,13 @@ export const adminService = {
     }
   },
 
-  getMentorApplicationById: async (id: string): Promise<IMentorApplicationDetail> => {
+  getMentorApplicationById: async (
+    id: string
+  ): Promise<IMentorApplicationDetail> => {
     try {
-      const response = await api.get<IMentorApplicationDetail>(`/admin/mentor-applications/${id}`);
+      const response = await api.get<IMentorApplicationDetail>(
+        `/admin/mentor-applications/${id}`
+      );
       return response.data;
     } catch (error) {
       console.error('Get mentor application by id failed:', error);
@@ -248,9 +285,15 @@ export const adminService = {
     }
   },
 
-  reviewMentorApplication: async (id: string, payload: IReviewMentorApplicationPayload): Promise<IMentorApplicationDetail> => {
+  reviewMentorApplication: async (
+    id: string,
+    payload: IReviewMentorApplicationPayload
+  ): Promise<IMentorApplicationDetail> => {
     try {
-      const response = await api.post<IMentorApplicationDetail>(`/admin/mentor-applications/${id}/review`, payload);
+      const response = await api.post<IMentorApplicationDetail>(
+        `/admin/mentor-applications/${id}/review`,
+        payload
+      );
       return response.data;
     } catch (error) {
       console.error('Review mentor application failed:', error);
@@ -260,9 +303,13 @@ export const adminService = {
     }
   },
 
-  markApplicationUnderReview: async (id: string): Promise<IMentorApplicationDetail> => {
+  markApplicationUnderReview: async (
+    id: string
+  ): Promise<IMentorApplicationDetail> => {
     try {
-      const response = await api.post<IMentorApplicationDetail>(`/admin/mentor-applications/${id}/under-review`);
+      const response = await api.post<IMentorApplicationDetail>(
+        `/admin/mentor-applications/${id}/under-review`
+      );
       return response.data;
     } catch (error) {
       console.error('Mark application under review failed:', error);
@@ -274,7 +321,9 @@ export const adminService = {
 
   getFlaggedApplications: async (): Promise<IMentorApplicationDetail[]> => {
     try {
-      const response = await api.get<IMentorApplicationDetail[]>('/admin/applications/flagged');
+      const response = await api.get<IMentorApplicationDetail[]>(
+        '/admin/applications/flagged'
+      );
       return response.data;
     } catch (error) {
       console.error('Get flagged applications failed:', error);
@@ -286,7 +335,9 @@ export const adminService = {
 
   unflagApplication: async (id: string): Promise<IMentorApplicationDetail> => {
     try {
-      const response = await api.post<IMentorApplicationDetail>(`/admin/applications/${id}/unflag`);
+      const response = await api.post<IMentorApplicationDetail>(
+        `/admin/applications/${id}/unflag`
+      );
       return response.data;
     } catch (error) {
       console.error('Unflag application failed:', error);
@@ -298,7 +349,9 @@ export const adminService = {
 
   getIPStatistics: async (): Promise<IIPStatisticsResponse> => {
     try {
-      const response = await api.get<IIPStatisticsResponse>('/admin/applications/ip-statistics');
+      const response = await api.get<IIPStatisticsResponse>(
+        '/admin/applications/ip-statistics'
+      );
       return response.data;
     } catch (error) {
       console.error('Get IP statistics failed:', error);
@@ -308,9 +361,13 @@ export const adminService = {
     }
   },
 
-  getAuditLogs: async (params?: IAuditLogsParams): Promise<IAuditLogsResponse> => {
+  getAuditLogs: async (
+    params?: IAuditLogsParams
+  ): Promise<IAuditLogsResponse> => {
     try {
-      const response = await api.get<IAuditLogsResponse>('/admin/audit-logs', { params });
+      const response = await api.get<IAuditLogsResponse>('/admin/audit-logs', {
+        params,
+      });
       return response.data;
     } catch (error) {
       console.error('Get audit logs failed:', error);
@@ -320,7 +377,9 @@ export const adminService = {
     }
   },
 
-  getApplicationDocuments: async (applicationId: string): Promise<IAdminDocument[]> => {
+  getApplicationDocuments: async (
+    applicationId: string
+  ): Promise<IAdminDocument[]> => {
     try {
       const response = await api.get<IAdminDocument[]>(
         `/admin/mentor-applications/${applicationId}/documents`
@@ -334,7 +393,10 @@ export const adminService = {
     }
   },
 
-  getDocumentById: async (applicationId: string, documentId: string): Promise<IAdminDocumentDetail> => {
+  getDocumentById: async (
+    applicationId: string,
+    documentId: string
+  ): Promise<IAdminDocumentDetail> => {
     try {
       const response = await api.get<IAdminDocumentDetail>(
         `/admin/mentor-applications/${applicationId}/documents/${documentId}`
@@ -349,8 +411,8 @@ export const adminService = {
   },
 
   verifyDocument: async (
-    applicationId: string, 
-    documentId: string, 
+    applicationId: string,
+    documentId: string,
     payload: IVerifyDocumentPayload
   ): Promise<IAdminDocument> => {
     try {
@@ -381,7 +443,10 @@ export const adminService = {
     }
   },
 
-  downloadDocument: async (applicationId: string, documentId: string): Promise<Blob> => {
+  downloadDocument: async (
+    applicationId: string,
+    documentId: string
+  ): Promise<Blob> => {
     try {
       const response = await api.get(
         `/admin/mentor-applications/${applicationId}/documents/${documentId}/download`,
@@ -396,14 +461,20 @@ export const adminService = {
     }
   },
 
-  getDocumentDownloadUrl: (applicationId: string, documentId: string): string => {
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
+  getDocumentDownloadUrl: (
+    applicationId: string,
+    documentId: string
+  ): string => {
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
     return `${baseUrl}/admin/mentor-applications/${applicationId}/documents/${documentId}/download`;
   },
 
   getPendingDocuments: async (): Promise<IAdminPendingDocument[]> => {
     try {
-      const response = await api.get<IAdminPendingDocument[]>('/admin/documents/pending');
+      const response = await api.get<IAdminPendingDocument[]>(
+        '/admin/documents/pending'
+      );
       return response.data;
     } catch (error) {
       console.error('Get pending documents failed:', error);
@@ -413,9 +484,13 @@ export const adminService = {
     }
   },
 
-  getMentors: async (params?: IAdminMentorsParams): Promise<IAdminMentorsResponse> => {
+  getMentors: async (
+    params?: IAdminMentorsParams
+  ): Promise<IAdminMentorsResponse> => {
     try {
-      const response = await api.get<IAdminMentorsResponse>('/admin/mentors', { params });
+      const response = await api.get<IAdminMentorsResponse>('/admin/mentors', {
+        params,
+      });
       return response.data;
     } catch (error) {
       console.error('Get mentors failed:', error);
@@ -449,7 +524,10 @@ export const adminService = {
     }
   },
 
-  revokeMentorStatus: async (userId: string, payload: IRevokeMentorPayload): Promise<void> => {
+  revokeMentorStatus: async (
+    userId: string,
+    payload: IRevokeMentorPayload
+  ): Promise<void> => {
     try {
       await api.post(`/admin/users/${userId}/revoke-mentor`, payload);
     } catch (error) {
@@ -459,10 +537,15 @@ export const adminService = {
       throw error;
     }
   },
-  
-  getMentorships: async (params?: IAdminMentorshipsParams): Promise<IAdminMentorshipsResponse> => {
+
+  getMentorships: async (
+    params?: IAdminMentorshipsParams
+  ): Promise<IAdminMentorshipsResponse> => {
     try {
-      const response = await api.get<IAdminMentorshipsResponse>('/admin/mentorships', { params });
+      const response = await api.get<IAdminMentorshipsResponse>(
+        '/admin/mentorships',
+        { params }
+      );
       return response.data;
     } catch (error) {
       console.error('Get mentorships failed:', error);
@@ -474,7 +557,9 @@ export const adminService = {
 
   getMentorshipStats: async (): Promise<IAdminMentorshipStats> => {
     try {
-      const response = await api.get<IAdminMentorshipStats>('/admin/mentorships/stats');
+      const response = await api.get<IAdminMentorshipStats>(
+        '/admin/mentorships/stats'
+      );
       return response.data;
     } catch (error) {
       console.error('Get mentorship stats failed:', error);
@@ -486,7 +571,9 @@ export const adminService = {
 
   getMentorshipById: async (id: string): Promise<IAdminMentorship> => {
     try {
-      const response = await api.get<IAdminMentorship>(`/admin/mentorships/${id}`);
+      const response = await api.get<IAdminMentorship>(
+        `/admin/mentorships/${id}`
+      );
       return response.data;
     } catch (error) {
       console.error('Get mentorship by id failed:', error);
@@ -496,9 +583,15 @@ export const adminService = {
     }
   },
 
-  forceEndMentorship: async (id: string, payload: IForceEndMentorshipPayload): Promise<IAdminMentorship> => {
+  forceEndMentorship: async (
+    id: string,
+    payload: IForceEndMentorshipPayload
+  ): Promise<IAdminMentorship> => {
     try {
-      const response = await api.post<IAdminMentorship>(`/admin/mentorships/${id}/force-end`, payload);
+      const response = await api.post<IAdminMentorship>(
+        `/admin/mentorships/${id}/force-end`,
+        payload
+      );
       return response.data;
     } catch (error) {
       console.error('Force end mentorship failed:', error);
@@ -508,9 +601,14 @@ export const adminService = {
     }
   },
 
-  getContactMessages: async (params?: IAdminContactMessagesParams): Promise<IAdminContactMessagesResponse> => {
+  getContactMessages: async (
+    params?: IAdminContactMessagesParams
+  ): Promise<IAdminContactMessagesResponse> => {
     try {
-      const response = await api.get<IAdminContactMessagesResponse>('/admin/contact', { params });
+      const response = await api.get<IAdminContactMessagesResponse>(
+        '/admin/contact',
+        { params }
+      );
       return response.data;
     } catch (error) {
       console.error('Get contact messages failed:', error);
@@ -522,7 +620,9 @@ export const adminService = {
 
   getContactStats: async (): Promise<IAdminContactStats> => {
     try {
-      const response = await api.get<IAdminContactStats>('/admin/contact/stats');
+      const response = await api.get<IAdminContactStats>(
+        '/admin/contact/stats'
+      );
       return response.data;
     } catch (error) {
       console.error('Get contact stats failed:', error);
@@ -534,7 +634,9 @@ export const adminService = {
 
   getContactMessageById: async (id: string): Promise<IAdminContactMessage> => {
     try {
-      const response = await api.get<IAdminContactMessage>(`/admin/contact/${id}`);
+      const response = await api.get<IAdminContactMessage>(
+        `/admin/contact/${id}`
+      );
       return response.data;
     } catch (error) {
       console.error('Get contact message by id failed:', error);
@@ -544,9 +646,15 @@ export const adminService = {
     }
   },
 
-  updateContactStatus: async (id: string, payload: IUpdateContactStatusPayload): Promise<IAdminContactMessage> => {
+  updateContactStatus: async (
+    id: string,
+    payload: IUpdateContactStatusPayload
+  ): Promise<IAdminContactMessage> => {
     try {
-      const response = await api.patch<IAdminContactMessage>(`/admin/contact/${id}/status`, payload);
+      const response = await api.patch<IAdminContactMessage>(
+        `/admin/contact/${id}/status`,
+        payload
+      );
       return response.data;
     } catch (error) {
       console.error('Update contact status failed:', error);
@@ -556,9 +664,15 @@ export const adminService = {
     }
   },
 
-  respondToContact: async (id: string, payload: IRespondToContactPayload): Promise<IAdminContactMessage> => {
+  respondToContact: async (
+    id: string,
+    payload: IRespondToContactPayload
+  ): Promise<IAdminContactMessage> => {
     try {
-      const response = await api.post<IAdminContactMessage>(`/admin/contact/${id}/respond`, payload);
+      const response = await api.post<IAdminContactMessage>(
+        `/admin/contact/${id}/respond`,
+        payload
+      );
       return response.data;
     } catch (error) {
       console.error('Respond to contact failed:', error);
@@ -566,5 +680,5 @@ export const adminService = {
       if (message) throw new Error(message);
       throw error;
     }
-  }
+  },
 };

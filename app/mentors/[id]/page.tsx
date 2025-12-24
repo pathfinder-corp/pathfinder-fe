@@ -6,10 +6,10 @@ import Image from 'next/image';
 import { motion } from 'motion/react';
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
-import { 
+import {
   ArrowLeft,
-  Briefcase, 
-  Globe, 
+  Briefcase,
+  Globe,
   Linkedin,
   ExternalLink,
   Users,
@@ -24,13 +24,18 @@ import {
   Eye,
   FileSpreadsheet,
   Presentation,
-  FileType
+  FileType,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { useUserStore } from '@/stores';
 import { mentorService, mentorshipService } from '@/services';
-import type { IMentorProfile, MentorDocumentType, IMentorReview, IMentorship } from '@/types';
+import type {
+  IMentorProfile,
+  MentorDocumentType,
+  IMentorReview,
+  IMentorship,
+} from '@/types';
 import { USER_ROLES } from '@/constants';
 import { getInitials } from '@/lib';
 
@@ -78,7 +83,14 @@ const getDocumentIcon = (type: MentorDocumentType) => {
   }
 };
 
-const getFileTypeIcon = (doc: { isPdf?: boolean; isWord?: boolean; isExcel?: boolean; isPowerPoint?: boolean; isOfficeDocument?: boolean; mimeType?: string }) => {
+const getFileTypeIcon = (doc: {
+  isPdf?: boolean;
+  isWord?: boolean;
+  isExcel?: boolean;
+  isPowerPoint?: boolean;
+  isOfficeDocument?: boolean;
+  mimeType?: string;
+}) => {
   const baseClassName = 'size-6 text-neutral-400';
   if (doc.isPdf) return <FileText className={baseClassName} />;
   if (doc.isWord) return <FileType className={baseClassName} />;
@@ -87,7 +99,13 @@ const getFileTypeIcon = (doc: { isPdf?: boolean; isWord?: boolean; isExcel?: boo
   return <File className={baseClassName} />;
 };
 
-const getFileTypeLabel = (doc: { isPdf?: boolean; isWord?: boolean; isExcel?: boolean; isPowerPoint?: boolean; mimeType?: string }) => {
+const getFileTypeLabel = (doc: {
+  isPdf?: boolean;
+  isWord?: boolean;
+  isExcel?: boolean;
+  isPowerPoint?: boolean;
+  mimeType?: string;
+}) => {
   if (doc.isPdf) return 'PDF';
   if (doc.isWord) return 'Word';
   if (doc.isExcel) return 'Excel';
@@ -97,11 +115,16 @@ const getFileTypeLabel = (doc: { isPdf?: boolean; isWord?: boolean; isExcel?: bo
 
 const getDocumentTypeLabel = (type: MentorDocumentType) => {
   switch (type) {
-    case 'certificate': return 'Certificate';
-    case 'award': return 'Award';
-    case 'portfolio': return 'Portfolio';
-    case 'recommendation': return 'Recommendation';
-    default: return 'Document';
+    case 'certificate':
+      return 'Certificate';
+    case 'award':
+      return 'Award';
+    case 'portfolio':
+      return 'Portfolio';
+    case 'recommendation':
+      return 'Recommendation';
+    default:
+      return 'Document';
   }
 };
 
@@ -116,7 +139,8 @@ export default function MentorDetailPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<TabType>('about');
 
-  const [isConnectDialogOpen, setIsConnectDialogOpen] = useState<boolean>(false);
+  const [isConnectDialogOpen, setIsConnectDialogOpen] =
+    useState<boolean>(false);
   const [connectMessage, setConnectMessage] = useState<string>('');
   const [isSendingRequest, setIsSendingRequest] = useState<boolean>(false);
   const [requestSent, setRequestSent] = useState<boolean>(false);
@@ -124,12 +148,16 @@ export default function MentorDetailPage() {
   const [isReviewDialogOpen, setIsReviewDialogOpen] = useState<boolean>(false);
   const [myReview, setMyReview] = useState<IMentorReview | null>(null);
   const [isLoadingMyReview, setIsLoadingMyReview] = useState<boolean>(false);
-  const [activeMentorship, setActiveMentorship] = useState<IMentorship | null>(null);
-  const [isCheckingMentorship, setIsCheckingMentorship] = useState<boolean>(false);
+  const [activeMentorship, setActiveMentorship] = useState<IMentorship | null>(
+    null
+  );
+  const [isCheckingMentorship, setIsCheckingMentorship] =
+    useState<boolean>(false);
   const [hasAnyMentorship, setHasAnyMentorship] = useState<boolean>(false);
-  const [isCheckingAnyMentorship, setIsCheckingAnyMentorship] = useState<boolean>(false);
+  const [isCheckingAnyMentorship, setIsCheckingAnyMentorship] =
+    useState<boolean>(false);
 
-  const activeIndex = TABS.findIndex(tab => tab.id === activeTab);
+  const activeIndex = TABS.findIndex((tab) => tab.id === activeTab);
 
   useEffect(() => {
     initializeUser();
@@ -144,25 +172,7 @@ export default function MentorDetailPage() {
         const data = await mentorService.getMentorWithDocuments(mentorId);
         setMentor(data);
       } catch (error) {
-        const errorStatus = error && typeof error === 'object' && 'response' in error
-          ? (error as { response?: { status?: number } }).response?.status
-          : null;
-        
-        if (errorStatus === 404) {
-          setMentor(null);
-          toast.error('Mentor profile not found', {
-            description: 'This mentor profile has been removed and is no longer available.',
-            duration: 5000,
-          });
-        } else {
-          const errorMessage = error instanceof Error 
-            ? error.message 
-            : 'Failed to fetch mentor';
-          toast.error('Failed to fetch mentor', {
-            description: errorMessage,
-          });
-          router.push('/mentors');
-        }
+        console.error('Failed to fetch mentor profile:', error);
       } finally {
         setIsLoading(false);
       }
@@ -252,15 +262,16 @@ export default function MentorDetailPage() {
       setIsSendingRequest(true);
       await mentorshipService.createRequest({
         mentorId: mentor.userId,
-        message: connectMessage.trim()
+        message: connectMessage.trim(),
       });
       setRequestSent(true);
       toast.success('Connection request sent successfully!');
     } catch (error) {
       console.error('Failed to send request:', error);
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to send connection request';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to send connection request';
       toast.error(errorMessage);
     } finally {
       setIsSendingRequest(false);
@@ -275,20 +286,21 @@ export default function MentorDetailPage() {
     }
   };
 
-  const canConnect = user && 
-    user.role === USER_ROLES.STUDENT && 
-    user.id !== mentor?.userId && 
+  const canConnect =
+    user &&
+    user.role === USER_ROLES.STUDENT &&
+    user.id !== mentor?.userId &&
     mentor?.isAcceptingMentees &&
     !activeMentorship;
 
-  const canReview = user && 
-    user.role === USER_ROLES.STUDENT && 
-    user.id !== mentor?.userId;
+  const canReview =
+    user && user.role === USER_ROLES.STUDENT && user.id !== mentor?.userId;
 
   const handleWriteReview = () => {
     if (!hasAnyMentorship && !isCheckingAnyMentorship) {
       toast.error('Cannot write review', {
-        description: 'You must have at least one mentorship (active or ended) with this mentor before you can review them.',
+        description:
+          'You must have at least one mentorship (active or ended) with this mentor before you can review them.',
         duration: 5000,
       });
       return;
@@ -313,35 +325,35 @@ export default function MentorDetailPage() {
       <div className="min-h-screen bg-neutral-950">
         <PublicHeader />
         <main className="pt-36">
-          <div className="max-w-[1100px] mx-auto px-6 py-8">
-            <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
-              <Skeleton className="size-40 rounded-xl bg-neutral-800 shrink-0" />
+          <div className="mx-auto max-w-[1100px] px-6 py-8">
+            <div className="mb-8 flex flex-col items-start gap-8 lg:flex-row">
+              <Skeleton className="size-40 shrink-0 rounded-xl bg-neutral-800" />
               <div className="flex-1">
-                <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
+                <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                   <div className="space-y-3">
                     <Skeleton className="h-14 w-80 bg-neutral-800" />
                     <Skeleton className="h-8 w-full max-w-lg bg-neutral-800" />
                     <Skeleton className="h-6 w-56 bg-neutral-800" />
                   </div>
-                  <Skeleton className="h-9 w-32 bg-neutral-800 rounded-full" />
+                  <Skeleton className="h-9 w-32 rounded-full bg-neutral-800" />
                 </div>
                 <div className="flex gap-3">
-                  <Skeleton className="h-10 w-32 bg-neutral-800 rounded-full" />
-                  <Skeleton className="h-10 w-36 bg-neutral-800 rounded-full" />
+                  <Skeleton className="h-10 w-32 rounded-full bg-neutral-800" />
+                  <Skeleton className="h-10 w-36 rounded-full bg-neutral-800" />
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-1 mb-10 border-b border-neutral-800">
+            <div className="mb-10 flex gap-1 border-b border-neutral-800">
               <Skeleton className="h-12 w-20 bg-neutral-800" />
               <Skeleton className="h-12 w-28 bg-neutral-800" />
               <Skeleton className="h-12 w-28 bg-neutral-800" />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              <div className="lg:col-span-2 space-y-8">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+              <div className="space-y-8 lg:col-span-2">
                 <div>
-                  <Skeleton className="h-8 w-36 mb-5 bg-neutral-800" />
+                  <Skeleton className="mb-5 h-8 w-36 bg-neutral-800" />
                   <div className="space-y-3">
                     <Skeleton className="h-6 w-full bg-neutral-800" />
                     <Skeleton className="h-6 w-full bg-neutral-800" />
@@ -355,19 +367,19 @@ export default function MentorDetailPage() {
                 </div>
 
                 <div className="pt-4">
-                  <Skeleton className="h-5 w-20 mb-4 bg-neutral-800" />
+                  <Skeleton className="mb-4 h-5 w-20 bg-neutral-800" />
                   <div className="flex gap-2.5">
-                    <Skeleton className="h-10 w-28 bg-neutral-800 rounded-full" />
-                    <Skeleton className="h-10 w-32 bg-neutral-800 rounded-full" />
-                    <Skeleton className="h-10 w-24 bg-neutral-800 rounded-full" />
+                    <Skeleton className="h-10 w-28 rounded-full bg-neutral-800" />
+                    <Skeleton className="h-10 w-32 rounded-full bg-neutral-800" />
+                    <Skeleton className="h-10 w-24 rounded-full bg-neutral-800" />
                   </div>
                 </div>
               </div>
 
               <div className="space-y-7">
-                <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6 space-y-5">
+                <div className="space-y-5 rounded-lg border border-neutral-800 bg-neutral-900/50 p-6">
                   <Skeleton className="h-6 w-32 bg-neutral-800" />
-                  <Skeleton className="h-14 w-full bg-neutral-800 rounded-lg" />
+                  <Skeleton className="h-14 w-full rounded-lg bg-neutral-800" />
                   <Skeleton className="h-px w-full bg-neutral-800" />
                   <Skeleton className="h-5 w-28 bg-neutral-800" />
                   <div className="space-y-3">
@@ -376,7 +388,7 @@ export default function MentorDetailPage() {
                   </div>
                 </div>
 
-                <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6 space-y-5">
+                <div className="space-y-5 rounded-lg border border-neutral-800 bg-neutral-900/50 p-6">
                   <Skeleton className="h-6 w-40 bg-neutral-800" />
                   <div className="space-y-4">
                     <div className="flex justify-between">
@@ -396,7 +408,7 @@ export default function MentorDetailPage() {
                     <Skeleton className="h-px w-full bg-neutral-800" />
                     <div className="flex justify-between">
                       <Skeleton className="h-6 w-20 bg-neutral-800" />
-                      <Skeleton className="h-8 w-24 bg-neutral-800 rounded-full" />
+                      <Skeleton className="h-8 w-24 rounded-full bg-neutral-800" />
                     </div>
                   </div>
                 </div>
@@ -413,19 +425,26 @@ export default function MentorDetailPage() {
       <div className="min-h-screen bg-neutral-950">
         <PublicHeader />
         <main className="pt-36">
-          <div className="max-w-[1100px] mx-auto px-6 py-20 text-center">
-            <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+          <div className="mx-auto max-w-[1100px] px-6 py-20 text-center">
+            <div className="mx-auto mb-8 flex size-24 items-center justify-center rounded-full bg-neutral-800">
               <Users className="size-12 text-neutral-500" />
             </div>
-            <h2 className="text-4xl font-bold mb-5">Mentor Profile Not Found</h2>
-            <p className="text-xl text-neutral-400 mb-4">
+            <h2 className="mb-5 text-4xl font-bold">
+              Mentor Profile Not Found
+            </h2>
+            <p className="mb-4 text-xl text-neutral-400">
               This mentor profile doesn&apos;t exist or has been removed.
             </p>
-            <p className="text-lg text-neutral-500 mb-10">
-              The profile may have been deleted by an administrator or the mentor may have withdrawn from the platform.
+            <p className="mb-10 text-lg text-neutral-500">
+              The profile may have been deleted by an administrator or the
+              mentor may have withdrawn from the platform.
             </p>
-            <Button size="lg" onClick={() => router.push('/mentors')} className="h-14! text-lg! px-10!">
-              <ArrowLeft className="size-6 mr-2" />
+            <Button
+              size="lg"
+              onClick={() => router.push('/mentors')}
+              className="h-14! px-10! text-lg!"
+            >
+              <ArrowLeft className="mr-2 size-6" />
               Back to Mentors
             </Button>
           </div>
@@ -440,32 +459,34 @@ export default function MentorDetailPage() {
   return (
     <div className="min-h-screen bg-neutral-950">
       <PublicHeader />
-      
-      <main className="pt-40 pb-16">
-        <div className="max-w-[1100px] mx-auto px-6">
 
-          <div className="flex flex-col lg:flex-row items-start gap-8 mb-8">
-          {mentor.user?.avatar ? (
-            <div className="relative size-40 rounded-xl overflow-hidden shrink-0">
-              <Image
-                src={mentor.user.avatar}
-                alt={`${mentor.user?.firstName} ${mentor.user?.lastName}`}
-                fill
-                sizes="160px"
-                className="object-cover"
-                priority
-              />
-            </div>
-          ) : (
-            <div className="size-40 rounded-xl bg-neutral-800 border border-neutral-700 flex items-center justify-center text-4xl font-bold shrink-0">
-              {getInitials(mentor.user?.firstName || '', mentor.user?.lastName || '')}
-            </div>
-          )}
+      <main className="pt-40 pb-16">
+        <div className="mx-auto max-w-[1100px] px-6">
+          <div className="mb-8 flex flex-col items-start gap-8 lg:flex-row">
+            {mentor.user?.avatar ? (
+              <div className="relative size-40 shrink-0 overflow-hidden rounded-xl">
+                <Image
+                  src={mentor.user.avatar}
+                  alt={`${mentor.user?.firstName} ${mentor.user?.lastName}`}
+                  fill
+                  sizes="160px"
+                  className="object-cover"
+                  priority
+                />
+              </div>
+            ) : (
+              <div className="flex size-40 shrink-0 items-center justify-center rounded-xl border border-neutral-700 bg-neutral-800 text-4xl font-bold">
+                {getInitials(
+                  mentor.user?.firstName || '',
+                  mentor.user?.lastName || ''
+                )}
+              </div>
+            )}
 
             <div className="flex-1">
-              <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
+              <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                 <div>
-                  <h1 className="text-5xl font-bold mb-2">
+                  <h1 className="mb-2 text-5xl font-bold">
                     {mentor.user?.firstName} {mentor.user?.lastName}
                   </h1>
                   <p className="text-2xl text-neutral-400">
@@ -473,36 +494,50 @@ export default function MentorDetailPage() {
                   </p>
                 </div>
                 {mentor.isActive && (
-                  <Badge variant="outline" className="py-2 px-4 text-base border-green-500/50 text-green-500 w-fit">
+                  <Badge
+                    variant="outline"
+                    className="w-fit border-green-500/50 px-4 py-2 text-base text-green-500"
+                  >
                     Verified Mentor
                   </Badge>
                 )}
               </div>
 
               {mentor.languages && mentor.languages.length > 0 && (
-                <div className="flex items-center gap-2.5 text-lg text-neutral-400 mb-5">
+                <div className="mb-5 flex items-center gap-2.5 text-lg text-neutral-400">
                   <Globe className="size-5" />
                   <span>Speaks:</span>
                   <span className="text-white">{mentor.languages[0]}</span>
                   {mentor.languages.length > 1 && (
-                    <span className="text-neutral-500">, {mentor.languages.slice(1).join(', ')}</span>
+                    <span className="text-neutral-500">
+                      , {mentor.languages.slice(1).join(', ')}
+                    </span>
                   )}
                 </div>
               )}
 
               <div className="flex flex-wrap gap-3">
                 {mentor.yearsExperience >= 5 && (
-                  <Badge variant="outline" className="border-neutral-700 text-neutral-300 py-2 px-4 text-base">
+                  <Badge
+                    variant="outline"
+                    className="border-neutral-700 px-4 py-2 text-base text-neutral-300"
+                  >
                     {mentor.yearsExperience}+ years experience
                   </Badge>
                 )}
                 {mentor.isAcceptingMentees && (
-                  <Badge variant="outline" className="py-2 px-4 text-base border-green-500/50 text-green-400">
+                  <Badge
+                    variant="outline"
+                    className="border-green-500/50 px-4 py-2 text-base text-green-400"
+                  >
                     Accepting Students
                   </Badge>
                 )}
                 {!mentor.isAcceptingMentees && (
-                  <Badge variant="outline" className="py-2 px-4 text-base border-neutral-600 text-neutral-400">
+                  <Badge
+                    variant="outline"
+                    className="border-neutral-600 px-4 py-2 text-base text-neutral-400"
+                  >
                     Not Accepting
                   </Badge>
                 )}
@@ -510,14 +545,14 @@ export default function MentorDetailPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 border-b border-neutral-800 mb-10">
+          <div className="mb-10 flex items-center gap-1 border-b border-neutral-800">
             {TABS.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`cursor-pointer relative px-5 py-4 text-lg font-medium transition-colors ${
+                  className={`relative cursor-pointer px-5 py-4 text-lg font-medium transition-colors ${
                     isActive
                       ? 'text-white'
                       : 'text-neutral-500 hover:text-neutral-300'
@@ -525,9 +560,9 @@ export default function MentorDetailPage() {
                 >
                   {tab.label}
                   {isActive && (
-                    <motion.span 
+                    <motion.span
                       layoutId="activeMentorTab"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" 
+                      className="absolute right-0 bottom-0 left-0 h-0.5 bg-white"
                     />
                   )}
                 </button>
@@ -535,7 +570,7 @@ export default function MentorDetailPage() {
             })}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             <div className="lg:col-span-2">
               <TransitionPanel
                 activeIndex={activeIndex}
@@ -548,9 +583,9 @@ export default function MentorDetailPage() {
               >
                 <div className="space-y-8">
                   <div>
-                    <h2 className="text-2xl font-semibold mb-5">About Me</h2>
-                    <p className="text-lg text-neutral-300 leading-relaxed whitespace-pre-line wrap-break-word">
-                      {mentor.bio || 'This mentor hasn\'t added a bio yet.'}
+                    <h2 className="mb-5 text-2xl font-semibold">About Me</h2>
+                    <p className="text-lg leading-relaxed wrap-break-word whitespace-pre-line text-neutral-300">
+                      {mentor.bio || "This mentor hasn't added a bio yet."}
                     </p>
                   </div>
 
@@ -561,7 +596,7 @@ export default function MentorDetailPage() {
                           href={mentor.linkedinUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-lg text-neutral-400 hover:text-white transition-colors"
+                          className="flex items-center gap-2 text-lg text-neutral-400 transition-colors hover:text-white"
                         >
                           <Linkedin className="size-6" />
                         </a>
@@ -571,7 +606,7 @@ export default function MentorDetailPage() {
                           href={mentor.portfolioUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-lg text-neutral-400 hover:text-white transition-colors"
+                          className="flex items-center gap-2 text-lg text-neutral-400 transition-colors hover:text-white"
                         >
                           <Globe className="size-6" />
                         </a>
@@ -581,15 +616,15 @@ export default function MentorDetailPage() {
 
                   {mentor.skills && mentor.skills.length > 0 && (
                     <div className="pt-4">
-                      <h3 className="text-base font-medium text-neutral-500 uppercase tracking-wider mb-4">
+                      <h3 className="mb-4 text-base font-medium tracking-wider text-neutral-500 uppercase">
                         Skills
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {mentor.skills.map((skill, i) => (
-                          <Badge 
-                            key={i} 
-                            variant="outline" 
-                            className="border-neutral-700 text-neutral-300 py-1.5 px-4 text-base"
+                          <Badge
+                            key={i}
+                            variant="outline"
+                            className="border-neutral-700 px-4 py-1.5 text-base text-neutral-300"
                           >
                             {skill}
                           </Badge>
@@ -602,15 +637,15 @@ export default function MentorDetailPage() {
                 <div className="space-y-10">
                   {mentor.expertise && mentor.expertise.length > 0 && (
                     <div>
-                      <h3 className="text-base font-medium text-neutral-500 uppercase tracking-wider mb-4">
+                      <h3 className="mb-4 text-base font-medium tracking-wider text-neutral-500 uppercase">
                         Expertise
                       </h3>
                       <div className="flex flex-wrap gap-2.5">
                         {mentor.expertise.map((exp, i) => (
-                          <Badge 
-                            key={i} 
-                            variant="secondary" 
-                            className="py-2 px-4 text-lg"
+                          <Badge
+                            key={i}
+                            variant="secondary"
+                            className="px-4 py-2 text-lg"
                           >
                             {exp}
                           </Badge>
@@ -621,15 +656,15 @@ export default function MentorDetailPage() {
 
                   {mentor.industries && mentor.industries.length > 0 && (
                     <div>
-                      <h3 className="text-base font-medium text-neutral-500 uppercase tracking-wider mb-4">
+                      <h3 className="mb-4 text-base font-medium tracking-wider text-neutral-500 uppercase">
                         Industries
                       </h3>
                       <div className="flex flex-wrap gap-2.5">
                         {mentor.industries.map((industry, i) => (
-                          <Badge 
-                            key={i} 
-                            variant="outline" 
-                            className="border-neutral-700 text-neutral-300 py-1.5 px-4 text-base"
+                          <Badge
+                            key={i}
+                            variant="outline"
+                            className="border-neutral-700 px-4 py-1.5 text-base text-neutral-300"
                           >
                             {industry}
                           </Badge>
@@ -639,31 +674,39 @@ export default function MentorDetailPage() {
                   )}
 
                   <div>
-                    <h3 className="text-base font-medium text-neutral-500 uppercase tracking-wider mb-4">
+                    <h3 className="mb-4 text-base font-medium tracking-wider text-neutral-500 uppercase">
                       Experience
                     </h3>
                     <div className="flex items-center gap-4">
-                      <div className="size-12 rounded-lg bg-neutral-800 flex items-center justify-center">
+                      <div className="flex size-12 items-center justify-center rounded-lg bg-neutral-800">
                         <Briefcase className="size-6 text-neutral-400" />
                       </div>
                       <div>
-                        <p className="text-lg font-medium">{mentor.yearsExperience || 0} years</p>
-                        <p className="text-base text-neutral-500">Professional experience</p>
+                        <p className="text-lg font-medium">
+                          {mentor.yearsExperience || 0} years
+                        </p>
+                        <p className="text-base text-neutral-500">
+                          Professional experience
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   <div>
-                    <h3 className="text-base font-medium text-neutral-500 uppercase tracking-wider mb-4">
+                    <h3 className="mb-4 text-base font-medium tracking-wider text-neutral-500 uppercase">
                       Member Since
                     </h3>
                     <div className="flex items-center gap-4">
-                      <div className="size-12 rounded-lg bg-neutral-800 flex items-center justify-center">
+                      <div className="flex size-12 items-center justify-center rounded-lg bg-neutral-800">
                         <Calendar className="size-6 text-neutral-400" />
                       </div>
                       <div>
-                        <p className="text-lg font-medium">{formatDate(mentor.createdAt)}</p>
-                        <p className="text-base text-neutral-500">Joined as mentor</p>
+                        <p className="text-lg font-medium">
+                          {formatDate(mentor.createdAt)}
+                        </p>
+                        <p className="text-base text-neutral-500">
+                          Joined as Mentor
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -671,15 +714,17 @@ export default function MentorDetailPage() {
 
                 <div className="space-y-8">
                   <div>
-                    <h2 className="text-2xl font-semibold mb-5">Credentials & Documents</h2>
-                    <p className="text-lg text-neutral-400 mb-8">
+                    <h2 className="mb-5 text-2xl font-semibold">
+                      Credentials & Documents
+                    </h2>
+                    <p className="mb-8 text-lg text-neutral-400">
                       Verified certificates, awards, and professional documents
                     </p>
 
-                    {(!mentor.documents || mentor.documents.length === 0) ? (
-                      <div className="text-center py-16">
-                        <File className="size-14 text-neutral-600 mx-auto mb-4" />
-                        <p className="text-lg text-neutral-400 mb-2">
+                    {!mentor.documents || mentor.documents.length === 0 ? (
+                      <div className="py-16 text-center">
+                        <File className="mx-auto mb-4 size-14 text-neutral-600" />
+                        <p className="mb-2 text-lg text-neutral-400">
                           No credentials uploaded yet
                         </p>
                         <p className="text-base text-neutral-500">
@@ -688,19 +733,25 @@ export default function MentorDetailPage() {
                       </div>
                     ) : (
                       <PhotoProvider>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                           {mentor.documents.map((doc) => {
-                            const isImage = doc.isImage ?? doc.mimeType?.startsWith('image/');
-                            const viewUrl = doc.imagekitUrl || mentorService.getDocumentViewUrl(mentor.id, doc.id);
+                            const isImage =
+                              doc.isImage ?? doc.mimeType?.startsWith('image/');
+                            const viewUrl =
+                              doc.imagekitUrl ||
+                              mentorService.getDocumentViewUrl(
+                                mentor.id,
+                                doc.id
+                              );
 
                             return (
                               <div
                                 key={doc.id}
-                                className="group bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden hover:border-neutral-700 transition-colors"
+                                className="group overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50 transition-colors hover:border-neutral-700"
                               >
                                 {isImage ? (
                                   <PhotoView src={viewUrl}>
-                                    <div className="block relative aspect-video bg-neutral-800 overflow-hidden w-full cursor-pointer">
+                                    <div className="relative block aspect-video w-full cursor-pointer overflow-hidden bg-neutral-800">
                                       {/* eslint-disable-next-line @next/next/no-img-element */}
                                       <img
                                         src={viewUrl}
@@ -715,21 +766,27 @@ export default function MentorDetailPage() {
                                           hidden: { opacity: 0 },
                                           visible: { opacity: 1 },
                                         }}
-                                        transition={{ duration: 0.2, ease: 'easeOut' }}
+                                        transition={{
+                                          duration: 0.2,
+                                          ease: 'easeOut',
+                                        }}
                                       />
                                       <motion.div
-                                        className="absolute bottom-0 left-0 right-0 p-3"
+                                        className="absolute right-0 bottom-0 left-0 p-3"
                                         initial={{ opacity: 0, y: 10 }}
                                         whileInView={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                                        transition={{
+                                          duration: 0.3,
+                                          ease: 'easeOut',
+                                        }}
                                       >
                                         <span className="text-base font-medium text-white">
                                           {getDocumentTypeLabel(doc.type)}
                                         </span>
                                       </motion.div>
-                                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                                        <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                          <div className="size-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                                      <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-colors group-hover:bg-black/30">
+                                        <div className="opacity-0 transition-opacity group-hover:opacity-100">
+                                          <div className="flex size-12 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
                                             <Eye className="size-5 text-white" />
                                           </div>
                                         </div>
@@ -741,14 +798,14 @@ export default function MentorDetailPage() {
                                     href={viewUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="block aspect-video bg-neutral-800/50 hover:bg-neutral-800/70 transition-colors"
+                                    className="block aspect-video bg-neutral-800/50 transition-colors hover:bg-neutral-800/70"
                                   >
-                                    <div className="size-full flex items-center justify-center">
+                                    <div className="flex size-full items-center justify-center">
                                       <div className="text-center">
-                                        <div className="size-12 rounded-lg bg-neutral-800 flex items-center justify-center mx-auto mb-2 group-hover:bg-neutral-700 transition-colors">
+                                        <div className="mx-auto mb-2 flex size-12 items-center justify-center rounded-lg bg-neutral-800 transition-colors group-hover:bg-neutral-700">
                                           {getFileTypeIcon(doc)}
                                         </div>
-                                        <p className="text-base font-medium text-neutral-300 mb-0.5">
+                                        <p className="mb-0.5 text-base font-medium text-neutral-300">
                                           {getFileTypeLabel(doc)}
                                         </p>
                                         <p className="text-xs text-neutral-500">
@@ -777,19 +834,21 @@ export default function MentorDetailPage() {
             </div>
 
             <div className="space-y-7">
-              <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold mb-5 capitalize">personal contact</h3>
-                
+              <div className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-6">
+                <h3 className="mb-5 text-lg font-semibold capitalize">
+                  personal contact
+                </h3>
+
                 <Button
                   size="lg"
-                  className="w-full h-14! text-lg! bg-white text-neutral-950 hover:bg-neutral-200 mb-5"
+                  className="mb-5 h-14! w-full bg-white text-lg! text-neutral-950 hover:bg-neutral-200"
                   disabled={!canConnect || isCheckingMentorship}
                   onClick={() => setIsConnectDialogOpen(true)}
                 >
                   {isCheckingMentorship ? (
                     <>
                       Checking...
-                      <Loader2 className="size-5 animate-spin ml-2" />
+                      <Loader2 className="ml-2 size-5 animate-spin" />
                     </>
                   ) : (
                     'Connect Now'
@@ -797,40 +856,46 @@ export default function MentorDetailPage() {
                 </Button>
 
                 {!user && (
-                  <p className="text-base text-neutral-500 text-center">
+                  <p className="text-center text-base text-neutral-500">
                     Please login to connect with this mentor
                   </p>
                 )}
 
-                {user && user.role !== USER_ROLES.STUDENT && (
-                  <p className="text-base text-neutral-500 text-center">
-                    Only students can send connection requests
-                  </p>
-                )}
+                {user &&
+                  user.role !== USER_ROLES.STUDENT &&
+                  user.id !== mentor.userId && (
+                    <p className="text-center text-base text-neutral-500">
+                      Only students can send connection requests
+                    </p>
+                  )}
 
                 {user && user.id === mentor.userId && (
-                  <p className="text-base text-neutral-500 text-center">
+                  <p className="text-center text-base text-neutral-500">
                     This is your own profile
                   </p>
                 )}
 
-                {user && user.role === USER_ROLES.STUDENT && !mentor.isAcceptingMentees && (
-                  <p className="text-base text-neutral-500 text-center">
-                    This mentor is currently not accepting new students
-                  </p>
-                )}
+                {user &&
+                  user.role === USER_ROLES.STUDENT &&
+                  !mentor.isAcceptingMentees && (
+                    <p className="text-center text-base text-neutral-500">
+                      This mentor is currently not accepting new students
+                    </p>
+                  )}
 
-                {user && user.role === USER_ROLES.STUDENT && activeMentorship && (
-                  <p className="text-base text-neutral-500 text-center">
-                    You already have an active mentorship with this mentor
-                  </p>
-                )}
+                {user &&
+                  user.role === USER_ROLES.STUDENT &&
+                  activeMentorship && (
+                    <p className="text-center text-base text-neutral-500">
+                      You already have an active mentorship with this mentor
+                    </p>
+                  )}
 
                 {(mentor.linkedinUrl || mentor.portfolioUrl) && (
                   <>
                     <Separator className="my-5 bg-neutral-800" />
                     <div className="space-y-4">
-                      <p className="text-base font-medium text-neutral-500 uppercase tracking-wider">
+                      <p className="text-base font-medium tracking-wider text-neutral-500 uppercase">
                         Social Links
                       </p>
                       <div className="space-y-3">
@@ -839,11 +904,11 @@ export default function MentorDetailPage() {
                             href={mentor.linkedinUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 text-lg text-neutral-300 hover:text-white transition-colors"
+                            className="flex items-center gap-3 text-lg text-neutral-300 transition-colors hover:text-white"
                           >
                             <Linkedin className="size-5" />
                             LinkedIn
-                            <ExternalLink className="size-4 ml-auto text-neutral-500" />
+                            <ExternalLink className="ml-auto size-4 text-neutral-500" />
                           </a>
                         )}
                         {mentor.portfolioUrl && (
@@ -851,11 +916,11 @@ export default function MentorDetailPage() {
                             href={mentor.portfolioUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 text-lg text-neutral-300 hover:text-white transition-colors"
+                            className="flex items-center gap-3 text-lg text-neutral-300 transition-colors hover:text-white"
                           >
                             <Globe className="size-5" />
                             Portfolio
-                            <ExternalLink className="size-4 ml-auto text-neutral-500" />
+                            <ExternalLink className="ml-auto size-4 text-neutral-500" />
                           </a>
                         )}
                       </div>
@@ -864,31 +929,42 @@ export default function MentorDetailPage() {
                 )}
               </div>
 
-              <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
-                <h3 className="text-lg font-semibold mb-5 capitalize">personal information</h3>
+              <div className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-6">
+                <h3 className="mb-5 text-lg font-semibold capitalize">
+                  personal information
+                </h3>
                 <div className="space-y-5">
                   <div className="flex items-center justify-between">
                     <span className="text-lg text-neutral-400">Experience</span>
-                    <span className="text-lg font-medium">{mentor.yearsExperience || 0} years</span>
+                    <span className="text-lg font-medium">
+                      {mentor.yearsExperience || 0} years
+                    </span>
                   </div>
                   <Separator className="bg-neutral-800" />
                   <div className="flex items-center justify-between">
                     <span className="text-lg text-neutral-400">Languages</span>
-                    <span className="text-lg font-medium">{mentor.languages?.length || 0}</span>
+                    <span className="text-lg font-medium">
+                      {mentor.languages?.length || 0}
+                    </span>
                   </div>
                   <Separator className="bg-neutral-800" />
                   <div className="flex items-center justify-between">
-                    <span className="text-lg text-neutral-400">Max Students</span>
-                    <span className="text-lg font-medium">{mentor.maxMentees || 'N/A'}</span>
+                    <span className="text-lg text-neutral-400">
+                      Max Students
+                    </span>
+                    <span className="text-lg font-medium">
+                      {mentor.maxMentees || 'N/A'}
+                    </span>
                   </div>
                   <Separator className="bg-neutral-800" />
                   <div className="flex items-center justify-between">
                     <span className="text-lg text-neutral-400">Status</span>
-                    <Badge 
+                    <Badge
                       variant="outline"
-                      className={`text-base py-1.5 px-3 ${mentor.isAcceptingMentees 
-                        ? 'border-green-500/50 text-green-400' 
-                        : 'border-neutral-600 text-neutral-400'
+                      className={`px-3 py-1.5 text-base ${
+                        mentor.isAcceptingMentees
+                          ? 'border-green-500/50 text-green-400'
+                          : 'border-neutral-600 text-neutral-400'
                       }`}
                     >
                       {mentor.isAcceptingMentees ? 'Available' : 'Unavailable'}
@@ -907,25 +983,27 @@ export default function MentorDetailPage() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-2xl">
-              {requestSent ? 'Request Sent!' : `Connect with ${mentor.user?.firstName}`}
+              {requestSent
+                ? 'Request Sent!'
+                : `Connect with ${mentor.user?.firstName}`}
             </DialogTitle>
             <DialogDescription className="text-base">
-              {requestSent 
+              {requestSent
                 ? 'Your connection request has been sent successfully.'
-                : 'Send a message introducing yourself and explaining why you\'d like to connect.'
-              }
+                : "Send a message introducing yourself and explaining why you'd like to connect."}
             </DialogDescription>
           </DialogHeader>
 
           {requestSent ? (
             <div className="py-8 text-center">
-              <div className="size-20 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-6">
+              <div className="mx-auto mb-6 flex size-20 items-center justify-center rounded-full bg-green-500/20">
                 <CheckCircle className="size-10 text-green-500" />
               </div>
-              <p className="text-lg text-neutral-400 mb-8">
-                {mentor.user?.firstName} will review your request and respond soon.
+              <p className="mb-8 text-lg text-neutral-400">
+                {mentor.user?.firstName} will review your request and respond
+                soon.
               </p>
-              <div className="flex gap-3 justify-center">
+              <div className="flex justify-center gap-3">
                 <Button
                   variant="outline"
                   onClick={handleCloseDialog}
@@ -952,10 +1030,11 @@ export default function MentorDetailPage() {
               />
 
               <p className="text-base text-neutral-500">
-                Tip: Mention your goals, what you hope to learn, and why you think this mentor would be a good fit.
+                Tip: Mention your goals, what you hope to learn, and why you
+                think this mentor would be a good fit.
               </p>
 
-              <div className="flex gap-3 justify-end pt-2">
+              <div className="flex justify-end gap-3 pt-2">
                 <Button
                   variant="outline"
                   onClick={handleCloseDialog}
@@ -991,7 +1070,9 @@ export default function MentorDetailPage() {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-2xl">
-              {myReview ? 'Update Your Review' : `Write a Review for ${mentor.user?.firstName}`}
+              {myReview
+                ? 'Update Your Review'
+                : `Write a Review for ${mentor.user?.firstName}`}
             </DialogTitle>
             <DialogDescription className="text-base">
               {myReview
@@ -1008,7 +1089,6 @@ export default function MentorDetailPage() {
           />
         </DialogContent>
       </Dialog>
-
     </div>
   );
 }

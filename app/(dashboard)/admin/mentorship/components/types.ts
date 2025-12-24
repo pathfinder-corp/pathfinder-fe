@@ -1,8 +1,8 @@
-import type { 
-  IMentorApplication, 
+import type {
+  IMentorApplication,
   IMentorApplicationDetail,
   MentorApplicationStatus,
-  MentorshipStatus
+  MentorshipStatus,
 } from '@/types';
 
 export type StatusFilter = MentorApplicationStatus | 'all';

@@ -29,9 +29,10 @@ export function UserMenu() {
       router.push('/login');
       router.refresh();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'An error occurred while logging out. Please try again.';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'An error occurred while logging out. Please try again.';
       toast.error('Logout failed', {
         description: errorMessage,
       });
@@ -42,13 +43,13 @@ export function UserMenu() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center p-1 rounded-full cursor-pointer"
+        className="flex cursor-pointer items-center rounded-full p-1"
       >
         {user.avatar ? (
-          <div className="relative size-14 rounded-full overflow-hidden border-2 border-neutral-700">
+          <div className="relative size-14 overflow-hidden rounded-full border-2 border-neutral-700">
             <Image
-            src={user.avatar}
-            alt={`${user.firstName} ${user.lastName}`}
+              src={user.avatar}
+              alt={`${user.firstName} ${user.lastName}`}
               fill
               sizes="(max-width: 768px) 100vw, 33vw"
               className="object-cover"
@@ -56,7 +57,7 @@ export function UserMenu() {
             />
           </div>
         ) : (
-          <div className="size-14 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 border-2 border-neutral-600 flex items-center justify-center text-lg font-bold">
+          <div className="flex size-14 items-center justify-center rounded-full border-2 border-neutral-600 bg-linear-to-br from-neutral-700 to-neutral-800 text-lg font-bold">
             {getInitials(user.firstName, user.lastName)}
           </div>
         )}
@@ -64,14 +65,20 @@ export function UserMenu() {
 
       {isOpen && (
         <>
-          <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
+          <div
+            className="fixed inset-0 z-40"
+            onClick={() => setIsOpen(false)}
+          />
 
-          <div className="absolute right-0 mt-2 w-72 bg-neutral-900 border border-neutral-800 rounded-xl shadow-xl z-50 overflow-hidden">
-            <div className="p-5 border-b border-neutral-800">
+          <div className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900 shadow-xl">
+            <div className="border-b border-neutral-800 p-5">
               <p className="text-xl font-semibold text-white">
                 {user.firstName} {user.lastName}
               </p>
-              <p className="text-lg text-neutral-400 truncate" title={user.email}>
+              <p
+                className="truncate text-lg text-neutral-400"
+                title={user.email}
+              >
                 {user.email}
               </p>
             </div>
@@ -79,7 +86,7 @@ export function UserMenu() {
             {user.role === USER_ROLES.ADMIN && (
               <Link
                 href="/admin/dashboard"
-                className="flex items-center gap-3 px-5 py-4 text-lg text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
+                className="flex cursor-pointer items-center gap-3 px-5 py-4 text-lg text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white"
                 onClick={() => setIsOpen(false)}
               >
                 <LayoutDashboard className="size-6" />
@@ -89,7 +96,7 @@ export function UserMenu() {
 
             <Link
               href="/messages"
-              className="flex items-center gap-3 px-5 py-4 text-lg text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
+              className="flex cursor-pointer items-center gap-3 px-5 py-4 text-lg text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white"
               onClick={() => setIsOpen(false)}
             >
               <MessageCircle className="size-6" />
@@ -97,21 +104,21 @@ export function UserMenu() {
             </Link>
 
             <Link
-                href="/settings"
-              className="flex items-center gap-3 px-5 py-4 text-lg text-neutral-300 hover:bg-neutral-800 hover:text-white transition-colors cursor-pointer"
-                onClick={() => setIsOpen(false)}
-              >
+              href="/settings"
+              className="flex cursor-pointer items-center gap-3 px-5 py-4 text-lg text-neutral-300 transition-colors hover:bg-neutral-800 hover:text-white"
+              onClick={() => setIsOpen(false)}
+            >
               <Settings className="size-6" />
-                Settings
-              </Link>
+              Settings
+            </Link>
 
-              <button
-                onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-5 py-4 text-lg text-red-400 hover:bg-neutral-800 hover:text-red-300 transition-colors cursor-pointer"
-              >
+            <button
+              onClick={handleLogout}
+              className="flex w-full cursor-pointer items-center gap-3 px-5 py-4 text-lg text-red-400 transition-colors hover:bg-neutral-800 hover:text-red-300"
+            >
               <LogOut className="size-6" />
               Logout
-              </button>
+            </button>
           </div>
         </>
       )}

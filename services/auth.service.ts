@@ -1,7 +1,7 @@
-import type { 
-  ILoginRequest, 
-  ILoginResponse, 
-  IRegisterRequest, 
+import type {
+  ILoginRequest,
+  ILoginResponse,
+  IRegisterRequest,
   IRegisterResponse,
   IForgotPasswordResponse,
   IResetPasswordRequest,
@@ -9,14 +9,17 @@ import type {
   IUserProfile,
   IUpdateProfileRequest,
   IChangePasswordRequest,
-  IUser
+  IUser,
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
 export const authService = {
   login: async (credentials: ILoginRequest): Promise<ILoginResponse> => {
     try {
-      const response = await api.post<ILoginResponse>('/auth/login', credentials);
+      const response = await api.post<ILoginResponse>(
+        '/auth/login',
+        credentials
+      );
       return response.data;
     } catch (error) {
       console.error('Login failed:', error);
@@ -28,7 +31,10 @@ export const authService = {
 
   register: async (data: IRegisterRequest): Promise<IRegisterResponse> => {
     try {
-      const response = await api.post<IRegisterResponse>('/auth/register', data);
+      const response = await api.post<IRegisterResponse>(
+        '/auth/register',
+        data
+      );
       return response.data;
     } catch (error) {
       console.error('Registration failed:', error);
@@ -52,7 +58,7 @@ export const authService = {
   forgotPassword: async (email: string): Promise<IForgotPasswordResponse> => {
     try {
       const response = await api.post<IForgotPasswordResponse>(
-        '/auth/forgot-password', 
+        '/auth/forgot-password',
         { email }
       );
       return response.data;
@@ -64,10 +70,12 @@ export const authService = {
     }
   },
 
-  resetPassword: async (data: IResetPasswordRequest): Promise<IResetPasswordResponse> => {
+  resetPassword: async (
+    data: IResetPasswordRequest
+  ): Promise<IResetPasswordResponse> => {
     try {
       const response = await api.post<IResetPasswordResponse>(
-        '/auth/reset-password', 
+        '/auth/reset-password',
         data
       );
       return response.data;
@@ -103,9 +111,14 @@ export const authService = {
     }
   },
 
-  changePassword: async (data: IChangePasswordRequest): Promise<{ message: string }> => {
+  changePassword: async (
+    data: IChangePasswordRequest
+  ): Promise<{ message: string }> => {
     try {
-      const response = await api.post<{ message: string }>('/auth/change-password', data);
+      const response = await api.post<{ message: string }>(
+        '/auth/change-password',
+        data
+      );
       return response.data;
     } catch (error) {
       console.error('Change password failed:', error);
@@ -117,7 +130,9 @@ export const authService = {
 
   resendVerification: async (): Promise<{ message: string }> => {
     try {
-      const response = await api.post<{ message: string }>('/auth/resend-verification');
+      const response = await api.post<{ message: string }>(
+        '/auth/resend-verification'
+      );
       return response.data;
     } catch (error) {
       console.error('Resend verification failed:', error);
@@ -129,7 +144,10 @@ export const authService = {
 
   verifyEmail: async (token: string): Promise<{ message: string }> => {
     try {
-      const response = await api.post<{ message: string }>('/auth/verify-email', { token });
+      const response = await api.post<{ message: string }>(
+        '/auth/verify-email',
+        { token }
+      );
       return response.data;
     } catch (error) {
       console.error('Email verification failed:', error);

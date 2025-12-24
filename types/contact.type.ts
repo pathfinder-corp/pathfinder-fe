@@ -29,4 +29,3 @@ export interface ICreateContactResponse {
   message: string;
   contactMessage: IContactMessage;
 }
-

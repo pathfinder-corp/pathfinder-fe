@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { 
-  Search, 
-  MoreVertical, 
+import {
+  Search,
+  MoreVertical,
   GraduationCap,
   Eye,
   X,
@@ -14,10 +14,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { adminService } from '@/services';
-import type { 
-  IMentorApplication, 
-  IMentorApplicationsParams 
-} from '@/types';
+import type { IMentorApplication, IMentorApplicationsParams } from '@/types';
 import { ITEMS_PER_PAGE } from '@/constants';
 import { useDebounceValue } from 'usehooks-ts';
 import Image from 'next/image';
@@ -30,7 +27,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Select,
@@ -67,7 +64,7 @@ export function ApplicationsTab({
   onUnflagApplication,
   onApprove,
   onDecline,
-  refreshTrigger = 0
+  refreshTrigger = 0,
 }: ApplicationsTabProps) {
   const [applications, setApplications] = useState<IMentorApplication[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -81,10 +78,10 @@ export function ApplicationsTab({
   const fetchApplications = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       const params: IMentorApplicationsParams = {
         page: currentPage,
-        limit: ITEMS_PER_PAGE
+        limit: ITEMS_PER_PAGE,
       };
 
       if (statusFilter !== 'all') {
@@ -96,9 +93,10 @@ export function ApplicationsTab({
       setTotalPages(response.meta?.totalPages || 1);
       setTotalApplications(response.meta?.total || 0);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load mentor applications';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load mentor applications';
       toast.error(errorMessage);
       setApplications([]);
       setTotalPages(1);
@@ -123,9 +121,10 @@ export function ApplicationsTab({
       fetchApplications();
       onMarkUnderReview(application);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to mark application as under review';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to mark application as under review';
       toast.error(errorMessage);
     }
   };
@@ -137,9 +136,8 @@ export function ApplicationsTab({
       fetchApplications();
       onUnflagApplication(application);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to unflag application';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to unflag application';
       toast.error(errorMessage);
     }
   };
@@ -150,64 +148,78 @@ export function ApplicationsTab({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4 sm:items-center justify-between">
-        <div className="relative flex-1 max-w-xl">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-6 text-neutral-400" />
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+        <div className="relative max-w-xl flex-1">
+          <Search className="absolute top-1/2 left-4 size-6 -translate-y-1/2 text-neutral-400" />
           <Input
             placeholder="Search by applicant name or email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-14 h-14! text-lg! bg-neutral-900/50 border-neutral-800"
+            className="h-14! border-neutral-800 bg-neutral-900/50 pl-14 text-lg!"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+              className="absolute top-1/2 right-4 -translate-y-1/2 text-neutral-400 hover:text-white"
             >
               <X className="size-5" />
             </button>
           )}
         </div>
 
-        <Select 
-          value={statusFilter} 
+        <Select
+          value={statusFilter}
           onValueChange={(value) => setStatusFilter(value as StatusFilter)}
         >
-          <SelectTrigger className="w-[200px] h-14! text-lg bg-neutral-900/50 border-neutral-800">
+          <SelectTrigger className="h-14! w-[200px] border-neutral-800 bg-neutral-900/50 text-lg">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all" className="text-lg">All Status</SelectItem>
-            <SelectItem value="pending" className="text-lg">Pending</SelectItem>
-            <SelectItem value="under_review" className="text-lg">Under Review</SelectItem>
-            <SelectItem value="flagged" className="text-lg">Flagged</SelectItem>
-            <SelectItem value="approved" className="text-lg">Approved</SelectItem>
-            <SelectItem value="declined" className="text-lg">Declined</SelectItem>
-            <SelectItem value="withdrawn" className="text-lg">Withdrawn</SelectItem>
+            <SelectItem value="all" className="text-lg">
+              All Status
+            </SelectItem>
+            <SelectItem value="pending" className="text-lg">
+              Pending
+            </SelectItem>
+            <SelectItem value="under_review" className="text-lg">
+              Under Review
+            </SelectItem>
+            <SelectItem value="flagged" className="text-lg">
+              Flagged
+            </SelectItem>
+            <SelectItem value="approved" className="text-lg">
+              Approved
+            </SelectItem>
+            <SelectItem value="declined" className="text-lg">
+              Declined
+            </SelectItem>
+            <SelectItem value="withdrawn" className="text-lg">
+              Withdrawn
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50">
         <Table>
           <TableHeader>
             <TableRow className="border-neutral-800 hover:bg-transparent">
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pl-6 w-[220px]">
+              <TableHead className="w-[220px] py-5 pl-6 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Applicant
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[200px]">
+              <TableHead className="w-[200px] py-5 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Headline
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[100px]">
+              <TableHead className="w-[100px] py-5 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Experience
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[140px]">
+              <TableHead className="w-[140px] py-5 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Status
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[140px]">
+              <TableHead className="w-[140px] py-5 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Applied
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pr-6 text-right w-[80px]">
+              <TableHead className="w-[80px] py-5 pr-6 text-right text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Actions
               </TableHead>
             </TableRow>
@@ -225,69 +237,85 @@ export function ApplicationsTab({
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell><Skeleton className="h-6 w-40 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-20 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-8 w-28 rounded-full bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-32 bg-neutral-800" /></TableCell>
-                  <TableCell className="pr-6"><Skeleton className="size-10 rounded-lg bg-neutral-800 ml-auto" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-40 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-20 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-8 w-28 rounded-full bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-32 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell className="pr-6">
+                    <Skeleton className="ml-auto size-10 rounded-lg bg-neutral-800" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : applications.length === 0 ? (
               <TableRow className="border-neutral-800 hover:bg-transparent">
                 <TableCell colSpan={6} className="py-16 text-center">
-                  <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+                  <div className="mx-auto mb-4 flex size-20 items-center justify-center rounded-full bg-neutral-800">
                     <GraduationCap className="size-10 text-neutral-500" />
                   </div>
-                  <h3 className="text-2xl font-semibold mb-2">No applications found</h3>
+                  <h3 className="mb-2 text-2xl font-semibold">
+                    No applications found
+                  </h3>
                   <p className="text-lg text-neutral-400">
-                    {statusFilter !== 'all' ? 'No applications match the selected filter' : 'No mentor applications yet'}
+                    {statusFilter !== 'all'
+                      ? 'No applications match the selected filter'
+                      : 'No mentor applications yet'}
                   </p>
                 </TableCell>
               </TableRow>
             ) : (
               applications.map((application) => (
-                <TableRow 
-                  key={application.id} 
-                  className="border-neutral-800 hover:bg-neutral-800/30 transition-colors"
+                <TableRow
+                  key={application.id}
+                  className="border-neutral-800 transition-colors hover:bg-neutral-800/30"
                 >
                   <TableCell className="py-5 pl-6">
                     <div className="flex items-center gap-3">
                       {application.user?.avatar ? (
-                        <div className="relative size-12 rounded-full overflow-hidden shrink-0">
-                          <Image 
-                            src={application.user.avatar} 
+                        <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
+                          <Image
+                            src={application.user.avatar}
                             alt={`${application.user?.firstName} ${application.user?.lastName}`}
                             fill
                             className="object-cover"
                           />
                         </div>
                       ) : (
-                        <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold shrink-0">
-                          {application.user?.firstName?.[0] || ''}{application.user?.lastName?.[0] || ''}
+                        <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-base font-bold">
+                          {application.user?.firstName?.[0] || ''}
+                          {application.user?.lastName?.[0] || ''}
                         </div>
                       )}
                       <div className="min-w-0">
-                        <p className="font-medium text-lg text-neutral-100 truncate">
-                          {application.user?.firstName || ''} {application.user?.lastName || ''}
+                        <p className="truncate text-lg font-medium text-neutral-100">
+                          {application.user?.firstName || ''}{' '}
+                          {application.user?.lastName || ''}
                         </p>
-                        <p className="text-base text-neutral-400 truncate">
+                        <p className="truncate text-base text-neutral-400">
                           {application.user?.email || 'N/A'}
                         </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <p className="text-lg text-neutral-300 truncate max-w-[180px]">
+                    <p className="max-w-[180px] truncate text-lg text-neutral-300">
                       {application.applicationData?.headline || 'No headline'}
                     </p>
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-lg">
+                  <TableCell className="text-lg text-neutral-300">
                     {application.applicationData?.yearsExperience ?? 0} years
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={application.status} />
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-lg">
+                  <TableCell className="text-lg text-neutral-300">
                     {formatDate(application.createdAt)}
                   </TableCell>
                   <TableCell className="pr-6 text-right">
@@ -298,18 +326,18 @@ export function ApplicationsTab({
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => onViewApplication(application)}
-                          className="text-lg py-3"
+                          className="py-3 text-lg"
                         >
                           <Eye className="size-5" />
                           View details
                         </DropdownMenuItem>
-                        
+
                         {application.status === 'pending' && (
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => handleMarkUnderReview(application)}
-                            className="text-lg py-3"
+                            className="py-3 text-lg"
                           >
                             <FileSearch className="size-5" />
                             Mark under review
@@ -317,28 +345,28 @@ export function ApplicationsTab({
                         )}
 
                         {application.isFlagged && (
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             onClick={() => handleUnflag(application)}
-                            className="text-lg py-3 text-orange-500 focus:text-orange-500"
+                            className="py-3 text-lg text-orange-500 focus:text-orange-500"
                           >
                             <FlagOff className="size-5 text-orange-500" />
                             Unflag application
                           </DropdownMenuItem>
                         )}
-                        
+
                         {canReview(application.status) && (
                           <>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => onApprove(application)}
-                              className="text-lg py-3 text-green-500 focus:text-green-500 dark:hover:bg-green-500/10"
+                              className="py-3 text-lg text-green-500 focus:text-green-500 dark:hover:bg-green-500/10"
                             >
                               <CheckCircle className="size-5 text-green-500" />
                               Approve
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => onDecline(application)}
-                              className="text-lg py-3 text-red-500 focus:text-red-500 dark:hover:bg-red-500/10"
+                              className="py-3 text-lg text-red-500 focus:text-red-500 dark:hover:bg-red-500/10"
                             >
                               <XCircle className="size-5 text-red-500" />
                               Decline
@@ -355,25 +383,30 @@ export function ApplicationsTab({
         </Table>
 
         {!isLoading && totalApplications > 0 && (
-          <div className="px-6 py-5 border-t border-neutral-800 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <span className="text-lg text-neutral-400 whitespace-nowrap">
-              Showing {startIndex} to {endIndex} of {totalApplications} application{totalApplications > 1 ? 's' : ''}
+          <div className="flex flex-col gap-3 border-t border-neutral-800 px-6 py-5 md:flex-row md:items-center md:justify-between">
+            <span className="text-lg whitespace-nowrap text-neutral-400">
+              Showing {startIndex} to {endIndex} of {totalApplications}{' '}
+              application{totalApplications > 1 ? 's' : ''}
             </span>
-            
+
             {totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious 
+                    <PaginationPrevious
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (currentPage > 1) setCurrentPage(p => p - 1);
+                        if (currentPage > 1) setCurrentPage((p) => p - 1);
                       }}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={
+                        currentPage === 1
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
                     />
                   </PaginationItem>
-                  
+
                   {paginationItems.map((item, index) => (
                     <PaginationItem key={index}>
                       {item === 'ellipsis' ? (
@@ -393,15 +426,20 @@ export function ApplicationsTab({
                       )}
                     </PaginationItem>
                   ))}
-                  
+
                   <PaginationItem>
-                    <PaginationNext 
+                    <PaginationNext
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (currentPage < totalPages) setCurrentPage(p => p + 1);
+                        if (currentPage < totalPages)
+                          setCurrentPage((p) => p + 1);
                       }}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={
+                        currentPage === totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>

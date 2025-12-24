@@ -1,17 +1,25 @@
 const parseExpiresIn = (expiresIn: string): number => {
   let seconds = 7 * 24 * 60 * 60;
-  
+
   if (expiresIn) {
     const match = expiresIn.match(/^(\d+)([dhms])$/);
     if (match) {
       const value = parseInt(match[1]);
       const unit = match[2];
-      
+
       switch (unit) {
-        case 'd': seconds = value * 24 * 60 * 60; break;
-        case 'h': seconds = value * 60 * 60; break;
-        case 'm': seconds = value * 60; break;
-        case 's': seconds = value; break;
+        case 'd':
+          seconds = value * 24 * 60 * 60;
+          break;
+        case 'h':
+          seconds = value * 60 * 60;
+          break;
+        case 'm':
+          seconds = value * 60;
+          break;
+        case 's':
+          seconds = value;
+          break;
       }
     } else {
       const parsed = parseInt(expiresIn);
@@ -20,7 +28,7 @@ const parseExpiresIn = (expiresIn: string): number => {
       }
     }
   }
-  
+
   return seconds;
 };
 
@@ -28,9 +36,9 @@ export const setAuthCookie = (token: string, expiresIn: string) => {
   const seconds = parseExpiresIn(expiresIn);
   const isProduction = process.env.NODE_ENV === 'production';
   const secureFlag = isProduction ? '; Secure' : '';
-  
+
   const cookieString = `auth-token=${token}; path=/; max-age=${seconds}; SameSite=Lax${secureFlag}`;
-  
+
   document.cookie = cookieString;
 };
 
@@ -38,9 +46,9 @@ export const setUserRoleCookie = (role: string, expiresIn?: string) => {
   const seconds = expiresIn ? parseExpiresIn(expiresIn) : 7 * 24 * 60 * 60;
   const isProduction = process.env.NODE_ENV === 'production';
   const secureFlag = isProduction ? '; Secure' : '';
-  
+
   const cookieString = `user-role=${role}; path=/; max-age=${seconds}; SameSite=Lax${secureFlag}`;
-  
+
   document.cookie = cookieString;
 };
 
@@ -51,11 +59,11 @@ export const removeAuthCookie = () => {
 
 export const getAuthToken = (): string | null => {
   if (typeof window === 'undefined') return null;
-  
+
   const token = document.cookie
     .split('; ')
-    .find(row => row.startsWith('auth-token='))
+    .find((row) => row.startsWith('auth-token='))
     ?.split('=')[1];
-    
+
   return token || null;
 };

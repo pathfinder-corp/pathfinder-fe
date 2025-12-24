@@ -73,8 +73,8 @@ export function ReviewsList({ mentorId, onWriteReview }: ReviewsListProps) {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-          <Skeleton className="h-8 w-48 mb-6 bg-neutral-800" />
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+          <Skeleton className="mb-6 h-8 w-48 bg-neutral-800" />
           <div className="space-y-4">
             <Skeleton className="h-6 w-full bg-neutral-800" />
             <Skeleton className="h-6 w-3/4 bg-neutral-800" />
@@ -88,9 +88,9 @@ export function ReviewsList({ mentorId, onWriteReview }: ReviewsListProps) {
   if (!stats || stats.totalReviews === 0) {
     return (
       <div className="p-10 text-center">
-        <MessageSquare className="size-14 text-neutral-600 mx-auto mb-4" />
-        <p className="text-xl text-neutral-400 mb-2">No reviews yet</p>
-        <p className="text-base text-neutral-500 mb-6">
+        <MessageSquare className="mx-auto mb-4 size-14 text-neutral-600" />
+        <p className="mb-2 text-xl text-neutral-400">No reviews yet</p>
+        <p className="mb-6 text-base text-neutral-500">
           Be the first to review this mentor!
         </p>
         {onWriteReview && (
@@ -109,9 +109,9 @@ export function ReviewsList({ mentorId, onWriteReview }: ReviewsListProps) {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6">
+      <div className="mb-6 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <div className="flex items-center gap-4 mb-2">
+          <div className="mb-2 flex items-center gap-4">
             <div className="flex items-center gap-2">
               <span className="text-5xl font-bold text-white">
                 {stats.averageRating.toFixed(1)}
@@ -120,32 +120,39 @@ export function ReviewsList({ mentorId, onWriteReview }: ReviewsListProps) {
             </div>
           </div>
           <p className="text-lg text-neutral-400">
-            Based on {stats.totalReviews} {stats.totalReviews === 1 ? 'review' : 'reviews'}
+            Based on {stats.totalReviews}{' '}
+            {stats.totalReviews === 1 ? 'review' : 'reviews'}
           </p>
         </div>
 
         {onWriteReview && (
-          <Button onClick={onWriteReview} className="bg-white h-12! text-base! w-full md:w-auto">
+          <Button
+            onClick={onWriteReview}
+            className="h-12! w-full bg-white text-base! md:w-auto"
+          >
             Write a Review
           </Button>
         )}
       </div>
 
-      <div className="space-y-3 pt-6 border-t border-neutral-800">
+      <div className="space-y-3 border-t border-neutral-800 pt-6">
         {[5, 4, 3, 2, 1].map((star) => {
-          const count = stats.ratingDistribution[star as keyof typeof stats.ratingDistribution];
+          const count =
+            stats.ratingDistribution[
+              star as keyof typeof stats.ratingDistribution
+            ];
           const percentage = getRatingPercentage(count);
 
           return (
             <div key={star} className="flex items-center gap-4">
-              <div className="flex items-center gap-2 w-20">
+              <div className="flex w-20 items-center gap-2">
                 <span className="text-base text-neutral-300">{star}</span>
                 <StarIcon className="size-4 fill-yellow-400 text-yellow-400" />
               </div>
               <div className="flex-1">
                 <Progress value={percentage} className="h-2" />
               </div>
-              <span className="text-base text-neutral-400 w-16 text-right">
+              <span className="w-16 text-right text-base text-neutral-400">
                 {count} ({percentage.toFixed(0)}%)
               </span>
             </div>
@@ -156,19 +163,26 @@ export function ReviewsList({ mentorId, onWriteReview }: ReviewsListProps) {
         <div className="flex items-center justify-between">
           <h2 className="text-2xl font-semibold text-white">Reviews</h2>
           <span className="text-base text-neutral-400">
-            {stats.totalReviews} {stats.totalReviews === 1 ? 'review' : 'reviews'}
+            {stats.totalReviews}{' '}
+            {stats.totalReviews === 1 ? 'review' : 'reviews'}
           </span>
         </div>
 
-        <div className={reviews.length >= 2 ? 'grid grid-cols-1 md:grid-cols-2 gap-4' : 'space-y-4'}>
+        <div
+          className={
+            reviews.length >= 2
+              ? 'grid grid-cols-1 gap-4 md:grid-cols-2'
+              : 'space-y-4'
+          }
+        >
           {reviews.map((review) => (
             <div
               key={review.id}
-              className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6"
+              className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-6"
             >
-              <div className="flex items-start gap-4 mb-4">
+              <div className="mb-4 flex items-start gap-4">
                 {review.student?.avatar ? (
-                  <div className="relative size-12 rounded-full overflow-hidden shrink-0">
+                  <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
                     <Image
                       src={review.student.avatar}
                       alt={`${review.student.firstName} ${review.student.lastName}`}
@@ -178,13 +192,16 @@ export function ReviewsList({ mentorId, onWriteReview }: ReviewsListProps) {
                     />
                   </div>
                 ) : (
-                  <div className="size-12 rounded-full bg-neutral-800 border border-neutral-700 flex items-center justify-center text-lg font-bold shrink-0">
-                    {getInitials(review.student?.firstName || '', review.student?.lastName || '')}
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-full border border-neutral-700 bg-neutral-800 text-lg font-bold">
+                    {getInitials(
+                      review.student?.firstName || '',
+                      review.student?.lastName || ''
+                    )}
                   </div>
                 )}
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-4 mb-2">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-2 flex items-center justify-between gap-4">
                     <p className="text-lg font-semibold text-white">
                       {review.student?.firstName} {review.student?.lastName}
                     </p>
@@ -200,7 +217,7 @@ export function ReviewsList({ mentorId, onWriteReview }: ReviewsListProps) {
               </div>
 
               {review.feedback && (
-                <p className="text-base text-neutral-300 leading-relaxed whitespace-pre-line">
+                <p className="text-base leading-relaxed whitespace-pre-line text-neutral-300">
                   {review.feedback}
                 </p>
               )}
@@ -231,4 +248,3 @@ export function ReviewsList({ mentorId, onWriteReview }: ReviewsListProps) {
     </div>
   );
 }
-

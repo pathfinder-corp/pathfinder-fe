@@ -5,7 +5,7 @@ export const userService = {
   searchUsers: async (email: string): Promise<ISearchUserResult[]> => {
     try {
       const response = await api.get<ISearchUserResult[]>('/users/search', {
-        params: { email }
+        params: { email },
       });
       return response.data;
     } catch (error) {
@@ -34,5 +34,5 @@ export const userService = {
       if (message) throw new Error(message);
       throw error;
     }
-  }
+  },
 };

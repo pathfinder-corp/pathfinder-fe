@@ -3,18 +3,18 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export default function HistoryLoading() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
       {[...Array(6)].map((_, index) => (
         <div
           key={index}
-          className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7 animate-pulse"
+          className="animate-pulse rounded-xl border border-neutral-800 bg-neutral-900/50 p-7"
         >
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1 min-w-0 space-y-3">
+          <div className="mb-4 flex items-start justify-between">
+            <div className="min-w-0 flex-1 space-y-3">
               <Skeleton className="h-8 w-3/4 bg-neutral-800" />
               <Skeleton className="h-8 w-1/2 bg-neutral-800" />
-              
-              <div className="flex items-center gap-2 mt-3">
+
+              <div className="mt-3 flex items-center gap-2">
                 <Calendar className="size-5 text-neutral-600" />
                 <Skeleton className="h-6 w-24 bg-neutral-800" />
               </div>
@@ -38,7 +38,7 @@ export default function HistoryLoading() {
             </div>
           </div>
 
-          <div className="mt-4 pt-4 border-t border-neutral-800">
+          <div className="mt-4 border-t border-neutral-800 pt-4">
             <Skeleton className="h-6 w-full bg-neutral-800" />
           </div>
         </div>
@@ -46,4 +46,3 @@ export default function HistoryLoading() {
     </div>
   );
 }
-

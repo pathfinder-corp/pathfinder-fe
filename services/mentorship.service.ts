@@ -1,4 +1,4 @@
-import type { 
+import type {
   IMentorshipRequest,
   IMentorship,
   IMentorshipsParams,
@@ -8,12 +8,14 @@ import type {
   IAcceptMentorshipRequest,
   IDeclineMentorshipRequest,
   IMentorshipRequestsParams,
-  IMentorshipRequestsResponse
+  IMentorshipRequestsResponse,
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
 export const mentorshipService = {
-  getMentorships: async (params?: IMentorshipsParams): Promise<IMentorshipsResponse> => {
+  getMentorships: async (
+    params?: IMentorshipsParams
+  ): Promise<IMentorshipsResponse> => {
     try {
       const queryParams = new URLSearchParams();
       if (params?.status) queryParams.append('status', params.status);
@@ -41,9 +43,15 @@ export const mentorshipService = {
     }
   },
 
-  endMentorship: async (id: string, data: IEndMentorshipRequest): Promise<IMentorship> => {
+  endMentorship: async (
+    id: string,
+    data: IEndMentorshipRequest
+  ): Promise<IMentorship> => {
     try {
-      const response = await api.post<IMentorship>(`/mentorships/${id}/end`, data);
+      const response = await api.post<IMentorship>(
+        `/mentorships/${id}/end`,
+        data
+      );
       return response.data;
     } catch (error) {
       console.error('End mentorship failed:', error);
@@ -53,9 +61,14 @@ export const mentorshipService = {
     }
   },
 
-  createRequest: async (data: ICreateMentorshipRequest): Promise<IMentorshipRequest> => {
+  createRequest: async (
+    data: ICreateMentorshipRequest
+  ): Promise<IMentorshipRequest> => {
     try {
-      const response = await api.post<IMentorshipRequest>('/mentorship-requests', data);
+      const response = await api.post<IMentorshipRequest>(
+        '/mentorship-requests',
+        data
+      );
       return response.data;
     } catch (error) {
       console.error('Create mentorship request failed:', error);
@@ -65,10 +78,12 @@ export const mentorshipService = {
     }
   },
 
-  getRequests: async (params?: IMentorshipRequestsParams): Promise<IMentorshipRequestsResponse> => {
+  getRequests: async (
+    params?: IMentorshipRequestsParams
+  ): Promise<IMentorshipRequestsResponse> => {
     try {
       const queryParams = new URLSearchParams();
-      
+
       if (params?.status) queryParams.append('status', params.status);
       if (params?.role) queryParams.append('role', params.role);
       if (params?.page) queryParams.append('page', String(params.page));
@@ -86,7 +101,9 @@ export const mentorshipService = {
 
   getRequestById: async (id: string): Promise<IMentorshipRequest> => {
     try {
-      const response = await api.get<IMentorshipRequest>(`/mentorship-requests/${id}`);
+      const response = await api.get<IMentorshipRequest>(
+        `/mentorship-requests/${id}`
+      );
       return response.data;
     } catch (error) {
       console.error('Get mentorship request failed:', error);
@@ -105,7 +122,10 @@ export const mentorshipService = {
     }
   },
 
-  acceptRequest: async (id: string, data?: IAcceptMentorshipRequest): Promise<IMentorshipRequest> => {
+  acceptRequest: async (
+    id: string,
+    data?: IAcceptMentorshipRequest
+  ): Promise<IMentorshipRequest> => {
     try {
       const response = await api.post<IMentorshipRequest>(
         `/mentorship-requests/${id}/accept`,
@@ -120,7 +140,10 @@ export const mentorshipService = {
     }
   },
 
-  declineRequest: async (id: string, data: IDeclineMentorshipRequest): Promise<IMentorshipRequest> => {
+  declineRequest: async (
+    id: string,
+    data: IDeclineMentorshipRequest
+  ): Promise<IMentorshipRequest> => {
     try {
       const response = await api.post<IMentorshipRequest>(
         `/mentorship-requests/${id}/decline`,
@@ -133,5 +156,5 @@ export const mentorshipService = {
       if (message) throw new Error(message);
       throw error;
     }
-  }
+  },
 };

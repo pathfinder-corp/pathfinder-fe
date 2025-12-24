@@ -30,47 +30,54 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const registerSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: 'Email is required' })
-    .email({ message: 'Invalid email address' })
-    .toLowerCase(),
-  password: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters' })
-    .max(100, { message: 'Password is too long' })
-    .regex(/[A-Z]/, { message: 'Password must contain at least 1 uppercase letter' })
-    .regex(/[a-z]/, { message: 'Password must contain at least 1 lowercase letter' })
-    .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
-    .regex(/[^A-Za-z0-9]/, { message: 'Password must contain at least 1 special character' }),
-  confirmPassword: z
-    .string()
-    .min(1, { message: 'Please confirm password' }),
-  firstName: z
-    .string()
-    .min(1, { message: 'First name is required' })
-    .min(2, { message: 'First name must be at least 2 characters' })
-    .max(50, { message: 'First name is too long' }),
-  lastName: z
-    .string()
-    .min(1, { message: 'Last name is required' })
-    .min(2, { message: 'Last name must be at least 2 characters' })
-    .max(50, { message: 'Last name is too long' }),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: 'Confirm password does not match',
-  path: ['confirmPassword'],
-});
+const registerSchema = z
+  .object({
+    email: z
+      .string()
+      .min(1, { message: 'Email is required' })
+      .email({ message: 'Invalid email address' })
+      .toLowerCase(),
+    password: z
+      .string()
+      .min(8, { message: 'Password must be at least 8 characters' })
+      .max(100, { message: 'Password is too long' })
+      .regex(/[A-Z]/, {
+        message: 'Password must contain at least 1 uppercase letter',
+      })
+      .regex(/[a-z]/, {
+        message: 'Password must contain at least 1 lowercase letter',
+      })
+      .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
+      .regex(/[^A-Za-z0-9]/, {
+        message: 'Password must contain at least 1 special character',
+      }),
+    confirmPassword: z.string().min(1, { message: 'Please confirm password' }),
+    firstName: z
+      .string()
+      .min(1, { message: 'First name is required' })
+      .min(2, { message: 'First name must be at least 2 characters' })
+      .max(50, { message: 'First name is too long' }),
+    lastName: z
+      .string()
+      .min(1, { message: 'Last name is required' })
+      .min(2, { message: 'Last name must be at least 2 characters' })
+      .max(50, { message: 'Last name is too long' }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Confirm password does not match',
+    path: ['confirmPassword'],
+  });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
-  
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
-  
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+
   const registerService = authService?.register;
 
   const {
@@ -85,7 +92,7 @@ export default function RegisterPage() {
       password: '',
       confirmPassword: '',
       firstName: '',
-      lastName: ''
+      lastName: '',
     },
   });
 
@@ -97,26 +104,28 @@ export default function RegisterPage() {
         email: data.email,
         password: data.password,
         firstName: data.firstName,
-        lastName: data.lastName
+        lastName: data.lastName,
       };
 
       await registerService?.(registerPayload);
 
       toast.success('Registration successful!', {
-        description: 'Redirecting to login page...'
+        description: 'Redirecting to login page...',
       });
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
       router.push('/login?registered=true');
     } catch (error: unknown) {
       console.error('Register error:', error);
 
       const errorMessage =
-        error instanceof Error ? error.message : 'An error occurred while registering. Please try again.';
+        error instanceof Error
+          ? error.message
+          : 'An error occurred while registering. Please try again.';
 
       toast.error('Registration failed', {
-        description: errorMessage
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -133,7 +142,7 @@ export default function RegisterPage() {
           Create a new account to start your journey
         </CardDescription>
       </CardHeader>
-  
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-2 gap-6">
@@ -147,16 +156,18 @@ export default function RegisterPage() {
                 placeholder="John"
                 autoComplete="off"
                 disabled={isLoading}
-                className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
+                className={`h-14 border-neutral-800 bg-neutral-900/50 text-xl! focus:border-neutral-600 ${
                   errors.firstName ? 'border-red-500 focus:border-red-500' : ''
                 }`}
                 {...register('firstName')}
               />
               {errors.firstName && (
-                <p className="text-xl text-red-500">{errors.firstName.message}</p>
+                <p className="text-xl text-red-500">
+                  {errors.firstName.message}
+                </p>
               )}
             </div>
-  
+
             <div className="space-y-3">
               <Label htmlFor="lastName" className="text-xl">
                 Last name <span className="text-red-500">*</span>
@@ -167,17 +178,19 @@ export default function RegisterPage() {
                 placeholder="Doe"
                 autoComplete="off"
                 disabled={isLoading}
-                className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
+                className={`h-14 border-neutral-800 bg-neutral-900/50 text-xl! focus:border-neutral-600 ${
                   errors.lastName ? 'border-red-500 focus:border-red-500' : ''
                 }`}
                 {...register('lastName')}
               />
               {errors.lastName && (
-                <p className="text-xl text-red-500">{errors.lastName.message}</p>
+                <p className="text-xl text-red-500">
+                  {errors.lastName.message}
+                </p>
               )}
             </div>
           </div>
-  
+
           <div className="space-y-3">
             <Label htmlFor="email" className="text-xl">
               Email address <span className="text-red-500">*</span>
@@ -188,7 +201,7 @@ export default function RegisterPage() {
               placeholder="john.doe@example.com"
               autoComplete="off"
               disabled={isLoading}
-              className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 ${
+              className={`h-14 border-neutral-800 bg-neutral-900/50 text-xl! focus:border-neutral-600 ${
                 errors.email ? 'border-red-500 focus:border-red-500' : ''
               }`}
               {...register('email')}
@@ -197,7 +210,7 @@ export default function RegisterPage() {
               <p className="text-xl text-red-500">{errors.email.message}</p>
             )}
           </div>
-  
+
           <div className="space-y-3">
             <Label htmlFor="password" className="text-xl">
               Password <span className="text-red-500">*</span>
@@ -209,7 +222,7 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 autoComplete="new-password"
                 disabled={isLoading}
-                className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
+                className={`h-14 border-neutral-800 bg-neutral-900/50 pr-14 text-xl! focus:border-neutral-600 ${
                   errors.password ? 'border-red-500 focus:border-red-500' : ''
                 }`}
                 {...register('password')}
@@ -217,7 +230,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer text-neutral-400 transition-colors hover:text-neutral-200"
                 disabled={isLoading}
               >
                 {showPassword ? (
@@ -231,7 +244,7 @@ export default function RegisterPage() {
               <p className="text-xl text-red-500">{errors.password.message}</p>
             )}
           </div>
-  
+
           <div className="space-y-3">
             <Label htmlFor="confirmPassword" className="text-xl">
               Confirm password <span className="text-red-500">*</span>
@@ -243,15 +256,17 @@ export default function RegisterPage() {
                 placeholder="••••••••"
                 autoComplete="new-password"
                 disabled={isLoading}
-                className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
-                  errors.confirmPassword ? 'border-red-500 focus:border-red-500' : ''
+                className={`h-14 border-neutral-800 bg-neutral-900/50 pr-14 text-xl! focus:border-neutral-600 ${
+                  errors.confirmPassword
+                    ? 'border-red-500 focus:border-red-500'
+                    : ''
                 }`}
                 {...register('confirmPassword')}
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer text-neutral-400 transition-colors hover:text-neutral-200"
                 disabled={isLoading}
               >
                 {showConfirmPassword ? (
@@ -262,15 +277,17 @@ export default function RegisterPage() {
               </button>
             </div>
             {errors.confirmPassword && (
-              <p className="text-xl text-red-500">{errors.confirmPassword.message}</p>
+              <p className="text-xl text-red-500">
+                {errors.confirmPassword.message}
+              </p>
             )}
           </div>
         </CardContent>
-  
-        <CardFooter className="flex flex-col space-y-5 mt-8">
+
+        <CardFooter className="mt-8 flex flex-col space-y-5">
           <Button
             type="submit"
-            className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+            className="h-14 w-full bg-neutral-100 text-xl text-neutral-900 hover:bg-neutral-200"
             disabled={isLoading}
           >
             {isLoading ? (
@@ -282,7 +299,7 @@ export default function RegisterPage() {
               'Register'
             )}
           </Button>
-  
+
           <p className="text-center text-xl text-neutral-400">
             Already have an account?{' '}
             <Link
@@ -292,7 +309,7 @@ export default function RegisterPage() {
               Login now
             </Link>
           </p>
-  
+
           <p className="text-center text-lg text-neutral-500">
             By registering, you agree to the{' '}
             <Link href="/terms" className="underline hover:text-neutral-400">

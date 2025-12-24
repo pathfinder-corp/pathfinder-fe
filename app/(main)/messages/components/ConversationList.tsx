@@ -19,7 +19,9 @@ type ConversationListProps = {
   onSearchChange: Dispatch<SetStateAction<string>>;
   isLoadingConversations: boolean;
   onSelectConversation: (conversation: IChatConversation) => void;
-  getOtherParticipant: (conversation: IChatConversation) => IChatParticipant | null;
+  getOtherParticipant: (
+    conversation: IChatConversation
+  ) => IChatParticipant | null;
   formatConversationTime: (dateStr: string | null) => string;
   isUserOnline: (userId: string) => boolean | undefined;
   isSocketConnected: boolean;
@@ -47,8 +49,8 @@ export function ConversationList({
   });
 
   return (
-    <div className="w-[360px] border-r border-neutral-800 flex flex-col bg-neutral-900/50">
-      <div className="h-24 px-5 flex items-center justify-between border-b border-neutral-800">
+    <div className="flex w-[360px] flex-col border-r border-neutral-800 bg-neutral-900/50">
+      <div className="flex h-24 items-center justify-between border-b border-neutral-800 px-5">
         <h1 className="text-4xl font-bold">Messages</h1>
         <div className="flex items-center gap-2">
           <span
@@ -62,19 +64,19 @@ export function ConversationList({
         </div>
       </div>
 
-      <div className="px-4 mt-5 mb-3">
+      <div className="mt-5 mb-3 px-4">
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-neutral-500" />
+          <Search className="absolute top-1/2 left-4 size-5 -translate-y-1/2 text-neutral-500" />
           <Input
             placeholder="Search..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="pl-12 h-14 bg-neutral-800/50 border-neutral-700 text-xl"
+            className="h-14 border-neutral-700 bg-neutral-800/50 pl-12 text-xl"
           />
           {searchQuery && (
             <button
               onClick={() => onSearchChange('')}
-              className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+              className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer text-neutral-400 hover:text-white"
             >
               <X className="size-5" />
             </button>
@@ -98,14 +100,16 @@ export function ConversationList({
             </div>
           ) : filteredConversations.length === 0 ? (
             <div className="py-20 text-center">
-              <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-5">
+              <div className="mx-auto mb-5 flex size-16 items-center justify-center rounded-full bg-neutral-800">
                 <MessageCircle className="size-8 text-neutral-500" />
               </div>
               <p className="text-xl text-neutral-400">
-                {searchQuery ? 'No conversations found' : 'No conversations yet'}
+                {searchQuery
+                  ? 'No conversations found'
+                  : 'No conversations yet'}
               </p>
               {!searchQuery && (
-                <p className="text-lg text-neutral-500 mt-2">
+                <p className="mt-2 text-lg text-neutral-500">
                   Connect with a mentor to start chatting
                 </p>
               )}
@@ -117,7 +121,9 @@ export function ConversationList({
 
               const isActive = selectedConversation?.id === conversation.id;
               const onlineFromParticipant =
-                typeof other.isOnline === 'boolean' ? other.isOnline : undefined;
+                typeof other.isOnline === 'boolean'
+                  ? other.isOnline
+                  : undefined;
               const onlineFromStore = isUserOnline(other.id);
               const isOnline = onlineFromStore ?? onlineFromParticipant;
 
@@ -125,13 +131,13 @@ export function ConversationList({
                 <button
                   key={conversation.id}
                   onClick={() => onSelectConversation(conversation)}
-                  className={`w-full flex items-start gap-4 p-4 rounded-xl transition-colors text-left cursor-pointer ${
+                  className={`flex w-full cursor-pointer items-start gap-4 rounded-xl p-4 text-left transition-colors ${
                     isActive ? 'bg-neutral-800' : 'hover:bg-neutral-800/50'
                   }`}
                 >
                   <div className="relative shrink-0">
                     {other.avatar ? (
-                      <div className="relative size-14 rounded-full overflow-hidden">
+                      <div className="relative size-14 overflow-hidden rounded-full">
                         <Image
                           src={other.avatar}
                           alt={`${other.firstName} ${other.lastName}`}
@@ -140,60 +146,67 @@ export function ConversationList({
                         />
                       </div>
                     ) : (
-                      <div className="size-14 rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-base font-bold">
+                      <div className="flex size-14 items-center justify-center rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 text-base font-bold">
                         {getInitials(other.firstName, other.lastName)}
                       </div>
                     )}
                     {typeof isOnline === 'boolean' && (
                       <span
-                        className={`absolute bottom-0.5 -right-0.5 size-3.5 rounded-full border border-neutral-900 ${
+                        className={`absolute -right-0.5 bottom-0.5 size-3.5 rounded-full border border-neutral-900 ${
                           isOnline ? 'bg-green-500' : 'bg-neutral-500'
                         }`}
                       />
                     )}
                   </div>
 
-                  <div className="flex-1 min-w-0 overflow-hidden">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-semibold text-xl truncate max-w-[180px]">
+                  <div className="min-w-0 flex-1 overflow-hidden">
+                    <div className="mb-1 flex items-center justify-between gap-2">
+                      <span className="max-w-[180px] truncate text-xl font-semibold">
                         {other.firstName} {other.lastName}
                       </span>
-                      <span className="text-lg text-neutral-500 shrink-0">
+                      <span className="shrink-0 text-lg text-neutral-500">
                         {formatConversationTime(conversation.lastMessageAt)}
                       </span>
                     </div>
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-lg text-neutral-400 truncate max-w-[220px]">
-                        {conversation.lastMessage?.senderId === currentUserId && (
+                      <p className="max-w-[220px] truncate text-lg text-neutral-400">
+                        {conversation.lastMessage?.senderId ===
+                          currentUserId && (
                           <span className="text-neutral-500">You: </span>
                         )}
                         {conversation.lastMessage?.isDeleted
                           ? 'Message deleted'
-                          : conversation.lastMessage?.content || 'No messages yet'}
+                          : conversation.lastMessage?.content ||
+                            'No messages yet'}
                       </p>
                       <div className="flex items-center gap-2">
                         {conversation.mentorshipStatus === 'ended' && (
                           <Badge
                             variant="outline"
-                            className="text-xs px-2 py-1 border-neutral-600 text-neutral-500"
+                            className="border-neutral-600 px-2 py-1 text-xs text-neutral-500"
                           >
                             Ended
                           </Badge>
                         )}
                         <AnimatePresence mode="wait">
-                          {conversation.unreadCount && conversation.unreadCount > 0 && (
-                            <motion.div
-                              key={`unread-${conversation.id}`}
-                              initial={{ scale: 0, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              exit={{ scale: 0, opacity: 0 }}
-                              transition={{ duration: 0.2, type: 'spring', stiffness: 200 }}
-                            >
-                              <Badge className="bg-white text-black text-sm px-2 py-1 h-6 min-w-6 flex items-center justify-center rounded-full">
-                                {conversation.unreadCount}
-                              </Badge>
-                            </motion.div>
-                          )}
+                          {conversation.unreadCount &&
+                            conversation.unreadCount > 0 && (
+                              <motion.div
+                                key={`unread-${conversation.id}`}
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
+                                transition={{
+                                  duration: 0.2,
+                                  type: 'spring',
+                                  stiffness: 200,
+                                }}
+                              >
+                                <Badge className="flex h-6 min-w-6 items-center justify-center rounded-full bg-white px-2 py-1 text-sm text-black">
+                                  {conversation.unreadCount}
+                                </Badge>
+                              </motion.div>
+                            )}
                         </AnimatePresence>
                       </div>
                     </div>

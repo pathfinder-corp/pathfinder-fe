@@ -1,9 +1,9 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { 
-  Search, 
-  MoreVertical, 
+import {
+  Search,
+  MoreVertical,
   MessageSquare,
   Loader2,
   Eye,
@@ -16,17 +16,17 @@ import {
   CheckCircle2,
   AlertCircle,
   Send,
-  User
+  User,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { adminService } from '@/services';
-import type { 
+import type {
   IAdminContactMessage,
   IAdminContactMessagesParams,
   IAdminContactStats,
   IUpdateContactStatusPayload,
-  IRespondToContactPayload
+  IRespondToContactPayload,
 } from '@/types';
 import { useDebounceValue } from 'usehooks-ts';
 import { ITEMS_PER_PAGE, SORT_ORDER } from '@/constants';
@@ -41,7 +41,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Dialog,
@@ -78,7 +78,13 @@ import {
 
 type StatusFilter = 'pending' | 'in_progress' | 'resolved' | 'closed' | 'all';
 type TypeFilter = 'general' | 'suspended' | 'feedback' | 'support' | 'all';
-type SortField = 'createdAt' | 'updatedAt' | 'name' | 'email' | 'status' | 'type';
+type SortField =
+  | 'createdAt'
+  | 'updatedAt'
+  | 'name'
+  | 'email'
+  | 'status'
+  | 'type';
 
 export default function AdminContactPage() {
   const [messages, setMessages] = useState<IAdminContactMessage[]>([]);
@@ -93,9 +99,11 @@ export default function AdminContactPage() {
   const [sortBy, setSortBy] = useState<SortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>(SORT_ORDER.DESC);
 
-  const [selectedMessage, setSelectedMessage] = useState<IAdminContactMessage | null>(null);
+  const [selectedMessage, setSelectedMessage] =
+    useState<IAdminContactMessage | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
-  const [isRespondDialogOpen, setIsRespondDialogOpen] = useState<boolean>(false);
+  const [isRespondDialogOpen, setIsRespondDialogOpen] =
+    useState<boolean>(false);
   const [responseText, setResponseText] = useState<string>('');
   const [isResponding, setIsResponding] = useState<boolean>(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState<boolean>(false);
@@ -103,7 +111,7 @@ export default function AdminContactPage() {
   const fetchMessages = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       const params: IAdminContactMessagesParams = {
         page: currentPage,
         limit: ITEMS_PER_PAGE,
@@ -128,14 +136,22 @@ export default function AdminContactPage() {
       setTotalPages(response.meta.totalPages);
       setTotalMessages(response.meta.total);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load contact messages';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load contact messages';
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
-  }, [currentPage, debouncedSearch, statusFilter, typeFilter, sortBy, sortOrder]);
+  }, [
+    currentPage,
+    debouncedSearch,
+    statusFilter,
+    typeFilter,
+    sortBy,
+    sortOrder,
+  ]);
 
   useEffect(() => {
     fetchMessages();
@@ -147,7 +163,9 @@ export default function AdminContactPage() {
 
   const handleSort = (field: SortField) => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === SORT_ORDER.ASC ? SORT_ORDER.DESC : SORT_ORDER.ASC);
+      setSortOrder(
+        sortOrder === SORT_ORDER.ASC ? SORT_ORDER.DESC : SORT_ORDER.ASC
+      );
     } else {
       setSortBy(field);
       setSortOrder(SORT_ORDER.DESC);
@@ -157,27 +175,35 @@ export default function AdminContactPage() {
 
   const getSortIcon = (field: SortField) => {
     if (sortBy !== field) {
-      return <ArrowUpDown className="size-5 ml-2 opacity-50" />;
+      return <ArrowUpDown className="ml-2 size-5 opacity-50" />;
     }
-    return sortOrder === SORT_ORDER.ASC 
-      ? <ArrowUp className="size-5 ml-2" />
-      : <ArrowDown className="size-5 ml-2" />;
+    return sortOrder === SORT_ORDER.ASC ? (
+      <ArrowUp className="ml-2 size-5" />
+    ) : (
+      <ArrowDown className="ml-2 size-5" />
+    );
   };
 
   const handleViewMessage = async (message: IAdminContactMessage) => {
     try {
-      const messageDetail = await adminService.getContactMessageById(message.id);
+      const messageDetail = await adminService.getContactMessageById(
+        message.id
+      );
       setSelectedMessage(messageDetail);
       setIsViewDialogOpen(true);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load message details';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load message details';
       toast.error(errorMessage);
     }
   };
 
-  const handleUpdateStatus = async (messageId: string, newStatus: 'pending' | 'in_progress' | 'resolved' | 'closed') => {
+  const handleUpdateStatus = async (
+    messageId: string,
+    newStatus: 'pending' | 'in_progress' | 'resolved' | 'closed'
+  ) => {
     try {
       setIsUpdatingStatus(true);
       const payload: IUpdateContactStatusPayload = { status: newStatus };
@@ -189,9 +215,8 @@ export default function AdminContactPage() {
         setSelectedMessage(updated);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to update status';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update status';
       toast.error(errorMessage);
     } finally {
       setIsUpdatingStatus(false);
@@ -212,16 +237,17 @@ export default function AdminContactPage() {
 
     try {
       setIsResponding(true);
-      const payload: IRespondToContactPayload = { response: responseText.trim() };
+      const payload: IRespondToContactPayload = {
+        response: responseText.trim(),
+      };
       await adminService.respondToContact(selectedMessage.id, payload);
       toast.success('Response sent successfully');
       setIsRespondDialogOpen(false);
       setResponseText('');
       await fetchMessages();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to send response';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to send response';
       toast.error(errorMessage);
     } finally {
       setIsResponding(false);
@@ -270,57 +296,57 @@ export default function AdminContactPage() {
 
   const generatePaginationItems = () => {
     const items: (number | 'ellipsis')[] = [];
-    
+
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) {
         items.push(i);
       }
     } else {
       items.push(1);
-      
+
       if (currentPage > 3) {
         items.push('ellipsis');
       }
-      
+
       const start = Math.max(2, currentPage - 1);
       const end = Math.min(totalPages - 1, currentPage + 1);
-      
+
       for (let i = start; i <= end; i++) {
         items.push(i);
       }
-      
+
       if (currentPage < totalPages - 2) {
         items.push('ellipsis');
       }
-      
+
       items.push(totalPages);
     }
-    
+
     return items;
   };
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-5xl font-bold mb-3">Contact Messages</h1>
+        <h1 className="mb-3 text-5xl font-bold">Contact Messages</h1>
         <p className="text-xl text-neutral-400">
           Manage contact messages from users and guests
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-5 sm:items-center justify-between">
-        <div className="relative flex-1 max-w-xl">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-6 text-neutral-400" />
+      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+        <div className="relative max-w-xl flex-1">
+          <Search className="absolute top-1/2 left-5 size-6 -translate-y-1/2 text-neutral-400" />
           <Input
             placeholder="Search by name, email, or message..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-14 h-14 text-lg! bg-neutral-900/50 border-neutral-800"
+            className="h-14 border-neutral-800 bg-neutral-900/50 pl-14 text-lg!"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+              className="absolute top-1/2 right-5 -translate-y-1/2 text-neutral-400 hover:text-white"
             >
               <X className="size-5" />
             </button>
@@ -328,46 +354,66 @@ export default function AdminContactPage() {
         </div>
 
         <div className="flex gap-3">
-          <Select 
-            value={statusFilter} 
+          <Select
+            value={statusFilter}
             onValueChange={(value) => setStatusFilter(value as StatusFilter)}
           >
-            <SelectTrigger className="w-[160px] h-14! text-lg bg-neutral-900/50 border-neutral-800">
+            <SelectTrigger className="h-14! w-[160px] border-neutral-800 bg-neutral-900/50 text-lg">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all" className="text-lg">All Status</SelectItem>
-              <SelectItem value="pending" className="text-lg">Pending</SelectItem>
-              <SelectItem value="in_progress" className="text-lg">In Progress</SelectItem>
-              <SelectItem value="resolved" className="text-lg">Resolved</SelectItem>
-              <SelectItem value="closed" className="text-lg">Closed</SelectItem>
+              <SelectItem value="all" className="text-lg">
+                All Status
+              </SelectItem>
+              <SelectItem value="pending" className="text-lg">
+                Pending
+              </SelectItem>
+              <SelectItem value="in_progress" className="text-lg">
+                In Progress
+              </SelectItem>
+              <SelectItem value="resolved" className="text-lg">
+                Resolved
+              </SelectItem>
+              <SelectItem value="closed" className="text-lg">
+                Closed
+              </SelectItem>
             </SelectContent>
           </Select>
 
-          <Select 
-            value={typeFilter} 
+          <Select
+            value={typeFilter}
             onValueChange={(value) => setTypeFilter(value as TypeFilter)}
           >
-            <SelectTrigger className="w-[160px] h-14! text-lg bg-neutral-900/50 border-neutral-800">
+            <SelectTrigger className="h-14! w-[160px] border-neutral-800 bg-neutral-900/50 text-lg">
               <SelectValue placeholder="Type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all" className="text-lg">All Types</SelectItem>
-              <SelectItem value="general" className="text-lg">General</SelectItem>
-              <SelectItem value="suspended" className="text-lg">Suspended</SelectItem>
-              <SelectItem value="feedback" className="text-lg">Feedback</SelectItem>
-              <SelectItem value="support" className="text-lg">Support</SelectItem>
+              <SelectItem value="all" className="text-lg">
+                All Types
+              </SelectItem>
+              <SelectItem value="general" className="text-lg">
+                General
+              </SelectItem>
+              <SelectItem value="suspended" className="text-lg">
+                Suspended
+              </SelectItem>
+              <SelectItem value="feedback" className="text-lg">
+                Feedback
+              </SelectItem>
+              <SelectItem value="support" className="text-lg">
+                Support
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
       </div>
 
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50">
         <Table>
           <TableHeader>
             <TableRow className="border-neutral-800 hover:bg-transparent">
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pl-7 cursor-pointer hover:text-white transition-colors w-[200px]"
+              <TableHead
+                className="w-[200px] cursor-pointer py-5 pl-7 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('name')}
               >
                 <div className="flex items-center">
@@ -375,8 +421,8 @@ export default function AdminContactPage() {
                   {getSortIcon('name')}
                 </div>
               </TableHead>
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors"
+              <TableHead
+                className="cursor-pointer py-5 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('email')}
               >
                 <div className="flex items-center">
@@ -384,8 +430,8 @@ export default function AdminContactPage() {
                   {getSortIcon('email')}
                 </div>
               </TableHead>
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[120px]"
+              <TableHead
+                className="w-[120px] cursor-pointer py-5 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('type')}
               >
                 <div className="flex items-center">
@@ -393,8 +439,8 @@ export default function AdminContactPage() {
                   {getSortIcon('type')}
                 </div>
               </TableHead>
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[140px]"
+              <TableHead
+                className="w-[140px] cursor-pointer py-5 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('status')}
               >
                 <div className="flex items-center">
@@ -402,8 +448,8 @@ export default function AdminContactPage() {
                   {getSortIcon('status')}
                 </div>
               </TableHead>
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[180px]"
+              <TableHead
+                className="w-[180px] cursor-pointer py-5 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('createdAt')}
               >
                 <div className="flex items-center">
@@ -411,7 +457,7 @@ export default function AdminContactPage() {
                   {getSortIcon('createdAt')}
                 </div>
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pr-7 text-right w-[100px]">
+              <TableHead className="w-[100px] py-5 pr-7 text-right text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Actions
               </TableHead>
             </TableRow>
@@ -423,62 +469,86 @@ export default function AdminContactPage() {
                   <TableCell className="py-4 pl-6">
                     <Skeleton className="h-5 w-36 bg-neutral-800" />
                   </TableCell>
-                  <TableCell><Skeleton className="h-5 w-52 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-7 w-20 rounded-full bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-7 w-24 rounded-full bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-28 bg-neutral-800" /></TableCell>
-                  <TableCell className="pr-6"><Skeleton className="size-9 rounded-lg bg-neutral-800 ml-auto" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-52 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-7 w-20 rounded-full bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-7 w-24 rounded-full bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-28 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell className="pr-6">
+                    <Skeleton className="ml-auto size-9 rounded-lg bg-neutral-800" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : messages.length === 0 ? (
               <TableRow className="border-neutral-800 hover:bg-transparent">
                 <TableCell colSpan={6} className="py-16 text-center">
-                  <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+                  <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-neutral-800">
                     <MessageSquare className="size-8 text-neutral-500" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">No contact messages found</h3>
+                  <h3 className="mb-2 text-xl font-semibold">
+                    No contact messages found
+                  </h3>
                   <p className="text-neutral-400">
-                    {searchQuery ? 'Try a different search term' : 'No messages match the selected filter'}
+                    {searchQuery
+                      ? 'Try a different search term'
+                      : 'No messages match the selected filter'}
                   </p>
                 </TableCell>
               </TableRow>
             ) : (
               messages.map((message) => (
-                <TableRow 
-                  key={message.id} 
-                  className="border-neutral-800 hover:bg-neutral-800/30 transition-colors"
+                <TableRow
+                  key={message.id}
+                  className="border-neutral-800 transition-colors hover:bg-neutral-800/30"
                 >
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold shrink-0">
-                        {message.name[0]}{message.name.split(' ')[1]?.[0] || ''}
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-sm font-bold">
+                        {message.name[0]}
+                        {message.name.split(' ')[1]?.[0] || ''}
                       </div>
                       <div>
-                        <span className="font-medium text-base text-neutral-100 block">
+                        <span className="block text-base font-medium text-neutral-100">
                           {message.name}
                         </span>
                         {message.type === 'suspended' && (
-                          <Badge variant="outline" className="mt-1 py-1.5 px-2.5 text-xs bg-red-500/20 text-red-400 border-red-500/30">
+                          <Badge
+                            variant="outline"
+                            className="mt-1 border-red-500/30 bg-red-500/20 px-2.5 py-1.5 text-xs text-red-400"
+                          >
                             High Priority
                           </Badge>
                         )}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-base">
+                  <TableCell className="text-base text-neutral-300">
                     {message.email}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={`py-1.5 px-3 capitalize text-sm ${getTypeBadgeColor(message.type)}`}>
+                    <Badge
+                      variant="outline"
+                      className={`px-3 py-1.5 text-sm capitalize ${getTypeBadgeColor(message.type)}`}
+                    >
                       {message.type}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={`py-1.5 px-3 capitalize text-sm ${getStatusBadgeColor(message.status)}`}>
+                    <Badge
+                      variant="outline"
+                      className={`px-3 py-1.5 text-sm capitalize ${getStatusBadgeColor(message.status)}`}
+                    >
                       {message.status.replace('_', ' ')}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-base">
+                  <TableCell className="text-base text-neutral-300">
                     {formatDate(message.createdAt)}
                   </TableCell>
                   <TableCell className="pr-6 text-right">
@@ -489,27 +559,31 @@ export default function AdminContactPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-52">
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => handleViewMessage(message)}
-                          className="text-base py-2"
+                          className="py-2 text-base"
                         >
                           <Eye className="size-4" />
                           View details
                         </DropdownMenuItem>
-                        {message.status !== 'resolved' && message.status !== 'closed' && !message.adminResponse && (
-                          <DropdownMenuItem 
-                            onClick={() => handleOpenRespond(message)}
-                            className="text-base py-2"
-                          >
-                            <Send className="size-4" />
-                            Respond
-                          </DropdownMenuItem>
-                        )}
+                        {message.status !== 'resolved' &&
+                          message.status !== 'closed' &&
+                          !message.adminResponse && (
+                            <DropdownMenuItem
+                              onClick={() => handleOpenRespond(message)}
+                              className="py-2 text-base"
+                            >
+                              <Send className="size-4" />
+                              Respond
+                            </DropdownMenuItem>
+                          )}
                         <DropdownMenuSeparator />
                         {message.status !== 'pending' && (
-                          <DropdownMenuItem 
-                            onClick={() => handleUpdateStatus(message.id, 'pending')}
-                            className="text-base py-2"
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleUpdateStatus(message.id, 'pending')
+                            }
+                            className="py-2 text-base"
                             disabled={isUpdatingStatus}
                           >
                             <Clock className="size-4" />
@@ -517,9 +591,11 @@ export default function AdminContactPage() {
                           </DropdownMenuItem>
                         )}
                         {message.status !== 'in_progress' && (
-                          <DropdownMenuItem 
-                            onClick={() => handleUpdateStatus(message.id, 'in_progress')}
-                            className="text-base py-2"
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleUpdateStatus(message.id, 'in_progress')
+                            }
+                            className="py-2 text-base"
                             disabled={isUpdatingStatus}
                           >
                             <AlertCircle className="size-4" />
@@ -527,9 +603,11 @@ export default function AdminContactPage() {
                           </DropdownMenuItem>
                         )}
                         {message.status !== 'resolved' && (
-                          <DropdownMenuItem 
-                            onClick={() => handleUpdateStatus(message.id, 'resolved')}
-                            className="text-base py-2"
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleUpdateStatus(message.id, 'resolved')
+                            }
+                            className="py-2 text-base"
                             disabled={isUpdatingStatus}
                           >
                             <CheckCircle2 className="size-4" />
@@ -537,9 +615,11 @@ export default function AdminContactPage() {
                           </DropdownMenuItem>
                         )}
                         {message.status !== 'closed' && (
-                          <DropdownMenuItem 
-                            onClick={() => handleUpdateStatus(message.id, 'closed')}
-                            className="text-base py-2"
+                          <DropdownMenuItem
+                            onClick={() =>
+                              handleUpdateStatus(message.id, 'closed')
+                            }
+                            className="py-2 text-base"
                             disabled={isUpdatingStatus}
                           >
                             <X className="size-4" />
@@ -556,25 +636,30 @@ export default function AdminContactPage() {
         </Table>
 
         {!isLoading && totalMessages > 0 && (
-          <div className="px-6 py-4 border-t border-neutral-800 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <span className="text-base text-neutral-400 whitespace-nowrap">
-              Showing {startIndex} to {endIndex} of {totalMessages} message{totalMessages > 1 ? 's' : ''}
+          <div className="flex flex-col gap-3 border-t border-neutral-800 px-6 py-4 md:flex-row md:items-center md:justify-between">
+            <span className="text-base whitespace-nowrap text-neutral-400">
+              Showing {startIndex} to {endIndex} of {totalMessages} message
+              {totalMessages > 1 ? 's' : ''}
             </span>
-            
+
             {totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious 
+                    <PaginationPrevious
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (currentPage > 1) setCurrentPage(p => p - 1);
+                        if (currentPage > 1) setCurrentPage((p) => p - 1);
                       }}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={
+                        currentPage === 1
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
                     />
                   </PaginationItem>
-                  
+
                   {generatePaginationItems().map((item, index) => (
                     <PaginationItem key={index}>
                       {item === 'ellipsis' ? (
@@ -594,15 +679,20 @@ export default function AdminContactPage() {
                       )}
                     </PaginationItem>
                   ))}
-                  
+
                   <PaginationItem>
-                    <PaginationNext 
+                    <PaginationNext
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (currentPage < totalPages) setCurrentPage(p => p + 1);
+                        if (currentPage < totalPages)
+                          setCurrentPage((p) => p + 1);
                       }}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={
+                        currentPage === totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -613,86 +703,110 @@ export default function AdminContactPage() {
       </div>
 
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Contact Message Details</DialogTitle>
+            <DialogTitle className="text-2xl">
+              Contact Message Details
+            </DialogTitle>
             <DialogDescription className="text-lg text-neutral-400">
               View and manage contact message details
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedMessage && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">From</p>
-                  <p className="text-lg font-semibold">{selectedMessage.name}</p>
+                  <p className="mb-1 text-base text-neutral-500">From</p>
+                  <p className="text-lg font-semibold">
+                    {selectedMessage.name}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Email</p>
+                  <p className="mb-1 text-base text-neutral-500">Email</p>
                   <p className="text-lg">{selectedMessage.email}</p>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Type</p>
-                  <Badge variant="outline" className={`py-1.5 px-3 capitalize text-sm ${getTypeBadgeColor(selectedMessage.type)}`}>
+                  <p className="mb-1 text-base text-neutral-500">Type</p>
+                  <Badge
+                    variant="outline"
+                    className={`px-3 py-1.5 text-sm capitalize ${getTypeBadgeColor(selectedMessage.type)}`}
+                  >
                     {selectedMessage.type}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Status</p>
-                  <Badge variant="outline" className={`py-1.5 px-3 capitalize text-sm ${getStatusBadgeColor(selectedMessage.status)}`}>
+                  <p className="mb-1 text-base text-neutral-500">Status</p>
+                  <Badge
+                    variant="outline"
+                    className={`px-3 py-1.5 text-sm capitalize ${getStatusBadgeColor(selectedMessage.status)}`}
+                  >
                     {selectedMessage.status.replace('_', ' ')}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Created</p>
-                  <p className="text-lg">{formatDate(selectedMessage.createdAt)}</p>
+                  <p className="mb-1 text-base text-neutral-500">Created</p>
+                  <p className="text-lg">
+                    {formatDate(selectedMessage.createdAt)}
+                  </p>
                 </div>
                 {selectedMessage.respondedAt && (
                   <div>
-                    <p className="text-base text-neutral-500 mb-1">Responded</p>
-                    <p className="text-lg">{formatDate(selectedMessage.respondedAt)}</p>
+                    <p className="mb-1 text-base text-neutral-500">Responded</p>
+                    <p className="text-lg">
+                      {formatDate(selectedMessage.respondedAt)}
+                    </p>
                   </div>
                 )}
               </div>
 
               {selectedMessage.subject && (
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Subject</p>
-                  <p className="text-lg font-medium">{selectedMessage.subject}</p>
+                  <p className="mb-1 text-base text-neutral-500">Subject</p>
+                  <p className="text-lg font-medium">
+                    {selectedMessage.subject}
+                  </p>
                 </div>
               )}
 
               <div>
-                <p className="text-base text-neutral-500 mb-2">Message</p>
-                <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-5">
-                  <p className="text-lg whitespace-pre-wrap">{selectedMessage.message}</p>
+                <p className="mb-2 text-base text-neutral-500">Message</p>
+                <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-5">
+                  <p className="text-lg whitespace-pre-wrap">
+                    {selectedMessage.message}
+                  </p>
                 </div>
               </div>
 
               {selectedMessage.adminResponse && (
                 <div>
-                  <p className="text-base text-neutral-500 mb-2">Admin Response</p>
-                  <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-5">
-                    <p className="text-lg whitespace-pre-wrap">{selectedMessage.adminResponse}</p>
+                  <p className="mb-2 text-base text-neutral-500">
+                    Admin Response
+                  </p>
+                  <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-5">
+                    <p className="text-lg whitespace-pre-wrap">
+                      {selectedMessage.adminResponse}
+                    </p>
                   </div>
                 </div>
               )}
 
-              {!selectedMessage.adminResponse && selectedMessage.status !== 'resolved' && selectedMessage.status !== 'closed' && (
-                <div className="pt-4 border-t border-neutral-800">
-                  <Button
-                    onClick={() => {
-                      setIsViewDialogOpen(false);
-                      handleOpenRespond(selectedMessage);
-                    }}
-                    className="w-full h-12! text-base!"
-                  >
-                    Respond to Message
-                    <Send className="size-5" />
-                  </Button>
-                </div>
-              )}
+              {!selectedMessage.adminResponse &&
+                selectedMessage.status !== 'resolved' &&
+                selectedMessage.status !== 'closed' && (
+                  <div className="border-t border-neutral-800 pt-4">
+                    <Button
+                      onClick={() => {
+                        setIsViewDialogOpen(false);
+                        handleOpenRespond(selectedMessage);
+                      }}
+                      className="h-12! w-full text-base!"
+                    >
+                      Respond to Message
+                      <Send className="size-5" />
+                    </Button>
+                  </div>
+                )}
             </div>
           )}
         </DialogContent>
@@ -701,17 +815,23 @@ export default function AdminContactPage() {
       <Dialog open={isRespondDialogOpen} onOpenChange={setIsRespondDialogOpen}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-2xl">Respond to Contact Message</DialogTitle>
+            <DialogTitle className="text-2xl">
+              Respond to Contact Message
+            </DialogTitle>
             <DialogDescription className="text-lg text-neutral-400">
               Send a response to {selectedMessage?.name}
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedMessage && (
             <div className="space-y-6">
-              <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-5">
-                <p className="text-base text-neutral-500 mb-2">Original Message</p>
-                <p className="text-lg whitespace-pre-wrap line-clamp-4">{selectedMessage.message}</p>
+              <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-5">
+                <p className="mb-2 text-base text-neutral-500">
+                  Original Message
+                </p>
+                <p className="line-clamp-4 text-lg whitespace-pre-wrap">
+                  {selectedMessage.message}
+                </p>
               </div>
 
               <div className="space-y-3">
@@ -722,7 +842,7 @@ export default function AdminContactPage() {
                   value={responseText}
                   onChange={(e) => setResponseText(e.target.value)}
                   placeholder="Enter your response..."
-                  className="min-h-[200px] text-lg! bg-neutral-800 border-neutral-700 resize-none"
+                  className="min-h-[200px] resize-none border-neutral-700 bg-neutral-800 text-lg!"
                   maxLength={5000}
                 />
                 <p className="text-sm text-neutral-500">

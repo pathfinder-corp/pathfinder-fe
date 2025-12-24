@@ -1,11 +1,10 @@
-import type {
-  ICreateContactRequest,
-  ICreateContactResponse,
-} from '@/types';
+import type { ICreateContactRequest, ICreateContactResponse } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
 export const contactService = {
-  createContact: async (data: ICreateContactRequest): Promise<ICreateContactResponse> => {
+  createContact: async (
+    data: ICreateContactRequest
+  ): Promise<ICreateContactResponse> => {
     try {
       const response = await api.post<ICreateContactResponse>('/contact', data);
       return response.data;

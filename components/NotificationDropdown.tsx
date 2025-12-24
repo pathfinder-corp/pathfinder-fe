@@ -2,14 +2,14 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
+import {
   Bell,
   CheckCheck,
   Users,
   FileText,
   MessageCircle,
   AlertCircle,
-  Loader2
+  Loader2,
 } from 'lucide-react';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { notificationService } from '@/services';
@@ -37,9 +37,8 @@ export function NotificationDropdown() {
       const response = await notificationService.getUnreadCount();
       setUnreadCount(response.count);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to fetch unread count';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to fetch unread count';
       toast.error('Failed to fetch unread count', {
         description: errorMessage,
       });
@@ -49,13 +48,16 @@ export function NotificationDropdown() {
   const fetchNotifications = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await notificationService.getNotifications({ limit: 20 });
+      const response = await notificationService.getNotifications({
+        limit: 20,
+      });
       setNotifications(response.notifications);
       setUnreadCount(response.unreadCount);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to fetch notifications';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to fetch notifications';
       toast.error('Failed to fetch notifications', {
         description: errorMessage,
       });
@@ -66,7 +68,7 @@ export function NotificationDropdown() {
 
   useEffect(() => {
     fetchUnreadCount();
-    
+
     const interval = setInterval(fetchUnreadCount, 30000);
     return () => clearInterval(interval);
   }, [fetchUnreadCount]);
@@ -79,15 +81,18 @@ export function NotificationDropdown() {
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
-      await notificationService.markAsRead({ notificationIds: [notificationId] });
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
+      await notificationService.markAsRead({
+        notificationIds: [notificationId],
+      });
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
       );
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to mark notification as read';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to mark notification as read';
       toast.error('Failed to mark notification as read', {
         description: errorMessage,
       });
@@ -95,18 +100,17 @@ export function NotificationDropdown() {
   };
 
   const handleMarkAllAsRead = async () => {
-    const unreadIds = notifications.filter(n => !n.isRead).map(n => n.id);
+    const unreadIds = notifications.filter((n) => !n.isRead).map((n) => n.id);
     if (unreadIds.length === 0) return;
 
     try {
       setIsMarkingRead(true);
       await notificationService.markAsRead({ notificationIds: unreadIds });
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to mark all as read';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to mark all as read';
       toast.error('Failed to mark all as read', {
         description: errorMessage,
       });
@@ -211,26 +215,26 @@ export function NotificationDropdown() {
         >
           <Bell className="size-6" />
           {unreadCount > 0 && (
-            <span className="absolute top-1.5 right-1.5 size-6 rounded-full bg-red-500 text-white text-sm font-bold flex items-center justify-center">
+            <span className="absolute top-1.5 right-1.5 flex size-6 items-center justify-center rounded-full bg-red-500 text-sm font-bold text-white">
               {unreadCount > 9 ? '9+' : unreadCount}
             </span>
           )}
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent 
-        align="end" 
-        className="w-md p-0 bg-neutral-900 border-neutral-800 flex flex-col h-[300px]"
+      <DropdownMenuContent
+        align="end"
+        className="flex h-[300px] w-md flex-col border-neutral-800 bg-neutral-900 p-0"
       >
-        <div className="flex items-center justify-between px-5 py-4 border-b border-neutral-800 shrink-0">
-          <h3 className="font-semibold text-2xl">Notifications</h3>
+        <div className="flex shrink-0 items-center justify-between border-b border-neutral-800 px-5 py-4">
+          <h3 className="text-2xl font-semibold">Notifications</h3>
           {unreadCount > 0 && (
             <Button
               variant="ghost"
               size="sm"
               onClick={handleMarkAllAsRead}
               disabled={isMarkingRead}
-              className="text-base text-neutral-400 hover:text-white h-10"
+              className="h-10 text-base text-neutral-400 hover:text-white"
             >
               {isMarkingRead ? (
                 <Loader2 className="size-5 animate-spin" />
@@ -244,14 +248,14 @@ export function NotificationDropdown() {
           )}
         </div>
 
-        <ScrollArea className="flex-1 min-h-0">
+        <ScrollArea className="min-h-0 flex-1">
           {isLoading ? (
             <div className="flex items-center justify-center py-10">
               <Loader2 className="size-7 animate-spin text-neutral-400" />
             </div>
           ) : notifications.length === 0 ? (
-            <div className="absolute top-0 left-0 size-full flex flex-col items-center justify-center text-neutral-500">
-              <Bell className="size-10 mb-3 opacity-40" />
+            <div className="absolute top-0 left-0 flex size-full flex-col items-center justify-center text-neutral-500">
+              <Bell className="mb-3 size-10 opacity-40" />
               <p className="text-lg">No notifications yet</p>
             </div>
           ) : (
@@ -260,30 +264,34 @@ export function NotificationDropdown() {
                 <button
                   key={notification.id}
                   onClick={() => handleNotificationClick(notification)}
-                  className={`w-full text-left px-5 py-4 hover:bg-neutral-800/50 transition-colors cursor-pointer ${
+                  className={`w-full cursor-pointer px-5 py-4 text-left transition-colors hover:bg-neutral-800/50 ${
                     !notification.isRead ? 'bg-white/2' : ''
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     {getNotificationIcon(notification.type)}
-                    
-                    <div className="flex-1 min-w-0">
+
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <p className={`text-base font-medium line-clamp-1 ${
-                          !notification.isRead ? 'text-white' : 'text-neutral-300'
-                        }`}>
+                        <p
+                          className={`line-clamp-1 text-base font-medium ${
+                            !notification.isRead
+                              ? 'text-white'
+                              : 'text-neutral-300'
+                          }`}
+                        >
                           {notification.title}
                         </p>
                         {!notification.isRead && (
-                          <span className="size-2 rounded-full bg-green-500 animate-pulse shrink-0 mt-2" />
+                          <span className="mt-2 size-2 shrink-0 animate-pulse rounded-full bg-green-500" />
                         )}
                       </div>
-                      
-                      <p className="text-base text-neutral-400 line-clamp-2 mt-1">
+
+                      <p className="mt-1 line-clamp-2 text-base text-neutral-400">
                         {notification.message}
                       </p>
-                      
-                      <p className="text-sm text-neutral-500 mt-1.5 capitalize">
+
+                      <p className="mt-1.5 text-sm text-neutral-500 capitalize">
                         {formatTime(notification.createdAt)}
                       </p>
                     </div>
@@ -294,10 +302,10 @@ export function NotificationDropdown() {
           )}
         </ScrollArea>
 
-        <div className="border-t border-neutral-800 p-3 shrink-0">
+        <div className="shrink-0 border-t border-neutral-800 p-3">
           <Button
             variant="ghost"
-            className="w-full h-11 text-base text-neutral-400 hover:text-white"
+            className="h-11 w-full text-base text-neutral-400 hover:text-white"
             onClick={() => {
               router.push('/notifications');
               setIsOpen(false);

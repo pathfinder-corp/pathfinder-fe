@@ -60,17 +60,21 @@ function RoadmapNode({ data, id }: NodeProps<any>) {
 
   return (
     <>
-      <Handle type="target" position={Position.Top} className="bg-neutral-600! border-neutral-500!" />
-      
+      <Handle
+        type="target"
+        position={Position.Top}
+        className="border-neutral-500! bg-neutral-600!"
+      />
+
       <TooltipProvider>
         <Tooltip delayDuration={300}>
           <TooltipTrigger asChild>
-              <div
+            <div
               className={cn(
-                'p-6 rounded-2xl border-2 transition-all duration-300 backdrop-blur-sm',
+                'rounded-2xl border-2 p-6 backdrop-blur-sm transition-all duration-300',
                 'w-[380px] max-w-[380px]',
                 config.bg,
-                'hover:scale-[1.03] cursor-pointer hover:shadow-2xl'
+                'cursor-pointer hover:scale-[1.03] hover:shadow-2xl'
               )}
               data-driver={`roadmap-node-${id || 'unknown'}`}
             >
@@ -78,16 +82,16 @@ function RoadmapNode({ data, id }: NodeProps<any>) {
                 <div className={cn('mt-1 shrink-0', config.textColor)}>
                   <BookOpenCheck className="size-7" />
                 </div>
-                
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-[1.75rem] leading-tight mb-3 line-clamp-2">
+
+                <div className="min-w-0 flex-1">
+                  <h3 className="mb-3 line-clamp-2 text-[1.75rem] leading-tight font-bold">
                     {label}
                   </h3>
-                  
-                  <p className="text-xl text-neutral-400 leading-7 mb-3 line-clamp-2">
+
+                  <p className="mb-3 line-clamp-2 text-xl leading-7 text-neutral-400">
                     {description}
                   </p>
-                  
+
                   <div className="flex items-center gap-2 text-neutral-500">
                     <Clock className="size-6 shrink-0" />
                     <span className="truncate text-xl">{duration}</span>
@@ -96,15 +100,17 @@ function RoadmapNode({ data, id }: NodeProps<any>) {
               </div>
             </div>
           </TooltipTrigger>
-          
-          <TooltipContent 
-            side="right" 
-            className="max-w-md p-6 bg-[#272727] border-neutral-700"
+
+          <TooltipContent
+            side="right"
+            className="max-w-md border-neutral-700 bg-[#272727] p-6"
           >
             <div className="space-y-3">
-              <h4 className="font-bold text-2xl text-white">{label}</h4>
-              <p className="text-xl text-neutral-300 leading-relaxed">{description}</p>
-              <div className="flex items-center gap-2 text-xl text-neutral-400 pt-3 border-t border-neutral-700">
+              <h4 className="text-2xl font-bold text-white">{label}</h4>
+              <p className="text-xl leading-relaxed text-neutral-300">
+                {description}
+              </p>
+              <div className="flex items-center gap-2 border-t border-neutral-700 pt-3 text-xl text-neutral-400">
                 <Clock className="size-6" />
                 <span>{duration}</span>
               </div>
@@ -113,7 +119,11 @@ function RoadmapNode({ data, id }: NodeProps<any>) {
         </Tooltip>
       </TooltipProvider>
 
-      <Handle type="source" position={Position.Bottom} className="bg-neutral-600! border-neutral-500!" />
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="border-neutral-500! bg-neutral-600!"
+      />
     </>
   );
 }

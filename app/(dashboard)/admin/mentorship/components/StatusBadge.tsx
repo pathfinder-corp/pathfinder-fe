@@ -2,13 +2,13 @@
 
 import { Badge } from '@/components/ui/badge';
 import type { MentorApplicationStatus, MentorshipStatus } from '@/types';
-import { 
-  getStatusBadgeColor, 
+import {
+  getStatusBadgeColor,
   formatStatus,
   getMentorActiveBadgeColor,
   formatMentorActiveStatus,
   getMentorshipStatusBadgeColor,
-  formatMentorshipStatus
+  formatMentorshipStatus,
 } from './utils';
 
 type StatusBadgeType = 'application' | 'mentor-active' | 'mentorship';
@@ -31,18 +31,17 @@ interface MentorshipStatusBadgeProps {
   size?: 'sm' | 'md';
 }
 
-type StatusBadgeProps = 
-  | ApplicationStatusBadgeProps 
-  | MentorActiveStatusBadgeProps 
+type StatusBadgeProps =
+  | ApplicationStatusBadgeProps
+  | MentorActiveStatusBadgeProps
   | MentorshipStatusBadgeProps;
 
 export function StatusBadge(props: StatusBadgeProps) {
   const { size = 'md' } = props;
   const type = props.type || 'application';
-  
-  const sizeClasses = size === 'sm' 
-    ? 'py-1 px-2.5 text-sm' 
-    : 'py-2 px-3 text-sm';
+
+  const sizeClasses =
+    size === 'sm' ? 'py-1 px-2.5 text-sm' : 'py-2 px-3 text-sm';
 
   let colorClass = '';
   let label = '';
@@ -57,16 +56,15 @@ export function StatusBadge(props: StatusBadgeProps) {
       label = formatMentorActiveStatus(props.status as boolean);
       break;
     case 'mentorship':
-      colorClass = getMentorshipStatusBadgeColor(props.status as MentorshipStatus);
+      colorClass = getMentorshipStatusBadgeColor(
+        props.status as MentorshipStatus
+      );
       label = formatMentorshipStatus(props.status as MentorshipStatus);
       break;
   }
 
   return (
-    <Badge 
-      variant="outline" 
-      className={`${sizeClasses} w-fit ${colorClass}`}
-    >
+    <Badge variant="outline" className={`${sizeClasses} w-fit ${colorClass}`}>
       {label}
     </Badge>
   );

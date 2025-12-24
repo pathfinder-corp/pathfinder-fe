@@ -5,7 +5,14 @@ import { FilePond, registerPlugin } from 'react-filepond';
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
-import { Loader2, FileText, Award, Briefcase, File, UserCheck } from 'lucide-react';
+import {
+  Loader2,
+  FileText,
+  Award,
+  Briefcase,
+  File,
+  UserCheck,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { mentorService } from '@/services';
 import type { MentorDocumentType } from '@/types';
@@ -66,17 +73,18 @@ interface DocumentUploadDialogProps {
   onDocumentUploaded?: () => void;
 }
 
-export function DocumentUploadDialog({ 
-  applicationId, 
-  open, 
+export function DocumentUploadDialog({
+  applicationId,
+  open,
   onOpenChange,
-  onDocumentUploaded 
+  onDocumentUploaded,
 }: DocumentUploadDialogProps) {
   const pondRef = useRef<FilePond | null>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [isUploading, setIsUploading] = useState<boolean>(false);
-  
-  const [documentType, setDocumentType] = useState<MentorDocumentType>('certificate');
+
+  const [documentType, setDocumentType] =
+    useState<MentorDocumentType>('certificate');
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [issuedYear, setIssuedYear] = useState<number | undefined>(undefined);
@@ -102,7 +110,7 @@ export function DocumentUploadDialog({
 
     try {
       setIsUploading(true);
-      
+
       await mentorService.uploadDocument(applicationId, {
         file: files[0],
         type: documentType,
@@ -117,9 +125,8 @@ export function DocumentUploadDialog({
       onOpenChange(false);
       onDocumentUploaded?.();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to upload document';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to upload document';
       toast.error('Failed to upload document', {
         description: errorMessage,
       });
@@ -129,19 +136,22 @@ export function DocumentUploadDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => {
-      if (!isOpen) resetForm();
-      onOpenChange(isOpen);
-    }}>
-      <DialogContent className="max-w-2xl max-h-[90vh] p-0">
+    <Dialog
+      open={open}
+      onOpenChange={(isOpen) => {
+        if (!isOpen) resetForm();
+        onOpenChange(isOpen);
+      }}
+    >
+      <DialogContent className="max-h-[90vh] max-w-2xl p-0">
         <DialogHeader className="p-6 pb-0">
-          <DialogTitle className="text-2xl flex items-center gap-3">
+          <DialogTitle className="flex items-center gap-3 text-2xl">
             <FileText className="size-7" />
             Upload Document
           </DialogTitle>
           <DialogDescription className="text-base">
-            Upload certificates, awards, or other documents to strengthen your application.
-            Supported formats: PDF, JPG, PNG (max 5MB)
+            Upload certificates, awards, or other documents to strengthen your
+            application. Supported formats: PDF, JPG, PNG (max 5MB)
           </DialogDescription>
         </DialogHeader>
 
@@ -152,18 +162,26 @@ export function DocumentUploadDialog({
                 ref={pondRef}
                 files={files}
                 onupdatefiles={(fileItems) => {
-                  setFiles(fileItems.map(item => item.file as File));
+                  setFiles(fileItems.map((item) => item.file as File));
                 }}
                 allowMultiple={false}
                 maxFiles={1}
                 maxFileSize="5MB"
                 acceptedFileTypes={[
-                  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+                  'image/jpeg',
+                  'image/png',
+                  'image/gif',
+                  'image/webp',
                   'application/pdf',
-                  'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                  'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                  'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet', 'application/vnd.oasis.opendocument.presentation'
+                  'application/msword',
+                  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                  'application/vnd.ms-excel',
+                  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                  'application/vnd.ms-powerpoint',
+                  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                  'application/vnd.oasis.opendocument.text',
+                  'application/vnd.oasis.opendocument.spreadsheet',
+                  'application/vnd.oasis.opendocument.presentation',
                 ]}
                 labelIdle='<span class="filepond--label-action">Browse</span> or drag & drop your file here'
                 labelFileTypeNotAllowed="Invalid file type"
@@ -180,16 +198,22 @@ export function DocumentUploadDialog({
               <Label className="text-lg">
                 Document Type <span className="text-red-500">*</span>
               </Label>
-              <Select 
-                value={documentType} 
-                onValueChange={(value) => setDocumentType(value as MentorDocumentType)}
+              <Select
+                value={documentType}
+                onValueChange={(value) =>
+                  setDocumentType(value as MentorDocumentType)
+                }
               >
                 <SelectTrigger className="h-14! text-lg!">
                   <SelectValue placeholder="Select document type" />
                 </SelectTrigger>
                 <SelectContent>
                   {DOCUMENT_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value} className="text-lg!">
+                    <SelectItem
+                      key={type.value}
+                      value={type.value}
+                      className="text-lg!"
+                    >
                       <div className="flex items-center gap-2">
                         {getDocumentIcon(type.iconName)}
                         {type.label}
@@ -223,16 +247,22 @@ export function DocumentUploadDialog({
             <div className="grid grid-cols-2 gap-5">
               <div className="space-y-3">
                 <Label className="text-lg">Year Issued</Label>
-                <Select 
-                  value={issuedYear?.toString() || ''} 
-                  onValueChange={(value) => setIssuedYear(value ? parseInt(value) : undefined)}
+                <Select
+                  value={issuedYear?.toString() || ''}
+                  onValueChange={(value) =>
+                    setIssuedYear(value ? parseInt(value) : undefined)
+                  }
                 >
                   <SelectTrigger className="h-14! text-lg!">
                     <SelectValue placeholder="Select year" />
                   </SelectTrigger>
                   <SelectContent className="max-h-60">
                     {YEAR_OPTIONS.map((year) => (
-                      <SelectItem key={year} value={year.toString()} className="text-lg!">
+                      <SelectItem
+                        key={year}
+                        value={year.toString()}
+                        className="text-lg!"
+                      >
                         {year}
                       </SelectItem>
                     ))}
@@ -253,7 +283,7 @@ export function DocumentUploadDialog({
           </div>
         </ScrollArea>
 
-        <DialogFooter className="p-6 pt-4 border-t border-neutral-800">
+        <DialogFooter className="border-t border-neutral-800 p-6 pt-4">
           <Button
             variant="outline"
             onClick={() => {

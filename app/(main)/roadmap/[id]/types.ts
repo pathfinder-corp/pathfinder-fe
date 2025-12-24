@@ -25,4 +25,3 @@ export type LoadingStates = {
   initial: boolean;
   aiChat: boolean;
 };
-

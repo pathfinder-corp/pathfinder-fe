@@ -1,4 +1,4 @@
-import { USER_ROLES, USER_STATUS } from "@/constants";
+import { USER_ROLES, USER_STATUS } from '@/constants';
 
 export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 export type UserStatus = (typeof USER_STATUS)[keyof typeof USER_STATUS];

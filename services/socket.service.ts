@@ -2,16 +2,34 @@ import { io, Socket } from 'socket.io-client';
 import type { IChatMessage } from '@/types';
 
 type MessageCallback = (message: IChatMessage) => void;
-type TypingCallback = (data: { conversationId: string; userId: string; isTyping: boolean }) => void;
-type ReadCallback = (data: { conversationId: string; messageIds: string[]; readBy: string }) => void;
-type MentorshipEndedCallback = (data: { mentorshipId: string; status: string; endReason?: string; endedBy?: string; endedAt?: Date }) => void;
-type MentorshipStartedCallback = (data: { mentorshipId: string; status: string; conversationId: string }) => void;
-type ConversationMentorshipCallback = (data: { 
-  conversationId: string; 
-  mentorshipId: string; 
-  status: string; 
-  endReason?: string; 
-  endedBy?: string; 
+type TypingCallback = (data: {
+  conversationId: string;
+  userId: string;
+  isTyping: boolean;
+}) => void;
+type ReadCallback = (data: {
+  conversationId: string;
+  messageIds: string[];
+  readBy: string;
+}) => void;
+type MentorshipEndedCallback = (data: {
+  mentorshipId: string;
+  status: string;
+  endReason?: string;
+  endedBy?: string;
+  endedAt?: Date;
+}) => void;
+type MentorshipStartedCallback = (data: {
+  mentorshipId: string;
+  status: string;
+  conversationId: string;
+}) => void;
+type ConversationMentorshipCallback = (data: {
+  conversationId: string;
+  mentorshipId: string;
+  status: string;
+  endReason?: string;
+  endedBy?: string;
   endedAt?: string;
 }) => void;
 type ConnectionCallback = () => void;
@@ -24,7 +42,10 @@ class SocketService {
   private readCallbacks: Map<string, ReadCallback[]> = new Map();
   private mentorshipEndedCallbacks: MentorshipEndedCallback[] = [];
   private mentorshipStartedCallbacks: MentorshipStartedCallback[] = [];
-  private conversationMentorshipCallbacks: Map<string, ConversationMentorshipCallback[]> = new Map();
+  private conversationMentorshipCallbacks: Map<
+    string,
+    ConversationMentorshipCallback[]
+  > = new Map();
   private connectionCallbacks: ConnectionCallback[] = [];
   private disconnectionCallbacks: ConnectionCallback[] = [];
   private userStatusCallbacks: UserStatusCallback[] = [];
@@ -34,7 +55,9 @@ class SocketService {
       return;
     }
 
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:8000';
+    const baseUrl =
+      process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ||
+      'http://localhost:8000';
 
     this.socket = io(`${baseUrl}/chat`, {
       auth: { token, userId },
@@ -45,11 +68,11 @@ class SocketService {
     });
 
     this.socket.on('connect', () => {
-      this.connectionCallbacks.forEach(cb => cb());
+      this.connectionCallbacks.forEach((cb) => cb());
     });
 
     this.socket.on('disconnect', () => {
-      this.disconnectionCallbacks.forEach(cb => cb());
+      this.disconnectionCallbacks.forEach((cb) => cb());
     });
 
     this.socket.on('connect_error', (error) => {
@@ -62,88 +85,131 @@ class SocketService {
 
     this.socket.on('message:new', (message: IChatMessage) => {
       const callbacks = this.messageCallbacks.get(message.conversationId) || [];
-      callbacks.forEach(cb => cb(message));
-      
+      callbacks.forEach((cb) => cb(message));
+
       const globalCallbacks = this.messageCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(message));
+      globalCallbacks.forEach((cb) => cb(message));
     });
 
     this.socket.on('message:edited', (message: IChatMessage) => {
       const callbacks = this.messageCallbacks.get(message.conversationId) || [];
-      callbacks.forEach(cb => cb(message));
-      
+      callbacks.forEach((cb) => cb(message));
+
       const globalCallbacks = this.messageCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(message));
+      globalCallbacks.forEach((cb) => cb(message));
     });
 
     this.socket.on('message:deleted', (message: IChatMessage) => {
       const callbacks = this.messageCallbacks.get(message.conversationId) || [];
-      callbacks.forEach(cb => cb(message));
-      
+      callbacks.forEach((cb) => cb(message));
+
       const globalCallbacks = this.messageCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(message));
+      globalCallbacks.forEach((cb) => cb(message));
     });
 
-    this.socket.on('messages:read', (data: { conversationId: string; messageIds: string[]; readBy: string }) => {
-      const callbacks = this.readCallbacks.get(data.conversationId) || [];
-      callbacks.forEach(cb => cb(data));
-      
-      const globalCallbacks = this.readCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(data));
-    });
+    this.socket.on(
+      'messages:read',
+      (data: {
+        conversationId: string;
+        messageIds: string[];
+        readBy: string;
+      }) => {
+        const callbacks = this.readCallbacks.get(data.conversationId) || [];
+        callbacks.forEach((cb) => cb(data));
 
-    this.socket.on('typing:start', (data: { conversationId: string; userId: string }) => {
-      const typingData = { ...data, isTyping: true };
-      const callbacks = this.typingCallbacks.get(data.conversationId) || [];
-      callbacks.forEach(cb => cb(typingData));
-      
-      const globalCallbacks = this.typingCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(typingData));
-    });
+        const globalCallbacks = this.readCallbacks.get('*') || [];
+        globalCallbacks.forEach((cb) => cb(data));
+      }
+    );
 
-    this.socket.on('typing:stop', (data: { conversationId: string; userId: string }) => {
-      const typingData = { ...data, isTyping: false };
-      const callbacks = this.typingCallbacks.get(data.conversationId) || [];
-      callbacks.forEach(cb => cb(typingData));
-      
-      const globalCallbacks = this.typingCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(typingData));
-    });
+    this.socket.on(
+      'typing:start',
+      (data: { conversationId: string; userId: string }) => {
+        const typingData = { ...data, isTyping: true };
+        const callbacks = this.typingCallbacks.get(data.conversationId) || [];
+        callbacks.forEach((cb) => cb(typingData));
 
-    this.socket.on('mentorship:ended', (data: { mentorshipId: string; status: string; endReason?: string; endedBy?: string; endedAt?: Date }) => {
-      this.mentorshipEndedCallbacks.forEach(cb => cb(data));
-    });
+        const globalCallbacks = this.typingCallbacks.get('*') || [];
+        globalCallbacks.forEach((cb) => cb(typingData));
+      }
+    );
 
-    this.socket.on('mentorship:started', (data: { mentorshipId: string; status: string; conversationId: string }) => {
-      this.mentorshipStartedCallbacks.forEach(cb => cb(data));
-    });
+    this.socket.on(
+      'typing:stop',
+      (data: { conversationId: string; userId: string }) => {
+        const typingData = { ...data, isTyping: false };
+        const callbacks = this.typingCallbacks.get(data.conversationId) || [];
+        callbacks.forEach((cb) => cb(typingData));
 
-    this.socket.on('conversation:mentorship', (data: { 
-      conversationId: string; 
-      mentorshipId: string; 
-      status: string; 
-      endReason?: string; 
-      endedBy?: string; 
-      endedAt?: string;
-    }) => {
-      const callbacks = this.conversationMentorshipCallbacks.get(data.conversationId) || [];
-      callbacks.forEach(cb => cb(data));
-      
-      const globalCallbacks = this.conversationMentorshipCallbacks.get('*') || [];
-      globalCallbacks.forEach(cb => cb(data));
-    });
+        const globalCallbacks = this.typingCallbacks.get('*') || [];
+        globalCallbacks.forEach((cb) => cb(typingData));
+      }
+    );
+
+    this.socket.on(
+      'mentorship:ended',
+      (data: {
+        mentorshipId: string;
+        status: string;
+        endReason?: string;
+        endedBy?: string;
+        endedAt?: Date;
+      }) => {
+        this.mentorshipEndedCallbacks.forEach((cb) => cb(data));
+      }
+    );
+
+    this.socket.on(
+      'mentorship:started',
+      (data: {
+        mentorshipId: string;
+        status: string;
+        conversationId: string;
+      }) => {
+        this.mentorshipStartedCallbacks.forEach((cb) => cb(data));
+      }
+    );
+
+    this.socket.on(
+      'conversation:mentorship',
+      (data: {
+        conversationId: string;
+        mentorshipId: string;
+        status: string;
+        endReason?: string;
+        endedBy?: string;
+        endedAt?: string;
+      }) => {
+        const callbacks =
+          this.conversationMentorshipCallbacks.get(data.conversationId) || [];
+        callbacks.forEach((cb) => cb(data));
+
+        const globalCallbacks =
+          this.conversationMentorshipCallbacks.get('*') || [];
+        globalCallbacks.forEach((cb) => cb(data));
+      }
+    );
 
     this.socket.on('user:online', (data: { userId: string }) => {
-      this.userStatusCallbacks.forEach(cb => cb({ userId: data.userId, isOnline: true }));
+      this.userStatusCallbacks.forEach((cb) =>
+        cb({ userId: data.userId, isOnline: true })
+      );
     });
 
     this.socket.on('user:offline', (data: { userId: string }) => {
-      this.userStatusCallbacks.forEach(cb => cb({ userId: data.userId, isOnline: false }));
+      this.userStatusCallbacks.forEach((cb) =>
+        cb({ userId: data.userId, isOnline: false })
+      );
     });
 
-    this.socket.on('user:status', (data: { userId: string; isOnline: boolean }) => {
-      this.userStatusCallbacks.forEach(cb => cb({ userId: data.userId, isOnline: data.isOnline }));
-    });
+    this.socket.on(
+      'user:status',
+      (data: { userId: string; isOnline: boolean }) => {
+        this.userStatusCallbacks.forEach((cb) =>
+          cb({ userId: data.userId, isOnline: data.isOnline })
+        );
+      }
+    );
   }
 
   disconnect(): void {
@@ -169,7 +235,11 @@ class SocketService {
     }
   }
 
-  sendMessage(conversationId: string, content: string, parentMessageId?: string): void {
+  sendMessage(
+    conversationId: string,
+    content: string,
+    parentMessageId?: string
+  ): void {
     if (this.socket?.connected) {
       this.socket.emit('message:send', {
         conversationId,
@@ -179,7 +249,11 @@ class SocketService {
     }
   }
 
-  editMessage(conversationId: string, messageId: string, content: string): void {
+  editMessage(
+    conversationId: string,
+    messageId: string,
+    content: string
+  ): void {
     if (this.socket?.connected) {
       this.socket.emit('message:edit', { conversationId, messageId, content });
     }
@@ -292,13 +366,18 @@ class SocketService {
     };
   }
 
-  onConversationMentorship(conversationId: string, callback: ConversationMentorshipCallback): () => void {
-    const callbacks = this.conversationMentorshipCallbacks.get(conversationId) || [];
+  onConversationMentorship(
+    conversationId: string,
+    callback: ConversationMentorshipCallback
+  ): () => void {
+    const callbacks =
+      this.conversationMentorshipCallbacks.get(conversationId) || [];
     callbacks.push(callback);
     this.conversationMentorshipCallbacks.set(conversationId, callbacks);
 
     return () => {
-      const cbs = this.conversationMentorshipCallbacks.get(conversationId) || [];
+      const cbs =
+        this.conversationMentorshipCallbacks.get(conversationId) || [];
       const index = cbs.indexOf(callback);
       if (index > -1) {
         cbs.splice(index, 1);

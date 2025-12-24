@@ -20,23 +20,23 @@ export default function Error({ error, reset }: ErrorProps) {
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-neutral-950 relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-neutral-950">
       <PublicHeader />
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 size-[500px] bg-linear-to-br from-white/5 via-neutral-500/5 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 size-[400px] bg-linear-to-tl from-neutral-400/5 via-neutral-500/5 to-transparent rounded-full blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 size-[500px] rounded-full bg-linear-to-br from-white/5 via-neutral-500/5 to-transparent blur-3xl" />
+        <div className="absolute right-1/4 bottom-1/4 size-[400px] rounded-full bg-linear-to-tl from-neutral-400/5 via-neutral-500/5 to-transparent blur-3xl" />
       </div>
 
-      <main className="relative z-10 min-h-screen flex items-center justify-center px-8 pt-32">
-        <div className="max-w-3xl mx-auto text-center">
+      <main className="relative z-10 flex min-h-screen items-center justify-center px-8 pt-32">
+        <div className="mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
             className="relative"
           >
-            <span className="text-[140px] md:text-[180px] font-bold text-neutral-900 leading-none select-none">
+            <span className="text-[140px] leading-none font-bold text-neutral-900 select-none md:text-[180px]">
               500
             </span>
           </motion.div>
@@ -45,10 +45,10 @@ export default function Error({ error, reset }: ErrorProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-4xl md:text-6xl font-bold mb-6"
+            className="mb-6 text-4xl font-bold md:text-6xl"
           >
             Something{' '}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-white to-neutral-400">
+            <span className="bg-linear-to-r from-white to-neutral-400 bg-clip-text text-transparent">
               Went Wrong
             </span>
           </motion.h1>
@@ -57,10 +57,10 @@ export default function Error({ error, reset }: ErrorProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-xl md:text-2xl text-neutral-400 mb-12 leading-relaxed max-w-2xl mx-auto"
+            className="mx-auto mb-12 max-w-2xl text-xl leading-relaxed text-neutral-400 md:text-2xl"
           >
-            We encountered an unexpected error. Don&apos;t worry, our team has been notified 
-            and is working on a fix.
+            We encountered an unexpected error. Don&apos;t worry, our team has
+            been notified and is working on a fix.
           </motion.p>
 
           {process.env.NODE_ENV === 'development' && error.message && (
@@ -68,13 +68,15 @@ export default function Error({ error, reset }: ErrorProps) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.45 }}
-              className="mb-10 p-6 rounded-2xl bg-neutral-900/50 border border-neutral-800 text-left"
+              className="mb-10 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-6 text-left"
             >
-              <div className="flex items-center gap-3 mb-4">
+              <div className="mb-4 flex items-center gap-3">
                 <Bug className="size-5 text-neutral-400" />
-                <span className="text-sm font-medium text-neutral-400 uppercase tracking-wider">Error Details</span>
+                <span className="text-sm font-medium tracking-wider text-neutral-400 uppercase">
+                  Error Details
+                </span>
               </div>
-              <code className="text-sm text-neutral-300 break-all font-mono">
+              <code className="font-mono text-sm break-all text-neutral-300">
                 {error.message}
               </code>
               {error.digest && (
@@ -89,25 +91,23 @@ export default function Error({ error, reset }: ErrorProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <Button
               size="lg"
               onClick={reset}
-              className="w-full sm:w-auto rounded-full bg-white text-neutral-950 hover:bg-neutral-200 text-xl px-10 py-8 cursor-pointer"
+              className="w-full cursor-pointer rounded-full bg-white px-10 py-8 text-xl text-neutral-950 hover:bg-neutral-200 sm:w-auto"
             >
               Try Again
             </Button>
-            
+
             <Button
               asChild
               size="lg"
               variant="ghost"
-              className="w-full sm:w-auto rounded-full border border-white/20 bg-white/5 backdrop-blur-xl hover:bg-white/10 hover:border-white/40 text-xl px-10 py-8"
+              className="w-full rounded-full border border-white/20 bg-white/5 px-10 py-8 text-xl backdrop-blur-xl hover:border-white/40 hover:bg-white/10 sm:w-auto"
             >
-              <Link href="/">
-                Go Home
-              </Link>
+              <Link href="/">Go Home</Link>
             </Button>
           </motion.div>
 
@@ -119,7 +119,7 @@ export default function Error({ error, reset }: ErrorProps) {
           >
             <button
               onClick={() => window.history.back()}
-              className="inline-flex items-center gap-2 text-lg text-neutral-500 hover:text-white transition-colors cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-2 text-lg text-neutral-500 transition-colors hover:text-white"
             >
               <ArrowLeft className="size-5" />
               Go back to previous page
@@ -130,12 +130,14 @@ export default function Error({ error, reset }: ErrorProps) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="mt-8 pt-10 border-t border-neutral-800"
+            className="mt-8 border-t border-neutral-800 pt-10"
           >
-            <p className="text-neutral-500 mb-6">Need help? Contact our support team:</p>
+            <p className="mb-6 text-neutral-500">
+              Need help? Contact our support team:
+            </p>
             <Link
               href="/contact"
-              className="px-5 py-2.5 rounded-full bg-neutral-900/50 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all text-base"
+              className="rounded-full border border-neutral-800 bg-neutral-900/50 px-5 py-2.5 text-base text-neutral-400 transition-all hover:border-neutral-700 hover:text-white"
             >
               support@pathfinder.ai
             </Link>

@@ -25,7 +25,11 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { assessmentService } from '@/services';
-import type { IAssessment, IAssessmentResult, IAssessmentHistory } from '@/types';
+import type {
+  IAssessment,
+  IAssessmentResult,
+  IAssessmentHistory,
+} from '@/types';
 import { useTour, type TourStep } from '@/hooks';
 import { useUserStore } from '@/stores';
 
@@ -67,7 +71,9 @@ export default function AssessmentDetailPage() {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
   const [answers, setAnswers] = useState<AnswerState>({});
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
+  const [questionStartTime, setQuestionStartTime] = useState<number>(
+    Date.now()
+  );
   const [loadingStates, setLoadingStates] = useState<LoadingStates>({
     initial: true,
     starting: false,
@@ -77,9 +83,12 @@ export default function AssessmentDetailPage() {
     loadingHistory: false,
   });
 
-  const updateLoadingState = useCallback((key: keyof LoadingStates, value: boolean) => {
-    setLoadingStates(prev => ({ ...prev, [key]: value }));
-  }, []);
+  const updateLoadingState = useCallback(
+    (key: keyof LoadingStates, value: boolean) => {
+      setLoadingStates((prev) => ({ ...prev, [key]: value }));
+    },
+    []
+  );
 
   useEffect(() => {
     const fetchAssessment = async () => {
@@ -93,7 +102,8 @@ export default function AssessmentDetailPage() {
           setResult(resultData);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : 'Failed to load assessment';
+        const errorMessage =
+          error instanceof Error ? error.message : 'Failed to load assessment';
         toast.error(errorMessage);
         router.push('/history');
       } finally {
@@ -114,7 +124,8 @@ export default function AssessmentDetailPage() {
       setQuestionStartTime(Date.now());
       toast.success('Assessment started! Good luck!');
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to start assessment';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to start assessment';
       toast.error(errorMessage);
     } finally {
       updateLoadingState('starting', false);
@@ -140,7 +151,7 @@ export default function AssessmentDetailPage() {
         timeSpent,
       });
 
-      setAnswers(prev => ({
+      setAnswers((prev) => ({
         ...prev,
         [currentQuestion.id]: {
           selectedIndex: selectedOption,
@@ -151,16 +162,17 @@ export default function AssessmentDetailPage() {
         },
       }));
 
-      setAssessment(prev =>
+      setAssessment((prev) =>
         prev
           ? {
               ...prev,
               answeredCount: prev.answeredCount + 1,
             }
-          : null,
+          : null
       );
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to submit answer';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to submit answer';
       toast.error(errorMessage);
     } finally {
       updateLoadingState('submitting', false);
@@ -169,7 +181,7 @@ export default function AssessmentDetailPage() {
 
   const handleNextQuestion = () => {
     if (currentQuestionIndex < (assessment?.questions.length || 0) - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+      setCurrentQuestionIndex((prev) => prev + 1);
       setSelectedOption(null);
       setQuestionStartTime(Date.now());
     }
@@ -177,7 +189,7 @@ export default function AssessmentDetailPage() {
 
   const handlePrevQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
+      setCurrentQuestionIndex((prev) => prev - 1);
       const prevQuestion = assessment?.questions[currentQuestionIndex - 1];
       if (prevQuestion && answers[prevQuestion.id]) {
         setSelectedOption(answers[prevQuestion.id].selectedIndex);
@@ -194,15 +206,18 @@ export default function AssessmentDetailPage() {
   const handleCompleteAssessment = async () => {
     try {
       updateLoadingState('completing', true);
-      const resultData = await assessmentService.completeAssessment(assessmentId);
+      const resultData =
+        await assessmentService.completeAssessment(assessmentId);
       setResult(resultData);
-      setAssessment(prev => (prev ? { ...prev, status: 'completed' } : null));
+      setAssessment((prev) => (prev ? { ...prev, status: 'completed' } : null));
       toast.success('Assessment completed!');
 
       sessionStorage.setItem('start-assessment-tour', 'true');
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'Failed to complete assessment. Make sure all questions are answered.';
+        error instanceof Error
+          ? error.message
+          : 'Failed to complete assessment. Make sure all questions are answered.';
       toast.error(errorMessage);
     } finally {
       updateLoadingState('completing', false);
@@ -212,11 +227,13 @@ export default function AssessmentDetailPage() {
   const handleRetake = async () => {
     try {
       updateLoadingState('retaking', true);
-      const newAssessment = await assessmentService.retakeAssessment(assessmentId);
+      const newAssessment =
+        await assessmentService.retakeAssessment(assessmentId);
       toast.success(`Starting attempt ${newAssessment.attemptNumber}!`);
       router.push(`/assessment/${newAssessment.id}`);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create retake';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create retake';
       toast.error(errorMessage);
     } finally {
       updateLoadingState('retaking', false);
@@ -226,10 +243,12 @@ export default function AssessmentDetailPage() {
   const loadHistory = async () => {
     try {
       updateLoadingState('loadingHistory', true);
-      const historyData = await assessmentService.getAssessmentHistory(assessmentId);
+      const historyData =
+        await assessmentService.getAssessmentHistory(assessmentId);
       setHistory(historyData);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load history';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load history';
       toast.error(errorMessage);
     } finally {
       updateLoadingState('loadingHistory', false);
@@ -245,8 +264,12 @@ export default function AssessmentDetailPage() {
 
   const currentQuestion = assessment?.questions[currentQuestionIndex];
   const currentAnswer = currentQuestion ? answers[currentQuestion.id] : null;
-  const isAllAnswered = assessment ? assessment.answeredCount >= assessment.questionCount : false;
-  const progressPercent = assessment ? (assessment.answeredCount / assessment.questionCount) * 100 : 0;
+  const isAllAnswered = assessment
+    ? assessment.answeredCount >= assessment.questionCount
+    : false;
+  const progressPercent = assessment
+    ? (assessment.answeredCount / assessment.questionCount) * 100
+    : 0;
 
   const getDifficultyColor = (difficulty: string) => {
     switch (difficulty) {
@@ -262,7 +285,8 @@ export default function AssessmentDetailPage() {
   };
 
   const getOptionStyle = (index: number) => {
-    const baseStyle = 'w-full p-7 rounded-xl border text-left transition-all duration-200 flex items-start gap-6';
+    const baseStyle =
+      'w-full p-7 rounded-xl border text-left transition-all duration-200 flex items-start gap-6';
 
     if (!currentAnswer?.isSubmitted) {
       if (selectedOption === index) {
@@ -279,7 +303,10 @@ export default function AssessmentDetailPage() {
       return `${baseStyle} border-red-500 bg-red-500/10`;
     }
 
-    if (!currentAnswer.isCorrect && currentAnswer.correctAnswerIndex === index) {
+    if (
+      !currentAnswer.isCorrect &&
+      currentAnswer.correctAnswerIndex === index
+    ) {
       return `${baseStyle} border-green-500 bg-green-500/10`;
     }
 
@@ -289,13 +316,18 @@ export default function AssessmentDetailPage() {
   useEffect(() => {
     if (assessment?.status !== 'completed' || !result) return;
 
-    const shouldStartTour = sessionStorage.getItem('start-assessment-tour') === 'true';
+    const shouldStartTour =
+      sessionStorage.getItem('start-assessment-tour') === 'true';
     if (!shouldStartTour) return;
 
     sessionStorage.removeItem('start-assessment-tour');
 
-    const waitForElement = (selector: string, maxAttempts = 20, interval = 200): Promise<Element | null> => {
-      return new Promise(resolve => {
+    const waitForElement = (
+      selector: string,
+      maxAttempts = 20,
+      interval = 200
+    ): Promise<Element | null> => {
+      return new Promise((resolve) => {
         let attempts = 0;
         const checkElement = () => {
           const element = document.querySelector(selector);
@@ -314,12 +346,24 @@ export default function AssessmentDetailPage() {
 
     const startTourWhenReady = async () => {
       try {
-        const scoreCard = await waitForElement('[data-driver="assessment-score-card"]');
-        const resultsBreakdown = await waitForElement('[data-driver="assessment-results-breakdown"]');
-        const summarySection = await waitForElement('[data-driver="assessment-summary"]');
-        const suggestedRoadmaps = await waitForElement('[data-driver="assessment-suggested-roadmaps"]');
-        const questionBreakdown = await waitForElement('[data-driver="assessment-question-breakdown"]');
-        const attemptHistory = await waitForElement('[data-driver="assessment-attempt-history"]');
+        const scoreCard = await waitForElement(
+          '[data-driver="assessment-score-card"]'
+        );
+        const resultsBreakdown = await waitForElement(
+          '[data-driver="assessment-results-breakdown"]'
+        );
+        const summarySection = await waitForElement(
+          '[data-driver="assessment-summary"]'
+        );
+        const suggestedRoadmaps = await waitForElement(
+          '[data-driver="assessment-suggested-roadmaps"]'
+        );
+        const questionBreakdown = await waitForElement(
+          '[data-driver="assessment-question-breakdown"]'
+        );
+        const attemptHistory = await waitForElement(
+          '[data-driver="assessment-attempt-history"]'
+        );
 
         if (!scoreCard) {
           console.warn('Assessment score card not found, skipping tour');
@@ -417,9 +461,9 @@ export default function AssessmentDetailPage() {
 
   if (loadingStates.initial) {
     return (
-      <div className="max-w-4xl mx-auto py-8">
-        <Skeleton className="h-10 w-72 mb-4 bg-neutral-800" />
-        <Skeleton className="h-6 w-96 mb-8 bg-neutral-800" />
+      <div className="mx-auto max-w-4xl py-8">
+        <Skeleton className="mb-4 h-10 w-72 bg-neutral-800" />
+        <Skeleton className="mb-8 h-6 w-96 bg-neutral-800" />
         <Skeleton className="h-[500px] w-full rounded-xl bg-neutral-800" />
       </div>
     );
@@ -427,11 +471,16 @@ export default function AssessmentDetailPage() {
 
   if (!assessment) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <AlertCircle className="size-20 text-neutral-500 mb-6" />
-        <h2 className="text-3xl font-bold mb-3">Assessment not found</h2>
-        <p className="text-lg text-neutral-400 mb-8">The assessment you&apos;re looking for doesn&apos;t exist.</p>
-        <Button onClick={() => router.push('/history')} className="h-14! text-lg!">
+      <div className="flex min-h-[60vh] flex-col items-center justify-center">
+        <AlertCircle className="mb-6 size-20 text-neutral-500" />
+        <h2 className="mb-3 text-3xl font-bold">Assessment not found</h2>
+        <p className="mb-8 text-lg text-neutral-400">
+          The assessment you&apos;re looking for doesn&apos;t exist.
+        </p>
+        <Button
+          onClick={() => router.push('/history')}
+          className="h-14! text-lg!"
+        >
           <Home className="size-5" />
           Back to History
         </Button>
@@ -440,7 +489,9 @@ export default function AssessmentDetailPage() {
   }
 
   if (assessment.status === 'completed' && result) {
-    const scorePercent = Math.round((result.correctCount / result.totalQuestions) * 100);
+    const scorePercent = Math.round(
+      (result.correctCount / result.totalQuestions) * 100
+    );
     const incorrectCount = result.totalQuestions - result.correctCount;
 
     const getScoreColor = () => {
@@ -456,48 +507,70 @@ export default function AssessmentDetailPage() {
     };
 
     const getPerformanceLabel = () => {
-      if (scorePercent >= 90) return { text: 'Excellent!', color: 'text-green-400' };
-      if (scorePercent >= 80) return { text: 'Great Job!', color: 'text-green-400' };
-      if (scorePercent >= 60) return { text: 'Good Effort', color: 'text-yellow-400' };
-      if (scorePercent >= 40) return { text: 'Needs Work', color: 'text-orange-400' };
+      if (scorePercent >= 90)
+        return { text: 'Excellent!', color: 'text-green-400' };
+      if (scorePercent >= 80)
+        return { text: 'Great Job!', color: 'text-green-400' };
+      if (scorePercent >= 60)
+        return { text: 'Good Effort', color: 'text-yellow-400' };
+      if (scorePercent >= 40)
+        return { text: 'Needs Work', color: 'text-orange-400' };
       return { text: 'Keep Learning', color: 'text-red-400' };
     };
 
     const performance = getPerformanceLabel();
 
     return (
-      <div className="max-w-5xl mx-auto py-10 px-4">
+      <div className="mx-auto max-w-5xl px-4 py-10">
         <div
-          className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-10 mb-8"
+          className="mb-8 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-10"
           data-driver="assessment-score-card"
         >
-          <div className="flex flex-col md:flex-row items-center gap-10">
+          <div className="flex flex-col items-center gap-10 md:flex-row">
             <div className="shrink-0">
-              <CircularProgress value={scorePercent} size={140} strokeWidth={12} progressColor={getProgressColor()}>
+              <CircularProgress
+                value={scorePercent}
+                size={140}
+                strokeWidth={12}
+                progressColor={getProgressColor()}
+              >
                 <div className="text-center">
-                  <p className={`text-4xl font-bold ${getScoreColor()}`}>{scorePercent}%</p>
+                  <p className={`text-4xl font-bold ${getScoreColor()}`}>
+                    {scorePercent}%
+                  </p>
                 </div>
               </CircularProgress>
             </div>
 
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-5xl font-bold mb-3">Assessment Complete!</h1>
-              <p className={`text-3xl font-semibold mb-4 ${performance.color}`}>{performance.text}</p>
-              <p className="text-2xl text-neutral-400 mb-5">{assessment.domain}</p>
+              <h1 className="mb-3 text-5xl font-bold">Assessment Complete!</h1>
+              <p className={`mb-4 text-3xl font-semibold ${performance.color}`}>
+                {performance.text}
+              </p>
+              <p className="mb-5 text-2xl text-neutral-400">
+                {assessment.domain}
+              </p>
 
               <p className="text-lg text-neutral-300">
-                You scored <span className="font-semibold text-white">{result.correctCount}</span> out of{' '}
-                <span className="font-semibold text-white">{result.totalQuestions}</span> questions correctly
+                You scored{' '}
+                <span className="font-semibold text-white">
+                  {result.correctCount}
+                </span>{' '}
+                out of{' '}
+                <span className="font-semibold text-white">
+                  {result.totalQuestions}
+                </span>{' '}
+                questions correctly
               </p>
             </div>
           </div>
         </div>
 
         <div
-          className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8"
+          className="mb-8 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-7"
           data-driver="assessment-results-breakdown"
         >
-          <h2 className="text-2xl font-bold mb-6">Results Breakdown</h2>
+          <h2 className="mb-6 text-2xl font-bold">Results Breakdown</h2>
           <div className="space-y-5">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -506,12 +579,18 @@ export default function AssessmentDetailPage() {
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-lg font-semibold">
-                  {result.correctCount} ({Math.round((result.correctCount / result.totalQuestions) * 100)}%)
+                  {result.correctCount} (
+                  {Math.round(
+                    (result.correctCount / result.totalQuestions) * 100
+                  )}
+                  %)
                 </span>
-                <div className="w-56 h-2.5 bg-neutral-800 rounded-full overflow-hidden">
+                <div className="h-2.5 w-56 overflow-hidden rounded-full bg-neutral-800">
                   <div
-                    className="h-full bg-green-500 rounded-full"
-                    style={{ width: `${(result.correctCount / result.totalQuestions) * 100}%` }}
+                    className="h-full rounded-full bg-green-500"
+                    style={{
+                      width: `${(result.correctCount / result.totalQuestions) * 100}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -523,12 +602,15 @@ export default function AssessmentDetailPage() {
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-lg font-semibold">
-                  {incorrectCount} ({Math.round((incorrectCount / result.totalQuestions) * 100)}%)
+                  {incorrectCount} (
+                  {Math.round((incorrectCount / result.totalQuestions) * 100)}%)
                 </span>
-                <div className="w-56 h-2.5 bg-neutral-800 rounded-full overflow-hidden">
+                <div className="h-2.5 w-56 overflow-hidden rounded-full bg-neutral-800">
                   <div
-                    className="h-full bg-red-500 rounded-full"
-                    style={{ width: `${(incorrectCount / result.totalQuestions) * 100}%` }}
+                    className="h-full rounded-full bg-red-500"
+                    style={{
+                      width: `${(incorrectCount / result.totalQuestions) * 100}%`,
+                    }}
                   />
                 </div>
               </div>
@@ -538,115 +620,149 @@ export default function AssessmentDetailPage() {
 
         {result.summary && (
           <div
-            className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8"
+            className="mb-8 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-7"
             data-driver="assessment-summary"
           >
-            <h2 className="text-2xl font-bold mb-6">Summary of your Assessment</h2>
+            <h2 className="mb-6 text-2xl font-bold">
+              Summary of your Assessment
+            </h2>
             <div className="space-y-7">
               {result.summary.overallAssessment && (
-                <p className="text-lg text-neutral-300 leading-relaxed">{result.summary.overallAssessment}</p>
+                <p className="text-lg leading-relaxed text-neutral-300">
+                  {result.summary.overallAssessment}
+                </p>
               )}
 
-              {result.summary.strengths && result.summary.strengths.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <TrendingUp className="size-6 text-white" />
-                    <h3 className="text-xl font-semibold text-white">Strengths</h3>
+              {result.summary.strengths &&
+                result.summary.strengths.length > 0 && (
+                  <div>
+                    <div className="mb-4 flex items-center gap-2.5">
+                      <TrendingUp className="size-6 text-white" />
+                      <h3 className="text-xl font-semibold text-white">
+                        Strengths
+                      </h3>
+                    </div>
+                    <ul className="space-y-2.5">
+                      {result.summary.strengths.map((strength, idx) => (
+                        <li
+                          key={idx}
+                          className="flex items-start gap-3 text-lg text-neutral-300"
+                        >
+                          <CheckCircle2 className="mt-1 size-5 shrink-0 text-neutral-400" />
+                          <span>{strength}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="space-y-2.5">
-                    {result.summary.strengths.map((strength, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
-                        <CheckCircle2 className="size-5 text-neutral-400 mt-1 shrink-0" />
-                        <span>{strength}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                )}
 
-              {result.summary.weaknesses && result.summary.weaknesses.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <TrendingDown className="size-6 text-white" />
-                    <h3 className="text-xl font-semibold text-white">Weaknesses</h3>
+              {result.summary.weaknesses &&
+                result.summary.weaknesses.length > 0 && (
+                  <div>
+                    <div className="mb-4 flex items-center gap-2.5">
+                      <TrendingDown className="size-6 text-white" />
+                      <h3 className="text-xl font-semibold text-white">
+                        Weaknesses
+                      </h3>
+                    </div>
+                    <ul className="space-y-2.5">
+                      {result.summary.weaknesses.map((weakness, idx) => (
+                        <li
+                          key={idx}
+                          className="flex items-start gap-3 text-lg text-neutral-300"
+                        >
+                          <XCircle className="mt-1 size-5 shrink-0 text-neutral-400" />
+                          <span>{weakness}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="space-y-2.5">
-                    {result.summary.weaknesses.map((weakness, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
-                        <XCircle className="size-5 text-neutral-400 mt-1 shrink-0" />
-                        <span>{weakness}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                )}
 
-              {result.summary.topicsToReview && result.summary.topicsToReview.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <Target className="size-6 text-white" />
-                    <h3 className="text-xl font-semibold text-white">Topics to Review</h3>
+              {result.summary.topicsToReview &&
+                result.summary.topicsToReview.length > 0 && (
+                  <div>
+                    <div className="mb-4 flex items-center gap-2.5">
+                      <Target className="size-6 text-white" />
+                      <h3 className="text-xl font-semibold text-white">
+                        Topics to Review
+                      </h3>
+                    </div>
+                    <ul className="space-y-2.5">
+                      {result.summary.topicsToReview.map((topic, idx) => (
+                        <li
+                          key={idx}
+                          className="flex items-start gap-3 text-lg text-neutral-300"
+                        >
+                          <BookOpen className="mt-1 size-5 shrink-0 text-neutral-400" />
+                          <span>{topic}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                  <ul className="space-y-2.5">
-                    {result.summary.topicsToReview.map((topic, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
-                        <BookOpen className="size-5 text-neutral-400 mt-1 shrink-0" />
-                        <span>{topic}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                )}
 
-              {result.summary.studyRecommendations && result.summary.studyRecommendations.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2.5 mb-4">
-                    <Sparkles className="size-6 text-white" />
-                    <h3 className="text-xl font-semibold text-white">Study Recommendations</h3>
+              {result.summary.studyRecommendations &&
+                result.summary.studyRecommendations.length > 0 && (
+                  <div>
+                    <div className="mb-4 flex items-center gap-2.5">
+                      <Sparkles className="size-6 text-white" />
+                      <h3 className="text-xl font-semibold text-white">
+                        Study Recommendations
+                      </h3>
+                    </div>
+                    <ul className="space-y-2.5">
+                      {result.summary.studyRecommendations.map(
+                        (recommendation, idx) => (
+                          <li
+                            key={idx}
+                            className="flex items-start gap-3 text-lg text-neutral-300"
+                          >
+                            <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-full bg-neutral-700 text-sm font-bold text-white">
+                              {idx + 1}
+                            </span>
+                            <span>{recommendation}</span>
+                          </li>
+                        )
+                      )}
+                    </ul>
                   </div>
-                  <ul className="space-y-2.5">
-                    {result.summary.studyRecommendations.map((recommendation, idx) => (
-                      <li key={idx} className="flex items-start gap-3 text-lg text-neutral-300">
-                        <span className="shrink-0 size-7 rounded-full bg-neutral-700 text-white flex items-center justify-center text-sm font-bold mt-0.5">
-                          {idx + 1}
-                        </span>
-                        <span>{recommendation}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+                )}
             </div>
           </div>
         )}
 
         {result.suggestedRoadmaps && result.suggestedRoadmaps.length > 0 && (
           <div
-            className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8"
+            className="mb-8 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-7"
             data-driver="assessment-suggested-roadmaps"
           >
             <div className="mb-6">
               <h2 className="text-2xl font-bold">Suggested Roadmaps</h2>
-              <p className="text-base text-neutral-400">Explore these roadmaps to improve your understanding</p>
+              <p className="text-base text-neutral-400">
+                Explore these roadmaps to improve your understanding
+              </p>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {result.suggestedRoadmaps.map((roadmap, idx) => (
                 <button
                   key={idx}
                   onClick={() => {
-                    router.push(`/roadmap?topic=${encodeURIComponent(roadmap.topic)}&from=assessment`);
+                    router.push(
+                      `/roadmap?topic=${encodeURIComponent(roadmap.topic)}&from=assessment`
+                    );
                   }}
-                  className="cursor-pointer flex items-start gap-4 p-6 bg-neutral-800/50 border border-neutral-700 rounded-xl hover:border-neutral-500 hover:bg-neutral-800 transition-all text-left group"
+                  className="group flex cursor-pointer items-start gap-4 rounded-xl border border-neutral-700 bg-neutral-800/50 p-6 text-left transition-all hover:border-neutral-500 hover:bg-neutral-800"
                 >
-                  <div className="shrink-0 size-11 rounded-lg bg-neutral-700 flex items-center justify-center">
+                  <div className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-neutral-700">
                     <Map className="size-6 text-white" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-lg font-semibold text-white group-hover:text-neutral-300 transition-colors">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-lg font-semibold text-white transition-colors group-hover:text-neutral-300">
                       {roadmap.topic}
                     </h4>
                   </div>
-                  <ExternalLink className="size-5 text-neutral-500 group-hover:text-white transition-colors shrink-0 mt-1" />
+                  <ExternalLink className="mt-1 size-5 shrink-0 text-neutral-500 transition-colors group-hover:text-white" />
                 </button>
               ))}
             </div>
@@ -654,40 +770,42 @@ export default function AssessmentDetailPage() {
         )}
 
         <div
-          className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8"
+          className="mb-8 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-7"
           data-driver="assessment-question-breakdown"
         >
-          <h2 className="text-2xl font-bold mb-7">Question Breakdown</h2>
-          <div className="max-h-[500px] overflow-y-auto pr-2 space-y-6 custom-scrollbar">
+          <h2 className="mb-7 text-2xl font-bold">Question Breakdown</h2>
+          <div className="custom-scrollbar max-h-[500px] space-y-6 overflow-y-auto pr-2">
             {result.questionBreakdown.map((q, index) => (
               <div
                 key={q.questionId}
-                className={`p-7 rounded-xl border ${
-                  q.isCorrect ? 'border-green-500/30 bg-green-500/5' : 'border-red-500/30 bg-red-500/5'
+                className={`rounded-xl border p-7 ${
+                  q.isCorrect
+                    ? 'border-green-500/30 bg-green-500/5'
+                    : 'border-red-500/30 bg-red-500/5'
                 }`}
               >
-                <div className="flex items-start justify-between gap-4 mb-5">
+                <div className="mb-5 flex items-start justify-between gap-4">
                   <p className="text-xl font-medium">
-                    <span className="text-neutral-500 mr-2">Q{index + 1}.</span>
+                    <span className="mr-2 text-neutral-500">Q{index + 1}.</span>
                     {q.questionText}
                   </p>
                   {q.isCorrect ? (
-                    <CheckCircle2 className="size-7 text-green-400 shrink-0" />
+                    <CheckCircle2 className="size-7 shrink-0 text-green-400" />
                   ) : (
-                    <XCircle className="size-7 text-red-400 shrink-0" />
+                    <XCircle className="size-7 shrink-0 text-red-400" />
                   )}
                 </div>
 
-                <div className="space-y-2.5 mb-5">
+                <div className="mb-5 space-y-2.5">
                   {q.options.map((opt, optIndex) => (
                     <div
                       key={optIndex}
-                      className={`text-lg px-5 py-3 rounded-lg ${
+                      className={`rounded-lg px-5 py-3 text-lg ${
                         optIndex === q.correctAnswerIndex
                           ? 'bg-green-500/20 text-green-300'
                           : optIndex === q.selectedAnswerIndex && !q.isCorrect
-                          ? 'bg-red-500/20 text-red-300 line-through'
-                          : 'text-neutral-500'
+                            ? 'bg-red-500/20 text-red-300 line-through'
+                            : 'text-neutral-500'
                       }`}
                     >
                       {opt}
@@ -696,9 +814,11 @@ export default function AssessmentDetailPage() {
                 </div>
 
                 {q.explanation && (
-                  <div className="mt-5 pt-5 border-t border-neutral-800">
+                  <div className="mt-5 border-t border-neutral-800 pt-5">
                     <p className="text-lg text-neutral-400">
-                      <span className="text-neutral-300 font-medium">Explanation: </span>
+                      <span className="font-medium text-neutral-300">
+                        Explanation:{' '}
+                      </span>
                       {q.explanation}
                     </p>
                   </div>
@@ -710,37 +830,36 @@ export default function AssessmentDetailPage() {
 
         {history && history.totalAttempts > 1 && (
           <div
-            className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8"
+            className="mb-8 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-7"
             data-driver="assessment-attempt-history"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold">
-                Attempt History
-              </h2>
-              <Badge variant="outline" className="text-lg px-4 py-2">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-bold">Attempt History</h2>
+              <Badge variant="outline" className="px-4 py-2 text-lg">
                 {history.totalAttempts} Attempts
               </Badge>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-neutral-800/50 border border-neutral-700 rounded-xl p-5">
-                <p className="text-sm text-neutral-400 mb-2">Best Score</p>
+            <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div className="rounded-xl border border-neutral-700 bg-neutral-800/50 p-5">
+                <p className="mb-2 text-sm text-neutral-400">Best Score</p>
                 <p className="text-3xl font-bold text-green-400">
                   {history.bestScore !== null && history.bestScore !== undefined
                     ? `${history.bestScore.toFixed(1)}%`
                     : 'N/A'}
                 </p>
               </div>
-              <div className="bg-neutral-800/50 border border-neutral-700 rounded-xl p-5">
-                <p className="text-sm text-neutral-400 mb-2">Latest Score</p>
+              <div className="rounded-xl border border-neutral-700 bg-neutral-800/50 p-5">
+                <p className="mb-2 text-sm text-neutral-400">Latest Score</p>
                 <p className="text-3xl font-bold text-orange-400">
-                  {history.latestScore !== null && history.latestScore !== undefined
+                  {history.latestScore !== null &&
+                  history.latestScore !== undefined
                     ? `${history.latestScore.toFixed(1)}%`
                     : 'N/A'}
                 </p>
               </div>
-              <div className="bg-neutral-800/50 border border-neutral-700 rounded-xl p-5">
-                <p className="text-sm text-neutral-400 mb-2">Current Attempt</p>
+              <div className="rounded-xl border border-neutral-700 bg-neutral-800/50 p-5">
+                <p className="mb-2 text-sm text-neutral-400">Current Attempt</p>
                 <p className="text-3xl font-bold">{assessment.attemptNumber}</p>
               </div>
             </div>
@@ -756,16 +875,18 @@ export default function AssessmentDetailPage() {
                         router.push(`/assessment/${attempt.id}`);
                       }
                     }}
-                    className={`flex items-center justify-between p-5 rounded-xl border transition-all ${
+                    className={`flex items-center justify-between rounded-xl border p-5 transition-all ${
                       isCurrentAttempt
                         ? 'border-neutral-500 bg-neutral-800'
-                        : 'border-neutral-700 bg-neutral-800/50 cursor-pointer hover:border-neutral-500 hover:bg-neutral-800'
+                        : 'cursor-pointer border-neutral-700 bg-neutral-800/50 hover:border-neutral-500 hover:bg-neutral-800'
                     }`}
                   >
                     <div className="flex items-center gap-4">
                       <div
-                        className={`flex items-center justify-center size-12 rounded-full font-bold text-xl ${
-                          isCurrentAttempt ? 'bg-neutral-700 text-white' : 'bg-neutral-800 text-neutral-400'
+                        className={`flex size-12 items-center justify-center rounded-full text-xl font-bold ${
+                          isCurrentAttempt
+                            ? 'bg-neutral-700 text-white'
+                            : 'bg-neutral-800 text-neutral-400'
                         }`}
                       >
                         {attempt.attemptNumber}
@@ -780,16 +901,23 @@ export default function AssessmentDetailPage() {
                         </p>
                       </div>
                     </div>
-                    {attempt.status === 'completed' && attempt.score !== null && attempt.score !== undefined ? (
+                    {attempt.status === 'completed' &&
+                    attempt.score !== null &&
+                    attempt.score !== undefined ? (
                       <div className="text-right">
-                        <p className="text-2xl font-bold">{Number(attempt.score).toFixed(1)}%</p>
+                        <p className="text-2xl font-bold">
+                          {Number(attempt.score).toFixed(1)}%
+                        </p>
                         <p className="text-sm text-neutral-400">
-                          {attempt.correctCount}/{attempt.totalQuestions} correct
+                          {attempt.correctCount}/{attempt.totalQuestions}{' '}
+                          correct
                         </p>
                       </div>
                     ) : (
                       <Badge variant="outline" className="text-neutral-400">
-                        {attempt.status === 'in_progress' ? 'In Progress' : 'Not Started'}
+                        {attempt.status === 'in_progress'
+                          ? 'In Progress'
+                          : 'Not Started'}
                       </Badge>
                     )}
                   </div>
@@ -819,17 +947,26 @@ export default function AssessmentDetailPage() {
               </>
             )}
           </Button>
-          <Button variant="outline" size="lg" onClick={() => router.push('/assessment')} className="h-16! text-xl!">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={() => router.push('/assessment')}
+            className="h-16! text-xl!"
+          >
             New Assessment
             <Sparkles className="size-6" />
           </Button>
-          <Button size="lg" onClick={() => router.push('/history')} className="h-16! text-xl!">
+          <Button
+            size="lg"
+            onClick={() => router.push('/history')}
+            className="h-16! text-xl!"
+          >
             View All History
             <ChevronRight className="size-6" />
           </Button>
         </div>
 
-        <p className="text-center text-lg text-neutral-500 mt-10">
+        <p className="mt-10 text-center text-lg text-neutral-500">
           AI can make mistakes, make sure to verify important information
         </p>
       </div>
@@ -838,44 +975,55 @@ export default function AssessmentDetailPage() {
 
   if (assessment.status === 'pending') {
     return (
-      <div className="w-232 mx-auto py-12">
+      <div className="mx-auto w-232 py-12">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center size-28 rounded-full bg-neutral-900/50 border border-neutral-800 mb-10">
+          <div className="mb-10 inline-flex size-28 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900/50">
             <Sparkles className="size-14 text-white" />
           </div>
 
-          <h1 className="text-6xl font-bold mb-6">{assessment.domain}</h1>
+          <h1 className="mb-6 text-6xl font-bold">{assessment.domain}</h1>
 
-          <div className="flex items-center justify-center gap-4 mb-12">
+          <div className="mb-12 flex items-center justify-center gap-4">
             <Badge
               variant="outline"
-              className={`capitalize text-lg px-5 py-2 ${getDifficultyColor(assessment.difficulty)}`}
+              className={`px-5 py-2 text-lg capitalize ${getDifficultyColor(assessment.difficulty)}`}
             >
               {assessment.difficulty}
             </Badge>
-            <Badge variant="outline" className="capitalize text-lg px-5 py-2 border-neutral-700 text-neutral-300">
+            <Badge
+              variant="outline"
+              className="border-neutral-700 px-5 py-2 text-lg text-neutral-300 capitalize"
+            >
               {assessment.questionCount} questions
             </Badge>
           </div>
 
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-12 mb-12">
-            <h2 className="text-3xl font-semibold mb-8">Before you begin</h2>
-            <ul className="text-left space-y-5 text-neutral-400 max-w-lg mx-auto">
+          <div className="mb-12 rounded-xl border border-neutral-800 bg-neutral-900/50 p-12">
+            <h2 className="mb-8 text-3xl font-semibold">Before you begin</h2>
+            <ul className="mx-auto max-w-lg space-y-5 text-left text-neutral-400">
               <li className="flex items-start gap-4">
-                <CheckCircle2 className="size-7 text-green-400 mt-0.5 shrink-0" />
-                <span className="text-xl">Read each question carefully before selecting an answer</span>
+                <CheckCircle2 className="mt-0.5 size-7 shrink-0 text-green-400" />
+                <span className="text-xl">
+                  Read each question carefully before selecting an answer
+                </span>
               </li>
               <li className="flex items-start gap-4">
-                <CheckCircle2 className="size-7 text-green-400 mt-0.5 shrink-0" />
-                <span className="text-xl">You can navigate between questions using the arrows</span>
+                <CheckCircle2 className="mt-0.5 size-7 shrink-0 text-green-400" />
+                <span className="text-xl">
+                  You can navigate between questions using the arrows
+                </span>
               </li>
               <li className="flex items-start gap-4">
-                <CheckCircle2 className="size-7 text-green-400 mt-0.5 shrink-0" />
-                <span className="text-xl">Click &quot;Check Answer&quot; to submit your response</span>
+                <CheckCircle2 className="mt-0.5 size-7 shrink-0 text-green-400" />
+                <span className="text-xl">
+                  Click &quot;Check Answer&quot; to submit your response
+                </span>
               </li>
               <li className="flex items-start gap-4">
-                <CheckCircle2 className="size-7 text-green-400 mt-0.5 shrink-0" />
-                <span className="text-xl">Complete all questions to see your final results</span>
+                <CheckCircle2 className="mt-0.5 size-7 shrink-0 text-green-400" />
+                <span className="text-xl">
+                  Complete all questions to see your final results
+                </span>
               </li>
             </ul>
           </div>
@@ -898,7 +1046,7 @@ export default function AssessmentDetailPage() {
               </>
             )}
           </Button>
-          <p className="text-center text-xl text-neutral-500 mt-10">
+          <p className="mt-10 text-center text-xl text-neutral-500">
             AI can make mistakes, make sure to verify important information
           </p>
         </div>
@@ -907,8 +1055,8 @@ export default function AssessmentDetailPage() {
   }
 
   return (
-    <div className="w-232 mx-auto py-8">
-      <div className="flex items-center justify-between mb-5">
+    <div className="mx-auto w-232 py-8">
+      <div className="mb-5 flex items-center justify-between">
         <div className="flex items-center gap-5">
           <Button
             variant="ghost"
@@ -920,7 +1068,9 @@ export default function AssessmentDetailPage() {
             <ChevronLeft className="size-7" />
           </Button>
           <span className="text-2xl font-medium">
-            Question <span className="text-white">{currentQuestionIndex + 1}</span> of {assessment.questionCount}
+            Question{' '}
+            <span className="text-white">{currentQuestionIndex + 1}</span> of{' '}
+            {assessment.questionCount}
           </span>
           <Button
             variant="ghost"
@@ -934,21 +1084,25 @@ export default function AssessmentDetailPage() {
         </div>
 
         <div className="flex items-center gap-5">
-          <span className="text-xl text-neutral-400">{Math.round(progressPercent)}% complete</span>
+          <span className="text-xl text-neutral-400">
+            {Math.round(progressPercent)}% complete
+          </span>
           <Badge
             variant="outline"
-            className={`capitalize text-lg px-4 py-1.5 ${getDifficultyColor(assessment.difficulty)}`}
+            className={`px-4 py-1.5 text-lg capitalize ${getDifficultyColor(assessment.difficulty)}`}
           >
             {assessment.difficulty}
           </Badge>
         </div>
       </div>
 
-      <Progress value={progressPercent} className="h-3 mb-12" />
+      <Progress value={progressPercent} className="mb-12 h-3" />
 
       {currentQuestion && (
-        <div className="bg-neutral-900/30 border border-neutral-800 rounded-2xl p-12 mb-10">
-          <h2 className="text-2xl font-bold mb-12 leading-relaxed">{currentQuestion.questionText}</h2>
+        <div className="mb-10 rounded-2xl border border-neutral-800 bg-neutral-900/30 p-12">
+          <h2 className="mb-12 text-2xl leading-relaxed font-bold">
+            {currentQuestion.questionText}
+          </h2>
 
           <div className="space-y-6">
             {currentQuestion.options.map((option, index) => (
@@ -959,35 +1113,34 @@ export default function AssessmentDetailPage() {
                 className={getOptionStyle(index)}
               >
                 <div
-                  className={`
-                  size-9 rounded-full border-2 flex items-center justify-center shrink-0
-                  ${!currentAnswer?.isSubmitted && selectedOption === index ? 'border-white bg-white' : ''}
-                  ${!currentAnswer?.isSubmitted && selectedOption !== index ? 'border-neutral-600' : ''}
-                  ${
-                    currentAnswer?.isSubmitted && currentAnswer.selectedIndex === index && currentAnswer.isCorrect
+                  className={`flex size-9 shrink-0 items-center justify-center rounded-full border-2 ${!currentAnswer?.isSubmitted && selectedOption === index ? 'border-white bg-white' : ''} ${!currentAnswer?.isSubmitted && selectedOption !== index ? 'border-neutral-600' : ''} ${
+                    currentAnswer?.isSubmitted &&
+                    currentAnswer.selectedIndex === index &&
+                    currentAnswer.isCorrect
                       ? 'border-green-500 bg-green-500'
                       : ''
-                  }
-                  ${
-                    currentAnswer?.isSubmitted && currentAnswer.selectedIndex === index && !currentAnswer.isCorrect
+                  } ${
+                    currentAnswer?.isSubmitted &&
+                    currentAnswer.selectedIndex === index &&
+                    !currentAnswer.isCorrect
                       ? 'border-red-500 bg-red-500'
                       : ''
-                  }
-                  ${
-                    currentAnswer?.isSubmitted && !currentAnswer.isCorrect && currentAnswer.correctAnswerIndex === index
+                  } ${
+                    currentAnswer?.isSubmitted &&
+                    !currentAnswer.isCorrect &&
+                    currentAnswer.correctAnswerIndex === index
                       ? 'border-green-500 bg-green-500'
                       : ''
-                  }
-                  ${
+                  } ${
                     currentAnswer?.isSubmitted &&
                     currentAnswer.selectedIndex !== index &&
                     currentAnswer.correctAnswerIndex !== index
                       ? 'border-neutral-700'
                       : ''
-                  }
-                `}
+                  } `}
                 >
-                  {currentAnswer?.isSubmitted && currentAnswer.selectedIndex === index ? (
+                  {currentAnswer?.isSubmitted &&
+                  currentAnswer.selectedIndex === index ? (
                     currentAnswer.isCorrect ? (
                       <Check className="size-6 text-white" />
                     ) : (
@@ -999,7 +1152,9 @@ export default function AssessmentDetailPage() {
                     <Check className="size-6 text-white" />
                   ) : (
                     !currentAnswer?.isSubmitted &&
-                    selectedOption === index && <div className="size-3.5 rounded-full bg-neutral-900" />
+                    selectedOption === index && (
+                      <div className="size-3.5 rounded-full bg-neutral-900" />
+                    )
                   )}
                 </div>
                 <span className="text-xl">{option}</span>
@@ -1014,7 +1169,10 @@ export default function AssessmentDetailPage() {
           variant="outline"
           size="lg"
           onClick={handleSkipQuestion}
-          disabled={currentQuestionIndex >= assessment.questionCount - 1 || loadingStates.submitting}
+          disabled={
+            currentQuestionIndex >= assessment.questionCount - 1 ||
+            loadingStates.submitting
+          }
           className="h-16! text-xl!"
         >
           Skip Question
@@ -1039,7 +1197,11 @@ export default function AssessmentDetailPage() {
             </Button>
           ) : (
             currentQuestionIndex < assessment.questionCount - 1 && (
-              <Button size="lg" onClick={handleNextQuestion} className="h-16! text-xl!">
+              <Button
+                size="lg"
+                onClick={handleNextQuestion}
+                className="h-16! text-xl!"
+              >
                 Next Question
                 <ChevronRight className="size-6" />
               </Button>
@@ -1052,7 +1214,7 @@ export default function AssessmentDetailPage() {
               variant="outline"
               onClick={handleCompleteAssessment}
               disabled={loadingStates.completing}
-              className="h-16! text-xl! border-green-500/50! text-green-400 dark:hover:text-green-400 dark:hover:bg-green-500/10"
+              className="h-16! border-green-500/50! text-xl! text-green-400 dark:hover:bg-green-500/10 dark:hover:text-green-400"
             >
               {loadingStates.completing ? (
                 <>
@@ -1070,7 +1232,7 @@ export default function AssessmentDetailPage() {
         </div>
       </div>
 
-      <p className="text-center text-xl text-neutral-500 mt-10">
+      <p className="mt-10 text-center text-xl text-neutral-500">
         AI can make mistakes, make sure to verify important information
       </p>
     </div>

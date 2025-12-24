@@ -5,7 +5,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { useUserStore } from '@/stores';
-import { Menu, X, LogOut, Settings, LayoutDashboard, MessageCircle, Bell } from 'lucide-react';
+import {
+  Menu,
+  X,
+  LogOut,
+  Settings,
+  LayoutDashboard,
+  MessageCircle,
+  Bell,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { getInitials } from '@/lib';
 
@@ -21,7 +29,7 @@ const NAV_ITEMS = [
   { label: 'Home', href: '/' },
   { label: 'Roadmap with AI', href: '/roadmap' },
   { label: 'Find Mentors', href: '/mentors' },
-  { label: 'Contact', href: '/contact' }
+  { label: 'Contact', href: '/contact' },
 ];
 
 function MobileUserSection({ onClose }: { onClose: () => void }) {
@@ -40,7 +48,9 @@ function MobileUserSection({ onClose }: { onClose: () => void }) {
       router.refresh();
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : 'An error occurred. Please try again.';
+        error instanceof Error
+          ? error.message
+          : 'An error occurred. Please try again.';
       toast.error('Logout failed', {
         description: errorMessage,
       });
@@ -49,7 +59,13 @@ function MobileUserSection({ onClose }: { onClose: () => void }) {
 
   const menuItems = [
     ...(user.role === USER_ROLES.ADMIN
-      ? [{ icon: LayoutDashboard, label: 'Dashboard', href: '/admin/dashboard' }]
+      ? [
+          {
+            icon: LayoutDashboard,
+            label: 'Dashboard',
+            href: '/admin/dashboard',
+          },
+        ]
       : []),
     { icon: MessageCircle, label: 'Messages', href: '/messages' },
     { icon: Bell, label: 'Notifications', href: '/notifications' },
@@ -58,9 +74,9 @@ function MobileUserSection({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4 p-4 rounded-2xl bg-neutral-800/50 border border-neutral-700/50">
+      <div className="flex items-center gap-4 rounded-2xl border border-neutral-700/50 bg-neutral-800/50 p-4">
         {user.avatar ? (
-          <div className="relative size-16 rounded-full overflow-hidden border-2 border-neutral-600">
+          <div className="relative size-16 overflow-hidden rounded-full border-2 border-neutral-600">
             <Image
               src={user.avatar}
               alt={`${user.firstName} ${user.lastName}`}
@@ -70,15 +86,15 @@ function MobileUserSection({ onClose }: { onClose: () => void }) {
             />
           </div>
         ) : (
-          <div className="size-16 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 border-2 border-neutral-600 flex items-center justify-center text-xl font-bold">
+          <div className="flex size-16 items-center justify-center rounded-full border-2 border-neutral-600 bg-linear-to-br from-neutral-700 to-neutral-800 text-xl font-bold">
             {getInitials(user.firstName, user.lastName)}
           </div>
         )}
-        <div className="flex-1 min-w-0">
-          <p className="text-xl font-semibold text-white truncate">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xl font-semibold text-white">
             {user.firstName} {user.lastName}
           </p>
-          <p className="text-base text-neutral-400 truncate">{user.email}</p>
+          <p className="truncate text-base text-neutral-400">{user.email}</p>
         </div>
       </div>
 
@@ -88,7 +104,7 @@ function MobileUserSection({ onClose }: { onClose: () => void }) {
             key={item.href}
             href={item.href}
             onClick={onClose}
-            className="flex items-center gap-4 px-4 py-3 text-lg text-neutral-300 hover:text-white hover:bg-white/5 rounded-xl transition-all"
+            className="flex items-center gap-4 rounded-xl px-4 py-3 text-lg text-neutral-300 transition-all hover:bg-white/5 hover:text-white"
           >
             <item.icon className="size-6" />
             {item.label}
@@ -98,7 +114,7 @@ function MobileUserSection({ onClose }: { onClose: () => void }) {
 
       <button
         onClick={handleLogout}
-        className="w-full flex items-center justify-center gap-3 px-4 py-3 text-lg font-medium text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all bg-red-500/10 border border-red-500/20"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-lg font-medium text-red-400 transition-all hover:bg-red-500/10 hover:text-red-300"
       >
         Logout
         <LogOut className="size-6" />
@@ -116,36 +132,35 @@ export function PublicHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
   return (
-    <header className="fixed top-0 w-full h-30 z-50 bg-black/40 backdrop-blur-2xl border-b border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)]">
-      <div className="size-full px-8 lg:px-16 flex lg:grid lg:grid-cols-3 items-center justify-between lg:justify-normal">
-        <Link 
+    <header className="fixed top-0 z-50 h-30 w-full border-b border-white/10 bg-black/40 shadow-[0_8px_32px_0_rgba(0,0,0,0.37)] backdrop-blur-2xl">
+      <div className="flex size-full items-center justify-between px-8 lg:grid lg:grid-cols-3 lg:justify-normal lg:px-16">
+        <Link
           href="/"
-          className="text-4xl xl:text-5xl font-bold tracking-tight hover:text-neutral-300 transition-colors"
+          className="text-4xl font-bold tracking-tight transition-colors hover:text-neutral-300 xl:text-5xl"
         >
           Pathfinder.
         </Link>
 
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-10 justify-center-safe">
+        <nav className="hidden items-center justify-center-safe gap-6 lg:flex xl:gap-10">
           {NAV_ITEMS.map((item, index) => {
-            const isActive = pathname === item.href || 
-                           (item.href !== '/' && pathname.startsWith(item.href));
-            
+            const isActive =
+              pathname === item.href ||
+              (item.href !== '/' && pathname.startsWith(item.href));
+
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative py-2 text-lg xl:text-xl font-medium transition-colors group whitespace-nowrap ${
-                  isActive 
-                    ? 'text-white'
-                    : 'text-neutral-300 hover:text-white'
+                className={`group relative py-2 text-lg font-medium whitespace-nowrap transition-colors xl:text-xl ${
+                  isActive ? 'text-white' : 'text-neutral-300 hover:text-white'
                 }`}
                 onMouseEnter={() => setHoveredIndex(index)}
                 onMouseLeave={() => setHoveredIndex(null)}
               >
                 {item.label}
-                
-                <span 
-                  className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] bg-white transition-all duration-300 ease-out ${
+
+                <span
+                  className={`absolute bottom-0 left-1/2 h-[2px] -translate-x-1/2 bg-white transition-all duration-300 ease-out ${
                     isActive || hoveredIndex === index ? 'w-full' : 'w-0'
                   }`}
                 />
@@ -154,7 +169,7 @@ export function PublicHeader() {
           })}
         </nav>
 
-        <div className="hidden lg:flex items-center gap-3 justify-end-safe">
+        <div className="hidden items-center justify-end-safe gap-3 lg:flex">
           {!isInitialized ? (
             <Skeleton className="size-12 rounded-full" />
           ) : isAuthenticated ? (
@@ -169,15 +184,15 @@ export function PublicHeader() {
                 asChild
                 variant="ghost"
                 size="lg"
-                className="h-16! rounded-full text-xl border border-neutral-700 hover:border-white hover:bg-white/5 transition-all duration-300"
+                className="h-16! rounded-full border border-neutral-700 text-xl transition-all duration-300 hover:border-white hover:bg-white/5"
               >
                 <Link href="/login">Login</Link>
               </Button>
-              
+
               <Button
                 asChild
                 size="lg"
-                className="h-16! rounded-full text-xl bg-white text-neutral-950 hover:bg-neutral-200 transition-all duration-300"
+                className="h-16! rounded-full bg-white text-xl text-neutral-950 transition-all duration-300 hover:bg-neutral-200"
               >
                 <Link href="/register">Register</Link>
               </Button>
@@ -190,35 +205,45 @@ export function PublicHeader() {
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden size-12 text-white hover:bg-white/10"
+              className="size-12 text-white hover:bg-white/10 lg:hidden"
             >
-              {mobileMenuOpen ? <X className="size-8" /> : <Menu className="size-8" />}
+              {mobileMenuOpen ? (
+                <X className="size-8" />
+              ) : (
+                <Menu className="size-8" />
+              )}
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-full sm:w-[400px] bg-neutral-950/95 backdrop-blur-xl border-l border-neutral-800 p-0">
-            <div className="flex flex-col h-full">
-              <div className="px-6 py-8 border-b border-neutral-800/50">
-                <SheetTitle className="text-4xl font-bold text-white">Menu</SheetTitle>
+          <SheetContent
+            side="right"
+            className="w-full border-l border-neutral-800 bg-neutral-950/95 p-0 backdrop-blur-xl sm:w-[400px]"
+          >
+            <div className="flex h-full flex-col">
+              <div className="border-b border-neutral-800/50 px-6 py-8">
+                <SheetTitle className="text-4xl font-bold text-white">
+                  Menu
+                </SheetTitle>
               </div>
-              
-              <nav className="flex flex-col gap-2 px-4 py-6 flex-1 overflow-y-auto">
+
+              <nav className="flex flex-1 flex-col gap-2 overflow-y-auto px-4 py-6">
                 {NAV_ITEMS.map((item) => {
-                  const isActive = pathname === item.href || 
-                                 (item.href !== '/' && pathname.startsWith(item.href));
-                  
+                  const isActive =
+                    pathname === item.href ||
+                    (item.href !== '/' && pathname.startsWith(item.href));
+
                   return (
                     <Link
                       key={item.href}
                       href={item.href}
                       onClick={() => setMobileMenuOpen(false)}
-                      className={`relative text-xl font-medium transition-all py-4 px-6 rounded-2xl flex items-center gap-4 ${
-                        isActive 
-                          ? 'text-white bg-white/10 shadow-lg'
-                          : 'text-neutral-400 hover:text-white hover:bg-white/5'
+                      className={`relative flex items-center gap-4 rounded-2xl px-6 py-4 text-xl font-medium transition-all ${
+                        isActive
+                          ? 'bg-white/10 text-white shadow-lg'
+                          : 'text-neutral-400 hover:bg-white/5 hover:text-white'
                       }`}
                     >
                       {isActive && (
-                        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-white rounded-r-full" />
+                        <div className="absolute top-1/2 left-0 h-8 w-1 -translate-y-1/2 rounded-r-full bg-white" />
                       )}
                       {item.label}
                     </Link>
@@ -226,7 +251,7 @@ export function PublicHeader() {
                 })}
               </nav>
 
-              <div className="px-4 py-6 border-t border-neutral-800/50 bg-neutral-900/50">
+              <div className="border-t border-neutral-800/50 bg-neutral-900/50 px-4 py-6">
                 {!isInitialized ? (
                   <div className="space-y-3">
                     <Skeleton className="h-14 w-full rounded-2xl bg-neutral-800" />
@@ -237,15 +262,15 @@ export function PublicHeader() {
                     <Button
                       asChild
                       variant="outline"
-                      className="w-full h-14! text-xl border-2 border-neutral-700 hover:border-white hover:bg-white/5 rounded-2xl"
+                      className="h-14! w-full rounded-2xl border-2 border-neutral-700 text-xl hover:border-white hover:bg-white/5"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Link href="/login">Login</Link>
                     </Button>
-                    
+
                     <Button
                       asChild
-                      className="w-full h-14! text-xl bg-white text-neutral-950 hover:bg-neutral-200 rounded-2xl shadow-lg"
+                      className="h-14! w-full rounded-2xl bg-white text-xl text-neutral-950 shadow-lg hover:bg-neutral-200"
                       onClick={() => setMobileMenuOpen(false)}
                     >
                       <Link href="/register">Get Started</Link>

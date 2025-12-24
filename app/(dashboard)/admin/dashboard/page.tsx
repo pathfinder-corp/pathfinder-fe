@@ -1,44 +1,44 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { 
-  Users, 
-  Map, 
-  ClipboardList, 
+import {
+  Users,
+  Map,
+  ClipboardList,
   TrendingUp,
   TrendingDown,
   Share2,
   GraduationCap,
   Handshake,
-  MessageSquare
+  MessageSquare,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { 
-  AreaChart, 
-  Area, 
+import {
+  AreaChart,
+  Area,
   BarChart,
   Bar,
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   Cell,
   PieChart,
   Pie,
-  Legend
+  Legend,
 } from 'recharts';
 import { format, parseISO } from 'date-fns';
 
 import { adminService } from '@/services';
-import type { 
-  IDashboardOverview, 
-  IDashboardUsers, 
-  IDashboardRoadmaps, 
+import type {
+  IDashboardOverview,
+  IDashboardUsers,
+  IDashboardRoadmaps,
   IDashboardAssessments,
   IAdminMentorStats,
   IAdminMentorshipStats,
-  IAdminContactStats
+  IAdminContactStats,
 } from '@/types';
 
 import { Skeleton } from '@/components/ui/skeleton';
@@ -51,10 +51,14 @@ import {
 function CustomTooltip({ active, payload, label }: any) {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-neutral-800 border border-neutral-700 rounded-lg px-5 py-3 shadow-lg">
-        <p className="text-base text-neutral-300 mb-1">{label}</p>
+      <div className="rounded-lg border border-neutral-700 bg-neutral-800 px-5 py-3 shadow-lg">
+        <p className="mb-1 text-base text-neutral-300">{label}</p>
         {payload.map((entry: any, index: number) => (
-          <p key={index} className="text-base font-semibold" style={{ color: entry.color }}>
+          <p
+            key={index}
+            className="text-base font-semibold"
+            style={{ color: entry.color }}
+          >
             {entry.name}: {entry.value}
           </p>
         ))}
@@ -66,39 +70,39 @@ function CustomTooltip({ active, payload, label }: any) {
 
 const statusChartConfig = {
   pending: {
-    label: "Pending",
-    color: "#eab308",
+    label: 'Pending',
+    color: '#eab308',
   },
   inProgress: {
-    label: "In Progress",
-    color: "#3b82f6",
+    label: 'In Progress',
+    color: '#3b82f6',
   },
   resolved: {
-    label: "Resolved",
-    color: "#22c55e",
+    label: 'Resolved',
+    color: '#22c55e',
   },
   closed: {
-    label: "Closed",
-    color: "#737373",
+    label: 'Closed',
+    color: '#737373',
   },
 } satisfies ChartConfig;
 
 const typeChartConfig = {
   general: {
-    label: "General",
-    color: "#737373",
+    label: 'General',
+    color: '#737373',
   },
   suspended: {
-    label: "Suspended",
-    color: "#ef4444",
+    label: 'Suspended',
+    color: '#ef4444',
   },
   feedback: {
-    label: "Feedback",
-    color: "#a855f7",
+    label: 'Feedback',
+    color: '#a855f7',
   },
   support: {
-    label: "Support",
-    color: "#3b82f6",
+    label: 'Support',
+    color: '#3b82f6',
   },
 } satisfies ChartConfig;
 
@@ -112,14 +116,22 @@ interface IStatCardProps {
   loading?: boolean;
 }
 
-function StatCard({ title, value, change, changeLabel, icon, iconBg = 'bg-neutral-800', loading }: IStatCardProps) {
+function StatCard({
+  title,
+  value,
+  change,
+  changeLabel,
+  icon,
+  iconBg = 'bg-neutral-800',
+  loading,
+}: IStatCardProps) {
   if (loading) {
     return (
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+      <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <Skeleton className="h-6 w-32 mb-4 bg-neutral-800" />
-            <Skeleton className="h-12 w-28 mb-3 bg-neutral-800" />
+            <Skeleton className="mb-4 h-6 w-32 bg-neutral-800" />
+            <Skeleton className="mb-3 h-12 w-28 bg-neutral-800" />
             <Skeleton className="h-6 w-40 bg-neutral-800" />
           </div>
           <Skeleton className="size-14 rounded-lg bg-neutral-800" />
@@ -131,11 +143,11 @@ function StatCard({ title, value, change, changeLabel, icon, iconBg = 'bg-neutra
   const isPositive = change !== undefined && change >= 0;
 
   return (
-    <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7 hover:border-neutral-700 transition-colors">
+    <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7 transition-colors hover:border-neutral-700">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-lg text-neutral-400 mb-2">{title}</p>
-          <p className="text-5xl font-bold mb-3">{value.toLocaleString()}</p>
+          <p className="mb-2 text-lg text-neutral-400">{title}</p>
+          <p className="mb-3 text-5xl font-bold">{value.toLocaleString()}</p>
           {change !== undefined && (
             <div className="flex items-center gap-2">
               {isPositive ? (
@@ -143,16 +155,17 @@ function StatCard({ title, value, change, changeLabel, icon, iconBg = 'bg-neutra
               ) : (
                 <TrendingDown className="size-5 text-red-400" />
               )}
-              <span className={`text-lg font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                {isPositive ? '+' : ''}{change}
+              <span
+                className={`text-lg font-medium ${isPositive ? 'text-green-400' : 'text-red-400'}`}
+              >
+                {isPositive ? '+' : ''}
+                {change}
               </span>
               <span className="text-lg text-neutral-500">{changeLabel}</span>
             </div>
           )}
         </div>
-        <div className={`p-4 ${iconBg} rounded-lg`}>
-          {icon}
-        </div>
+        <div className={`p-4 ${iconBg} rounded-lg`}>{icon}</div>
       </div>
     </div>
   );
@@ -161,26 +174,44 @@ function StatCard({ title, value, change, changeLabel, icon, iconBg = 'bg-neutra
 export default function AdminDashboardPage() {
   const [overview, setOverview] = useState<IDashboardOverview | null>(null);
   const [usersData, setUsersData] = useState<IDashboardUsers | null>(null);
-  const [roadmapsData, setRoadmapsData] = useState<IDashboardRoadmaps | null>(null);
-  const [assessmentsData, setAssessmentsData] = useState<IDashboardAssessments | null>(null);
-  const [mentorStats, setMentorStats] = useState<IAdminMentorStats | null>(null);
-  const [mentorshipStats, setMentorshipStats] = useState<IAdminMentorshipStats | null>(null);
-  const [contactStats, setContactStats] = useState<IAdminContactStats | null>(null);
+  const [roadmapsData, setRoadmapsData] = useState<IDashboardRoadmaps | null>(
+    null
+  );
+  const [assessmentsData, setAssessmentsData] =
+    useState<IDashboardAssessments | null>(null);
+  const [mentorStats, setMentorStats] = useState<IAdminMentorStats | null>(
+    null
+  );
+  const [mentorshipStats, setMentorshipStats] =
+    useState<IAdminMentorshipStats | null>(null);
+  const [contactStats, setContactStats] = useState<IAdminContactStats | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [activeChart, setActiveChart] = useState<'users' | 'roadmaps' | 'assessments'>('users');
+  const [activeChart, setActiveChart] = useState<
+    'users' | 'roadmaps' | 'assessments'
+  >('users');
 
   const fetchDashboardData = useCallback(async () => {
     try {
       setIsLoading(true);
-      
-      const [overviewRes, usersRes, roadmapsRes, assessmentsRes, mentorStatsRes, mentorshipStatsRes, contactStatsRes] = await Promise.all([
+
+      const [
+        overviewRes,
+        usersRes,
+        roadmapsRes,
+        assessmentsRes,
+        mentorStatsRes,
+        mentorshipStatsRes,
+        contactStatsRes,
+      ] = await Promise.all([
         adminService.getDashboardOverview(),
         adminService.getDashboardUsers(),
         adminService.getDashboardRoadmaps(),
         adminService.getDashboardAssessments(),
         adminService.getMentorStats(),
         adminService.getMentorshipStats(),
-        adminService.getContactStats()
+        adminService.getContactStats(),
       ]);
 
       setOverview(overviewRes);
@@ -191,9 +222,10 @@ export default function AdminDashboardPage() {
       setMentorshipStats(mentorshipStatsRes);
       setContactStats(contactStatsRes);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load dashboard data';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load dashboard data';
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -213,36 +245,39 @@ export default function AdminDashboardPage() {
   };
 
   const chartDataMap = {
-    users: usersData?.registrationTrend.map(item => ({
-      date: formatChartDate(item.date),
-      count: item.count
-    })) || [],
-    roadmaps: roadmapsData?.generationTrend.map(item => ({
-      date: formatChartDate(item.date),
-      count: item.count
-    })) || [],
-    assessments: assessmentsData?.creationTrend.map(item => ({
-      date: formatChartDate(item.date),
-      count: item.count
-    })) || []
+    users:
+      usersData?.registrationTrend.map((item) => ({
+        date: formatChartDate(item.date),
+        count: item.count,
+      })) || [],
+    roadmaps:
+      roadmapsData?.generationTrend.map((item) => ({
+        date: formatChartDate(item.date),
+        count: item.count,
+      })) || [],
+    assessments:
+      assessmentsData?.creationTrend.map((item) => ({
+        date: formatChartDate(item.date),
+        count: item.count,
+      })) || [],
   };
 
   const chartConfig = {
     users: { label: 'User Registrations', color: '#ffffff' },
     roadmaps: { label: 'Roadmaps Created', color: '#ffffff' },
-    assessments: { label: 'Assessments Created', color: '#ffffff' }
+    assessments: { label: 'Assessments Created', color: '#ffffff' },
   };
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-5xl font-bold mb-3">Overview</h1>
+        <h1 className="mb-3 text-5xl font-bold">Overview</h1>
         <p className="text-xl text-neutral-400">
           Platform statistics and performance metrics
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title="Total Users"
           value={overview?.totalUsers || 0}
@@ -275,21 +310,21 @@ export default function AdminDashboardPage() {
         />
       </div>
 
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+      <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+        <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <div>
             <h3 className="text-3xl font-semibold">Activity Trends</h3>
             <p className="text-lg text-neutral-400">Data for the last 7 days</p>
           </div>
-          
+
           <div className="flex items-center">
             {(['users', 'roadmaps', 'assessments'] as const).map((type) => (
               <button
                 key={type}
                 onClick={() => setActiveChart(type)}
-                className={`cursor-pointer px-5 py-3 text-lg font-medium transition-colors capitalize ${
+                className={`cursor-pointer px-5 py-3 text-lg font-medium capitalize transition-colors ${
                   activeChart === type
-                    ? 'text-white bg-neutral-800 rounded-lg'
+                    ? 'rounded-lg bg-neutral-800 text-white'
                     : 'text-neutral-500 hover:text-neutral-300'
                 }`}
               >
@@ -300,13 +335,17 @@ export default function AdminDashboardPage() {
         </div>
 
         {isLoading ? (
-          <Skeleton className="h-[350px] w-full bg-neutral-800 rounded-lg" />
+          <Skeleton className="h-[350px] w-full rounded-lg bg-neutral-800" />
         ) : chartDataMap[activeChart].length === 0 ? (
-          <div className="h-[350px] flex items-center justify-center">
+          <div className="flex h-[350px] items-center justify-center">
             <div className="text-center">
-              <TrendingUp className="size-12 text-neutral-500 mx-auto mb-3" />
-              <p className="text-lg text-neutral-400">No activity data available</p>
-              <p className="text-sm text-neutral-500 mt-1">Activity trends will appear here once data is available</p>
+              <TrendingUp className="mx-auto mb-3 size-12 text-neutral-500" />
+              <p className="text-lg text-neutral-400">
+                No activity data available
+              </p>
+              <p className="mt-1 text-sm text-neutral-500">
+                Activity trends will appear here once data is available
+              </p>
             </div>
           </div>
         ) : (
@@ -314,33 +353,51 @@ export default function AdminDashboardPage() {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={chartDataMap[activeChart]}>
                 <defs>
-                  <linearGradient id={`gradient-${activeChart}`} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={chartConfig[activeChart].color} stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor={chartConfig[activeChart].color} stopOpacity={0}/>
+                  <linearGradient
+                    id={`gradient-${activeChart}`}
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
+                    <stop
+                      offset="5%"
+                      stopColor={chartConfig[activeChart].color}
+                      stopOpacity={0.3}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor={chartConfig[activeChart].color}
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#404040" vertical={false} />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#737373" 
-                  fontSize={14} 
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#404040"
+                  vertical={false}
+                />
+                <XAxis
+                  dataKey="date"
+                  stroke="#737373"
+                  fontSize={14}
                   tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
-                  stroke="#737373" 
-                  fontSize={14} 
+                <YAxis
+                  stroke="#737373"
+                  fontSize={14}
                   tickLine={false}
                   axisLine={false}
                 />
                 <Tooltip content={<CustomTooltip />} />
-                <Area 
-                  type="monotone" 
-                  dataKey="count" 
+                <Area
+                  type="monotone"
+                  dataKey="count"
                   name={chartConfig[activeChart].label}
-                  stroke={chartConfig[activeChart].color} 
-                  fillOpacity={1} 
-                  fill={`url(#gradient-${activeChart})`} 
+                  stroke={chartConfig[activeChart].color}
+                  fillOpacity={1}
+                  fill={`url(#gradient-${activeChart})`}
                   strokeWidth={2}
                 />
               </AreaChart>
@@ -349,31 +406,37 @@ export default function AdminDashboardPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-          <div className="flex items-center justify-between mb-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-neutral-800 rounded-lg">
+              <div className="rounded-lg bg-neutral-800 p-3">
                 <GraduationCap className="size-6" />
               </div>
               <div>
                 <h3 className="text-2xl font-semibold">Mentors</h3>
-                <p className="text-base text-neutral-400">Platform mentors overview</p>
+                <p className="text-base text-neutral-400">
+                  Platform mentors overview
+                </p>
               </div>
             </div>
             <div className="text-right">
               <p className="text-4xl font-bold">{mentorStats?.total || 0}</p>
-              <p className="text-md text-neutral-500 capitalize">total mentors</p>
+              <p className="text-md text-neutral-500 capitalize">
+                total mentors
+              </p>
             </div>
           </div>
           {isLoading ? (
-            <Skeleton className="h-[180px] w-full bg-neutral-800 rounded-lg" />
-          ) : (mentorStats?.total === 0 || !mentorStats ? (
-            <div className="h-[180px] flex items-center justify-center">
+            <Skeleton className="h-[180px] w-full rounded-lg bg-neutral-800" />
+          ) : mentorStats?.total === 0 || !mentorStats ? (
+            <div className="flex h-[180px] items-center justify-center">
               <div className="text-center">
-                <GraduationCap className="size-10 text-neutral-500 mx-auto mb-2" />
+                <GraduationCap className="mx-auto mb-2 size-10 text-neutral-500" />
                 <p className="text-base text-neutral-400">No mentors yet</p>
-                <p className="text-xs text-neutral-500 mt-1">Mentor data will appear here</p>
+                <p className="mt-1 text-xs text-neutral-500">
+                  Mentor data will appear here
+                </p>
               </div>
             </div>
           ) : (
@@ -381,33 +444,67 @@ export default function AdminDashboardPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={[
-                    { name: 'Active', value: mentorStats?.active || 0, fill: '#ffffff' },
-                    { name: 'Inactive', value: mentorStats?.inactive || 0, fill: '#737373' },
-                    { name: 'Accepting', value: mentorStats?.acceptingMentees || 0, fill: '#06b6d4' },
+                    {
+                      name: 'Active',
+                      value: mentorStats?.active || 0,
+                      fill: '#ffffff',
+                    },
+                    {
+                      name: 'Inactive',
+                      value: mentorStats?.inactive || 0,
+                      fill: '#737373',
+                    },
+                    {
+                      name: 'Accepting',
+                      value: mentorStats?.acceptingMentees || 0,
+                      fill: '#06b6d4',
+                    },
                   ]}
                   layout="vertical"
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#404040" horizontal={false} />
-                  <XAxis type="number" stroke="#737373" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis 
-                    type="category" 
-                    dataKey="name" 
-                    stroke="#737373" 
-                    fontSize={14} 
-                    tickLine={false} 
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#404040"
+                    horizontal={false}
+                  />
+                  <XAxis
+                    type="number"
+                    stroke="#737373"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    stroke="#737373"
+                    fontSize={14}
+                    tickLine={false}
                     axisLine={false}
                     width={80}
                   />
-                  <Tooltip 
+                  <Tooltip
                     content={<CustomTooltip />}
                     cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                   />
                   <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={28}>
                     {[
-                      { name: 'Active', value: mentorStats?.active || 0, fill: '#ffffff' },
-                      { name: 'Inactive', value: mentorStats?.inactive || 0, fill: '#737373' },
-                      { name: 'Accepting', value: mentorStats?.acceptingMentees || 0, fill: '#06b6d4' },
+                      {
+                        name: 'Active',
+                        value: mentorStats?.active || 0,
+                        fill: '#ffffff',
+                      },
+                      {
+                        name: 'Inactive',
+                        value: mentorStats?.inactive || 0,
+                        fill: '#737373',
+                      },
+                      {
+                        name: 'Accepting',
+                        value: mentorStats?.acceptingMentees || 0,
+                        fill: '#06b6d4',
+                      },
                     ].map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
@@ -415,33 +512,41 @@ export default function AdminDashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          ))}
+          )}
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-          <div className="flex items-center justify-between mb-6">
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-neutral-800 rounded-lg">
+              <div className="rounded-lg bg-neutral-800 p-3">
                 <Handshake className="size-6" />
               </div>
               <div>
                 <h3 className="text-2xl font-semibold">Mentorships</h3>
-                <p className="text-base text-neutral-400">Active relationships</p>
+                <p className="text-base text-neutral-400">
+                  Active relationships
+                </p>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-4xl font-bold">{mentorshipStats?.total || 0}</p>
-              <p className="text-md text-neutral-500 capitalize">total mentorships</p>
+              <p className="text-4xl font-bold">
+                {mentorshipStats?.total || 0}
+              </p>
+              <p className="text-md text-neutral-500 capitalize">
+                total mentorships
+              </p>
             </div>
           </div>
           {isLoading ? (
-            <Skeleton className="h-[180px] w-full bg-neutral-800 rounded-lg" />
-          ) : (mentorshipStats?.total === 0 || !mentorshipStats ? (
-            <div className="h-[180px] flex items-center justify-center">
+            <Skeleton className="h-[180px] w-full rounded-lg bg-neutral-800" />
+          ) : mentorshipStats?.total === 0 || !mentorshipStats ? (
+            <div className="flex h-[180px] items-center justify-center">
               <div className="text-center">
-                <Handshake className="size-10 text-neutral-500 mx-auto mb-2" />
+                <Handshake className="mx-auto mb-2 size-10 text-neutral-500" />
                 <p className="text-base text-neutral-400">No mentorships yet</p>
-                <p className="text-xs text-neutral-500 mt-1">Mentorship data will appear here</p>
+                <p className="mt-1 text-xs text-neutral-500">
+                  Mentorship data will appear here
+                </p>
               </div>
             </div>
           ) : (
@@ -449,31 +554,57 @@ export default function AdminDashboardPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={[
-                    { name: 'Active', value: mentorshipStats?.active || 0, fill: '#ffffff' },
-                    { name: 'Completed', value: mentorshipStats?.completed || 0, fill: '#06b6d4' }
+                    {
+                      name: 'Active',
+                      value: mentorshipStats?.active || 0,
+                      fill: '#ffffff',
+                    },
+                    {
+                      name: 'Completed',
+                      value: mentorshipStats?.completed || 0,
+                      fill: '#06b6d4',
+                    },
                   ]}
                   layout="vertical"
                   margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#404040" horizontal={false} />
-                  <XAxis type="number" stroke="#737373" fontSize={12} tickLine={false} axisLine={false} />
-                  <YAxis 
-                    type="category" 
-                    dataKey="name" 
-                    stroke="#737373" 
-                    fontSize={14} 
-                    tickLine={false} 
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke="#404040"
+                    horizontal={false}
+                  />
+                  <XAxis
+                    type="number"
+                    stroke="#737373"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    stroke="#737373"
+                    fontSize={14}
+                    tickLine={false}
                     axisLine={false}
                     width={80}
                   />
-                  <Tooltip 
+                  <Tooltip
                     content={<CustomTooltip />}
                     cursor={{ fill: 'rgba(255,255,255,0.05)' }}
                   />
                   <Bar dataKey="value" radius={[0, 6, 6, 0]} barSize={28}>
                     {[
-                      { name: 'Active', value: mentorshipStats?.active || 0, fill: '#ffffff' },
-                      { name: 'Completed', value: mentorshipStats?.completed || 0, fill: '#06b6d4' }
+                      {
+                        name: 'Active',
+                        value: mentorshipStats?.active || 0,
+                        fill: '#ffffff',
+                      },
+                      {
+                        name: 'Completed',
+                        value: mentorshipStats?.completed || 0,
+                        fill: '#06b6d4',
+                      },
                     ].map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
                     ))}
@@ -481,15 +612,15 @@ export default function AdminDashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-          <div className="flex items-center justify-between mb-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-neutral-800 rounded-lg">
+              <div className="rounded-lg bg-neutral-800 p-3">
                 <MessageSquare className="size-6" />
               </div>
               <div>
@@ -499,17 +630,23 @@ export default function AdminDashboardPage() {
             </div>
             <div className="text-right">
               <p className="text-4xl font-bold">{contactStats?.total || 0}</p>
-              <p className="text-md text-neutral-500 capitalize">total messages</p>
+              <p className="text-md text-neutral-500 capitalize">
+                total messages
+              </p>
             </div>
           </div>
           {isLoading ? (
-            <Skeleton className="h-[250px] w-full bg-neutral-800 rounded-lg" />
-          ) : (contactStats?.total === 0 || !contactStats ? (
-            <div className="h-[250px] flex items-center justify-center">
+            <Skeleton className="h-[250px] w-full rounded-lg bg-neutral-800" />
+          ) : contactStats?.total === 0 || !contactStats ? (
+            <div className="flex h-[250px] items-center justify-center">
               <div className="text-center">
-                <MessageSquare className="size-12 text-neutral-500 mx-auto mb-3" />
-                <p className="text-lg text-neutral-400">No contact messages yet</p>
-                <p className="text-sm text-neutral-500 mt-1">Messages will appear here once received</p>
+                <MessageSquare className="mx-auto mb-3 size-12 text-neutral-500" />
+                <p className="text-lg text-neutral-400">
+                  No contact messages yet
+                </p>
+                <p className="mt-1 text-sm text-neutral-500">
+                  Messages will appear here once received
+                </p>
               </div>
             </div>
           ) : (
@@ -526,20 +663,52 @@ export default function AdminDashboardPage() {
                     />
                     <Pie
                       data={[
-                        { name: 'pending', value: contactStats?.pending || 0, fill: '#eab308' },
-                        { name: 'inProgress', value: contactStats?.inProgress || 0, fill: '#3b82f6' },
-                        { name: 'resolved', value: contactStats?.resolved || 0, fill: '#22c55e' },
-                        { name: 'closed', value: contactStats?.closed || 0, fill: '#737373' },
+                        {
+                          name: 'pending',
+                          value: contactStats?.pending || 0,
+                          fill: '#eab308',
+                        },
+                        {
+                          name: 'inProgress',
+                          value: contactStats?.inProgress || 0,
+                          fill: '#3b82f6',
+                        },
+                        {
+                          name: 'resolved',
+                          value: contactStats?.resolved || 0,
+                          fill: '#22c55e',
+                        },
+                        {
+                          name: 'closed',
+                          value: contactStats?.closed || 0,
+                          fill: '#737373',
+                        },
                       ]}
                       dataKey="value"
                       nameKey="name"
                       innerRadius={60}
                     >
                       {[
-                        { name: 'pending', value: contactStats?.pending || 0, fill: '#eab308' },
-                        { name: 'inProgress', value: contactStats?.inProgress || 0, fill: '#3b82f6' },
-                        { name: 'resolved', value: contactStats?.resolved || 0, fill: '#22c55e' },
-                        { name: 'closed', value: contactStats?.closed || 0, fill: '#737373' },
+                        {
+                          name: 'pending',
+                          value: contactStats?.pending || 0,
+                          fill: '#eab308',
+                        },
+                        {
+                          name: 'inProgress',
+                          value: contactStats?.inProgress || 0,
+                          fill: '#3b82f6',
+                        },
+                        {
+                          name: 'resolved',
+                          value: contactStats?.resolved || 0,
+                          fill: '#22c55e',
+                        },
+                        {
+                          name: 'closed',
+                          value: contactStats?.closed || 0,
+                          fill: '#737373',
+                        },
                       ].map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.fill} />
                       ))}
@@ -548,13 +717,13 @@ export default function AdminDashboardPage() {
                 </ResponsiveContainer>
               </ChartContainer>
             </div>
-          ))}
+          )}
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-          <div className="flex items-center justify-between mb-6">
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+          <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-3 bg-neutral-800 rounded-lg">
+              <div className="rounded-lg bg-neutral-800 p-3">
                 <MessageSquare className="size-6" />
               </div>
               <div>
@@ -564,17 +733,23 @@ export default function AdminDashboardPage() {
             </div>
             <div className="text-right">
               <p className="text-4xl font-bold">{contactStats?.total || 0}</p>
-              <p className="text-md text-neutral-500 capitalize">total messages</p>
+              <p className="text-md text-neutral-500 capitalize">
+                total messages
+              </p>
             </div>
           </div>
           {isLoading ? (
-            <Skeleton className="h-[250px] w-full bg-neutral-800 rounded-lg" />
-          ) : (contactStats?.total === 0 || !contactStats ? (
-            <div className="h-[250px] flex items-center justify-center">
+            <Skeleton className="h-[250px] w-full rounded-lg bg-neutral-800" />
+          ) : contactStats?.total === 0 || !contactStats ? (
+            <div className="flex h-[250px] items-center justify-center">
               <div className="text-center">
-                <MessageSquare className="size-12 text-neutral-500 mx-auto mb-3" />
-                <p className="text-lg text-neutral-400">No contact messages yet</p>
-                <p className="text-sm text-neutral-500 mt-1">Messages will appear here once received</p>
+                <MessageSquare className="mx-auto mb-3 size-12 text-neutral-500" />
+                <p className="text-lg text-neutral-400">
+                  No contact messages yet
+                </p>
+                <p className="mt-1 text-sm text-neutral-500">
+                  Messages will appear here once received
+                </p>
               </div>
             </div>
           ) : (
@@ -591,20 +766,52 @@ export default function AdminDashboardPage() {
                     />
                     <Pie
                       data={[
-                        { name: 'general', value: contactStats?.byType.general || 0, fill: '#737373' },
-                        { name: 'suspended', value: contactStats?.byType.suspended || 0, fill: '#ef4444' },
-                        { name: 'feedback', value: contactStats?.byType.feedback || 0, fill: '#a855f7' },
-                        { name: 'support', value: contactStats?.byType.support || 0, fill: '#3b82f6' },
+                        {
+                          name: 'general',
+                          value: contactStats?.byType.general || 0,
+                          fill: '#737373',
+                        },
+                        {
+                          name: 'suspended',
+                          value: contactStats?.byType.suspended || 0,
+                          fill: '#ef4444',
+                        },
+                        {
+                          name: 'feedback',
+                          value: contactStats?.byType.feedback || 0,
+                          fill: '#a855f7',
+                        },
+                        {
+                          name: 'support',
+                          value: contactStats?.byType.support || 0,
+                          fill: '#3b82f6',
+                        },
                       ]}
                       dataKey="value"
                       nameKey="name"
                       innerRadius={60}
                     >
                       {[
-                        { name: 'general', value: contactStats?.byType.general || 0, fill: '#737373' },
-                        { name: 'suspended', value: contactStats?.byType.suspended || 0, fill: '#ef4444' },
-                        { name: 'feedback', value: contactStats?.byType.feedback || 0, fill: '#a855f7' },
-                        { name: 'support', value: contactStats?.byType.support || 0, fill: '#3b82f6' },
+                        {
+                          name: 'general',
+                          value: contactStats?.byType.general || 0,
+                          fill: '#737373',
+                        },
+                        {
+                          name: 'suspended',
+                          value: contactStats?.byType.suspended || 0,
+                          fill: '#ef4444',
+                        },
+                        {
+                          name: 'feedback',
+                          value: contactStats?.byType.feedback || 0,
+                          fill: '#a855f7',
+                        },
+                        {
+                          name: 'support',
+                          value: contactStats?.byType.support || 0,
+                          fill: '#3b82f6',
+                        },
                       ].map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.fill} />
                       ))}
@@ -613,13 +820,13 @@ export default function AdminDashboardPage() {
                 </ResponsiveContainer>
               </ChartContainer>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-          <h3 className="text-2xl font-semibold mb-5">Users by Role</h3>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+          <h3 className="mb-5 text-2xl font-semibold">Users by Role</h3>
           {isLoading ? (
             <div className="space-y-5">
               {[...Array(3)].map((_, i) => (
@@ -629,27 +836,34 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          ) : (!usersData?.byRole || usersData.byRole.length === 0 ? (
+          ) : !usersData?.byRole || usersData.byRole.length === 0 ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-center">
-                <Users className="size-8 text-neutral-500 mx-auto mb-2" />
-                <p className="text-sm text-neutral-400">No user data available</p>
+                <Users className="mx-auto mb-2 size-8 text-neutral-500" />
+                <p className="text-sm text-neutral-400">
+                  No user data available
+                </p>
               </div>
             </div>
           ) : (
             <div className="space-y-5">
               {usersData.byRole.map((item) => (
-                <div key={item.role} className="flex items-center justify-between">
-                  <span className="text-lg text-neutral-300 capitalize">{item.role}</span>
+                <div
+                  key={item.role}
+                  className="flex items-center justify-between"
+                >
+                  <span className="text-lg text-neutral-300 capitalize">
+                    {item.role}
+                  </span>
                   <span className="text-lg font-semibold">{item.count}</span>
                 </div>
               ))}
             </div>
-          ))}
+          )}
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-          <h3 className="text-2xl font-semibold mb-5">Users by Status</h3>
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+          <h3 className="mb-5 text-2xl font-semibold">Users by Status</h3>
           {isLoading ? (
             <div className="space-y-5">
               {[...Array(2)].map((_, i) => (
@@ -659,32 +873,43 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          ) : (!usersData?.byStatus || usersData.byStatus.length === 0 ? (
+          ) : !usersData?.byStatus || usersData.byStatus.length === 0 ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-center">
-                <Users className="size-8 text-neutral-500 mx-auto mb-2" />
-                <p className="text-sm text-neutral-400">No user status data available</p>
+                <Users className="mx-auto mb-2 size-8 text-neutral-500" />
+                <p className="text-sm text-neutral-400">
+                  No user status data available
+                </p>
               </div>
             </div>
           ) : (
             <div className="space-y-5">
               {usersData.byStatus.map((item) => (
-                <div key={item.status} className="flex items-center justify-between">
+                <div
+                  key={item.status}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center gap-3">
-                    <div className={`size-3 rounded-full ${
-                      item.status === 'active' ? 'bg-green-500' : 'bg-red-500'
-                    }`} />
-                    <span className="text-lg text-neutral-300 capitalize">{item.status}</span>
+                    <div
+                      className={`size-3 rounded-full ${
+                        item.status === 'active' ? 'bg-green-500' : 'bg-red-500'
+                      }`}
+                    />
+                    <span className="text-lg text-neutral-300 capitalize">
+                      {item.status}
+                    </span>
                   </div>
                   <span className="text-lg font-semibold">{item.count}</span>
                 </div>
               ))}
             </div>
-          ))}
+          )}
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-          <h3 className="text-2xl font-semibold mb-5">Assessments by Difficulty</h3>
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+          <h3 className="mb-5 text-2xl font-semibold">
+            Assessments by Difficulty
+          </h3>
           {isLoading ? (
             <div className="space-y-5">
               {[...Array(3)].map((_, i) => (
@@ -694,35 +919,50 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          ) : (!assessmentsData?.byDifficulty || assessmentsData.byDifficulty.length === 0 ? (
+          ) : !assessmentsData?.byDifficulty ||
+            assessmentsData.byDifficulty.length === 0 ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-center">
-                <ClipboardList className="size-8 text-neutral-500 mx-auto mb-2" />
-                <p className="text-sm text-neutral-400">No assessment data available</p>
+                <ClipboardList className="mx-auto mb-2 size-8 text-neutral-500" />
+                <p className="text-sm text-neutral-400">
+                  No assessment data available
+                </p>
               </div>
             </div>
           ) : (
             <div className="space-y-5">
               {assessmentsData.byDifficulty.map((item) => (
-                <div key={item.difficulty} className="flex items-center justify-between">
+                <div
+                  key={item.difficulty}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center gap-3">
-                    <div className={`size-3 rounded-full ${
-                      item.difficulty === 'easy' ? 'bg-green-400' :
-                      item.difficulty === 'medium' ? 'bg-yellow-400' : 'bg-red-400'
-                    }`} />
-                    <span className="text-lg text-neutral-300 capitalize">{item.difficulty}</span>
+                    <div
+                      className={`size-3 rounded-full ${
+                        item.difficulty === 'easy'
+                          ? 'bg-green-400'
+                          : item.difficulty === 'medium'
+                            ? 'bg-yellow-400'
+                            : 'bg-red-400'
+                      }`}
+                    />
+                    <span className="text-lg text-neutral-300 capitalize">
+                      {item.difficulty}
+                    </span>
                   </div>
                   <span className="text-lg font-semibold">{item.count}</span>
                 </div>
               ))}
             </div>
-          ))}
+          )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-          <h3 className="text-2xl font-semibold mb-5">Popular Roadmap Topics</h3>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+          <h3 className="mb-5 text-2xl font-semibold">
+            Popular Roadmap Topics
+          </h3>
           {isLoading ? (
             <div className="space-y-5">
               {[...Array(5)].map((_, i) => (
@@ -732,20 +972,28 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          ) : (!roadmapsData?.popularTopics || roadmapsData.popularTopics.length === 0 ? (
+          ) : !roadmapsData?.popularTopics ||
+            roadmapsData.popularTopics.length === 0 ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-center">
-                <Map className="size-8 text-neutral-500 mx-auto mb-2" />
-                <p className="text-sm text-neutral-400">No roadmap topics available</p>
+                <Map className="mx-auto mb-2 size-8 text-neutral-500" />
+                <p className="text-sm text-neutral-400">
+                  No roadmap topics available
+                </p>
               </div>
             </div>
           ) : (
             <div className="space-y-5">
               {roadmapsData.popularTopics.slice(0, 5).map((item, index) => (
-                <div key={item.topic} className="flex items-center justify-between">
+                <div
+                  key={item.topic}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center gap-4">
-                    <span className="text-base text-neutral-500 w-6">{index + 1}.</span>
-                    <span className="text-lg text-neutral-300 truncate max-w-[300px]">
+                    <span className="w-6 text-base text-neutral-500">
+                      {index + 1}.
+                    </span>
+                    <span className="max-w-[300px] truncate text-lg text-neutral-300">
                       {item.topic}
                     </span>
                   </div>
@@ -753,11 +1001,13 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          ))}
+          )}
         </div>
 
-        <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
-          <h3 className="text-2xl font-semibold mb-5">Popular Assessment Domains</h3>
+        <div className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
+          <h3 className="mb-5 text-2xl font-semibold">
+            Popular Assessment Domains
+          </h3>
           {isLoading ? (
             <div className="space-y-5">
               {[...Array(5)].map((_, i) => (
@@ -767,20 +1017,28 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          ) : (!assessmentsData?.popularDomains || assessmentsData.popularDomains.length === 0 ? (
+          ) : !assessmentsData?.popularDomains ||
+            assessmentsData.popularDomains.length === 0 ? (
             <div className="flex items-center justify-center py-8">
               <div className="text-center">
-                <ClipboardList className="size-8 text-neutral-500 mx-auto mb-2" />
-                <p className="text-sm text-neutral-400">No assessment domains available</p>
+                <ClipboardList className="mx-auto mb-2 size-8 text-neutral-500" />
+                <p className="text-sm text-neutral-400">
+                  No assessment domains available
+                </p>
               </div>
             </div>
           ) : (
             <div className="space-y-5">
               {assessmentsData.popularDomains.slice(0, 5).map((item, index) => (
-                <div key={item.domain} className="flex items-center justify-between">
+                <div
+                  key={item.domain}
+                  className="flex items-center justify-between"
+                >
                   <div className="flex items-center gap-4">
-                    <span className="text-base text-neutral-500 w-6">{index + 1}.</span>
-                    <span className="text-lg text-neutral-300 truncate max-w-[300px]">
+                    <span className="w-6 text-base text-neutral-500">
+                      {index + 1}.
+                    </span>
+                    <span className="max-w-[300px] truncate text-lg text-neutral-300">
                       {item.domain}
                     </span>
                   </div>
@@ -788,7 +1046,7 @@ export default function AdminDashboardPage() {
                 </div>
               ))}
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>

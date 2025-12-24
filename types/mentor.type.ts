@@ -1,12 +1,12 @@
 import { SortOrder } from './table.type';
 import { DOCUMENT_TYPES } from '@/constants';
 
-export type MentorApplicationStatus = 
-  | 'pending' 
-  | 'flagged' 
-  | 'under_review' 
-  | 'approved' 
-  | 'declined' 
+export type MentorApplicationStatus =
+  | 'pending'
+  | 'flagged'
+  | 'under_review'
+  | 'approved'
+  | 'declined'
   | 'withdrawn';
 
 export type MentorDocumentType = (typeof DOCUMENT_TYPES)[number]['value'];
@@ -63,7 +63,10 @@ export interface IMentorApplication {
   ipHash: string;
 }
 
-export interface ICreateMentorApplicationRequest extends Omit<IMentorCoreData, 'linkedinUrl' | 'portfolioUrl'> {
+export interface ICreateMentorApplicationRequest extends Omit<
+  IMentorCoreData,
+  'linkedinUrl' | 'portfolioUrl'
+> {
   linkedinUrl?: string;
   portfolioUrl?: string;
   motivation: string;

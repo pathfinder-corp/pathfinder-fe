@@ -16,10 +16,10 @@ export default function Home() {
   }, [initializeUser]);
 
   return (
-    <div className="min-h-screen bg-neutral-950 relative">
+    <div className="relative min-h-screen bg-neutral-950">
       <PublicHeader />
 
-      <div className="size-full absolute inset-0">
+      <div className="absolute inset-0 size-full">
         <DotGrid
           dotSize={6}
           gap={15}
@@ -34,61 +34,61 @@ export default function Home() {
       </div>
 
       <main className="relative z-10">
-        <section className="min-h-screen flex items-center justify-center px-8 pt-14">
-          <div className="max-w-10xl mx-auto text-center space-y-10">
-            <div className="inline-flex items-center gap-3 px-6 py-3 rounded-full border border-neutral-800 bg-neutral-900/50 backdrop-blur-sm text-lg text-neutral-300">
+        <section className="flex min-h-screen items-center justify-center px-8 pt-14">
+          <div className="max-w-10xl mx-auto space-y-10 text-center">
+            <div className="inline-flex items-center gap-3 rounded-full border border-neutral-800 bg-neutral-900/50 px-6 py-3 text-lg text-neutral-300 backdrop-blur-sm">
               <span className="relative flex size-3">
-                <span className="animate-ping absolute inline-flex size-full rounded-full bg-white opacity-75" />
-                <span className="relative inline-flex rounded-full size-3 bg-white" />
+                <span className="absolute inline-flex size-full animate-ping rounded-full bg-white opacity-75" />
+                <span className="relative inline-flex size-3 rounded-full bg-white" />
               </span>
               AI-Powered Roadmap Recommendation
             </div>
 
-            <h1 className="text-9xl font-bold tracking-tight leading-tight">
+            <h1 className="text-9xl leading-tight font-bold tracking-tight">
               Guide{' '}
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-white via-neutral-200 to-neutral-500">
+              <span className="bg-linear-to-r from-white via-neutral-200 to-neutral-500 bg-clip-text text-transparent">
                 your future
               </span>
               <br />
               with AI
             </h1>
-            
-            <p className="md:text-3xl text-neutral-400 max-w-4xl mx-auto leading-relaxed">
-              The system recommends learning roadmaps and career paths intelligently, 
-              helping you make informed decisions for your future
+
+            <p className="mx-auto max-w-4xl leading-relaxed text-neutral-400 md:text-3xl">
+              The system recommends learning roadmaps and career paths
+              intelligently, helping you make informed decisions for your future
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6">
+            <div className="flex flex-col items-center justify-center gap-6 pt-6 sm:flex-row">
               <Button
                 asChild
                 size="lg"
-                className="w-full sm:w-auto rounded-full bg-white text-neutral-950 hover:bg-neutral-200 text-2xl px-12 py-10"
+                className="w-full rounded-full bg-white px-12 py-10 text-2xl text-neutral-950 hover:bg-neutral-200 sm:w-auto"
               >
-                <Link href="/login">
-                  Discover your roadmap
-                </Link>
+                <Link href="/login">Discover your roadmap</Link>
               </Button>
-              
+
               <Button
                 asChild
                 size="lg"
                 variant="ghost"
-                className="w-full sm:w-auto rounded-full border border-white/20 bg-white/5 backdrop-blur-xl hover:bg-white/10 hover:border-white/40 text-2xl px-12 py-10 transition-all duration-300 shadow-lg shadow-black/20"
+                className="w-full rounded-full border border-white/20 bg-white/5 px-12 py-10 text-2xl shadow-lg shadow-black/20 backdrop-blur-xl transition-all duration-300 hover:border-white/40 hover:bg-white/10 sm:w-auto"
               >
-                <Link href="/about-ai">
-                  Learn about AI
-                </Link>
+                <Link href="/about-ai">Learn about AI</Link>
               </Button>
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-12 pt-16 text-lg text-neutral-500">
               <div className="flex items-center gap-3">
-                <span className="text-4xl font-bold text-white">AI-Powered</span>
+                <span className="text-4xl font-bold text-white">
+                  AI-Powered
+                </span>
                 <span>Intelligent analysis</span>
               </div>
               <div className="h-7 w-[2px] bg-neutral-700" />
               <div className="flex items-center gap-3">
-                <span className="text-4xl font-bold text-white">Personalized</span>
+                <span className="text-4xl font-bold text-white">
+                  Personalized
+                </span>
                 <span>Customized roadmap</span>
               </div>
               <div className="h-7 w-[2px] bg-neutral-700" />

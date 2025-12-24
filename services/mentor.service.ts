@@ -1,4 +1,4 @@
-import type { 
+import type {
   IMentorApplication,
   ICreateMentorApplicationRequest,
   IMentorProfile,
@@ -14,14 +14,19 @@ import type {
   IUpdateMentorReviewRequest,
   IMentorReviewsResponse,
   IMentorReviewStats,
-  IMentorReviewsParams
+  IMentorReviewsParams,
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
 export const mentorService = {
-  createApplication: async (data: ICreateMentorApplicationRequest): Promise<IMentorApplication> => {
+  createApplication: async (
+    data: ICreateMentorApplicationRequest
+  ): Promise<IMentorApplication> => {
     try {
-      const response = await api.post<IMentorApplication>('/mentor-applications', data);
+      const response = await api.post<IMentorApplication>(
+        '/mentor-applications',
+        data
+      );
       return response.data;
     } catch (error) {
       console.error('Create mentor application failed:', error);
@@ -41,14 +46,16 @@ export const mentorService = {
       issuedYear?: number;
       issuingOrganization?: string;
     }>
-  ): Promise<IMentorApplication & { 
-    uploadSummary?: { 
-      total: number; 
-      uploaded: number; 
-      failed: number; 
-      failures?: Array<{ filename: string; error: string }>;
-    } 
-  }> => {
+  ): Promise<
+    IMentorApplication & {
+      uploadSummary?: {
+        total: number;
+        uploaded: number;
+        failed: number;
+        failures?: Array<{ filename: string; error: string }>;
+      };
+    }
+  > => {
     try {
       const formData = new FormData();
 
@@ -75,7 +82,7 @@ export const mentorService = {
           title: doc.title,
           description: doc.description,
           issuedYear: doc.issuedYear,
-          issuingOrganization: doc.issuingOrganization
+          issuingOrganization: doc.issuingOrganization,
         }));
         formData.append('documentsMetadata', JSON.stringify(metadata));
       }
@@ -100,7 +107,9 @@ export const mentorService = {
 
   getMyApplications: async (): Promise<IMentorApplication[]> => {
     try {
-      const response = await api.get<IMentorApplication[]>('/mentor-applications/mine');
+      const response = await api.get<IMentorApplication[]>(
+        '/mentor-applications/mine'
+      );
       return response.data;
     } catch (error) {
       console.error('Get my application failed:', error);
@@ -112,7 +121,9 @@ export const mentorService = {
 
   getApplicationById: async (id: string): Promise<IMentorApplication> => {
     try {
-      const response = await api.get<IMentorApplication>(`/mentor-applications/${id}`);
+      const response = await api.get<IMentorApplication>(
+        `/mentor-applications/${id}`
+      );
       return response.data;
     } catch (error) {
       console.error('Get application by id failed:', error);
@@ -145,9 +156,14 @@ export const mentorService = {
     }
   },
 
-  updateMyProfile: async (data: IUpdateMentorProfileRequest): Promise<IMentorProfile> => {
+  updateMyProfile: async (
+    data: IUpdateMentorProfileRequest
+  ): Promise<IMentorProfile> => {
     try {
-      const response = await api.put<IMentorProfile>('/mentor-profiles/me', data);
+      const response = await api.put<IMentorProfile>(
+        '/mentor-profiles/me',
+        data
+      );
       return response.data;
     } catch (error) {
       console.error('Update my mentor profile failed:', error);
@@ -157,28 +173,38 @@ export const mentorService = {
     }
   },
 
-  getMentors: async (params?: IMentorProfilesParams): Promise<IMentorProfilesResponse> => {
+  getMentors: async (
+    params?: IMentorProfilesParams
+  ): Promise<IMentorProfilesResponse> => {
     try {
       const queryParams = new URLSearchParams();
-      
+
       if (params?.search) queryParams.append('search', params.search);
-      if (params?.minYearsExperience) queryParams.append('minYearsExperience', String(params.minYearsExperience));
+      if (params?.minYearsExperience)
+        queryParams.append(
+          'minYearsExperience',
+          String(params.minYearsExperience)
+        );
       if (params?.page) queryParams.append('page', String(params.page));
       if (params?.limit) queryParams.append('limit', String(params.limit));
       if (params?.sortBy) queryParams.append('sortBy', params.sortBy);
       if (params?.sortOrder) queryParams.append('sortOrder', params.sortOrder);
-      
+
       if (params?.expertise?.length) {
-        params.expertise.forEach(exp => queryParams.append('expertise', exp));
+        params.expertise.forEach((exp) => queryParams.append('expertise', exp));
       }
       if (params?.skills?.length) {
-        params.skills.forEach(skill => queryParams.append('skills', skill));
+        params.skills.forEach((skill) => queryParams.append('skills', skill));
       }
       if (params?.industries?.length) {
-        params.industries.forEach(ind => queryParams.append('industries', ind));
+        params.industries.forEach((ind) =>
+          queryParams.append('industries', ind)
+        );
       }
       if (params?.languages?.length) {
-        params.languages.forEach(lang => queryParams.append('languages', lang));
+        params.languages.forEach((lang) =>
+          queryParams.append('languages', lang)
+        );
       }
 
       const response = await api.get<IMentorProfilesResponse>(
@@ -207,7 +233,9 @@ export const mentorService = {
 
   getMentorWithDocuments: async (id: string): Promise<IMentorProfile> => {
     try {
-      const response = await api.get<IMentorProfile>(`/mentor-profiles/${id}/with-documents`);
+      const response = await api.get<IMentorProfile>(
+        `/mentor-profiles/${id}/with-documents`
+      );
       return response.data;
     } catch (error) {
       console.error('Get mentor with documents failed:', error);
@@ -217,9 +245,13 @@ export const mentorService = {
     }
   },
 
-  getMentorDocuments: async (mentorProfileId: string): Promise<IMentorDocument[]> => {
+  getMentorDocuments: async (
+    mentorProfileId: string
+  ): Promise<IMentorDocument[]> => {
     try {
-      const response = await api.get<IMentorDocument[]>(`/mentor-profiles/${mentorProfileId}/documents`);
+      const response = await api.get<IMentorDocument[]>(
+        `/mentor-profiles/${mentorProfileId}/documents`
+      );
       return response.data;
     } catch (error) {
       console.error('Get mentor documents failed:', error);
@@ -231,7 +263,9 @@ export const mentorService = {
 
   getMyDocuments: async (): Promise<IMentorDocument[]> => {
     try {
-      const response = await api.get<IMentorDocument[]>('/mentor-profiles/me/documents');
+      const response = await api.get<IMentorDocument[]>(
+        '/mentor-profiles/me/documents'
+      );
       return response.data;
     } catch (error) {
       console.error('Get my documents failed:', error);
@@ -241,15 +275,19 @@ export const mentorService = {
     }
   },
 
-  uploadMyDocument: async (data: IUploadMentorDocumentRequest): Promise<IMentorDocument> => {
+  uploadMyDocument: async (
+    data: IUploadMentorDocumentRequest
+  ): Promise<IMentorDocument> => {
     try {
       const formData = new FormData();
       formData.append('file', data.file);
       formData.append('type', data.type);
       if (data.title) formData.append('title', data.title);
       if (data.description) formData.append('description', data.description);
-      if (data.issuedYear) formData.append('issuedYear', String(data.issuedYear));
-      if (data.issuingOrganization) formData.append('issuingOrganization', data.issuingOrganization);
+      if (data.issuedYear)
+        formData.append('issuedYear', String(data.issuedYear));
+      if (data.issuingOrganization)
+        formData.append('issuingOrganization', data.issuingOrganization);
 
       const response = await api.post<IMentorDocument>(
         '/mentor-profiles/me/documents',
@@ -299,7 +337,7 @@ export const mentorService = {
   },
 
   uploadDocument: async (
-    applicationId: string, 
+    applicationId: string,
     data: IUploadMentorDocumentRequest
   ): Promise<IMentorDocument> => {
     try {
@@ -308,8 +346,10 @@ export const mentorService = {
       formData.append('type', data.type);
       if (data.title) formData.append('title', data.title);
       if (data.description) formData.append('description', data.description);
-      if (data.issuedYear) formData.append('issuedYear', String(data.issuedYear));
-      if (data.issuingOrganization) formData.append('issuingOrganization', data.issuingOrganization);
+      if (data.issuedYear)
+        formData.append('issuedYear', String(data.issuedYear));
+      if (data.issuingOrganization)
+        formData.append('issuingOrganization', data.issuingOrganization);
 
       const response = await api.post<IMentorDocument>(
         `/mentor-applications/${applicationId}/documents`,
@@ -344,7 +384,7 @@ export const mentorService = {
   },
 
   getDocumentById: async (
-    applicationId: string, 
+    applicationId: string,
     documentId: string
   ): Promise<IMentorDocument> => {
     try {
@@ -361,7 +401,7 @@ export const mentorService = {
   },
 
   downloadDocument: async (
-    applicationId: string, 
+    applicationId: string,
     documentId: string
   ): Promise<Blob> => {
     try {
@@ -381,7 +421,7 @@ export const mentorService = {
   },
 
   updateDocument: async (
-    applicationId: string, 
+    applicationId: string,
     documentId: string,
     data: IUpdateMentorDocumentRequest
   ): Promise<IMentorDocument> => {
@@ -400,7 +440,7 @@ export const mentorService = {
   },
 
   deleteDocument: async (
-    applicationId: string, 
+    applicationId: string,
     documentId: string
   ): Promise<void> => {
     try {
@@ -425,9 +465,10 @@ export const mentorService = {
       throw error;
     }
   },
-  
+
   getDocumentViewUrl: (profileId: string, documentId: string): string => {
-    const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
     return `${baseUrl}/mentor-profiles/${profileId}/documents/${documentId}/view`;
   },
 
@@ -452,9 +493,13 @@ export const mentorService = {
     }
   },
 
-  getMentorReviewStats: async (mentorId: string): Promise<IMentorReviewStats> => {
+  getMentorReviewStats: async (
+    mentorId: string
+  ): Promise<IMentorReviewStats> => {
     try {
-      const response = await api.get<IMentorReviewStats>(`/mentors/${mentorId}/reviews/stats`);
+      const response = await api.get<IMentorReviewStats>(
+        `/mentors/${mentorId}/reviews/stats`
+      );
       return response.data;
     } catch (error) {
       console.error('Get mentor review stats failed:', error);
@@ -466,7 +511,9 @@ export const mentorService = {
 
   getMyReview: async (mentorId: string): Promise<IMentorReview | null> => {
     try {
-      const response = await api.get<IMentorReview | null>(`/mentors/${mentorId}/reviews/my`);
+      const response = await api.get<IMentorReview | null>(
+        `/mentors/${mentorId}/reviews/my`
+      );
       return response.data;
     } catch (error) {
       console.error('Get my review failed:', error);
@@ -481,7 +528,10 @@ export const mentorService = {
     data: ICreateMentorReviewRequest
   ): Promise<IMentorReview> => {
     try {
-      const response = await api.post<IMentorReview>(`/mentors/${mentorId}/reviews`, data);
+      const response = await api.post<IMentorReview>(
+        `/mentors/${mentorId}/reviews`,
+        data
+      );
       return response.data;
     } catch (error) {
       console.error('Create review failed:', error);
@@ -519,5 +569,5 @@ export const mentorService = {
       if (message) throw new Error(message);
       throw error;
     }
-  }
+  },
 };

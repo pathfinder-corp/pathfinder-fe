@@ -2,9 +2,9 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
-import { 
-  Search, 
-  MoreVertical, 
+import {
+  Search,
+  MoreVertical,
   Map,
   Loader2,
   Trash2,
@@ -14,17 +14,17 @@ import {
   ArrowUp,
   ArrowDown,
   ExternalLink,
-  Share2
+  Share2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { adminService } from '@/services';
-import type { 
-  IAdminRoadmap, 
+import type {
+  IAdminRoadmap,
   IAdminRoadmapDetail,
   IAdminRoadmapsParams,
   RoadmapSortField,
-  SortOrder
+  SortOrder,
 } from '@/types';
 import { ITEMS_PER_PAGE, SORT_ORDER } from '@/constants';
 import { useDebounceValue } from 'usehooks-ts';
@@ -38,7 +38,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Dialog,
@@ -96,16 +96,19 @@ export default function AdminRoadmapsPage() {
   const [sortBy, setSortBy] = useState<RoadmapSortField>('createdAt');
   const [sortOrder, setSortOrder] = useState<SortOrder>(SORT_ORDER.DESC);
 
-  const [selectedRoadmap, setSelectedRoadmap] = useState<IAdminRoadmapDetail | null>(null);
+  const [selectedRoadmap, setSelectedRoadmap] =
+    useState<IAdminRoadmapDetail | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
-  const [roadmapToDelete, setRoadmapToDelete] = useState<IAdminRoadmap | null>(null);
+  const [roadmapToDelete, setRoadmapToDelete] = useState<IAdminRoadmap | null>(
+    null
+  );
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
 
   const fetchRoadmaps = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       const params: IAdminRoadmapsParams = {
         page: currentPage,
         limit: ITEMS_PER_PAGE,
@@ -126,9 +129,8 @@ export default function AdminRoadmapsPage() {
       setTotalPages(response.meta.totalPages);
       setTotalRoadmaps(response.meta.total);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load roadmaps';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load roadmaps';
       toast.error('Failed to load roadmaps', {
         description: errorMessage,
       });
@@ -139,7 +141,9 @@ export default function AdminRoadmapsPage() {
 
   const handleSort = (field: RoadmapSortField) => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === SORT_ORDER.ASC ? SORT_ORDER.DESC : SORT_ORDER.ASC);
+      setSortOrder(
+        sortOrder === SORT_ORDER.ASC ? SORT_ORDER.DESC : SORT_ORDER.ASC
+      );
     } else {
       setSortBy(field);
       setSortOrder(SORT_ORDER.DESC);
@@ -149,11 +153,13 @@ export default function AdminRoadmapsPage() {
 
   const getSortIcon = (field: RoadmapSortField) => {
     if (sortBy !== field) {
-      return <ArrowUpDown className="size-5 ml-2 opacity-50" />;
+      return <ArrowUpDown className="ml-2 size-5 opacity-50" />;
     }
-    return sortOrder === SORT_ORDER.ASC 
-      ? <ArrowUp className="size-5 ml-2" />
-      : <ArrowDown className="size-5 ml-2" />;
+    return sortOrder === SORT_ORDER.ASC ? (
+      <ArrowUp className="ml-2 size-5" />
+    ) : (
+      <ArrowDown className="ml-2 size-5" />
+    );
   };
 
   useEffect(() => {
@@ -171,9 +177,10 @@ export default function AdminRoadmapsPage() {
       setSelectedRoadmap(roadmapDetail);
       setIsViewDialogOpen(true);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load roadmap details';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load roadmap details';
       toast.error('Failed to load roadmap details', {
         description: errorMessage,
       });
@@ -193,9 +200,8 @@ export default function AdminRoadmapsPage() {
       setRoadmapToDelete(null);
       fetchRoadmaps();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to delete roadmap';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to delete roadmap';
       toast.error('Failed to delete roadmap', {
         description: errorMessage,
       });
@@ -231,84 +237,90 @@ export default function AdminRoadmapsPage() {
 
   const generatePaginationItems = () => {
     const items: (number | 'ellipsis')[] = [];
-    
+
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) {
         items.push(i);
       }
     } else {
       items.push(1);
-      
+
       if (currentPage > 3) {
         items.push('ellipsis');
       }
-      
+
       const start = Math.max(2, currentPage - 1);
       const end = Math.min(totalPages - 1, currentPage + 1);
-      
+
       for (let i = start; i <= end; i++) {
         items.push(i);
       }
-      
+
       if (currentPage < totalPages - 2) {
         items.push('ellipsis');
       }
-      
+
       items.push(totalPages);
     }
-    
+
     return items;
   };
 
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-5xl font-bold mb-3">Roadmaps</h1>
+        <h1 className="mb-3 text-5xl font-bold">Roadmaps</h1>
         <p className="text-xl text-neutral-400">
           Manage all roadmaps on the platform
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-5 sm:items-center justify-between">
-        <div className="relative flex-1 max-w-xl">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 size-6 text-neutral-400" />
+      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+        <div className="relative max-w-xl flex-1">
+          <Search className="absolute top-1/2 left-5 size-6 -translate-y-1/2 text-neutral-400" />
           <Input
             placeholder="Search by topic..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-14 h-14 text-lg! bg-neutral-900/50 border-neutral-800"
+            className="h-14 border-neutral-800 bg-neutral-900/50 pl-14 text-lg!"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+              className="absolute top-1/2 right-5 -translate-y-1/2 text-neutral-400 hover:text-white"
             >
               <X className="size-5" />
             </button>
           )}
         </div>
 
-        <Select 
-          value={shareFilter} 
+        <Select
+          value={shareFilter}
           onValueChange={(value) => setShareFilter(value as ShareFilter)}
         >
-          <SelectTrigger className="w-[160px] h-14! text-lg bg-neutral-900/50 border-neutral-800">
+          <SelectTrigger className="h-14! w-[160px] border-neutral-800 bg-neutral-900/50 text-lg">
             <SelectValue placeholder="Status" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all" className="text-lg">All Status</SelectItem>
-            <SelectItem value="shared" className="text-lg">Public</SelectItem>
-            <SelectItem value="private" className="text-lg">Private</SelectItem>
+            <SelectItem value="all" className="text-lg">
+              All Status
+            </SelectItem>
+            <SelectItem value="shared" className="text-lg">
+              Public
+            </SelectItem>
+            <SelectItem value="private" className="text-lg">
+              Private
+            </SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50">
         <Table>
           <TableHeader>
             <TableRow className="border-neutral-800 hover:bg-transparent">
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pl-7 cursor-pointer hover:text-white transition-colors w-[320px]"
+              <TableHead
+                className="w-[320px] cursor-pointer py-5 pl-7 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('topic')}
               >
                 <div className="flex items-center">
@@ -316,20 +328,20 @@ export default function AdminRoadmapsPage() {
                   {getSortIcon('topic')}
                 </div>
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[220px]">
+              <TableHead className="w-[220px] py-5 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Owner
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[140px]">
+              <TableHead className="w-[140px] py-5 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Level
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[140px]">
+              <TableHead className="w-[140px] py-5 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Timeframe
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[120px]">
+              <TableHead className="w-[120px] py-5 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Status
               </TableHead>
-              <TableHead 
-                className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 cursor-pointer hover:text-white transition-colors w-[160px]"
+              <TableHead
+                className="w-[160px] cursor-pointer py-5 text-base font-medium tracking-wider text-neutral-400 uppercase transition-colors hover:text-white"
                 onClick={() => handleSort('createdAt')}
               >
                 <div className="flex items-center">
@@ -337,7 +349,7 @@ export default function AdminRoadmapsPage() {
                   {getSortIcon('createdAt')}
                 </div>
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pr-7 text-right w-[100px]">
+              <TableHead className="w-[100px] py-5 pr-7 text-right text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Actions
               </TableHead>
             </TableRow>
@@ -358,74 +370,92 @@ export default function AdminRoadmapsPage() {
                       <Skeleton className="h-5 w-32 bg-neutral-800" />
                     </div>
                   </TableCell>
-                  <TableCell><Skeleton className="h-7 w-24 rounded-full bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-20 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-7 w-18 rounded-full bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-5 w-28 bg-neutral-800" /></TableCell>
-                  <TableCell className="pr-6"><Skeleton className="size-9 rounded-lg bg-neutral-800 ml-auto" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-7 w-24 rounded-full bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-20 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-7 w-18 rounded-full bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-28 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell className="pr-6">
+                    <Skeleton className="ml-auto size-9 rounded-lg bg-neutral-800" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : roadmaps.length === 0 ? (
               <TableRow className="border-neutral-800 hover:bg-transparent">
                 <TableCell colSpan={7} className="py-16 text-center">
-                  <div className="size-16 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+                  <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-neutral-800">
                     <Map className="size-8 text-neutral-500" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-2">No roadmaps found</h3>
+                  <h3 className="mb-2 text-xl font-semibold">
+                    No roadmaps found
+                  </h3>
                   <p className="text-neutral-400">
-                    {searchQuery ? 'Try a different search term' : 'No roadmaps match the selected filter'}
+                    {searchQuery
+                      ? 'Try a different search term'
+                      : 'No roadmaps match the selected filter'}
                   </p>
                 </TableCell>
               </TableRow>
             ) : (
               roadmaps.map((roadmap) => (
-                <TableRow 
-                  key={roadmap.id} 
-                  className="border-neutral-800 hover:bg-neutral-800/30 transition-colors"
+                <TableRow
+                  key={roadmap.id}
+                  className="border-neutral-800 transition-colors hover:bg-neutral-800/30"
                 >
                   <TableCell className="py-5 pl-7">
                     <div className="flex items-center gap-3">
-                      <div className="size-12 rounded-lg bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center shrink-0">
+                      <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-linear-to-br from-neutral-700 to-neutral-800">
                         <Map className="size-6 text-neutral-400" />
                       </div>
-                      <p className="font-medium text-lg text-neutral-100 truncate max-w-[240px]">
+                      <p className="max-w-[240px] truncate text-lg font-medium text-neutral-100">
                         {roadmap.topic}
                       </p>
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="size-10 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold shrink-0">
-                        {roadmap.owner.firstName[0]}{roadmap.owner.lastName[0]}
+                      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-sm font-bold">
+                        {roadmap.owner.firstName[0]}
+                        {roadmap.owner.lastName[0]}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-lg text-neutral-300 truncate max-w-[160px]">
+                        <p className="max-w-[160px] truncate text-lg text-neutral-300">
                           {roadmap.owner.firstName} {roadmap.owner.lastName}
                         </p>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={`py-2 px-4 capitalize text-base ${getExperienceBadgeColor(roadmap.experienceLevel)}`}>
+                    <Badge
+                      variant="outline"
+                      className={`px-4 py-2 text-base capitalize ${getExperienceBadgeColor(roadmap.experienceLevel)}`}
+                    >
                       {roadmap.experienceLevel || 'N/A'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-lg">
+                  <TableCell className="text-lg text-neutral-300">
                     {roadmap.timeframe || 'N/A'}
                   </TableCell>
                   <TableCell>
-                    <Badge 
-                      variant="outline" 
-                      className={`py-2 px-4 text-base ${
-                        roadmap.isSharedWithAll 
-                          ? 'bg-green-500/20 text-green-400 border-green-500/30' 
-                          : 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30'
+                    <Badge
+                      variant="outline"
+                      className={`px-4 py-2 text-base ${
+                        roadmap.isSharedWithAll
+                          ? 'border-green-500/30 bg-green-500/20 text-green-400'
+                          : 'border-neutral-500/30 bg-neutral-500/20 text-neutral-400'
                       }`}
                     >
                       {roadmap.isSharedWithAll ? 'Public' : 'Private'}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-neutral-300 text-lg">
+                  <TableCell className="text-lg text-neutral-300">
                     {formatDate(roadmap.createdAt)}
                   </TableCell>
                   <TableCell className="pr-7 text-right">
@@ -436,30 +466,30 @@ export default function AdminRoadmapsPage() {
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => handleViewRoadmap(roadmap)}
-                          className="text-lg! py-3"
+                          className="py-3 text-lg!"
                         >
                           <Eye className="size-5" />
                           View details
                         </DropdownMenuItem>
                         <DropdownMenuItem asChild>
-                          <Link 
-                            href={`/roadmap/${roadmap.id}`} 
+                          <Link
+                            href={`/roadmap/${roadmap.id}`}
                             target="_blank"
-                            className="text-lg! py-3"
+                            className="py-3 text-lg!"
                           >
                             <ExternalLink className="size-5" />
                             Open roadmap
                           </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem 
+                        <DropdownMenuItem
                           onClick={() => {
                             setRoadmapToDelete(roadmap);
                             setIsDeleteDialogOpen(true);
                           }}
-                          className="dark:hover:bg-red-500/10 transition-colors text-lg! py-3 text-red-500 focus:text-red-500"
+                          className="py-3 text-lg! text-red-500 transition-colors focus:text-red-500 dark:hover:bg-red-500/10"
                         >
                           <Trash2 className="size-5 text-red-500" />
                           Delete roadmap
@@ -474,25 +504,30 @@ export default function AdminRoadmapsPage() {
         </Table>
 
         {!isLoading && totalRoadmaps > 0 && (
-          <div className="px-7 py-5 border-t border-neutral-800 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <span className="text-lg text-neutral-400 whitespace-nowrap">
-              Showing {startIndex} to {endIndex} of {totalRoadmaps} roadmap{totalRoadmaps > 1 ? 's' : ''}
+          <div className="flex flex-col gap-3 border-t border-neutral-800 px-7 py-5 md:flex-row md:items-center md:justify-between">
+            <span className="text-lg whitespace-nowrap text-neutral-400">
+              Showing {startIndex} to {endIndex} of {totalRoadmaps} roadmap
+              {totalRoadmaps > 1 ? 's' : ''}
             </span>
-            
+
             {totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious 
+                    <PaginationPrevious
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (currentPage > 1) setCurrentPage(p => p - 1);
+                        if (currentPage > 1) setCurrentPage((p) => p - 1);
                       }}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={
+                        currentPage === 1
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
                     />
                   </PaginationItem>
-                  
+
                   {generatePaginationItems().map((item, index) => (
                     <PaginationItem key={index}>
                       {item === 'ellipsis' ? (
@@ -512,15 +547,20 @@ export default function AdminRoadmapsPage() {
                       )}
                     </PaginationItem>
                   ))}
-                  
+
                   <PaginationItem>
-                    <PaginationNext 
+                    <PaginationNext
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (currentPage < totalPages) setCurrentPage(p => p + 1);
+                        if (currentPage < totalPages)
+                          setCurrentPage((p) => p + 1);
                       }}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={
+                        currentPage === totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>
@@ -538,14 +578,14 @@ export default function AdminRoadmapsPage() {
               View detailed information about this roadmap
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedRoadmap && (
             <div className="space-y-6">
               <div className="flex items-start gap-4">
-                <div className="size-14 rounded-xl bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center shrink-0">
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-neutral-700 to-neutral-800">
                   <Map className="size-7 text-neutral-400" />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="text-xl font-semibold wrap-break-word">
                     {selectedRoadmap.topic}
                   </p>
@@ -555,63 +595,88 @@ export default function AdminRoadmapsPage() {
                 </div>
               </div>
 
-              <div className="bg-neutral-800/50 rounded-lg p-4">
-                <p className="text-sm text-neutral-500 mb-2">Owner</p>
+              <div className="rounded-lg bg-neutral-800/50 p-4">
+                <p className="mb-2 text-sm text-neutral-500">Owner</p>
                 <div className="flex items-center gap-3">
-                  <div className="size-10 rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-sm font-bold">
-                    {selectedRoadmap.owner.firstName[0]}{selectedRoadmap.owner.lastName[0]}
+                  <div className="flex size-10 items-center justify-center rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 text-sm font-bold">
+                    {selectedRoadmap.owner.firstName[0]}
+                    {selectedRoadmap.owner.lastName[0]}
                   </div>
                   <div>
                     <p className="text-base font-medium">
-                      {selectedRoadmap.owner.firstName} {selectedRoadmap.owner.lastName}
+                      {selectedRoadmap.owner.firstName}{' '}
+                      {selectedRoadmap.owner.lastName}
                     </p>
-                    <p className="text-sm text-neutral-400">{selectedRoadmap.owner.email}</p>
+                    <p className="text-sm text-neutral-400">
+                      {selectedRoadmap.owner.email}
+                    </p>
                   </div>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Experience Level</p>
-                  <Badge variant="outline" className={`py-1.5 px-3 capitalize text-sm ${getExperienceBadgeColor(selectedRoadmap.experienceLevel)}`}>
+                  <p className="mb-1 text-base text-neutral-500">
+                    Experience Level
+                  </p>
+                  <Badge
+                    variant="outline"
+                    className={`px-3 py-1.5 text-sm capitalize ${getExperienceBadgeColor(selectedRoadmap.experienceLevel)}`}
+                  >
                     {selectedRoadmap.experienceLevel || 'N/A'}
                   </Badge>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Learning Pace</p>
-                  <p className="text-lg capitalize">{selectedRoadmap.learningPace || 'N/A'}</p>
+                  <p className="mb-1 text-base text-neutral-500">
+                    Learning Pace
+                  </p>
+                  <p className="text-lg capitalize">
+                    {selectedRoadmap.learningPace || 'N/A'}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Phases</p>
-                  <p className="text-lg font-semibold">{selectedRoadmap.phases?.length || 0}</p>
+                  <p className="mb-1 text-base text-neutral-500">Phases</p>
+                  <p className="text-lg font-semibold">
+                    {selectedRoadmap.phases?.length || 0}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Milestones</p>
-                  <p className="text-lg font-semibold">{selectedRoadmap.milestones?.length || 0}</p>
+                  <p className="mb-1 text-base text-neutral-500">Milestones</p>
+                  <p className="text-lg font-semibold">
+                    {selectedRoadmap.milestones?.length || 0}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Shared With</p>
+                  <p className="mb-1 text-base text-neutral-500">Shared With</p>
                   <div className="flex items-center gap-2">
                     <Share2 className="size-4 text-neutral-400" />
-                    <p className="text-lg font-semibold">{selectedRoadmap.shareCount} users</p>
+                    <p className="text-lg font-semibold">
+                      {selectedRoadmap.shareCount} users
+                    </p>
                   </div>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Public</p>
-                  <p className="text-lg">{selectedRoadmap.isSharedWithAll ? 'Yes' : 'No'}</p>
+                  <p className="mb-1 text-base text-neutral-500">Public</p>
+                  <p className="text-lg">
+                    {selectedRoadmap.isSharedWithAll ? 'Yes' : 'No'}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Created</p>
-                  <p className="text-lg">{formatDate(selectedRoadmap.createdAt)}</p>
+                  <p className="mb-1 text-base text-neutral-500">Created</p>
+                  <p className="text-lg">
+                    {formatDate(selectedRoadmap.createdAt)}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-base text-neutral-500 mb-1">Updated</p>
-                  <p className="text-lg">{formatDate(selectedRoadmap.updatedAt)}</p>
+                  <p className="mb-1 text-base text-neutral-500">Updated</p>
+                  <p className="text-lg">
+                    {formatDate(selectedRoadmap.updatedAt)}
+                  </p>
                 </div>
               </div>
 
               <div className="pt-2">
-                <Button asChild className="w-full h-14! text-[1.15rem]!">
+                <Button asChild className="h-14! w-full text-[1.15rem]!">
                   <Link href={`/roadmap/${selectedRoadmap.id}`} target="_blank">
                     Open Roadmap
                     <ExternalLink className="size-5" />
@@ -623,23 +688,32 @@ export default function AdminRoadmapsPage() {
         </DialogContent>
       </Dialog>
 
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Roadmap</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete the roadmap &quot;<strong>{roadmapToDelete?.topic}</strong>&quot;? 
-              This action cannot be undone and will permanently remove the roadmap and all associated data.
+              Are you sure you want to delete the roadmap &quot;
+              <strong>{roadmapToDelete?.topic}</strong>&quot;? This action
+              cannot be undone and will permanently remove the roadmap and all
+              associated data.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isLoadingAction}>Cancel</AlertDialogCancel>
+            <AlertDialogCancel disabled={isLoadingAction}>
+              Cancel
+            </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDeleteRoadmap}
               disabled={isLoadingAction}
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-red-500 text-white hover:bg-red-600"
             >
-              {isLoadingAction && <Loader2 className="size-4 mr-2 animate-spin" />}
+              {isLoadingAction && (
+                <Loader2 className="mr-2 size-4 animate-spin" />
+              )}
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

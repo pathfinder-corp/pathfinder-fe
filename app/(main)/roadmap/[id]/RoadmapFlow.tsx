@@ -30,14 +30,26 @@ interface RoadmapFlowProps {
   onNodeClick?: (nodeId: string) => void;
 }
 
-function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigger, onNodeClick }: RoadmapFlowProps) {
-  const [nodes, _setNodes, onNodesChange] = useNodesState<Node<any>>(initialNodes);
+function RoadmapFlowInner({
+  nodes: initialNodes,
+  edges: initialEdges,
+  resetTrigger,
+  onNodeClick,
+}: RoadmapFlowProps) {
+  const [nodes, _setNodes, onNodesChange] =
+    useNodesState<Node<any>>(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>(initialEdges);
   const { setCenter } = useReactFlow();
 
-  const getViewportBounds = useCallback((): [[number, number], [number, number]] => {
+  const getViewportBounds = useCallback((): [
+    [number, number],
+    [number, number],
+  ] => {
     if (nodes.length === 0) {
-      return [[-500, -500], [1500, 2000]];
+      return [
+        [-500, -500],
+        [1500, 2000],
+      ];
     }
 
     let minX = Infinity;
@@ -45,7 +57,7 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
     let minY = Infinity;
     let maxY = -Infinity;
 
-    nodes.forEach(node => {
+    nodes.forEach((node) => {
       const nodeWidth = 380;
       const nodeHeight = 180;
 
@@ -58,7 +70,7 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
     const padding = 400;
     return [
       [minX - padding, minY - padding],
-      [maxX + padding, maxY + padding]
+      [maxX + padding, maxY + padding],
     ];
   }, [nodes]);
 
@@ -66,7 +78,7 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
-  
+
   const handleNodeClick = useCallback(
     (_event: React.MouseEvent, node: Node) => {
       if (onNodeClick) {
@@ -76,34 +88,35 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
     [onNodeClick]
   );
 
+  // Center to start node - only called on initial mount and explicit reset
   const centerToStartNode = useCallback(() => {
-    const startNode = nodes.find(node => node.id === 'start');
+    const startNode = nodes.find((node) => node.id === 'start');
     if (startNode && startNode.position) {
-      setCenter(
-        startNode.position.x + 190, 
-        startNode.position.y + 320, 
-        { 
-          zoom: 1,
-          duration: 800
-        }
-      );
+      setCenter(startNode.position.x + 190, startNode.position.y + 320, {
+        zoom: 1,
+        duration: 800,
+      });
     }
   }, [nodes, setCenter]);
 
+  // Only center on initial mount
   useEffect(() => {
-    if (nodes.length > 0) {
-      setTimeout(() => {
+    if (initialNodes.length > 0) {
+      const timer = setTimeout(() => {
         centerToStartNode();
       }, 100);
+      return () => clearTimeout(timer);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nodes.length]);
+  }, []); // Empty dependency array - only run once on mount
 
+  // Only center when reset button is explicitly clicked
   useEffect(() => {
     if (resetTrigger && resetTrigger > 0) {
       centerToStartNode();
     }
-  }, [resetTrigger, centerToStartNode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [resetTrigger]); // Only depend on resetTrigger
 
   return (
     <ReactFlow
@@ -129,13 +142,13 @@ function RoadmapFlowInner({ nodes: initialNodes, edges: initialEdges, resetTrigg
       maxZoom={1.5}
       translateExtent={getViewportBounds()}
     >
-      <Background 
-        variant={BackgroundVariant.Dots} 
-        gap={20} 
+      <Background
+        variant={BackgroundVariant.Dots}
+        gap={20}
         size={1}
         color="#606060"
       />
-      </ReactFlow>
+    </ReactFlow>
   );
 }
 

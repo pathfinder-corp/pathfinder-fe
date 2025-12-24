@@ -41,16 +41,15 @@ export function AuditLogsTab() {
       setIsLoading(true);
       const params: IAuditLogsParams = {
         page: currentPage,
-        limit: ITEMS_PER_PAGE
+        limit: ITEMS_PER_PAGE,
       };
       const response = await adminService.getAuditLogs(params);
       setAuditLogs(response?.logs || []);
       setTotalPages(response?.meta?.totalPages || 1);
       setTotalLogs(response?.meta?.total || 0);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load audit logs';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load audit logs';
       toast.error(errorMessage);
       setAuditLogs([]);
     } finally {
@@ -68,20 +67,20 @@ export function AuditLogsTab() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50">
         <Table>
           <TableHeader>
             <TableRow className="border-neutral-800 hover:bg-transparent">
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pl-6 w-[160px]">
+              <TableHead className="w-[160px] py-5 pl-6 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Action
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[200px]">
+              <TableHead className="w-[200px] py-5 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Entity
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 w-[200px]">
+              <TableHead className="w-[200px] py-5 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Actor
               </TableHead>
-              <TableHead className="text-neutral-400 font-medium text-base uppercase tracking-wider py-5 pr-6 w-[180px]">
+              <TableHead className="w-[180px] py-5 pr-6 text-base font-medium tracking-wider text-neutral-400 uppercase">
                 Date
               </TableHead>
             </TableRow>
@@ -91,47 +90,63 @@ export function AuditLogsTab() {
               [...Array(10)].map((_, i) => (
                 <TableRow key={i} className="border-neutral-800">
                   <TableCell className="py-5 pl-6">
-                    <Skeleton className="h-7 w-28 bg-neutral-800 rounded-full" />
+                    <Skeleton className="h-7 w-28 rounded-full bg-neutral-800" />
                   </TableCell>
-                  <TableCell><Skeleton className="h-6 w-44 bg-neutral-800" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-36 bg-neutral-800" /></TableCell>
-                  <TableCell className="pr-6"><Skeleton className="h-6 w-40 bg-neutral-800" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-44 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-6 w-36 bg-neutral-800" />
+                  </TableCell>
+                  <TableCell className="pr-6">
+                    <Skeleton className="h-6 w-40 bg-neutral-800" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : auditLogs.length === 0 ? (
               <TableRow className="border-neutral-800 hover:bg-transparent">
                 <TableCell colSpan={4} className="py-16 text-center">
-                  <div className="size-20 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-4">
+                  <div className="mx-auto mb-4 flex size-20 items-center justify-center rounded-full bg-neutral-800">
                     <FileText className="size-10 text-neutral-500" />
                   </div>
-                  <h3 className="text-2xl font-semibold mb-2">No audit logs</h3>
-                  <p className="text-lg text-neutral-400">Activity logs will appear here</p>
+                  <h3 className="mb-2 text-2xl font-semibold">No audit logs</h3>
+                  <p className="text-lg text-neutral-400">
+                    Activity logs will appear here
+                  </p>
                 </TableCell>
               </TableRow>
             ) : (
               auditLogs.map((log) => (
-                <TableRow key={log.id} className="border-neutral-800 hover:bg-neutral-800/30 transition-colors">
+                <TableRow
+                  key={log.id}
+                  className="border-neutral-800 transition-colors hover:bg-neutral-800/30"
+                >
                   <TableCell className="py-5 pl-6">
-                    <Badge variant="outline" className="px-4 py-2 text-base uppercase bg-neutral-800/50 text-neutral-300 border-neutral-700">
+                    <Badge
+                      variant="outline"
+                      className="border-neutral-700 bg-neutral-800/50 px-4 py-2 text-base text-neutral-300 uppercase"
+                    >
                       {log.action || 'N/A'}
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    <span className="text-neutral-300 text-lg uppercase">{log.entityType || 'N/A'}</span>
-                    <span className="text-neutral-500 text-base ml-2">
+                    <span className="text-lg text-neutral-300 uppercase">
+                      {log.entityType || 'N/A'}
+                    </span>
+                    <span className="ml-2 text-base text-neutral-500">
                       #{log.entityId?.substring(0, 8) || 'N/A'}
                     </span>
                   </TableCell>
                   <TableCell>
                     {log.actor ? (
-                      <span className="text-neutral-300 text-lg">
+                      <span className="text-lg text-neutral-300">
                         {log.actor.firstName} {log.actor.lastName}
                       </span>
                     ) : (
-                      <span className="text-neutral-500 text-lg">System</span>
+                      <span className="text-lg text-neutral-500">System</span>
                     )}
                   </TableCell>
-                  <TableCell className="pr-6 text-neutral-400 text-lg">
+                  <TableCell className="pr-6 text-lg text-neutral-400">
                     {formatDateTime(log.createdAt)}
                   </TableCell>
                 </TableRow>
@@ -141,25 +156,30 @@ export function AuditLogsTab() {
         </Table>
 
         {!isLoading && totalLogs > 0 && (
-          <div className="px-6 py-5 border-t border-neutral-800 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <span className="text-lg text-neutral-400 whitespace-nowrap">
-              Showing {startIndex} to {endIndex} of {totalLogs} log{totalLogs > 1 ? 's' : ''}
+          <div className="flex flex-col gap-3 border-t border-neutral-800 px-6 py-5 md:flex-row md:items-center md:justify-between">
+            <span className="text-lg whitespace-nowrap text-neutral-400">
+              Showing {startIndex} to {endIndex} of {totalLogs} log
+              {totalLogs > 1 ? 's' : ''}
             </span>
-            
+
             {totalPages > 1 && (
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious 
+                    <PaginationPrevious
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (currentPage > 1) setCurrentPage(p => p - 1);
+                        if (currentPage > 1) setCurrentPage((p) => p - 1);
                       }}
-                      className={currentPage === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={
+                        currentPage === 1
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
                     />
                   </PaginationItem>
-                  
+
                   {paginationItems.map((item, index) => (
                     <PaginationItem key={index}>
                       {item === 'ellipsis' ? (
@@ -179,15 +199,20 @@ export function AuditLogsTab() {
                       )}
                     </PaginationItem>
                   ))}
-                  
+
                   <PaginationItem>
-                    <PaginationNext 
+                    <PaginationNext
                       href="#"
                       onClick={(e) => {
                         e.preventDefault();
-                        if (currentPage < totalPages) setCurrentPage(p => p + 1);
+                        if (currentPage < totalPages)
+                          setCurrentPage((p) => p + 1);
                       }}
-                      className={currentPage === totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      className={
+                        currentPage === totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer'
+                      }
                     />
                   </PaginationItem>
                 </PaginationContent>

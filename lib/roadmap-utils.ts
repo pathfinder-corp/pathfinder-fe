@@ -8,7 +8,12 @@ export interface RoadmapNodeData {
   duration: string;
   phaseIndex?: number;
   stepIndex?: number;
-  resources?: Array<{ type: string; title: string; url: string; description: string }>;
+  resources?: Array<{
+    type: string;
+    title: string;
+    url: string;
+    description: string;
+  }>;
   keyActivities?: string[];
 }
 
@@ -18,12 +23,12 @@ export function convertRoadmapToFlow(roadmap: IRoadmapResponse): {
 } {
   const nodes: Node<Record<string, any>>[] = [];
   const edges: Edge[] = [];
-  
+
   const centerX = 600;
   const phaseSpacing = 320;
   const stepOffsetX = 420;
   const stepLevelSpacing = 180;
-  
+
   let currentY = 0;
 
   nodes.push({
@@ -43,7 +48,7 @@ export function convertRoadmapToFlow(roadmap: IRoadmapResponse): {
 
   roadmap.phases.forEach((phase, phaseIndex) => {
     const phaseNodeId = `phase-${phaseIndex}`;
-    
+
     nodes.push({
       id: phaseNodeId,
       type: 'roadmapNode',
@@ -62,9 +67,9 @@ export function convertRoadmapToFlow(roadmap: IRoadmapResponse): {
       source: prevPhaseId,
       target: phaseNodeId,
       animated: phaseIndex === 0,
-      style: { 
-        stroke: phaseIndex === 0 ? '#10b981' : '#6366f1', 
-        strokeWidth: 2 
+      style: {
+        stroke: phaseIndex === 0 ? '#10b981' : '#6366f1',
+        strokeWidth: 2,
       },
     });
 
@@ -77,13 +82,13 @@ export function convertRoadmapToFlow(roadmap: IRoadmapResponse): {
 
         if (leftStep) {
           const leftStepId = `step-${phaseIndex}-${i}`;
-          
+
           nodes.push({
             id: leftStepId,
             type: 'roadmapNode',
-            position: { 
+            position: {
               x: centerX - stepOffsetX,
-              y: stepY 
+              y: stepY,
             },
             data: {
               label: leftStep.title,
@@ -102,23 +107,23 @@ export function convertRoadmapToFlow(roadmap: IRoadmapResponse): {
             source: phaseNodeId,
             target: leftStepId,
             animated: true,
-            style: { 
-              stroke: '#94a3b8', 
+            style: {
+              stroke: '#94a3b8',
               strokeWidth: 1.5,
-              strokeDasharray: '5,5'
+              strokeDasharray: '5,5',
             },
           });
         }
 
         if (rightStep) {
           const rightStepId = `step-${phaseIndex}-${i + 1}`;
-          
+
           nodes.push({
             id: rightStepId,
             type: 'roadmapNode',
-            position: { 
+            position: {
               x: centerX + stepOffsetX,
-              y: stepY 
+              y: stepY,
             },
             data: {
               label: rightStep.title,
@@ -137,10 +142,10 @@ export function convertRoadmapToFlow(roadmap: IRoadmapResponse): {
             source: phaseNodeId,
             target: rightStepId,
             animated: true,
-            style: { 
-              stroke: '#94a3b8', 
+            style: {
+              stroke: '#94a3b8',
               strokeWidth: 1.5,
-              strokeDasharray: '5,5'
+              strokeDasharray: '5,5',
             },
           });
         }
@@ -149,7 +154,7 @@ export function convertRoadmapToFlow(roadmap: IRoadmapResponse): {
       }
 
       const numStepPairs = Math.ceil(phase.steps.length / 2);
-      currentY += phaseSpacing + (numStepPairs * stepLevelSpacing) - 50;
+      currentY += phaseSpacing + numStepPairs * stepLevelSpacing - 50;
     } else {
       currentY += phaseSpacing;
     }

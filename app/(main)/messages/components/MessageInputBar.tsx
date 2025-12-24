@@ -28,21 +28,21 @@ export function MessageInputBar({
   onCancelReply,
 }: MessageInputBarProps) {
   return (
-    <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
+    <div className="border-t border-neutral-800 bg-neutral-900/30 p-6">
       {replyingTo && (
-        <div className="flex items-center justify-between mb-4 px-5 py-3 bg-neutral-800/50 rounded-lg">
-          <div className="flex-1 min-w-0">
-            <p className="text-base text-neutral-400 mb-1">
+        <div className="mb-4 flex items-center justify-between rounded-lg bg-neutral-800/50 px-5 py-3">
+          <div className="min-w-0 flex-1">
+            <p className="mb-1 text-base text-neutral-400">
               Replying to {replyingTo.sender?.firstName || 'User'}
             </p>
-            <p className="text-lg text-neutral-300 truncate">
+            <p className="truncate text-lg text-neutral-300">
               {replyingTo.content}
             </p>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="size-10 text-neutral-400 hover:text-white shrink-0"
+            className="size-10 shrink-0 text-neutral-400 hover:text-white"
             onClick={onCancelReply}
           >
             <X className="size-5" />
@@ -55,24 +55,24 @@ export function MessageInputBar({
           type="button"
           variant="ghost"
           size="icon"
-          className="size-12 text-neutral-400 hover:text-white hover:bg-neutral-800/70"
+          className="size-12 text-neutral-400 hover:bg-neutral-800/70 hover:text-white"
           onClick={onOpenUploadDialog}
         >
           <Paperclip className="size-6" />
         </Button>
-        <div className="flex-1 relative">
+        <div className="relative flex-1">
           <Input
             placeholder="Type a message..."
             value={messageInput}
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={onKeyPress}
-            className="h-16! pr-14 bg-neutral-800/50 border-neutral-700 text-2xl!"
+            className="h-16! border-neutral-700 bg-neutral-800/50 pr-14 text-2xl!"
           />
         </div>
         <Button
           onClick={onSend}
           disabled={disabledSend}
-          className="size-14 rounded-full bg-white text-black hover:bg-neutral-200 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="size-14 shrink-0 rounded-full bg-white text-black hover:bg-neutral-200 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Send className="size-7" />
         </Button>

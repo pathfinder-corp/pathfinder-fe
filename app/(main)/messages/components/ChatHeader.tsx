@@ -35,7 +35,7 @@ export function ChatHeader({
   canEndMentorship,
   onViewProfile,
   onOpenEndMentorship,
-  onOpenSearch
+  onOpenSearch,
 }: ChatHeaderProps) {
   if (!other) {
     return null;
@@ -54,18 +54,16 @@ export function ChatHeader({
   };
 
   return (
-    <div className="h-24 px-6 flex items-center justify-between border-b border-neutral-800 bg-neutral-900/30">
+    <div className="flex h-24 items-center justify-between border-b border-neutral-800 bg-neutral-900/30 px-6">
       <div
         className={`flex items-center gap-4 ${
-          canViewProfile
-            ? 'cursor-pointer'
-            : ''
+          canViewProfile ? 'cursor-pointer' : ''
         }`}
         onClick={canViewProfile ? handleClickProfile : undefined}
       >
         <div className="relative">
           {other.avatar ? (
-            <div className="relative size-14 rounded-full overflow-hidden">
+            <div className="relative size-14 overflow-hidden rounded-full">
               <Image
                 src={other.avatar}
                 alt={`${other.firstName} ${other.lastName}`}
@@ -74,38 +72,41 @@ export function ChatHeader({
               />
             </div>
           ) : (
-            <div className="size-14 rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 flex items-center justify-center text-base font-bold">
+            <div className="flex size-14 items-center justify-center rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 text-base font-bold">
               {other.firstName[0]}
               {other.lastName[0]}
             </div>
           )}
           {typeof isOnline === 'boolean' && (
             <span
-              className={`absolute bottom-0.5 -right-0.5 size-3.5 rounded-full border border-neutral-900 ${
+              className={`absolute -right-0.5 bottom-0.5 size-3.5 rounded-full border border-neutral-900 ${
                 isOnline ? 'bg-green-500' : 'bg-neutral-500'
               }`}
             />
           )}
         </div>
         <div>
-          <p className="font-semibold text-3xl">
-            {other.firstName} {other.lastName} <span className="text-neutral-500 text-2xl capitalize">({other.role})</span>
+          <p className="text-3xl font-semibold">
+            {other.firstName} {other.lastName}{' '}
+            <span className="text-2xl text-neutral-500 capitalize">
+              ({other.role})
+            </span>
           </p>
           <div className="text-xl text-neutral-400">
             {isOtherTyping ? (
-              <p className="text-green-500 flex items-center gap-1.5">
+              <p className="flex items-center gap-1.5 text-green-500">
                 Typing
                 <span className="flex gap-1">
                   <span
-                    className="size-1.5 bg-green-500 rounded-full animate-bounce"
+                    className="size-1.5 animate-bounce rounded-full bg-green-500"
                     style={{ animationDelay: '0ms' }}
                   />
                   <span
-                    className="size-1.5 bg-green-500 rounded-full animate-bounce"
+                    className="size-1.5 animate-bounce rounded-full bg-green-500"
                     style={{ animationDelay: '150ms' }}
                   />
                   <span
-                    className="size-1.5 bg-green-500 rounded-full animate-bounce"
+                    className="size-1.5 animate-bounce rounded-full bg-green-500"
                     style={{ animationDelay: '300ms' }}
                   />
                 </span>
@@ -126,16 +127,13 @@ export function ChatHeader({
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem
-                className="text-lg py-3"
-                onClick={onOpenSearch}
-              >
+              <DropdownMenuItem className="py-3 text-lg" onClick={onOpenSearch}>
                 <Search className="size-5" />
                 Search
               </DropdownMenuItem>
               {canViewProfile && (
                 <DropdownMenuItem
-                  className="text-lg py-3"
+                  className="py-3 text-lg"
                   onClick={onViewProfile}
                 >
                   <Eye className="size-5" />
@@ -146,7 +144,7 @@ export function ChatHeader({
                 <>
                   {(canViewProfile || true) && <DropdownMenuSeparator />}
                   <DropdownMenuItem
-                    className="dark:hover:bg-red-500/10 text-lg py-3 text-red-500 focus:text-red-500"
+                    className="py-3 text-lg text-red-500 focus:text-red-500 dark:hover:bg-red-500/10"
                     onClick={onOpenEndMentorship}
                   >
                     <X className="size-5 text-red-500" />

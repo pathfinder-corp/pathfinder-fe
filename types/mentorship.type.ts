@@ -1,8 +1,8 @@
-export type MentorshipRequestStatus = 
-  | 'pending' 
-  | 'accepted' 
-  | 'declined' 
-  | 'cancelled' 
+export type MentorshipRequestStatus =
+  | 'pending'
+  | 'accepted'
+  | 'declined'
+  | 'cancelled'
   | 'expired';
 
 export type MentorshipRequestRole = 'as_student' | 'as_mentor';

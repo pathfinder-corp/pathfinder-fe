@@ -1,6 +1,19 @@
 import { format, parseISO } from 'date-fns';
-import { FileText, Award, Briefcase, File, UserCheck, FileSpreadsheet, Presentation, FileType } from 'lucide-react';
-import type { MentorApplicationStatus, MentorshipStatus, MentorDocumentType } from '@/types';
+import {
+  FileText,
+  Award,
+  Briefcase,
+  File,
+  UserCheck,
+  FileSpreadsheet,
+  Presentation,
+  FileType,
+} from 'lucide-react';
+import type {
+  MentorApplicationStatus,
+  MentorshipStatus,
+  MentorDocumentType,
+} from '@/types';
 
 export const formatDate = (dateStr: string | null) => {
   if (!dateStr) return 'N/A';
@@ -20,8 +33,11 @@ export const formatDateTime = (dateStr: string | null) => {
   }
 };
 
-export const getStatusBadgeColor = (status: MentorApplicationStatus | null | undefined) => {
-  if (!status) return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
+export const getStatusBadgeColor = (
+  status: MentorApplicationStatus | null | undefined
+) => {
+  if (!status)
+    return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
   switch (status) {
     case 'approved':
       return 'bg-green-500/20 text-green-400 border-green-500/30';
@@ -40,7 +56,9 @@ export const getStatusBadgeColor = (status: MentorApplicationStatus | null | und
   }
 };
 
-export const formatStatus = (status: MentorApplicationStatus | null | undefined) => {
+export const formatStatus = (
+  status: MentorApplicationStatus | null | undefined
+) => {
   if (!status) return 'Unknown';
   switch (status) {
     case 'under_review':
@@ -50,13 +68,15 @@ export const formatStatus = (status: MentorApplicationStatus | null | undefined)
   }
 };
 
-export const canReview = (status: MentorApplicationStatus | null | undefined) => {
+export const canReview = (
+  status: MentorApplicationStatus | null | undefined
+) => {
   if (!status) return false;
-  return status === 'pending' || status === 'under_review' || status === 'flagged';
+  return status === 'pending' || status === 'under_review';
 };
 
 export const getMentorActiveBadgeColor = (isActive: boolean) => {
-  return isActive 
+  return isActive
     ? 'bg-green-500/20 text-green-400 border-green-500/30'
     : 'bg-red-500/20 text-red-400 border-red-500/30';
 };
@@ -65,8 +85,11 @@ export const formatMentorActiveStatus = (isActive: boolean) => {
   return isActive ? 'Active' : 'Inactive';
 };
 
-export const getMentorshipStatusBadgeColor = (status: MentorshipStatus | null | undefined) => {
-  if (!status) return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
+export const getMentorshipStatusBadgeColor = (
+  status: MentorshipStatus | null | undefined
+) => {
+  if (!status)
+    return 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30';
   switch (status) {
     case 'active':
       return 'bg-green-500/20 text-green-400 border-green-500/30';
@@ -77,39 +100,44 @@ export const getMentorshipStatusBadgeColor = (status: MentorshipStatus | null | 
   }
 };
 
-export const formatMentorshipStatus = (status: MentorshipStatus | null | undefined) => {
+export const formatMentorshipStatus = (
+  status: MentorshipStatus | null | undefined
+) => {
   if (!status) return 'Unknown';
   return status.charAt(0).toUpperCase() + status.slice(1);
 };
 
-export const generatePaginationItems = (currentPage: number, totalPages: number) => {
+export const generatePaginationItems = (
+  currentPage: number,
+  totalPages: number
+) => {
   const items: (number | 'ellipsis')[] = [];
-  
+
   if (totalPages <= 7) {
     for (let i = 1; i <= totalPages; i++) {
       items.push(i);
     }
   } else {
     items.push(1);
-    
+
     if (currentPage > 3) {
       items.push('ellipsis');
     }
-    
+
     const start = Math.max(2, currentPage - 1);
     const end = Math.min(totalPages - 1, currentPage + 1);
-    
+
     for (let i = start; i <= end; i++) {
       items.push(i);
     }
-    
+
     if (currentPage < totalPages - 2) {
       items.push('ellipsis');
     }
-    
+
     items.push(totalPages);
   }
-  
+
   return items;
 };
 
@@ -128,12 +156,12 @@ export const getDocumentIconComponent = (type: MentorDocumentType) => {
   }
 };
 
-export const getFileTypeIconComponent = (doc: { 
-  isPdf?: boolean; 
-  isWord?: boolean; 
-  isExcel?: boolean; 
-  isPowerPoint?: boolean; 
-  isImage?: boolean 
+export const getFileTypeIconComponent = (doc: {
+  isPdf?: boolean;
+  isWord?: boolean;
+  isExcel?: boolean;
+  isPowerPoint?: boolean;
+  isImage?: boolean;
 }) => {
   if (doc.isImage) return File;
   if (doc.isPdf) return FileText;
@@ -143,13 +171,13 @@ export const getFileTypeIconComponent = (doc: {
   return File;
 };
 
-export const getFileTypeLabel = (doc: { 
-  isPdf?: boolean; 
-  isWord?: boolean; 
-  isExcel?: boolean; 
-  isPowerPoint?: boolean; 
-  isImage?: boolean; 
-  mimeType?: string 
+export const getFileTypeLabel = (doc: {
+  isPdf?: boolean;
+  isWord?: boolean;
+  isExcel?: boolean;
+  isPowerPoint?: boolean;
+  isImage?: boolean;
+  mimeType?: string;
 }) => {
   if (doc.isImage) return 'Image';
   if (doc.isPdf) return 'PDF';

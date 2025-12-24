@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function cleanObject<T extends Record<string, any>>(obj: T): Partial<T> {
@@ -39,15 +39,15 @@ export function searchVietnamese(text: string, query: string): boolean {
 
 export function extractTitle(title: string): string {
   if (!title || typeof title !== 'string') return '';
-  
+
   const trimmed = title.trim();
   const parts = trimmed.split(':');
-  
+
   if (parts.length > 1) {
     const extracted = parts.slice(1).join(':').trim();
     return extracted || trimmed;
   }
-  
+
   return trimmed;
 }
 
@@ -58,8 +58,14 @@ export function isValidEmailFormat(email: string): boolean {
 
 export function extractErrorMessage(error: unknown): string | null {
   if (error && typeof error === 'object' && 'response' in error) {
-    const axiosError = error as { response?: { data?: { message?: string; description?: string } } };
-    return axiosError.response?.data?.message || axiosError.response?.data?.description || null;
+    const axiosError = error as {
+      response?: { data?: { message?: string; description?: string } };
+    };
+    return (
+      axiosError.response?.data?.message ||
+      axiosError.response?.data?.description ||
+      null
+    );
   }
   return null;
 }
@@ -76,8 +82,8 @@ export function formatFileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-};
+}
 
 export function getInitials(firstName: string, lastName: string) {
   return `${firstName?.[0] || ''}${lastName?.[0] || ''}`.toUpperCase();
-};
+}

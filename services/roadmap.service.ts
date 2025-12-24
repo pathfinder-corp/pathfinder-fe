@@ -1,11 +1,11 @@
-import type { 
-  IRoadmapRequest, 
-  IRoadmapResponse, 
-  IAskInsightRequest, 
+import type {
+  IRoadmapRequest,
+  IRoadmapResponse,
+  IAskInsightRequest,
   IAskInsightResponse,
   IShareSettings,
   IShareRoadmapRequest,
-  ISharedUser
+  ISharedUser,
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
@@ -13,7 +13,7 @@ export const roadmapService = {
   createRoadmap: async (data: IRoadmapRequest): Promise<IRoadmapResponse> => {
     try {
       const response = await api.post<IRoadmapResponse>('/roadmaps', data, {
-        timeout: 180000
+        timeout: 180000,
       });
       return response.data;
     } catch (error) {
@@ -34,10 +34,13 @@ export const roadmapService = {
     }
   },
 
-  getAllRoadmaps: async (page: number = 1, limit: number = 12): Promise<IRoadmapResponse[]> => {
+  getAllRoadmaps: async (
+    page: number = 1,
+    limit: number = 12
+  ): Promise<IRoadmapResponse[]> => {
     try {
       const response = await api.get<IRoadmapResponse[]>('/roadmaps', {
-        params: { page, limit }
+        params: { page, limit },
       });
       return response.data;
     } catch (error) {
@@ -68,7 +71,7 @@ export const roadmapService = {
   },
 
   askInsight: async (
-    id: string, 
+    id: string,
     data: IAskInsightRequest
   ): Promise<IAskInsightResponse> => {
     try {
@@ -98,7 +101,9 @@ export const roadmapService = {
 
   getSharedUsers: async (id: string): Promise<ISharedUser[]> => {
     try {
-      const response = await api.get<ISharedUser[]>(`/roadmaps/${id}/shared-users`);
+      const response = await api.get<ISharedUser[]>(
+        `/roadmaps/${id}/shared-users`
+      );
       return response.data;
     } catch (error) {
       const message = extractErrorMessage(error);
@@ -107,7 +112,10 @@ export const roadmapService = {
     }
   },
 
-  shareRoadmap: async (id: string, data: IShareRoadmapRequest): Promise<void> => {
+  shareRoadmap: async (
+    id: string,
+    data: IShareRoadmapRequest
+  ): Promise<void> => {
     try {
       await api.post(`/roadmaps/${id}/share`, data);
     } catch (error) {
@@ -125,5 +133,5 @@ export const roadmapService = {
       if (message) throw new Error(message);
       throw error;
     }
-  }
+  },
 };

@@ -11,7 +11,12 @@ interface StarRatingProps {
   className?: string;
 }
 
-export function StarRating({ rating, size = 'md', showValue = false, className }: StarRatingProps) {
+export function StarRating({
+  rating,
+  size = 'md',
+  showValue = false,
+  className,
+}: StarRatingProps) {
   const fullStars = Math.floor(rating);
   const hasHalfStar = rating % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
@@ -29,14 +34,20 @@ export function StarRating({ rating, size = 'md', showValue = false, className }
       {Array.from({ length: fullStars }).map((_, i) => (
         <Star
           key={`full-${i}`}
-          className={cn(starSize, 'fill-yellow-400 text-yellow-400 drop-shadow-[0_0_4px_rgba(250,204,21,0.5)]')}
+          className={cn(
+            starSize,
+            'fill-yellow-400 text-yellow-400 drop-shadow-[0_0_4px_rgba(250,204,21,0.5)]'
+          )}
         />
       ))}
       {hasHalfStar && (
         <div className="relative">
-          <Star className={cn(starSize, 'text-neutral-700 fill-neutral-700')} />
+          <Star className={cn(starSize, 'fill-neutral-700 text-neutral-700')} />
           <Star
-            className={cn(starSize, 'fill-yellow-400 text-yellow-400 absolute inset-0 overflow-hidden drop-shadow-[0_0_4px_rgba(250,204,21,0.5)]')}
+            className={cn(
+              starSize,
+              'absolute inset-0 overflow-hidden fill-yellow-400 text-yellow-400 drop-shadow-[0_0_4px_rgba(250,204,21,0.5)]'
+            )}
             style={{ clipPath: 'inset(0 50% 0 0)' }}
           />
         </div>
@@ -44,7 +55,7 @@ export function StarRating({ rating, size = 'md', showValue = false, className }
       {Array.from({ length: emptyStars }).map((_, i) => (
         <Star
           key={`empty-${i}`}
-          className={cn(starSize, 'text-neutral-700 fill-neutral-700')}
+          className={cn(starSize, 'fill-neutral-700 text-neutral-700')}
         />
       ))}
       {showValue && (
@@ -95,7 +106,7 @@ export function InteractiveStarRating({
               'size-7',
               star <= rating
                 ? 'fill-yellow-400 text-yellow-400'
-                : 'text-neutral-700 fill-neutral-700'
+                : 'fill-neutral-700 text-neutral-700'
             )}
           />
         </button>

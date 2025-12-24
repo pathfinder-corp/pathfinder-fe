@@ -1,12 +1,18 @@
 import { UserRole, UserStatus } from './user.type';
-import { AssessmentSortField, ContactSortField, RoadmapSortField, SortField, SortOrder } from './table.type';
+import {
+  AssessmentSortField,
+  ContactSortField,
+  RoadmapSortField,
+  SortField,
+  SortOrder,
+} from './table.type';
 import { AssessmentDifficulty, AssessmentStatus } from './assessment.type';
-import { 
+import {
   MentorApplicationStatus,
   IMentorApplication,
   IMentorApplicationStatusHistory,
   MentorDocumentType,
-  DocumentVerificationStatus
+  DocumentVerificationStatus,
 } from './mentor.type';
 import { MentorshipStatus } from './mentorship.type';
 import { ContactStatus, ContactType } from './contact.type';
@@ -216,7 +222,6 @@ export interface IAdminAssessmentsParams {
   domain?: string;
   status?: AssessmentStatus;
   difficulty?: AssessmentDifficulty;
-
 }
 
 export interface IMentorApplicationDetail extends IMentorApplication {

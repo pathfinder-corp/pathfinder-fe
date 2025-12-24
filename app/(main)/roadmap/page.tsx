@@ -14,8 +14,17 @@ import { cleanObject } from '@/lib';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Select, SelectValue, SelectTrigger, SelectItem, SelectContent } from '@/components/ui/select';
-import { TimeframePicker, type TimeframeValue } from '@/components/ui/timeframe-picker';
+import {
+  Select,
+  SelectValue,
+  SelectTrigger,
+  SelectItem,
+  SelectContent,
+} from '@/components/ui/select';
+import {
+  TimeframePicker,
+  type TimeframeValue,
+} from '@/components/ui/timeframe-picker';
 
 const roadmapSchema = z.object({
   topic: z.string().min(3, 'Topic must be at least 3 characters'),
@@ -65,7 +74,8 @@ export default function RoadmapPage() {
 
       let timeframeStr = data.timeframe || '';
       if (timeframe.amount && timeframe.amount > 0) {
-        const unit = timeframe.amount === 1 ? timeframe.unit : `${timeframe.unit}s`;
+        const unit =
+          timeframe.amount === 1 ? timeframe.unit : `${timeframe.unit}s`;
         timeframeStr = `${timeframe.amount} ${unit}`;
       }
 
@@ -77,15 +87,17 @@ export default function RoadmapPage() {
       const response = await roadmapService.createRoadmap(requestData);
 
       toast.success('Create roadmap successfully!');
-      
-      const isFirstRoadmap = localStorage.getItem('roadmap-tour-completed') !== 'true';
+
+      const isFirstRoadmap =
+        localStorage.getItem('roadmap-tour-completed') !== 'true';
       if (isFirstRoadmap) {
         sessionStorage.setItem('start-roadmap-tour', 'true');
       }
-      
+
       router.push(`/roadmap/${response.id}`);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to create roadmap';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to create roadmap';
       toast.error('Failed to create roadmap', {
         description: errorMessage,
       });
@@ -96,37 +108,46 @@ export default function RoadmapPage() {
 
   return (
     <div
-      className={`${fromAssessment && suggestedTopic ? 'pb-12' : ''} pt-10 flex flex-col items-center justify-center`}
+      className={`${fromAssessment && suggestedTopic ? 'pb-12' : ''} flex flex-col items-center justify-center pt-10`}
     >
       {fromAssessment && suggestedTopic ? (
         <>
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-neutral-800 text-neutral-300 text-lg mb-6">
+          <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-neutral-800 px-5 py-2.5 text-lg text-neutral-300">
             <span>Suggested from your assessment results</span>
           </div>
-          <h1 className="text-6xl font-bold mb-6">Create Your Learning Roadmap</h1>
-          <p className="text-2xl text-neutral-500 text-center max-w-2xl">
+          <h1 className="mb-6 text-6xl font-bold">
+            Create Your Learning Roadmap
+          </h1>
+          <p className="max-w-2xl text-center text-2xl text-neutral-500">
             Based on your assessment, we recommend learning{' '}
-            <span className="text-white font-medium">{suggestedTopic}</span>. Customize the options below to personalize
-            your roadmap.
+            <span className="font-medium text-white">{suggestedTopic}</span>.
+            Customize the options below to personalize your roadmap.
           </p>
         </>
       ) : (
         <>
-          <h1 className="text-6xl font-bold mb-6">What do you want to learn today?</h1>
-          <p className="text-2xl text-neutral-500">Enter any topic below to automatically create a roadmap you want</p>
+          <h1 className="mb-6 text-6xl font-bold">
+            What do you want to learn today?
+          </h1>
+          <p className="text-2xl text-neutral-500">
+            Enter any topic below to automatically create a roadmap you want
+          </p>
         </>
       )}
 
-      <form 
-        onSubmit={handleSubmit(onSubmit)} 
-        className="w-232 space-y-7 mt-6"
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6 w-232 space-y-7">
         <div className="space-y-3">
           <Label htmlFor="topic" className="text-xl">
             Topic <span className="text-red-500">*</span>
           </Label>
-          <Input {...register('topic')} placeholder="Enter any topic..." className="w-full h-20! text-xl! px-6!" />
-          {errors.topic && <p className="text-red-500 text-lg">{errors.topic.message}</p>}
+          <Input
+            {...register('topic')}
+            placeholder="Enter any topic..."
+            className="h-20! w-full px-6! text-xl!"
+          />
+          {errors.topic && (
+            <p className="text-lg text-red-500">{errors.topic.message}</p>
+          )}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
@@ -137,23 +158,26 @@ export default function RoadmapPage() {
             <Input
               {...register('background')}
               placeholder="Enter background..."
-              className="w-full h-20! text-xl! px-6!"
+              className="h-20! w-full px-6! text-xl!"
             />
           </div>
           <div className="space-y-3">
             <Label htmlFor="experienceLevel" className="text-xl">
               Experience
             </Label>
-            <Select value={experienceLevel} onValueChange={value => {
-              if (value === 'none') {
-                setExperienceLevel('');
-                setValue('experienceLevel', undefined);
-              } else {
-                setExperienceLevel(value);
-                setValue('experienceLevel', value as any);
-              }
-            }}>
-              <SelectTrigger className="w-full h-20! text-xl! px-6!">
+            <Select
+              value={experienceLevel}
+              onValueChange={(value) => {
+                if (value === 'none') {
+                  setExperienceLevel('');
+                  setValue('experienceLevel', undefined);
+                } else {
+                  setExperienceLevel(value);
+                  setValue('experienceLevel', value as any);
+                }
+              }}
+            >
+              <SelectTrigger className="h-20! w-full px-6! text-xl!">
                 <SelectValue placeholder="Select experience" />
               </SelectTrigger>
               <SelectContent>
@@ -182,23 +206,26 @@ export default function RoadmapPage() {
             <Input
               {...register('targetOutcome')}
               placeholder="Enter target outcome..."
-              className="w-full h-20! text-xl! px-6!"
+              className="h-20! w-full px-6! text-xl!"
             />
           </div>
           <div className="space-y-3">
             <Label htmlFor="learningPace" className="text-xl">
               Learning Pace
             </Label>
-            <Select value={learningPace} onValueChange={value => {
-              if (value === 'none') {
-                setLearningPace('');
-                setValue('learningPace', undefined);
-              } else {
-                setLearningPace(value);
-                setValue('learningPace', value as any);
-              }
-            }}>
-              <SelectTrigger className="w-full h-20! text-xl! px-6!">
+            <Select
+              value={learningPace}
+              onValueChange={(value) => {
+                if (value === 'none') {
+                  setLearningPace('');
+                  setValue('learningPace', undefined);
+                } else {
+                  setLearningPace(value);
+                  setValue('learningPace', value as any);
+                }
+              }}
+            >
+              <SelectTrigger className="h-20! w-full px-6! text-xl!">
                 <SelectValue placeholder="Select learning pace" />
               </SelectTrigger>
               <SelectContent>
@@ -237,12 +264,16 @@ export default function RoadmapPage() {
             <Input
               {...register('preferences')}
               placeholder="Enter preferences..."
-              className="w-full h-20! text-xl! px-6!"
+              className="h-20! w-full px-6! text-xl!"
             />
           </div>
         </div>
 
-        <Button type="submit" disabled={isLoading} className="w-full h-16! text-xl!">
+        <Button
+          type="submit"
+          disabled={isLoading}
+          className="h-16! w-full text-xl!"
+        >
           {isLoading ? (
             <>
               Creating roadmap...
@@ -257,7 +288,7 @@ export default function RoadmapPage() {
         </Button>
       </form>
 
-      <p className="text-center text-lg text-neutral-500 mt-10">
+      <p className="mt-10 text-center text-lg text-neutral-500">
         AI can make mistakes, make sure to verify important information
       </p>
     </div>

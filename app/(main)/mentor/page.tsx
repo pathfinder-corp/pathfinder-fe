@@ -9,13 +9,31 @@ import { FilePond, registerPlugin } from 'react-filepond';
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
 import FilePondPluginFileValidateSize from 'filepond-plugin-file-validate-size';
 import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
-import { Send, Loader2, Plus, X, GraduationCap, FileText, Clock, Award, Briefcase, File, Trash2, UserCheck } from 'lucide-react';
+import {
+  Send,
+  Loader2,
+  Plus,
+  X,
+  GraduationCap,
+  FileText,
+  Clock,
+  Award,
+  Briefcase,
+  File,
+  Trash2,
+  UserCheck,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { mentorService } from '@/services';
 import { useUserStore } from '@/stores';
 import { USER_ROLES, DOCUMENT_TYPES } from '@/constants';
 import { formatFileSize } from '@/lib';
-import type { ICreateMentorApplicationRequest, IMentorApplication, MentorApplicationStatus, MentorDocumentType } from '@/types';
+import type {
+  ICreateMentorApplicationRequest,
+  IMentorApplication,
+  MentorApplicationStatus,
+  MentorDocumentType,
+} from '@/types';
 
 import 'filepond/dist/filepond.min.css';
 import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
@@ -25,12 +43,12 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Select, 
-  SelectValue, 
+import {
+  Select,
+  SelectValue,
   SelectTrigger,
-  SelectItem, 
-  SelectContent 
+  SelectItem,
+  SelectContent,
 } from '@/components/ui/select';
 
 registerPlugin(
@@ -91,12 +109,29 @@ const EXPERIENCE_OPTIONS = [
 ];
 
 const mentorApplicationSchema = z.object({
-  headline: z.string().min(10, 'Headline must be at least 10 characters').max(100, 'Headline must be less than 100 characters'),
-  bio: z.string().min(50, 'Bio must be at least 50 characters').max(1000, 'Bio must be less than 1000 characters'),
+  headline: z
+    .string()
+    .min(10, 'Headline must be at least 10 characters')
+    .max(100, 'Headline must be less than 100 characters'),
+  bio: z
+    .string()
+    .min(50, 'Bio must be at least 50 characters')
+    .max(1000, 'Bio must be less than 1000 characters'),
   yearsExperience: z.number().min(1, 'Please select your experience'),
-  linkedinUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  portfolioUrl: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
-  motivation: z.string().min(50, 'Motivation must be at least 50 characters').max(1000, 'Motivation must be less than 1000 characters'),
+  linkedinUrl: z
+    .string()
+    .url('Please enter a valid URL')
+    .optional()
+    .or(z.literal('')),
+  portfolioUrl: z
+    .string()
+    .url('Please enter a valid URL')
+    .optional()
+    .or(z.literal('')),
+  motivation: z
+    .string()
+    .min(50, 'Motivation must be at least 50 characters')
+    .max(1000, 'Motivation must be less than 1000 characters'),
 });
 
 type MentorApplicationFormData = z.infer<typeof mentorApplicationSchema>;
@@ -107,22 +142,27 @@ export default function MentorApplicationPage() {
   const pondRef = useRef<FilePond | null>(null);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isCheckingApplication, setIsCheckingApplication] = useState<boolean>(true);
-  const [existingApplication, setExistingApplication] = useState<IMentorApplication | null>(null);
-  
+  const [isCheckingApplication, setIsCheckingApplication] =
+    useState<boolean>(true);
+  const [existingApplication, setExistingApplication] =
+    useState<IMentorApplication | null>(null);
+
   const [expertise, setExpertise] = useState<string[]>([]);
   const [skills, setSkills] = useState<string[]>([]);
   const [industries, setIndustries] = useState<string[]>([]);
   const [languages, setLanguages] = useState<string[]>([]);
-  
+
   const [newExpertise, setNewExpertise] = useState<string>('');
   const [newSkill, setNewSkill] = useState<string>('');
   const [newIndustry, setNewIndustry] = useState<string>('');
   const [newLanguage, setNewLanguage] = useState<string>('');
 
-  const [pendingDocuments, setPendingDocuments] = useState<PendingDocument[]>([]);
+  const [pendingDocuments, setPendingDocuments] = useState<PendingDocument[]>(
+    []
+  );
   const [currentFile, setCurrentFile] = useState<File | null>(null);
-  const [currentDocType, setCurrentDocType] = useState<MentorDocumentType>('certificate');
+  const [currentDocType, setCurrentDocType] =
+    useState<MentorDocumentType>('certificate');
   const [currentDocTitle, setCurrentDocTitle] = useState<string>('');
   const [uploadProgress, setUploadProgress] = useState<string>('');
 
@@ -135,8 +175,8 @@ export default function MentorApplicationPage() {
   } = useForm<MentorApplicationFormData>({
     resolver: zodResolver(mentorApplicationSchema),
     defaultValues: {
-      yearsExperience: 1
-    }
+      yearsExperience: 1,
+    },
   });
 
   const selectedExperience = watch('yearsExperience');
@@ -153,18 +193,19 @@ export default function MentorApplicationPage() {
       try {
         setIsCheckingApplication(true);
         const applications = await mentorService.getMyApplications();
-        
-        const pendingOrUnderReview = applications.find(
-          app => ['pending', 'under_review', 'flagged'].includes(app.status)
+
+        const pendingOrUnderReview = applications.find((app) =>
+          ['pending', 'under_review', 'flagged'].includes(app.status)
         );
-        
+
         if (pendingOrUnderReview) {
           setExistingApplication(pendingOrUnderReview);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : 'Failed to check existing applications';
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : 'Failed to check existing applications';
         toast.error('Failed to check existing applications', {
           description: errorMessage,
         });
@@ -177,7 +218,7 @@ export default function MentorApplicationPage() {
   }, [isInitialized, user?.role, router]);
 
   const addItem = (
-    value: string, 
+    value: string,
     setter: React.Dispatch<React.SetStateAction<string>>,
     list: string[],
     listSetter: React.Dispatch<React.SetStateAction<string[]>>
@@ -194,7 +235,7 @@ export default function MentorApplicationPage() {
     list: string[],
     listSetter: React.Dispatch<React.SetStateAction<string[]>>
   ) => {
-    listSetter(list.filter(i => i !== item));
+    listSetter(list.filter((i) => i !== item));
   };
 
   const handleKeyDown = (
@@ -223,7 +264,7 @@ export default function MentorApplicationPage() {
       title: currentDocTitle || currentFile.name,
     };
 
-    setPendingDocuments(prev => [...prev, newDoc]);
+    setPendingDocuments((prev) => [...prev, newDoc]);
     setCurrentFile(null);
     setCurrentDocType('certificate');
     setCurrentDocTitle('');
@@ -233,11 +274,10 @@ export default function MentorApplicationPage() {
   };
 
   const removeDocument = (id: string) => {
-    setPendingDocuments(prev => prev.filter(doc => doc.id !== id));
+    setPendingDocuments((prev) => prev.filter((doc) => doc.id !== id));
   };
 
   const onSubmit = async (data: MentorApplicationFormData) => {
-
     if (expertise.length === 0) {
       toast.error('Please add at least one area of expertise');
       return;
@@ -264,13 +304,15 @@ export default function MentorApplicationPage() {
         yearsExperience: data.yearsExperience,
         linkedinUrl: data.linkedinUrl || undefined,
         portfolioUrl: data.portfolioUrl || undefined,
-        motivation: data.motivation
+        motivation: data.motivation,
       };
 
       if (pendingDocuments.length > 0) {
-        setUploadProgress(`Submitting application with ${pendingDocuments.length} document(s)...`);
-        
-        const documentsData = pendingDocuments.map(doc => ({
+        setUploadProgress(
+          `Submitting application with ${pendingDocuments.length} document(s)...`
+        );
+
+        const documentsData = pendingDocuments.map((doc) => ({
           file: doc.file,
           type: doc.type,
           title: doc.title,
@@ -285,7 +327,8 @@ export default function MentorApplicationPage() {
           toast.warning(
             `Application submitted but ${application.uploadSummary.failed} of ${application.uploadSummary.total} document(s) failed`,
             {
-              description: 'You can upload them later from your application page.',
+              description:
+                'You can upload them later from your application page.',
               duration: 5000,
             }
           );
@@ -303,12 +346,11 @@ export default function MentorApplicationPage() {
           description: 'Your application is now pending review.',
         });
       }
-      
+
       router.push('/mentor/applications');
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to submit application';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to submit application';
       toast.error('Failed to submit application', {
         description: errorMessage,
       });
@@ -322,19 +364,19 @@ export default function MentorApplicationPage() {
     switch (status) {
       case 'pending':
         return (
-          <Badge className="px-4 py-2 text-base bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+          <Badge className="border-yellow-500/30 bg-yellow-500/20 px-4 py-2 text-base text-yellow-400">
             Pending Review
           </Badge>
         );
       case 'under_review':
         return (
-          <Badge className="px-4 py-2 text-base bg-blue-500/20 text-blue-400 border-blue-500/30">
+          <Badge className="border-blue-500/30 bg-blue-500/20 px-4 py-2 text-base text-blue-400">
             Under Review
           </Badge>
         );
       case 'flagged':
         return (
-          <Badge className="px-4 py-2 text-base bg-orange-500/20 text-orange-400 border-orange-500/30">
+          <Badge className="border-orange-500/30 bg-orange-500/20 px-4 py-2 text-base text-orange-400">
             Under Review
           </Badge>
         );
@@ -343,25 +385,32 @@ export default function MentorApplicationPage() {
     }
   };
 
-  if (isCheckingApplication || !isInitialized || user?.role === USER_ROLES.MENTOR) {
+  if (
+    isCheckingApplication ||
+    !isInitialized ||
+    user?.role === USER_ROLES.MENTOR
+  ) {
     return (
-      <div className="absolute inset-0 size-full flex flex-col items-center justify-center">
+      <div className="absolute inset-0 flex size-full flex-col items-center justify-center">
         <Loader2 className="size-16 animate-spin text-neutral-400" />
-        <p className="mt-5 text-2xl text-neutral-400">Checking application status...</p>
+        <p className="mt-5 text-2xl text-neutral-400">
+          Checking application status...
+        </p>
       </div>
     );
   }
 
   if (existingApplication) {
     return (
-      <div className="pt-48 flex flex-col items-center justify-center">
-        <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mb-8">
+      <div className="flex flex-col items-center justify-center pt-48">
+        <div className="mb-8 flex size-24 items-center justify-center rounded-full bg-neutral-800">
           <GraduationCap className="size-12 text-neutral-400" />
         </div>
-        <h1 className="text-5xl font-bold mb-5">Application In Progress</h1>
-        <p className="text-2xl text-neutral-500 text-center max-w-2xl mb-8">
-          You already have a mentor application that is currently being reviewed. 
-          You cannot submit a new application until the current one is processed.
+        <h1 className="mb-5 text-5xl font-bold">Application In Progress</h1>
+        <p className="mb-8 max-w-2xl text-center text-2xl text-neutral-500">
+          You already have a mentor application that is currently being
+          reviewed. You cannot submit a new application until the current one is
+          processed.
         </p>
         <div className="mb-10">
           {getStatusBadge(existingApplication.status)}
@@ -381,13 +430,14 @@ export default function MentorApplicationPage() {
   }
 
   return (
-    <div className="pt-12 pb-16 flex flex-col items-center justify-center">
-      <h1 className="text-6xl font-bold mb-8">Become a Mentor</h1>
-      <p className="text-2xl text-neutral-500 text-center max-w-2xl">
-        Share your expertise and help others grow. Fill out the application below to join our mentor community.
+    <div className="flex flex-col items-center justify-center pt-12 pb-16">
+      <h1 className="mb-8 text-6xl font-bold">Become a Mentor</h1>
+      <p className="max-w-2xl text-center text-2xl text-neutral-500">
+        Share your expertise and help others grow. Fill out the application
+        below to join our mentor community.
       </p>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="w-232 space-y-8 mt-10">
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-10 w-232 space-y-8">
         <div className="space-y-3">
           <Label htmlFor="headline" className="text-xl">
             Professional Headline <span className="text-red-500">*</span>
@@ -395,10 +445,10 @@ export default function MentorApplicationPage() {
           <Input
             {...register('headline')}
             placeholder="e.g., Senior Software Engineer at Google | 8+ Years in Cloud Architecture"
-            className="w-full h-20! text-xl! px-6!"
+            className="h-20! w-full px-6! text-xl!"
           />
           {errors.headline && (
-            <p className="text-red-500 text-lg">{errors.headline.message}</p>
+            <p className="text-lg text-red-500">{errors.headline.message}</p>
           )}
         </div>
 
@@ -409,10 +459,10 @@ export default function MentorApplicationPage() {
           <Textarea
             {...register('bio')}
             placeholder="Tell us about yourself, your background, and what makes you a great mentor..."
-            className="w-full min-h-[160px] text-lg! px-6! py-5!"
+            className="min-h-[160px] w-full px-6! py-5! text-lg!"
           />
           {errors.bio && (
-            <p className="text-red-500 text-lg">{errors.bio.message}</p>
+            <p className="text-lg text-red-500">{errors.bio.message}</p>
           )}
         </div>
 
@@ -421,23 +471,31 @@ export default function MentorApplicationPage() {
             <Label className="text-xl">
               Years of Experience <span className="text-red-500">*</span>
             </Label>
-            <Select 
-              value={String(selectedExperience)} 
-              onValueChange={(value) => setValue('yearsExperience', Number(value))}
+            <Select
+              value={String(selectedExperience)}
+              onValueChange={(value) =>
+                setValue('yearsExperience', Number(value))
+              }
             >
-              <SelectTrigger className="w-full h-20! text-xl! px-6!">
+              <SelectTrigger className="h-20! w-full px-6! text-xl!">
                 <SelectValue placeholder="Select experience" />
               </SelectTrigger>
               <SelectContent>
                 {EXPERIENCE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={String(option.value)} className="text-xl!">
+                  <SelectItem
+                    key={option.value}
+                    value={String(option.value)}
+                    className="text-xl!"
+                  >
                     {option.label}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {errors.yearsExperience && (
-              <p className="text-red-500 text-lg">{errors.yearsExperience.message}</p>
+              <p className="text-lg text-red-500">
+                {errors.yearsExperience.message}
+              </p>
             )}
           </div>
 
@@ -449,25 +507,43 @@ export default function MentorApplicationPage() {
               <Input
                 value={newLanguage}
                 onChange={(e) => setNewLanguage(e.target.value)}
-                onKeyDown={(e) => handleKeyDown(e, newLanguage, setNewLanguage, languages, setLanguages)}
+                onKeyDown={(e) =>
+                  handleKeyDown(
+                    e,
+                    newLanguage,
+                    setNewLanguage,
+                    languages,
+                    setLanguages
+                  )
+                }
                 placeholder="Add language..."
-                className="flex-1 h-20! text-xl! px-6!"
+                className="h-20! flex-1 px-6! text-xl!"
               />
-              <Button 
+              <Button
                 type="button"
                 variant="outline"
-                onClick={() => addItem(newLanguage, setNewLanguage, languages, setLanguages)}
+                onClick={() =>
+                  addItem(newLanguage, setNewLanguage, languages, setLanguages)
+                }
                 className="size-20!"
               >
                 <Plus className="size-7" />
               </Button>
             </div>
             {languages.length > 0 && (
-              <div className="flex flex-wrap gap-2 mt-2">
+              <div className="mt-2 flex flex-wrap gap-2">
                 {languages.map((lang) => (
-                  <Badge key={lang} variant="secondary" className="py-2 px-4 text-lg">
+                  <Badge
+                    key={lang}
+                    variant="secondary"
+                    className="px-4 py-2 text-lg"
+                  >
                     {lang}
-                    <button type="button" onClick={() => removeItem(lang, languages, setLanguages)} className="ml-2 cursor-pointer">
+                    <button
+                      type="button"
+                      onClick={() => removeItem(lang, languages, setLanguages)}
+                      className="ml-2 cursor-pointer"
+                    >
                       <X className="size-4" />
                     </button>
                   </Badge>
@@ -485,25 +561,43 @@ export default function MentorApplicationPage() {
             <Input
               value={newExpertise}
               onChange={(e) => setNewExpertise(e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e, newExpertise, setNewExpertise, expertise, setExpertise)}
+              onKeyDown={(e) =>
+                handleKeyDown(
+                  e,
+                  newExpertise,
+                  setNewExpertise,
+                  expertise,
+                  setExpertise
+                )
+              }
               placeholder="e.g., Software Engineering, Cloud Architecture, Data Science..."
-              className="flex-1 h-20! text-xl! px-6!"
+              className="h-20! flex-1 px-6! text-xl!"
             />
-            <Button 
+            <Button
               type="button"
               variant="outline"
-              onClick={() => addItem(newExpertise, setNewExpertise, expertise, setExpertise)}
+              onClick={() =>
+                addItem(newExpertise, setNewExpertise, expertise, setExpertise)
+              }
               className="size-20!"
             >
               <Plus className="size-7" />
             </Button>
           </div>
           {expertise.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               {expertise.map((item) => (
-                <Badge key={item} variant="secondary" className="py-2 px-4 text-lg">
+                <Badge
+                  key={item}
+                  variant="secondary"
+                  className="px-4 py-2 text-lg"
+                >
                   {item}
-                  <button type="button" onClick={() => removeItem(item, expertise, setExpertise)} className="ml-2 cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => removeItem(item, expertise, setExpertise)}
+                    className="ml-2 cursor-pointer"
+                  >
                     <X className="size-4" />
                   </button>
                 </Badge>
@@ -520,11 +614,13 @@ export default function MentorApplicationPage() {
             <Input
               value={newSkill}
               onChange={(e) => setNewSkill(e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e, newSkill, setNewSkill, skills, setSkills)}
+              onKeyDown={(e) =>
+                handleKeyDown(e, newSkill, setNewSkill, skills, setSkills)
+              }
               placeholder="e.g., JavaScript, Python, Leadership, System Design..."
-              className="flex-1 h-20! text-xl! px-6!"
+              className="h-20! flex-1 px-6! text-xl!"
             />
-            <Button 
+            <Button
               type="button"
               variant="outline"
               onClick={() => addItem(newSkill, setNewSkill, skills, setSkills)}
@@ -534,11 +630,19 @@ export default function MentorApplicationPage() {
             </Button>
           </div>
           {skills.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               {skills.map((skill) => (
-                <Badge key={skill} variant="secondary" className="py-2 px-4 text-lg">
+                <Badge
+                  key={skill}
+                  variant="secondary"
+                  className="px-4 py-2 text-lg"
+                >
                   {skill}
-                  <button type="button" onClick={() => removeItem(skill, skills, setSkills)} className="ml-2 cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() => removeItem(skill, skills, setSkills)}
+                    className="ml-2 cursor-pointer"
+                  >
                     <X className="size-4" />
                   </button>
                 </Badge>
@@ -553,25 +657,45 @@ export default function MentorApplicationPage() {
             <Input
               value={newIndustry}
               onChange={(e) => setNewIndustry(e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e, newIndustry, setNewIndustry, industries, setIndustries)}
+              onKeyDown={(e) =>
+                handleKeyDown(
+                  e,
+                  newIndustry,
+                  setNewIndustry,
+                  industries,
+                  setIndustries
+                )
+              }
               placeholder="e.g., FinTech, Healthcare, E-commerce..."
-              className="flex-1 h-20! text-xl! px-6!"
+              className="h-20! flex-1 px-6! text-xl!"
             />
-            <Button 
+            <Button
               type="button"
               variant="outline"
-              onClick={() => addItem(newIndustry, setNewIndustry, industries, setIndustries)}
+              onClick={() =>
+                addItem(newIndustry, setNewIndustry, industries, setIndustries)
+              }
               className="size-20!"
             >
               <Plus className="size-7" />
             </Button>
           </div>
           {industries.length > 0 && (
-            <div className="flex flex-wrap gap-2 mt-2">
+            <div className="mt-2 flex flex-wrap gap-2">
               {industries.map((industry) => (
-                <Badge key={industry} variant="secondary" className="py-2 px-4 text-lg">
+                <Badge
+                  key={industry}
+                  variant="secondary"
+                  className="px-4 py-2 text-lg"
+                >
                   {industry}
-                  <button type="button" onClick={() => removeItem(industry, industries, setIndustries)} className="ml-2 cursor-pointer">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      removeItem(industry, industries, setIndustries)
+                    }
+                    className="ml-2 cursor-pointer"
+                  >
                     <X className="size-4" />
                   </button>
                 </Badge>
@@ -588,10 +712,12 @@ export default function MentorApplicationPage() {
             <Input
               {...register('linkedinUrl')}
               placeholder="https://linkedin.com/in/yourprofile"
-              className="w-full h-20! text-xl! px-6!"
+              className="h-20! w-full px-6! text-xl!"
             />
             {errors.linkedinUrl && (
-              <p className="text-red-500 text-lg">{errors.linkedinUrl.message}</p>
+              <p className="text-lg text-red-500">
+                {errors.linkedinUrl.message}
+              </p>
             )}
           </div>
 
@@ -602,36 +728,40 @@ export default function MentorApplicationPage() {
             <Input
               {...register('portfolioUrl')}
               placeholder="https://yourportfolio.com"
-              className="w-full h-20! text-xl! px-6!"
+              className="h-20! w-full px-6! text-xl!"
             />
             {errors.portfolioUrl && (
-              <p className="text-red-500 text-lg">{errors.portfolioUrl.message}</p>
+              <p className="text-lg text-red-500">
+                {errors.portfolioUrl.message}
+              </p>
             )}
           </div>
         </div>
 
         <div className="space-y-3">
           <Label htmlFor="motivation" className="text-xl">
-            Why do you want to become a mentor? <span className="text-red-500">*</span>
+            Why do you want to become a mentor?{' '}
+            <span className="text-red-500">*</span>
           </Label>
           <Textarea
             {...register('motivation')}
             placeholder="Share your motivation for becoming a mentor and how you plan to help students..."
-            className="w-full min-h-[160px] text-lg! px-6! py-5!"
+            className="min-h-[160px] w-full px-6! py-5! text-lg!"
           />
           {errors.motivation && (
-            <p className="text-red-500 text-lg">{errors.motivation.message}</p>
+            <p className="text-lg text-red-500">{errors.motivation.message}</p>
           )}
         </div>
 
-        <div className="space-y-5 p-7 bg-neutral-900/50 border border-neutral-800 rounded-xl">
+        <div className="space-y-5 rounded-xl border border-neutral-800 bg-neutral-900/50 p-7">
           <div>
-            <Label className="text-xl flex items-center gap-2">
+            <Label className="flex items-center gap-2 text-xl">
               <FileText className="size-6" />
               Supporting Documents
             </Label>
-            <p className="text-lg text-neutral-400 mt-2">
-              Upload certificates, awards, or portfolio items to strengthen your application (optional)
+            <p className="mt-2 text-lg text-neutral-400">
+              Upload certificates, awards, or portfolio items to strengthen your
+              application (optional)
             </p>
           </div>
 
@@ -648,12 +778,20 @@ export default function MentorApplicationPage() {
                 maxFiles={1}
                 maxFileSize="5MB"
                 acceptedFileTypes={[
-                  'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+                  'image/jpeg',
+                  'image/png',
+                  'image/gif',
+                  'image/webp',
                   'application/pdf',
-                  'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                  'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                  'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-                  'application/vnd.oasis.opendocument.text', 'application/vnd.oasis.opendocument.spreadsheet', 'application/vnd.oasis.opendocument.presentation'
+                  'application/msword',
+                  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                  'application/vnd.ms-excel',
+                  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                  'application/vnd.ms-powerpoint',
+                  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+                  'application/vnd.oasis.opendocument.text',
+                  'application/vnd.oasis.opendocument.spreadsheet',
+                  'application/vnd.oasis.opendocument.presentation',
                 ]}
                 labelIdle='<span class="filepond--label-action">Browse</span> or drag & drop your file here'
                 labelFileTypeNotAllowed="Invalid file type"
@@ -669,16 +807,22 @@ export default function MentorApplicationPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-lg">Document Type</Label>
-                <Select 
-                  value={currentDocType} 
-                  onValueChange={(value) => setCurrentDocType(value as MentorDocumentType)}
+                <Select
+                  value={currentDocType}
+                  onValueChange={(value) =>
+                    setCurrentDocType(value as MentorDocumentType)
+                  }
                 >
                   <SelectTrigger className="h-14! text-lg!">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
                     {DOCUMENT_TYPES.map((type) => (
-                      <SelectItem key={type.value} value={type.value} className="text-lg!">
+                      <SelectItem
+                        key={type.value}
+                        value={type.value}
+                        className="text-lg!"
+                      >
                         <div className="flex items-center gap-2">
                           {getDocumentIcon(type.iconName)}
                           {type.label}
@@ -705,7 +849,7 @@ export default function MentorApplicationPage() {
               variant="outline"
               onClick={addDocument}
               disabled={!currentFile}
-              className="w-full h-14! text-lg!"
+              className="h-14! w-full text-lg!"
             >
               Add Document
               <Plus className="size-5" />
@@ -713,20 +857,20 @@ export default function MentorApplicationPage() {
           </div>
 
           {pendingDocuments.length > 0 && (
-            <div className="space-y-3 pt-4 border-t border-neutral-800">
+            <div className="space-y-3 border-t border-neutral-800 pt-4">
               <p className="text-lg font-medium text-neutral-300">
                 Documents to upload ({pendingDocuments.length})
               </p>
               {pendingDocuments.map((doc) => (
-                <div 
+                <div
                   key={doc.id}
-                  className="flex items-center gap-4 p-4 bg-neutral-800/50 rounded-lg border border-neutral-700/50"
+                  className="flex items-center gap-4 rounded-lg border border-neutral-700/50 bg-neutral-800/50 p-4"
                 >
-                  <div className="size-12 rounded-lg bg-neutral-700/50 flex items-center justify-center shrink-0">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-neutral-700/50">
                     {getDocumentTypeIcon(doc.type)}
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-lg font-medium truncate">{doc.title}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-lg font-medium">{doc.title}</p>
                     <div className="flex items-center gap-2 text-base text-neutral-400">
                       <span className="capitalize">{doc.type}</span>
                       <span>•</span>
@@ -748,10 +892,10 @@ export default function MentorApplicationPage() {
           )}
         </div>
 
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           disabled={isLoading}
-          className="w-full h-16! text-xl!"
+          className="h-16! w-full text-xl!"
         >
           {isLoading ? (
             <>

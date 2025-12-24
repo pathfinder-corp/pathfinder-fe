@@ -1,7 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, FileText, Award, Briefcase, File, Trash2, Download, Edit2, UserCheck } from 'lucide-react';
+import {
+  Loader2,
+  FileText,
+  Award,
+  Briefcase,
+  File,
+  Trash2,
+  Download,
+  Edit2,
+  UserCheck,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { mentorService } from '@/services';
 import type { IMentorDocument, MentorDocumentType } from '@/types';
@@ -41,11 +51,29 @@ const getVerificationBadge = (status: string) => {
   const baseClasses = 'px-2 py-1 pt-[.45rem]';
   switch (status) {
     case 'verified':
-      return <Badge className={`${baseClasses} bg-green-500/20 text-green-400 border-green-500/30`}>Verified</Badge>;
+      return (
+        <Badge
+          className={`${baseClasses} border-green-500/30 bg-green-500/20 text-green-400`}
+        >
+          Verified
+        </Badge>
+      );
     case 'rejected':
-      return <Badge className={`${baseClasses} bg-red-500/20 text-red-400 border-red-500/30`}>Rejected</Badge>;
+      return (
+        <Badge
+          className={`${baseClasses} border-red-500/30 bg-red-500/20 text-red-400`}
+        >
+          Rejected
+        </Badge>
+      );
     default:
-      return <Badge className={`${baseClasses} bg-yellow-500/20 text-yellow-400 border-yellow-500/30`}>Pending</Badge>;
+      return (
+        <Badge
+          className={`${baseClasses} border-yellow-500/30 bg-yellow-500/20 text-yellow-400`}
+        >
+          Pending
+        </Badge>
+      );
   }
 };
 
@@ -56,16 +84,18 @@ interface DocumentListProps {
   canEdit?: boolean;
 }
 
-export function DocumentList({ 
-  applicationId, 
-  documents, 
+export function DocumentList({
+  applicationId,
+  documents,
   onDocumentsChange,
-  canEdit = true 
+  canEdit = true,
 }: DocumentListProps) {
-  const [selectedDocument, setSelectedDocument] = useState<IMentorDocument | null>(null);
+  const [selectedDocument, setSelectedDocument] =
+    useState<IMentorDocument | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
-  const [documentToDelete, setDocumentToDelete] = useState<IMentorDocument | null>(null);
+  const [documentToDelete, setDocumentToDelete] =
+    useState<IMentorDocument | null>(null);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
 
@@ -73,7 +103,7 @@ export function DocumentList({
     try {
       setIsDownloading(doc.id);
       const blob = await mentorService.downloadDocument(applicationId, doc.id);
-      
+
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -83,9 +113,8 @@ export function DocumentList({
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to download document';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to download document';
       toast.error('Failed to download document', {
         description: errorMessage,
       });
@@ -105,9 +134,8 @@ export function DocumentList({
       setDocumentToDelete(null);
       onDocumentsChange();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to delete document';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to delete document';
       toast.error('Failed to delete document', {
         description: errorMessage,
       });
@@ -118,11 +146,12 @@ export function DocumentList({
 
   if (documents.length === 0) {
     return (
-      <div className="text-center py-10 bg-neutral-800/30 rounded-xl border border-neutral-700/50">
-        <File className="size-12 text-neutral-500 mx-auto mb-4" />
+      <div className="rounded-xl border border-neutral-700/50 bg-neutral-800/30 py-10 text-center">
+        <File className="mx-auto mb-4 size-12 text-neutral-500" />
         <p className="text-lg text-neutral-400">No documents uploaded yet</p>
-        <p className="text-base text-neutral-500 mt-1">
-          Upload certificates, awards, or portfolio items to strengthen your application
+        <p className="mt-1 text-base text-neutral-500">
+          Upload certificates, awards, or portfolio items to strengthen your
+          application
         </p>
       </div>
     );
@@ -132,17 +161,17 @@ export function DocumentList({
     <>
       <div className="space-y-3">
         {documents.map((doc) => (
-          <div 
+          <div
             key={doc.id}
-            className="flex items-center gap-4 p-4 bg-neutral-800/50 rounded-xl border border-neutral-700/50 hover:border-neutral-600 transition-colors"
+            className="flex items-center gap-4 rounded-xl border border-neutral-700/50 bg-neutral-800/50 p-4 transition-colors hover:border-neutral-600"
           >
-            <div className="size-14 rounded-lg bg-neutral-700/50 flex items-center justify-center shrink-0">
+            <div className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-neutral-700/50">
               {getDocumentIcon(doc.type)}
             </div>
-            
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2 mb-1">
-                <h4 className="text-lg font-medium truncate">
+
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-center gap-2">
+                <h4 className="truncate text-lg font-medium">
                   {doc.title || doc.originalFilename}
                 </h4>
                 {getVerificationBadge(doc.verificationStatus)}
@@ -160,13 +189,15 @@ export function DocumentList({
                 {doc.issuingOrganization && (
                   <>
                     <span>•</span>
-                    <span className="truncate max-w-[200px]">{doc.issuingOrganization}</span>
+                    <span className="max-w-[200px] truncate">
+                      {doc.issuingOrganization}
+                    </span>
                   </>
                 )}
               </div>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex shrink-0 items-center gap-2">
               <Button
                 variant="ghost"
                 size="icon"
@@ -180,7 +211,7 @@ export function DocumentList({
                   <Download className="size-5" />
                 )}
               </Button>
-              
+
               {canEdit && (
                 <>
                   <Button
@@ -222,27 +253,34 @@ export function DocumentList({
         />
       )}
 
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl flex items-center gap-2.5">
+            <AlertDialogTitle className="flex items-center gap-2.5 text-2xl">
               <Trash2 className="size-7" />
               Delete Document
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base">
-              Are you sure you want to delete &quot;{documentToDelete?.title || documentToDelete?.originalFilename}&quot;? 
-              This action cannot be undone.
+              Are you sure you want to delete &quot;
+              {documentToDelete?.title || documentToDelete?.originalFilename}
+              &quot;? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeleting} className="h-12! text-base!">
+            <AlertDialogCancel
+              disabled={isDeleting}
+              className="h-12! text-base!"
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleDelete}
               disabled={isDeleting}
-              className="bg-red-600 hover:bg-red-700 text-white h-12! text-base!"
+              className="h-12! bg-red-600 text-base! text-white hover:bg-red-700"
             >
               {isDeleting ? (
                 <>

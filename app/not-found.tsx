@@ -10,23 +10,23 @@ import { Button } from '@/components/ui/button';
 
 export default function NotFound() {
   return (
-    <div className="min-h-screen bg-neutral-950 relative overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden bg-neutral-950">
       <PublicHeader />
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 size-[500px] bg-linear-to-br from-white/5 via-neutral-500/5 to-transparent rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 size-[400px] bg-linear-to-tl from-neutral-400/5 via-neutral-500/5 to-transparent rounded-full blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 size-[500px] rounded-full bg-linear-to-br from-white/5 via-neutral-500/5 to-transparent blur-3xl" />
+        <div className="absolute right-1/4 bottom-1/4 size-[400px] rounded-full bg-linear-to-tl from-neutral-400/5 via-neutral-500/5 to-transparent blur-3xl" />
       </div>
 
-      <main className="relative z-10 min-h-screen flex items-center justify-center px-8 pt-32">
-        <div className="max-w-3xl mx-auto text-center">
+      <main className="relative z-10 flex min-h-screen items-center justify-center px-8 pt-32">
+        <div className="mx-auto max-w-3xl text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
             className="relative"
           >
-            <span className="text-[140px] md:text-[180px] font-bold text-neutral-900 leading-none select-none">
+            <span className="text-[140px] leading-none font-bold text-neutral-900 select-none md:text-[180px]">
               404
             </span>
           </motion.div>
@@ -35,10 +35,10 @@ export default function NotFound() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-4xl md:text-6xl font-bold mb-6"
+            className="mb-6 text-4xl font-bold md:text-6xl"
           >
             Page{' '}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-white to-neutral-400">
+            <span className="bg-linear-to-r from-white to-neutral-400 bg-clip-text text-transparent">
               Not Found
             </span>
           </motion.h1>
@@ -47,37 +47,33 @@ export default function NotFound() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-xl md:text-2xl text-neutral-400 mb-12 leading-relaxed max-w-2xl mx-auto"
+            className="mx-auto mb-12 max-w-2xl text-xl leading-relaxed text-neutral-400 md:text-2xl"
           >
-            Oops! The page you&apos;re looking for seems to have wandered off the path. 
-            Let&apos;s get you back on track.
+            Oops! The page you&apos;re looking for seems to have wandered off
+            the path. Let&apos;s get you back on track.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.5 }}
-            className="flex flex-col sm:flex-row items-center justify-center gap-4"
+            className="flex flex-col items-center justify-center gap-4 sm:flex-row"
           >
             <Button
               asChild
               size="lg"
-              className="w-full sm:w-auto rounded-full bg-white text-neutral-950 hover:bg-neutral-200 text-xl px-10 py-8"
+              className="w-full rounded-full bg-white px-10 py-8 text-xl text-neutral-950 hover:bg-neutral-200 sm:w-auto"
             >
-              <Link href="/">
-                Go Home
-              </Link>
+              <Link href="/">Go Home</Link>
             </Button>
-            
+
             <Button
               asChild
               size="lg"
               variant="ghost"
-              className="w-full sm:w-auto rounded-full border border-white/20 bg-white/5 backdrop-blur-xl hover:bg-white/10 hover:border-white/40 text-xl px-10 py-8"
+              className="w-full rounded-full border border-white/20 bg-white/5 px-10 py-8 text-xl backdrop-blur-xl hover:border-white/40 hover:bg-white/10 sm:w-auto"
             >
-              <Link href="/mentors">
-                Explore Mentors
-              </Link>
+              <Link href="/mentors">Explore Mentors</Link>
             </Button>
           </motion.div>
 
@@ -89,7 +85,7 @@ export default function NotFound() {
           >
             <button
               onClick={() => window.history.back()}
-              className="inline-flex items-center gap-2 text-lg text-neutral-500 hover:text-white transition-colors cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-2 text-lg text-neutral-500 transition-colors hover:text-white"
             >
               <ArrowLeft className="size-5" />
               Go back to previous page
@@ -100,9 +96,9 @@ export default function NotFound() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="mt-8 pt-10 border-t border-neutral-800"
+            className="mt-8 border-t border-neutral-800 pt-10"
           >
-            <p className="text-neutral-500 mb-6">Or check out these pages:</p>
+            <p className="mb-6 text-neutral-500">Or check out these pages:</p>
             <div className="flex flex-wrap items-center justify-center gap-4">
               {[
                 { label: 'About AI', href: '/about-ai' },
@@ -113,7 +109,7 @@ export default function NotFound() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="px-5 py-2.5 rounded-full bg-neutral-900/50 border border-neutral-800 text-neutral-400 hover:text-white hover:border-neutral-700 transition-all text-base"
+                  className="rounded-full border border-neutral-800 bg-neutral-900/50 px-5 py-2.5 text-base text-neutral-400 transition-all hover:border-neutral-700 hover:text-white"
                 >
                   {link.label}
                 </Link>

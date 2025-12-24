@@ -45,19 +45,24 @@ export function MagicBento({
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   const [stars, setStars] = useState<Star[]>([]);
-  const [clickParticles, setClickParticles] = useState<{ id: number; x: number; y: number }[]>([]);
+  const [clickParticles, setClickParticles] = useState<
+    { id: number; x: number; y: number }[]
+  >([]);
 
   useEffect(() => {
     if (enableStars && containerRef.current) {
       const rect = containerRef.current.getBoundingClientRect();
-      const newStars: Star[] = Array.from({ length: particleCount }, (_, i) => ({
-        id: i,
-        x: Math.random() * rect.width,
-        y: Math.random() * rect.height,
-        size: Math.random() * 2 + 1,
-        opacity: Math.random() * 0.5 + 0.3,
-        speed: Math.random() * 2 + 1,
-      }));
+      const newStars: Star[] = Array.from(
+        { length: particleCount },
+        (_, i) => ({
+          id: i,
+          x: Math.random() * rect.width,
+          y: Math.random() * rect.height,
+          size: Math.random() * 2 + 1,
+          opacity: Math.random() * 0.5 + 0.3,
+          speed: Math.random() * 2 + 1,
+        })
+      );
       setStars(newStars);
     }
   }, [enableStars, particleCount]);
@@ -68,8 +73,8 @@ export function MagicBento({
 
     const rect = containerRef.current.getBoundingClientRect();
     const interval = setInterval(() => {
-      setStars(prev =>
-        prev.map(star => ({
+      setStars((prev) =>
+        prev.map((star) => ({
           ...star,
           y: star.y <= 0 ? rect.height : star.y - star.speed,
           opacity: Math.sin(Date.now() / 1000 + star.id) * 0.3 + 0.5,
@@ -113,8 +118,8 @@ export function MagicBento({
     // Magnetism effect
     if (enableMagnetism) {
       const magnetStrength = 10;
-      const offsetX = (x - rect.width / 2) / rect.width * magnetStrength;
-      const offsetY = (y - rect.height / 2) / rect.height * magnetStrength;
+      const offsetX = ((x - rect.width / 2) / rect.width) * magnetStrength;
+      const offsetY = ((y - rect.height / 2) / rect.height) * magnetStrength;
 
       gsap.to(containerRef.current, {
         x: offsetX,
@@ -159,10 +164,12 @@ export function MagicBento({
       y,
     }));
 
-    setClickParticles(prev => [...prev, ...newParticles]);
+    setClickParticles((prev) => [...prev, ...newParticles]);
 
     setTimeout(() => {
-      setClickParticles(prev => prev.filter(p => !newParticles.find(np => np.id === p.id)));
+      setClickParticles((prev) =>
+        prev.filter((p) => !newParticles.find((np) => np.id === p.id))
+      );
     }, 600);
   };
 
@@ -171,7 +178,9 @@ export function MagicBento({
       ref={containerRef}
       className={cn(
         'relative overflow-hidden rounded-2xl transition-all duration-300',
-        enableBorderGlow && isHovered && 'shadow-[0_0_30px_rgba(255,255,255,0.1)]',
+        enableBorderGlow &&
+          isHovered &&
+          'shadow-[0_0_30px_rgba(255,255,255,0.1)]',
         className
       )}
       onMouseMove={handleMouseMove}
@@ -187,7 +196,7 @@ export function MagicBento({
       {enableBorderGlow && (
         <div
           className={cn(
-            'absolute inset-0 rounded-2xl transition-opacity duration-300 pointer-events-none',
+            'pointer-events-none absolute inset-0 rounded-2xl transition-opacity duration-300',
             isHovered ? 'opacity-100' : 'opacity-0'
           )}
           style={{
@@ -200,15 +209,15 @@ export function MagicBento({
       {enableSpotlight && (
         <div
           ref={spotlightRef}
-          className="absolute inset-0 pointer-events-none transition-opacity duration-300 z-10"
+          className="pointer-events-none absolute inset-0 z-10 transition-opacity duration-300"
           style={{ opacity: isHovered ? 1 : 0 }}
         />
       )}
 
       {/* Stars */}
       {enableStars && (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
-          {stars.map(star => (
+        <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
+          {stars.map((star) => (
             <div
               key={star.id}
               className="absolute rounded-full bg-white"
@@ -226,39 +235,79 @@ export function MagicBento({
       )}
 
       {/* Click particles */}
-      {clickEffect && clickParticles.map(particle => (
-        <div
-          key={particle.id}
-          className="absolute pointer-events-none z-20"
-          style={{ left: particle.x, top: particle.y }}
-        >
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 rounded-full bg-white animate-[particle_0.6s_ease-out_forwards]"
-              style={{
-                transform: `rotate(${i * 45}deg) translateX(0)`,
-                animation: `particle-${i} 0.6s ease-out forwards`,
-              }}
-            />
-          ))}
-        </div>
-      ))}
+      {clickEffect &&
+        clickParticles.map((particle) => (
+          <div
+            key={particle.id}
+            className="pointer-events-none absolute z-20"
+            style={{ left: particle.x, top: particle.y }}
+          >
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute h-1 w-1 animate-[particle_0.6s_ease-out_forwards] rounded-full bg-white"
+                style={{
+                  transform: `rotate(${i * 45}deg) translateX(0)`,
+                  animation: `particle-${i} 0.6s ease-out forwards`,
+                }}
+              />
+            ))}
+          </div>
+        ))}
 
       {/* Content */}
       <div className="relative z-10">{children}</div>
 
       <style jsx>{`
-        @keyframes particle-0 { to { transform: rotate(0deg) translateX(30px); opacity: 0; } }
-        @keyframes particle-1 { to { transform: rotate(45deg) translateX(30px); opacity: 0; } }
-        @keyframes particle-2 { to { transform: rotate(90deg) translateX(30px); opacity: 0; } }
-        @keyframes particle-3 { to { transform: rotate(135deg) translateX(30px); opacity: 0; } }
-        @keyframes particle-4 { to { transform: rotate(180deg) translateX(30px); opacity: 0; } }
-        @keyframes particle-5 { to { transform: rotate(225deg) translateX(30px); opacity: 0; } }
-        @keyframes particle-6 { to { transform: rotate(270deg) translateX(30px); opacity: 0; } }
-        @keyframes particle-7 { to { transform: rotate(315deg) translateX(30px); opacity: 0; } }
+        @keyframes particle-0 {
+          to {
+            transform: rotate(0deg) translateX(30px);
+            opacity: 0;
+          }
+        }
+        @keyframes particle-1 {
+          to {
+            transform: rotate(45deg) translateX(30px);
+            opacity: 0;
+          }
+        }
+        @keyframes particle-2 {
+          to {
+            transform: rotate(90deg) translateX(30px);
+            opacity: 0;
+          }
+        }
+        @keyframes particle-3 {
+          to {
+            transform: rotate(135deg) translateX(30px);
+            opacity: 0;
+          }
+        }
+        @keyframes particle-4 {
+          to {
+            transform: rotate(180deg) translateX(30px);
+            opacity: 0;
+          }
+        }
+        @keyframes particle-5 {
+          to {
+            transform: rotate(225deg) translateX(30px);
+            opacity: 0;
+          }
+        }
+        @keyframes particle-6 {
+          to {
+            transform: rotate(270deg) translateX(30px);
+            opacity: 0;
+          }
+        }
+        @keyframes particle-7 {
+          to {
+            transform: rotate(315deg) translateX(30px);
+            opacity: 0;
+          }
+        }
       `}</style>
     </div>
   );
 }
-

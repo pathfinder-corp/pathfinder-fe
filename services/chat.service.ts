@@ -12,7 +12,9 @@ import { api, extractErrorMessage } from '@/lib';
 export const chatService = {
   getConversations: async (): Promise<IChatConversation[]> => {
     try {
-      const response = await api.get<IChatConversation[]>('/chat/conversations');
+      const response = await api.get<IChatConversation[]>(
+        '/chat/conversations'
+      );
       return response.data;
     } catch (error) {
       console.error('Get conversations failed:', error);
@@ -22,7 +24,9 @@ export const chatService = {
     }
   },
 
-  getConversationByMentorship: async (mentorshipId: string): Promise<IChatConversation> => {
+  getConversationByMentorship: async (
+    mentorshipId: string
+  ): Promise<IChatConversation> => {
     try {
       const response = await api.get<IChatConversation>(
         `/chat/conversations/mentorship/${mentorshipId}`
@@ -127,9 +131,15 @@ export const chatService = {
     }
   },
 
-  editMessage: async (messageId: string, data: IEditMessageRequest): Promise<IChatMessage> => {
+  editMessage: async (
+    messageId: string,
+    data: IEditMessageRequest
+  ): Promise<IChatMessage> => {
     try {
-      const response = await api.put<IChatMessage>(`/chat/messages/${messageId}`, data);
+      const response = await api.put<IChatMessage>(
+        `/chat/messages/${messageId}`,
+        data
+      );
       return response.data;
     } catch (error) {
       console.error('Edit message failed:', error);
@@ -141,7 +151,9 @@ export const chatService = {
 
   deleteMessage: async (messageId: string): Promise<IChatMessage> => {
     try {
-      const response = await api.delete<IChatMessage>(`/chat/messages/${messageId}`);
+      const response = await api.delete<IChatMessage>(
+        `/chat/messages/${messageId}`
+      );
       return response.data;
     } catch (error) {
       console.error('Delete message failed:', error);
@@ -151,7 +163,9 @@ export const chatService = {
     }
   },
 
-  getUnreadCount: async (conversationId: string): Promise<IUnreadCountResponse> => {
+  getUnreadCount: async (
+    conversationId: string
+  ): Promise<IUnreadCountResponse> => {
     try {
       const response = await api.get<IUnreadCountResponse>(
         `/chat/conversations/${conversationId}/unread-count`

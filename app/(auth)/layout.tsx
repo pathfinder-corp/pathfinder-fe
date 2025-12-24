@@ -4,9 +4,8 @@ import LightRays from '@/components/LightRays';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center relative">
-      
-      <div className="size-full absolute inset-0">
+    <div className="relative flex min-h-screen items-center justify-center">
+      <div className="absolute inset-0 size-full">
         <LightRays
           raysOrigin="top-center"
           raysColor="#ffffff"
@@ -20,9 +19,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           className="custom-rays"
         />
       </div>
-      <div className="w-full max-w-lg z-10">
-        {children}
-      </div>
+      <div className="z-10 w-full max-w-lg">{children}</div>
     </div>
   );
 }

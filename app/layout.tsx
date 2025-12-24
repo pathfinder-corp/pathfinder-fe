@@ -1,18 +1,18 @@
-import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
-import { cn } from "@/lib";
-import { Toaster } from "@/components/ui/sonner"
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Roboto } from 'next/font/google';
+import { cn } from '@/lib';
+import { Toaster } from '@/components/ui/sonner';
+import './globals.css';
 
 const mainFont = Roboto({
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900'],
-  variable: "--font-main",
-  subsets: ["latin"]
+  variable: '--font-main',
+  subsets: ['latin'],
 });
 
 export const metadata: Metadata = {
-  title: "Pathfinder",
-  description: "Pathfinder - Your AI-powered career coach"
+  title: 'Pathfinder',
+  description: 'Pathfinder - Your AI-powered career coach',
 };
 
 export default function RootLayout({
@@ -23,7 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={cn("dark min-h-screen font-main relative bg-background text-foreground antialiased", mainFont.variable)}
+        className={cn(
+          'dark font-main bg-background text-foreground relative min-h-screen antialiased',
+          mainFont.variable
+        )}
         suppressHydrationWarning
       >
         {children}

@@ -1,7 +1,7 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
-@plugin "@tailwindcss/typography";
+@plugin '@tailwindcss/typography';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -125,8 +125,8 @@
     @apply text-[62.5%];
   }
 
-  input[type="number"]::-webkit-outer-spin-button,
-  input[type="number"]::-webkit-inner-spin-button {
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
   }
@@ -224,7 +224,11 @@
 }
 
 .PhotoView-Slider__BannerWrap {
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent) !important;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.6),
+    transparent
+  ) !important;
   padding: 16px 20px !important;
 }
 
@@ -267,7 +271,9 @@
   border-radius: 50% !important;
   backdrop-filter: blur(8px) !important;
   opacity: 1 !important;
-  transition: background-color 0.2s ease, transform 0.2s ease !important;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease !important;
 }
 
 .PhotoView-Slider__ArrowLeft {

@@ -13,7 +13,7 @@ import {
   EyeOff,
   CheckCircle,
   AlertCircle,
-  Mail
+  Mail,
 } from 'lucide-react';
 import { FilePond, registerPlugin } from 'react-filepond';
 import FilePondPluginFileValidateType from 'filepond-plugin-file-validate-type';
@@ -50,24 +50,35 @@ const TABS = [
 ];
 
 const profileSchema = z.object({
-  firstName: z.string().min(1, 'First name is required').max(50, 'First name too long'),
-  lastName: z.string().min(1, 'Last name is required').max(50, 'Last name too long'),
+  firstName: z
+    .string()
+    .min(1, 'First name is required')
+    .max(50, 'First name too long'),
+  lastName: z
+    .string()
+    .min(1, 'Last name is required')
+    .max(50, 'Last name too long'),
 });
 
-const passwordSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/[0-9]/, 'Password must contain at least one number')
-    .regex(/[!@#$%^&*(),.?":{}|<>]/, 'Password must contain at least one special character'),
-  confirmPassword: z.string().min(1, 'Please confirm your password'),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: 'Passwords do not match',
-  path: ['confirmPassword'],
-});
+const passwordSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+      .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+      .regex(/[0-9]/, 'Password must contain at least one number')
+      .regex(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        'Password must contain at least one special character'
+      ),
+    confirmPassword: z.string().min(1, 'Please confirm your password'),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 type PasswordFormData = z.infer<typeof passwordSchema>;
@@ -75,24 +86,27 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 registerPlugin(
   FilePondPluginFileValidateType,
   FilePondPluginFileValidateSize,
-  FilePondPluginImagePreview,
+  FilePondPluginImagePreview
 );
 
 export default function SettingsPage() {
   const { setUser } = useUserStore();
-  
+
   const [activeTab, setActiveTab] = useState<ActiveTab>('profile');
-  const activeIndex = TABS.findIndex(tab => tab.id === activeTab);
+  const activeIndex = TABS.findIndex((tab) => tab.id === activeTab);
 
   const [profile, setProfile] = useState<IUserProfile | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState<boolean>(true);
   const [isSavingProfile, setIsSavingProfile] = useState<boolean>(false);
   const [isChangingPassword, setIsChangingPassword] = useState<boolean>(false);
 
-  const [showCurrentPassword, setShowCurrentPassword] = useState<boolean>(false);
+  const [showCurrentPassword, setShowCurrentPassword] =
+    useState<boolean>(false);
   const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
-  const [isResendingVerification, setIsResendingVerification] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+  const [isResendingVerification, setIsResendingVerification] =
+    useState<boolean>(false);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState<boolean>(false);
   const [avatarFiles, setAvatarFiles] = useState<any[]>([]);
   const avatarPondRef = useRef<FilePond | null>(null);
@@ -119,7 +133,7 @@ export default function SettingsPage() {
       setIsLoadingProfile(true);
       const data = await authService.getProfile();
       setProfile(data);
-      
+
       profileForm.setValue('firstName', data.firstName);
       profileForm.setValue('lastName', data.lastName);
 
@@ -134,9 +148,8 @@ export default function SettingsPage() {
         setAvatarFiles([]);
       }
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load profile';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load profile';
       toast.error('Failed to load profile', {
         description: errorMessage,
       });
@@ -153,15 +166,14 @@ export default function SettingsPage() {
     try {
       setIsSavingProfile(true);
       const updatedUser = await authService.updateProfile(data);
-      
+
       setUser(updatedUser);
-      setProfile(prev => prev ? { ...prev, ...updatedUser } : null);
-      
+      setProfile((prev) => (prev ? { ...prev, ...updatedUser } : null));
+
       toast.success('Profile updated successfully');
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to update profile';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to update profile';
       toast.error('Failed to update profile', {
         description: errorMessage,
       });
@@ -177,13 +189,12 @@ export default function SettingsPage() {
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
       });
-      
+
       passwordForm.reset();
       toast.success('Password changed successfully');
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to change password';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to change password';
       toast.error('Failed to change password', {
         description: errorMessage,
       });
@@ -211,9 +222,10 @@ export default function SettingsPage() {
         description: 'Please check your inbox and spam folder',
       });
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to resend verification';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to resend verification';
       toast.error('Failed to resend verification email', {
         description: errorMessage,
       });
@@ -223,10 +235,10 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
+    <div className="mx-auto max-w-4xl space-y-8">
       <div>
         <h1 className="text-5xl font-bold tracking-tight">Settings</h1>
-        <p className="text-2xl text-neutral-400 mt-3">
+        <p className="mt-3 text-2xl text-neutral-400">
           Manage your account settings and preferences
         </p>
       </div>
@@ -239,7 +251,7 @@ export default function SettingsPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`cursor-pointer relative flex items-center gap-2.5 px-5 py-4 text-lg font-medium transition-colors ${
+              className={`relative flex cursor-pointer items-center gap-2.5 px-5 py-4 text-lg font-medium transition-colors ${
                 isActive
                   ? 'text-white'
                   : 'text-neutral-500 hover:text-neutral-300'
@@ -248,9 +260,9 @@ export default function SettingsPage() {
               <Icon className="size-5" />
               {tab.label}
               {isActive && (
-                <motion.span 
+                <motion.span
                   layoutId="activeSettingsTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" 
+                  className="absolute right-0 bottom-0 left-0 h-0.5 bg-white"
                 />
               )}
             </button>
@@ -270,7 +282,7 @@ export default function SettingsPage() {
         <div className="space-y-8">
           {isLoadingProfile ? (
             <Card className="border-neutral-800 bg-neutral-900/50">
-              <CardContent className="p-10 flex items-center justify-center">
+              <CardContent className="flex items-center justify-center p-10">
                 <Loader2 className="size-10 animate-spin text-neutral-400" />
               </CardContent>
             </Card>
@@ -278,13 +290,15 @@ export default function SettingsPage() {
             <>
               <Card className="border-neutral-800 bg-neutral-900/50">
                 <CardHeader>
-                  <CardTitle className="text-3xl">Account Information</CardTitle>
+                  <CardTitle className="text-3xl">
+                    Account Information
+                  </CardTitle>
                   <CardDescription className="text-lg">
                     View your account details
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="flex flex-col md:flex-row md:items-center gap-5 mb-3">
+                  <div className="mb-3 flex flex-col gap-5 md:flex-row md:items-center">
                     <div className="w-34">
                       <FilePond
                         ref={avatarPondRef}
@@ -292,7 +306,10 @@ export default function SettingsPage() {
                         onupdatefiles={(fileItems) => {
                           setAvatarFiles(
                             fileItems.map((fileItem: any) => {
-                              if (fileItem.source && typeof fileItem.source === 'string') {
+                              if (
+                                fileItem.source &&
+                                typeof fileItem.source === 'string'
+                              ) {
                                 return {
                                   source: fileItem.source,
                                   options: { type: 'local' },
@@ -300,13 +317,15 @@ export default function SettingsPage() {
                               }
 
                               return fileItem.file;
-                            }),
+                            })
                           );
                         }}
                         allowMultiple={false}
                         maxFiles={1}
                         acceptedFileTypes={['image/*']}
-                        labelIdle={'Drag & Drop your picture or <span class="filepond--label-action">Browse</span>'}
+                        labelIdle={
+                          'Drag & Drop your picture or <span class="filepond--label-action">Browse</span>'
+                        }
                         imagePreviewHeight={150}
                         stylePanelLayout="compact circle"
                         styleLoadIndicatorPosition="center bottom"
@@ -321,7 +340,13 @@ export default function SettingsPage() {
                               .then(load)
                               .catch(() => error('Failed to load avatar'));
                           },
-                          process: (_fieldName, file, _metadata, load, error) => {
+                          process: (
+                            _fieldName,
+                            file,
+                            _metadata,
+                            load,
+                            error
+                          ) => {
                             if (!(file instanceof File)) {
                               load('done');
                               return {
@@ -332,11 +357,17 @@ export default function SettingsPage() {
                             (async () => {
                               try {
                                 setIsUploadingAvatar(true);
-                                const updatedUser = await userService.uploadAvatar(file as File);
+                                const updatedUser =
+                                  await userService.uploadAvatar(file as File);
 
                                 setUser(updatedUser);
-                                setProfile(prev =>
-                                  prev ? { ...prev, avatar: updatedUser.avatar ?? null } : null,
+                                setProfile((prev) =>
+                                  prev
+                                    ? {
+                                        ...prev,
+                                        avatar: updatedUser.avatar ?? null,
+                                      }
+                                    : null
                                 );
 
                                 if (updatedUser.avatar) {
@@ -352,7 +383,9 @@ export default function SettingsPage() {
                                 load('done');
                               } catch (e) {
                                 const message =
-                                  e instanceof Error ? e.message : 'Failed to upload avatar';
+                                  e instanceof Error
+                                    ? e.message
+                                    : 'Failed to upload avatar';
                                 toast.error('Failed to upload avatar', {
                                   description: message,
                                 });
@@ -363,7 +396,7 @@ export default function SettingsPage() {
                             })();
 
                             return {
-                              abort: () => {}
+                              abort: () => {},
                             };
                           },
                         }}
@@ -373,33 +406,41 @@ export default function SettingsPage() {
                   </div>
                   <Separator className="bg-neutral-800" />
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                     <div className="space-y-2">
-                      <Label className="text-neutral-400 text-base">Email</Label>
+                      <Label className="text-base text-neutral-400">
+                        Email
+                      </Label>
                       <p className="text-xl font-medium">{profile?.email}</p>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-neutral-400 text-base">Role</Label>
-                      <Badge 
-                        variant="outline" 
-                        className="text-lg capitalize border-neutral-700 px-3 py-1"
+                      <Label className="text-base text-neutral-400">Role</Label>
+                      <Badge
+                        variant="outline"
+                        className="border-neutral-700 px-3 py-1 text-lg capitalize"
                       >
                         {profile?.role}
                       </Badge>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-neutral-400 text-base">Email Verified</Label>
+                      <Label className="text-base text-neutral-400">
+                        Email Verified
+                      </Label>
                       <div className="flex items-center gap-3">
                         {profile?.emailVerified ? (
                           <>
                             <CheckCircle className="size-6 text-green-500" />
-                            <span className="text-lg text-green-500">Verified</span>
+                            <span className="text-lg text-green-500">
+                              Verified
+                            </span>
                           </>
                         ) : (
                           <>
                             <div className="flex items-center gap-2">
                               <AlertCircle className="size-6 text-yellow-500" />
-                              <span className="text-lg text-yellow-500">Not verified</span>
+                              <span className="text-lg text-yellow-500">
+                                Not verified
+                              </span>
                             </div>
                             <Button
                               type="button"
@@ -407,7 +448,7 @@ export default function SettingsPage() {
                               size="sm"
                               disabled={isResendingVerification}
                               onClick={handleResendVerification}
-                              className="h-9 text-base dark:border-yellow-500/50 text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400"
+                              className="h-9 text-base text-yellow-500 hover:bg-yellow-500/10 hover:text-yellow-400 dark:border-yellow-500/50"
                             >
                               {isResendingVerification ? (
                                 <>
@@ -426,12 +467,14 @@ export default function SettingsPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-neutral-400 text-base">Status</Label>
-                      <Badge 
-                        variant="outline" 
-                        className={`text-lg capitalize px-3 py-1 ${
-                          profile?.status === 'active' 
-                            ? 'border-green-500 text-green-500' 
+                      <Label className="text-base text-neutral-400">
+                        Status
+                      </Label>
+                      <Badge
+                        variant="outline"
+                        className={`px-3 py-1 text-lg capitalize ${
+                          profile?.status === 'active'
+                            ? 'border-green-500 text-green-500'
                             : 'border-red-500 text-red-500'
                         }`}
                       >
@@ -439,12 +482,20 @@ export default function SettingsPage() {
                       </Badge>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-neutral-400 text-base">Last Login</Label>
-                      <p className="text-lg">{formatDate(profile?.lastLoginAt ?? null)}</p>
+                      <Label className="text-base text-neutral-400">
+                        Last Login
+                      </Label>
+                      <p className="text-lg">
+                        {formatDate(profile?.lastLoginAt ?? null)}
+                      </p>
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-neutral-400 text-base">Member Since</Label>
-                      <p className="text-lg">{formatDate(profile?.createdAt ?? null)}</p>
+                      <Label className="text-base text-neutral-400">
+                        Member Since
+                      </Label>
+                      <p className="text-lg">
+                        {formatDate(profile?.createdAt ?? null)}
+                      </p>
                     </div>
                   </div>
                 </CardContent>
@@ -452,14 +503,19 @@ export default function SettingsPage() {
 
               <Card className="border-neutral-800 bg-neutral-900/50">
                 <CardHeader>
-                  <CardTitle className="text-3xl">Personal Information</CardTitle>
+                  <CardTitle className="text-3xl">
+                    Personal Information
+                  </CardTitle>
                   <CardDescription className="text-lg">
                     Update your personal details
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-7">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <form
+                    onSubmit={profileForm.handleSubmit(onProfileSubmit)}
+                    className="space-y-7"
+                  >
+                    <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
                       <div className="space-y-2">
                         <Label htmlFor="firstName" className="text-lg">
                           First Name <span className="text-red-500">*</span>
@@ -467,7 +523,7 @@ export default function SettingsPage() {
                         <Input
                           id="firstName"
                           placeholder="Enter your first name"
-                          className="h-14 text-lg! bg-neutral-900/50 border-neutral-800"
+                          className="h-14 border-neutral-800 bg-neutral-900/50 text-lg!"
                           {...profileForm.register('firstName')}
                         />
                         {profileForm.formState.errors.firstName && (
@@ -483,7 +539,7 @@ export default function SettingsPage() {
                         <Input
                           id="lastName"
                           placeholder="Enter your last name"
-                          className="h-14 text-lg! bg-neutral-900/50 border-neutral-800"
+                          className="h-14 border-neutral-800 bg-neutral-900/50 text-lg!"
                           {...profileForm.register('lastName')}
                         />
                         {profileForm.formState.errors.lastName && (
@@ -496,8 +552,10 @@ export default function SettingsPage() {
 
                     <Button
                       type="submit"
-                      disabled={isSavingProfile || !profileForm.formState.isDirty}
-                      className="w-full h-16! text-xl! bg-white text-neutral-950 hover:bg-neutral-200"
+                      disabled={
+                        isSavingProfile || !profileForm.formState.isDirty
+                      }
+                      className="h-16! w-full bg-white text-xl! text-neutral-950 hover:bg-neutral-200"
                     >
                       {isSavingProfile ? (
                         <>
@@ -527,7 +585,10 @@ export default function SettingsPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-7">
+              <form
+                onSubmit={passwordForm.handleSubmit(onPasswordSubmit)}
+                className="space-y-7"
+              >
                 <div className="space-y-2">
                   <Label htmlFor="currentPassword" className="text-lg">
                     Current Password <span className="text-red-500">*</span>
@@ -537,15 +598,21 @@ export default function SettingsPage() {
                       id="currentPassword"
                       type={showCurrentPassword ? 'text' : 'password'}
                       placeholder="Enter your current password"
-                      className="h-14 text-lg! bg-neutral-900/50 border-neutral-800 pr-14"
+                      className="h-14 border-neutral-800 bg-neutral-900/50 pr-14 text-lg!"
                       {...passwordForm.register('currentPassword')}
                     />
                     <button
                       type="button"
-                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+                      onClick={() =>
+                        setShowCurrentPassword(!showCurrentPassword)
+                      }
+                      className="absolute top-1/2 right-4 -translate-y-1/2 text-neutral-400 hover:text-white"
                     >
-                      {showCurrentPassword ? <EyeOff className="size-6" /> : <Eye className="size-6" />}
+                      {showCurrentPassword ? (
+                        <EyeOff className="size-6" />
+                      ) : (
+                        <Eye className="size-6" />
+                      )}
                     </button>
                   </div>
                   {passwordForm.formState.errors.currentPassword && (
@@ -564,15 +631,19 @@ export default function SettingsPage() {
                       id="newPassword"
                       type={showNewPassword ? 'text' : 'password'}
                       placeholder="Enter your new password"
-                      className="h-14 text-lg! bg-neutral-900/50 border-neutral-800 pr-14"
+                      className="h-14 border-neutral-800 bg-neutral-900/50 pr-14 text-lg!"
                       {...passwordForm.register('newPassword')}
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+                      className="absolute top-1/2 right-4 -translate-y-1/2 text-neutral-400 hover:text-white"
                     >
-                      {showNewPassword ? <EyeOff className="size-6" /> : <Eye className="size-6" />}
+                      {showNewPassword ? (
+                        <EyeOff className="size-6" />
+                      ) : (
+                        <Eye className="size-6" />
+                      )}
                     </button>
                   </div>
                   {passwordForm.formState.errors.newPassword && (
@@ -580,9 +651,9 @@ export default function SettingsPage() {
                       {passwordForm.formState.errors.newPassword.message}
                     </p>
                   )}
-                  <div className="text-base text-neutral-500 space-y-1.5 mt-3">
+                  <div className="mt-3 space-y-1.5 text-base text-neutral-500">
                     <p>Password must contain:</p>
-                    <ul className="list-disc list-inside space-y-1">
+                    <ul className="list-inside list-disc space-y-1">
                       <li>At least 8 characters</li>
                       <li>At least one uppercase letter</li>
                       <li>At least one lowercase letter</li>
@@ -601,15 +672,21 @@ export default function SettingsPage() {
                       id="confirmPassword"
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Confirm your new password"
-                      className="h-14 text-lg! bg-neutral-900/50 border-neutral-800 pr-14"
+                      className="h-14 border-neutral-800 bg-neutral-900/50 pr-14 text-lg!"
                       {...passwordForm.register('confirmPassword')}
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-white"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      className="absolute top-1/2 right-4 -translate-y-1/2 text-neutral-400 hover:text-white"
                     >
-                      {showConfirmPassword ? <EyeOff className="size-6" /> : <Eye className="size-6" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="size-6" />
+                      ) : (
+                        <Eye className="size-6" />
+                      )}
                     </button>
                   </div>
                   {passwordForm.formState.errors.confirmPassword && (
@@ -622,7 +699,7 @@ export default function SettingsPage() {
                 <Button
                   type="submit"
                   disabled={isChangingPassword}
-                  className="w-full h-16! text-xl! bg-white text-neutral-950 hover:bg-neutral-200"
+                  className="h-16! w-full bg-white text-xl! text-neutral-950 hover:bg-neutral-200"
                 >
                   {isChangingPassword ? (
                     <>
@@ -644,4 +721,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-

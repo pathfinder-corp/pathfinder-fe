@@ -7,25 +7,36 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const publicRoutePrefixes = ['/', '/contact', '/about-ai', '/mentors'];
-  const authRoutes = ['/login', '/register', '/forgot-password', '/reset-password'];
+  const authRoutes = [
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/reset-password',
+  ];
   const publicAuthRoutes = ['/verify-email', '/suspended'];
   const adminRoutes = ['/admin'];
-  
+
   const studentAndMentorRoutes = ['/mentor/requests', '/mentor/applications'];
   const mentorOnlyRoutes = ['/mentor/profile'];
-  
-  const isPublicRoute = publicRoutePrefixes.some(route => {
+
+  const isPublicRoute = publicRoutePrefixes.some((route) => {
     if (route === '/') {
       return pathname === '/';
     }
     return pathname.startsWith(route);
   });
-  
-  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
-  const isPublicAuthRoute = publicAuthRoutes.some(route => pathname.startsWith(route));
-  const isAdminRoute = adminRoutes.some(route => pathname.startsWith(route));
-  const isStudentAndMentorRoute = studentAndMentorRoutes.some(route => pathname.startsWith(route));
-  const isMentorOnlyRoute = mentorOnlyRoutes.some(route => pathname.startsWith(route));
+
+  const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const isPublicAuthRoute = publicAuthRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+  const isAdminRoute = adminRoutes.some((route) => pathname.startsWith(route));
+  const isStudentAndMentorRoute = studentAndMentorRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
+  const isMentorOnlyRoute = mentorOnlyRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
   const isStudentOnlyRoute = pathname === '/mentor';
 
   if (isPublicAuthRoute) return NextResponse.next();
@@ -36,7 +47,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (token && isAuthRoute) return NextResponse.redirect(new URL('/', request.url));
+  if (token && isAuthRoute)
+    return NextResponse.redirect(new URL('/', request.url));
 
   if (isAdminRoute && !token) {
     const url = new URL('/login', request.url);
@@ -50,7 +62,9 @@ export function middleware(request: NextRequest) {
 
   if (isStudentOnlyRoute && userRole !== 'student') {
     if (userRole === 'mentor') {
-      return NextResponse.redirect(new URL('/mentor/applications', request.url));
+      return NextResponse.redirect(
+        new URL('/mentor/applications', request.url)
+      );
     }
     return NextResponse.redirect(new URL('/', request.url));
   }

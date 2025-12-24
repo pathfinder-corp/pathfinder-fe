@@ -1,22 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { 
+import {
   Users,
   ShieldAlert,
   Network,
   FileText,
   FileClock,
   GraduationCap,
-  Handshake
+  Handshake,
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { toast } from 'sonner';
 import { adminService } from '@/services';
-import type { 
-  IMentorApplication, 
-  IMentorApplicationDetail 
-} from '@/types';
+import type { IMentorApplication, IMentorApplicationDetail } from '@/types';
 
 import { TransitionPanel } from '@/components/motion-primitives/transition-panel';
 
@@ -29,10 +26,16 @@ import {
   MentorshipsTab,
   ApplicationDetailDialog,
   ApproveDialog,
-  DeclineDialog
+  DeclineDialog,
 } from './components';
 
-type ActiveTab = 'applications' | 'pending-documents' | 'mentors' | 'mentorships' | 'ip-statistics' | 'audit-logs';
+type ActiveTab =
+  | 'applications'
+  | 'pending-documents'
+  | 'mentors'
+  | 'mentorships'
+  | 'ip-statistics'
+  | 'audit-logs';
 
 const TABS = [
   { id: 'applications' as const, label: 'Applications', icon: Users },
@@ -45,40 +48,51 @@ const TABS = [
 
 export default function AdminMentorshipPage() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('applications');
-  const activeIndex = TABS.findIndex(tab => tab.id === activeTab);
+  const activeIndex = TABS.findIndex((tab) => tab.id === activeTab);
 
-  const [selectedApplication, setSelectedApplication] = useState<IMentorApplicationDetail | null>(null);
+  const [selectedApplication, setSelectedApplication] =
+    useState<IMentorApplicationDetail | null>(null);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState<boolean>(false);
-  const [isApproveDialogOpen, setIsApproveDialogOpen] = useState<boolean>(false);
-  const [isDeclineDialogOpen, setIsDeclineDialogOpen] = useState<boolean>(false);
-  const [applicationToReview, setApplicationToReview] = useState<IMentorApplication | null>(null);
+  const [isApproveDialogOpen, setIsApproveDialogOpen] =
+    useState<boolean>(false);
+  const [isDeclineDialogOpen, setIsDeclineDialogOpen] =
+    useState<boolean>(false);
+  const [applicationToReview, setApplicationToReview] =
+    useState<IMentorApplication | null>(null);
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
   const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
-  const triggerRefresh = () => setRefreshTrigger(prev => prev + 1);
+  const triggerRefresh = () => setRefreshTrigger((prev) => prev + 1);
 
   const handleViewApplication = async (application: IMentorApplication) => {
     try {
       setIsLoadingAction(true);
-      const applicationDetail = await adminService.getMentorApplicationById(application.id);
+      const applicationDetail = await adminService.getMentorApplicationById(
+        application.id
+      );
       setSelectedApplication(applicationDetail);
       setIsViewDialogOpen(true);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load application details';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load application details';
       toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
     }
   };
 
-  const handleOpenApproveDialog = (application: IMentorApplication | IMentorApplicationDetail) => {
+  const handleOpenApproveDialog = (
+    application: IMentorApplication | IMentorApplicationDetail
+  ) => {
     setApplicationToReview(application as IMentorApplication);
     setIsApproveDialogOpen(true);
   };
 
-  const handleOpenDeclineDialog = (application: IMentorApplication | IMentorApplicationDetail) => {
+  const handleOpenDeclineDialog = (
+    application: IMentorApplication | IMentorApplicationDetail
+  ) => {
     setApplicationToReview(application as IMentorApplication);
     setIsDeclineDialogOpen(true);
   };
@@ -98,9 +112,10 @@ export default function AdminMentorshipPage() {
       setApplicationToReview(null);
       triggerRefresh();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to approve application';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to approve application';
       toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
@@ -123,9 +138,10 @@ export default function AdminMentorshipPage() {
       setApplicationToReview(null);
       triggerRefresh();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to decline application';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to decline application';
       toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
@@ -135,7 +151,7 @@ export default function AdminMentorshipPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-5xl font-bold mb-2">Mentorship Management</h1>
+        <h1 className="mb-2 text-5xl font-bold">Mentorship Management</h1>
         <p className="text-xl text-neutral-400">
           Review applications, monitor flagged content, and view system logs
         </p>
@@ -149,7 +165,7 @@ export default function AdminMentorshipPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`cursor-pointer relative flex items-center gap-2 px-5 py-4 text-lg font-medium transition-colors ${
+              className={`relative flex cursor-pointer items-center gap-2 px-5 py-4 text-lg font-medium transition-colors ${
                 isActive
                   ? 'text-white'
                   : 'text-neutral-500 hover:text-neutral-300'
@@ -158,9 +174,9 @@ export default function AdminMentorshipPage() {
               <Icon className="size-5" />
               {tab.label}
               {isActive && (
-                <motion.span 
+                <motion.span
                   layoutId="activeMentorshipTab"
-                  className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" 
+                  className="absolute right-0 bottom-0 left-0 h-0.5 bg-white"
                 />
               )}
             </button>

@@ -4,14 +4,14 @@ import { useEffect, useMemo } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
-import { 
-  LayoutDashboard, 
-  Users, 
-  Map, 
+import {
+  LayoutDashboard,
+  Users,
+  Map,
   ClipboardList,
   ChevronLeft,
   Book,
-  MessageSquare
+  MessageSquare,
 } from 'lucide-react';
 import { useUserStore } from '@/stores';
 import { USER_ROLES } from '@/constants';
@@ -24,7 +24,7 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator
+  BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 
 interface NavItem {
@@ -37,37 +37,37 @@ const NAV_ITEMS: NavItem[] = [
   {
     label: 'Overview',
     href: '/admin/dashboard',
-    icon: <LayoutDashboard className="size-7" />
+    icon: <LayoutDashboard className="size-7" />,
   },
   {
     label: 'Users',
     href: '/admin/users',
-    icon: <Users className="size-7" />
+    icon: <Users className="size-7" />,
   },
   {
     label: 'Roadmaps',
     href: '/admin/roadmaps',
-    icon: <Map className="size-7" />
+    icon: <Map className="size-7" />,
   },
   {
     label: 'Assessments',
     href: '/admin/assessments',
-    icon: <ClipboardList className="size-7" />
+    icon: <ClipboardList className="size-7" />,
   },
   {
     label: 'Mentorship',
     href: '/admin/mentorship',
-    icon: <Book className="size-7" />
+    icon: <Book className="size-7" />,
   },
   {
     label: 'Contacts',
     href: '/admin/contact',
-    icon: <MessageSquare className="size-7" />
-  }
+    icon: <MessageSquare className="size-7" />,
+  },
 ];
 
 export default function AdminLayout({
-  children
+  children,
 }: {
   children: React.ReactNode;
 }) {
@@ -84,7 +84,12 @@ export default function AdminLayout({
 
   const breadcrumbItems = useMemo(() => {
     const pathSegments = pathname.split('/').filter(Boolean);
-    const items: { id: string; label: string; href: string; isCurrentPage: boolean }[] = [];
+    const items: {
+      id: string;
+      label: string;
+      href: string;
+      isCurrentPage: boolean;
+    }[] = [];
 
     const labelMap: Record<string, string> = {
       admin: 'Admin',
@@ -93,17 +98,19 @@ export default function AdminLayout({
       roadmaps: 'Roadmaps',
       assessments: 'Assessments',
       mentorship: 'Mentorship',
-      contact: 'Contact'
+      contact: 'Contact',
     };
 
     let currentPath = '';
     pathSegments.forEach((segment, index) => {
       currentPath += `/${segment}`;
       const isLast = index === pathSegments.length - 1;
-      
+
       items.push({
         id: `breadcrumb-${index}-${segment}`,
-        label: labelMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1),
+        label:
+          labelMap[segment] ||
+          segment.charAt(0).toUpperCase() + segment.slice(1),
         href: segment === 'admin' ? '/admin/dashboard' : currentPath,
         isCurrentPage: isLast,
       });
@@ -116,23 +123,23 @@ export default function AdminLayout({
 
   return (
     <div className="flex min-h-screen">
-      <aside className="w-88 border-r border-neutral-800 bg-neutral-950 flex flex-col fixed inset-y-0 left-0">
-        <div className="p-7 border-b border-neutral-800">
-          <Link 
-            href="/" 
-            className="flex items-center gap-2.5 text-neutral-400 hover:text-white transition-colors text-xl"
+      <aside className="fixed inset-y-0 left-0 flex w-88 flex-col border-r border-neutral-800 bg-neutral-950">
+        <div className="border-b border-neutral-800 p-7">
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 text-xl text-neutral-400 transition-colors hover:text-white"
           >
             <ChevronLeft className="size-7" />
             Back to Home
           </Link>
         </div>
 
-        <div className="p-7 border-b border-neutral-800">
+        <div className="border-b border-neutral-800 p-7">
           <h2 className="text-3xl font-semibold">Admin Dashboard</h2>
-          <p className="text-xl text-neutral-500 mt-1">Manage your platform</p>
+          <p className="mt-1 text-xl text-neutral-500">Manage your platform</p>
         </div>
 
-        <nav className="flex-1 p-6 space-y-2.5">
+        <nav className="flex-1 space-y-2.5 p-6">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -140,10 +147,10 @@ export default function AdminLayout({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  'flex items-center gap-4 px-6 py-5 rounded-lg text-xl font-medium transition-colors',
-                  isActive 
-                    ? 'bg-white text-black' 
-                    : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                  'flex items-center gap-4 rounded-lg px-6 py-5 text-xl font-medium transition-colors',
+                  isActive
+                    ? 'bg-white text-black'
+                    : 'text-neutral-400 hover:bg-neutral-800/50 hover:text-white'
                 )}
               >
                 {item.icon}
@@ -153,10 +160,10 @@ export default function AdminLayout({
           })}
         </nav>
 
-        <div className="p-7 border-t border-neutral-800">
+        <div className="border-t border-neutral-800 p-7">
           <div className="flex items-center gap-4">
             {user.avatar ? (
-              <div className="relative size-14 rounded-full overflow-hidden">
+              <div className="relative size-14 overflow-hidden rounded-full">
                 <Image
                   src={user.avatar}
                   alt={`${user.firstName} ${user.lastName}`}
@@ -167,28 +174,26 @@ export default function AdminLayout({
                 />
               </div>
             ) : (
-              <div className="size-14 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-lg font-bold">
+              <div className="flex size-14 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-lg font-bold">
                 {getInitials(user.firstName, user.lastName)}
               </div>
             )}
-            <div className="flex-1 min-w-0">
-              <p className="text-xl font-medium truncate">
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xl font-medium">
                 {user.firstName} {user.lastName}
               </p>
-              <p className="text-lg text-neutral-500 truncate">{user.email}</p>
+              <p className="truncate text-lg text-neutral-500">{user.email}</p>
             </div>
           </div>
         </div>
       </aside>
 
-      <main className="flex-1 ml-88 p-8 overflow-auto min-h-screen">
+      <main className="ml-88 min-h-screen flex-1 overflow-auto p-8">
         <Breadcrumb className="mb-6">
           <BreadcrumbList className="text-xl">
             <BreadcrumbItem>
               <BreadcrumbLink asChild className="flex items-center gap-1.5">
-                <Link href="/">
-                  Home
-                </Link>
+                <Link href="/">Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
             {breadcrumbItems.map((item) => (

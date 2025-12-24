@@ -1,12 +1,12 @@
-import * as React from "react"
+import * as React from 'react';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
   MoreHorizontalIcon,
-} from "lucide-react"
+} from 'lucide-react';
 
-import { cn } from "@/lib/utils"
-import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from '@/lib/utils';
+import { Button, buttonVariants } from '@/components/ui/button';
 
 function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
   return (
@@ -17,7 +17,7 @@ function Pagination({ className, ...props }: React.ComponentProps<'nav'>) {
       className={cn('mx-auto flex w-full justify-center', className)}
       {...props}
     />
-  )
+  );
 }
 
 function PaginationContent({
@@ -30,17 +30,17 @@ function PaginationContent({
       className={cn('flex flex-row items-center gap-2', className)}
       {...props}
     />
-  )
+  );
 }
 
 function PaginationItem({ ...props }: React.ComponentProps<'li'>) {
-  return <li data-slot="pagination-item" {...props} />
+  return <li data-slot="pagination-item" {...props} />;
 }
 
 type PaginationLinkProps = {
-  isActive?: boolean
+  isActive?: boolean;
 } & Pick<React.ComponentProps<typeof Button>, 'size'> &
-  React.ComponentProps<'a'>
+  React.ComponentProps<'a'>;
 
 function PaginationLink({
   className,
@@ -63,7 +63,7 @@ function PaginationLink({
       )}
       {...props}
     />
-  )
+  );
 }
 
 function PaginationPrevious({
@@ -74,13 +74,13 @@ function PaginationPrevious({
     <PaginationLink
       aria-label="Go to previous page"
       size="default"
-      className={cn('gap-2 px-3 h-10', className)}
+      className={cn('h-10 gap-2 px-3', className)}
       {...props}
     >
       <ChevronLeftIcon />
-      <span className="hidden sm:block text-base">Previous</span>
+      <span className="hidden text-base sm:block">Previous</span>
     </PaginationLink>
-  )
+  );
 }
 
 function PaginationNext({
@@ -91,13 +91,13 @@ function PaginationNext({
     <PaginationLink
       aria-label="Go to next page"
       size="default"
-      className={cn('gap-2 px-3 h-10', className)}
+      className={cn('h-10 gap-2 px-3', className)}
       {...props}
     >
-      <span className="hidden sm:block text-base">Next</span>
+      <span className="hidden text-base sm:block">Next</span>
       <ChevronRightIcon />
     </PaginationLink>
-  )
+  );
 }
 
 function PaginationEllipsis({
@@ -114,7 +114,7 @@ function PaginationEllipsis({
       <MoreHorizontalIcon className="size-5" />
       <span className="sr-only">More pages</span>
     </span>
-  )
+  );
 }
 
 export {
@@ -125,4 +125,4 @@ export {
   PaginationPrevious,
   PaginationNext,
   PaginationEllipsis,
-}
+};

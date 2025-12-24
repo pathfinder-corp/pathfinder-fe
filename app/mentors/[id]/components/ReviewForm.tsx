@@ -4,7 +4,11 @@ import { useState, useEffect } from 'react';
 import { Loader2, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { mentorService } from '@/services';
-import type { IMentorReview, ICreateMentorReviewRequest, IUpdateMentorReviewRequest } from '@/types';
+import type {
+  IMentorReview,
+  ICreateMentorReviewRequest,
+  IUpdateMentorReviewRequest,
+} from '@/types';
 import { InteractiveStarRating } from './StarRating';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -26,7 +30,9 @@ export function ReviewForm({
   onCancel,
 }: ReviewFormProps) {
   const [rating, setRating] = useState<number>(existingReview?.rating || 0);
-  const [feedback, setFeedback] = useState<string>(existingReview?.feedback || '');
+  const [feedback, setFeedback] = useState<string>(
+    existingReview?.feedback || ''
+  );
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
@@ -51,7 +57,11 @@ export function ReviewForm({
           rating,
           feedback: feedback.trim() || undefined,
         };
-        await mentorService.updateReview(mentorId, existingReview.id, updateData);
+        await mentorService.updateReview(
+          mentorId,
+          existingReview.id,
+          updateData
+        );
         toast.success('Review updated successfully!');
       } else {
         const createData: ICreateMentorReviewRequest = {
@@ -64,7 +74,8 @@ export function ReviewForm({
       }
       onSuccess();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to save review';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to save review';
       toast.error('Failed to save review', {
         description: errorMessage,
       });
@@ -76,7 +87,9 @@ export function ReviewForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div>
-        <Label className="text-lg mb-4 block">Rating <span className="text-red-500">*</span></Label>
+        <Label className="mb-4 block text-lg">
+          Rating <span className="text-red-500">*</span>
+        </Label>
         <InteractiveStarRating
           rating={rating}
           onRatingChange={setRating}
@@ -85,7 +98,7 @@ export function ReviewForm({
       </div>
 
       <div>
-        <Label htmlFor="feedback" className="text-lg mb-3 block">
+        <Label htmlFor="feedback" className="mb-3 block text-lg">
           Feedback (Optional)
         </Label>
         <Textarea
@@ -97,12 +110,12 @@ export function ReviewForm({
           maxLength={2000}
           disabled={isSubmitting}
         />
-        <p className="text-sm text-neutral-500 mt-2 text-right">
+        <p className="mt-2 text-right text-sm text-neutral-500">
           {feedback.length} / 2000 characters
         </p>
       </div>
 
-      <div className="flex gap-3 justify-end pt-2">
+      <div className="flex justify-end gap-3 pt-2">
         <Button
           type="button"
           variant="outline"
@@ -120,12 +133,12 @@ export function ReviewForm({
           {isSubmitting ? (
             <>
               Saving...
-              <Loader2 className="size-5 animate-spin ml-2" />
+              <Loader2 className="ml-2 size-5 animate-spin" />
             </>
           ) : (
             <>
               {existingReview ? 'Update Review' : 'Submit Review'}
-              <Send className="size-5 ml-2" />
+              <Send className="ml-2 size-5" />
             </>
           )}
         </Button>
@@ -133,4 +146,3 @@ export function ReviewForm({
     </form>
   );
 }
-

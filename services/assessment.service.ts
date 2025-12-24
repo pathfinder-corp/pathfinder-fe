@@ -1,18 +1,20 @@
-import type { 
-  IAssessment, 
+import type {
+  IAssessment,
   ICreateAssessmentRequest,
   ISubmitAnswerRequest,
   ISubmitAnswerResponse,
   IAssessmentResult,
-  IAssessmentHistory
+  IAssessmentHistory,
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
 export const assessmentService = {
-  createAssessment: async (data: ICreateAssessmentRequest): Promise<IAssessment> => {
+  createAssessment: async (
+    data: ICreateAssessmentRequest
+  ): Promise<IAssessment> => {
     try {
       const response = await api.post<IAssessment>('/assessments', data, {
-        timeout: 180000
+        timeout: 180000,
       });
       return response.data;
     } catch (error) {
@@ -70,9 +72,15 @@ export const assessmentService = {
     }
   },
 
-  submitAnswer: async (id: string, data: ISubmitAnswerRequest): Promise<ISubmitAnswerResponse> => {
+  submitAnswer: async (
+    id: string,
+    data: ISubmitAnswerRequest
+  ): Promise<ISubmitAnswerResponse> => {
     try {
-      const response = await api.post<ISubmitAnswerResponse>(`/assessments/${id}/answers`, data);
+      const response = await api.post<ISubmitAnswerResponse>(
+        `/assessments/${id}/answers`,
+        data
+      );
       return response.data;
     } catch (error) {
       console.error('Submit answer failed:', error);
@@ -84,9 +92,13 @@ export const assessmentService = {
 
   completeAssessment: async (id: string): Promise<IAssessmentResult> => {
     try {
-      const response = await api.post<IAssessmentResult>(`/assessments/${id}/complete`, {}, {
-        timeout: 120000
-      });
+      const response = await api.post<IAssessmentResult>(
+        `/assessments/${id}/complete`,
+        {},
+        {
+          timeout: 120000,
+        }
+      );
       return response.data;
     } catch (error) {
       console.error('Complete assessment failed:', error);
@@ -98,7 +110,9 @@ export const assessmentService = {
 
   getResults: async (id: string): Promise<IAssessmentResult> => {
     try {
-      const response = await api.get<IAssessmentResult>(`/assessments/${id}/results`);
+      const response = await api.get<IAssessmentResult>(
+        `/assessments/${id}/results`
+      );
       return response.data;
     } catch (error) {
       console.error('Get results failed:', error);
@@ -122,7 +136,9 @@ export const assessmentService = {
 
   getAssessmentHistory: async (id: string): Promise<IAssessmentHistory> => {
     try {
-      const response = await api.get<IAssessmentHistory>(`/assessments/${id}/history`);
+      const response = await api.get<IAssessmentHistory>(
+        `/assessments/${id}/history`
+      );
       return response.data;
     } catch (error) {
       console.error('Get assessment history failed:', error);
@@ -130,5 +146,5 @@ export const assessmentService = {
       if (message) throw new Error(message);
       throw error;
     }
-  }
+  },
 };

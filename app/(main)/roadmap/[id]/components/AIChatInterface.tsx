@@ -46,16 +46,18 @@ export function AIChatInterface({
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-81.5px)]">
+    <div className="flex h-[calc(100vh-81.5px)] flex-col">
       {chatMessages.length === 0 && (
-        <div className="p-6 border-b border-neutral-800 bg-neutral-900/30">
-          <p className="-mt-4 text-xl text-neutral-400 mb-4">Suggested questions:</p>
+        <div className="border-b border-neutral-800 bg-neutral-900/30 p-6">
+          <p className="-mt-4 mb-4 text-xl text-neutral-400">
+            Suggested questions:
+          </p>
           <div className="space-y-2">
             {suggestedQuestions.map((question, idx) => (
               <button
                 key={idx}
                 onClick={() => onSuggestedQuestionClick(question)}
-                className="cursor-pointer w-full text-left p-4 text-lg bg-neutral-900/50 hover:bg-neutral-900 border border-neutral-800 hover:border-neutral-700 rounded-lg transition-all"
+                className="w-full cursor-pointer rounded-lg border border-neutral-800 bg-neutral-900/50 p-4 text-left text-lg transition-all hover:border-neutral-700 hover:bg-neutral-900"
               >
                 {question}
               </button>
@@ -66,17 +68,22 @@ export function AIChatInterface({
 
       <ScrollArea className="h-[calc(100vh-165px)] p-6">
         <div className="space-y-4">
-          {chatMessages.map(message => (
+          {chatMessages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}
 
           {isLoading && (
-            <div className="flex gap-3 justify-start">
-              <div className="shrink-0 size-10 rounded-full bg-white flex items-center justify-center mt-1">
+            <div className="flex justify-start gap-3">
+              <div className="mt-1 flex size-10 shrink-0 items-center justify-center rounded-full bg-white">
                 <Bot className="size-6 text-black" />
               </div>
-              <div className="max-w-[75%] rounded-lg p-5 bg-neutral-900 border border-neutral-800">
-                <TextShimmer as="span" className="text-lg" duration={1} spread={4}>
+              <div className="max-w-[75%] rounded-lg border border-neutral-800 bg-neutral-900 p-5">
+                <TextShimmer
+                  as="span"
+                  className="text-lg"
+                  duration={1}
+                  spread={4}
+                >
                   AI is thinking...
                 </TextShimmer>
               </div>
@@ -87,15 +94,15 @@ export function AIChatInterface({
         </div>
       </ScrollArea>
 
-      <div className="p-6 border-t border-neutral-800 bg-neutral-900/30">
-        <div className="flex items-start gap-3 mb-3">
+      <div className="border-t border-neutral-800 bg-neutral-900/30 p-6">
+        <div className="mb-3 flex items-start gap-3">
           <Textarea
             value={chatInput}
-            onChange={e => onInputChange(e.target.value)}
+            onChange={(e) => onInputChange(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Ask a question about this step..."
             rows={2}
-            className="custom-scrollbar flex-1 min-h-[7rem] max-h-[3.5rem] resize-none bg-neutral-900 border-neutral-800 text-xl!"
+            className="custom-scrollbar max-h-[3.5rem] min-h-[7rem] flex-1 resize-none border-neutral-800 bg-neutral-900 text-xl!"
             disabled={isLoading}
           />
           <Button
@@ -107,7 +114,7 @@ export function AIChatInterface({
             <Send className="size-6" />
           </Button>
         </div>
-        <p className="text-lg text-neutral-500 flex items-center gap-1.5">
+        <p className="flex items-center gap-1.5 text-lg text-neutral-500">
           Press <Kbd>Enter</Kbd> to send,{' '}
           <KbdGroup>
             <Kbd>Shift</Kbd> + <Kbd>Enter</Kbd>

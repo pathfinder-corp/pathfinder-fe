@@ -19,19 +19,20 @@ export function CircularProgress({
   className,
   trackColor = 'stroke-neutral-800',
   progressColor = 'stroke-green-500',
-  children
+  children,
 }: CircularProgressProps) {
   const radius = (size - strokeWidth) / 2;
   const circumference = radius * 2 * Math.PI;
   const offset = circumference - (value / 100) * circumference;
 
   return (
-    <div className={cn('relative inline-flex items-center justify-center', className)}>
-      <svg
-        width={size}
-        height={size}
-        className="transform -rotate-90"
-      >
+    <div
+      className={cn(
+        'relative inline-flex items-center justify-center',
+        className
+      )}
+    >
+      <svg width={size} height={size} className="-rotate-90 transform">
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -62,4 +63,3 @@ export function CircularProgress({
     </div>
   );
 }
-

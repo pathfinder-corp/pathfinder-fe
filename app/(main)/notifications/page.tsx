@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { 
+import {
   Bell,
   CheckCheck,
   Users,
@@ -11,7 +11,7 @@ import {
   MessageCircle,
   AlertCircle,
   Loader2,
-  Inbox
+  Inbox,
 } from 'lucide-react';
 import { formatDistanceToNow, parseISO, format } from 'date-fns';
 import { toast } from 'sonner';
@@ -33,7 +33,7 @@ const FILTERS: { id: FilterType; label: string }[] = [
 
 export default function NotificationsPage() {
   const router = useRouter();
-  
+
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
@@ -42,30 +42,29 @@ export default function NotificationsPage() {
   const [totalPages, setTotalPages] = useState<number>(1);
   const [unreadCount, setUnreadCount] = useState<number>(0);
 
-  const activeIndex = FILTERS.findIndex(f => f.id === activeFilter);
+  const activeIndex = FILTERS.findIndex((f) => f.id === activeFilter);
 
   const fetchNotifications = useCallback(async () => {
     try {
       setIsLoading(true);
       const unreadOnly = activeFilter === 'unread' ? true : undefined;
-      const response = await notificationService.getNotifications({ 
-        page, 
+      const response = await notificationService.getNotifications({
+        page,
         limit: 20,
-        unreadOnly 
+        unreadOnly,
       });
-      
+
       let filtered = response.notifications;
       if (activeFilter === 'read') {
-        filtered = filtered.filter(n => n.isRead);
+        filtered = filtered.filter((n) => n.isRead);
       }
-      
+
       setNotifications(filtered);
       setTotalPages(response.meta.totalPages);
       setUnreadCount(response.unreadCount);
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load notifications';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load notifications';
       toast.error('Failed to load notifications', {
         description: errorMessage,
       });
@@ -84,15 +83,18 @@ export default function NotificationsPage() {
 
   const handleMarkAsRead = async (notificationId: string) => {
     try {
-      await notificationService.markAsRead({ notificationIds: [notificationId] });
-      setNotifications(prev => 
-        prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
+      await notificationService.markAsRead({
+        notificationIds: [notificationId],
+      });
+      setNotifications((prev) =>
+        prev.map((n) => (n.id === notificationId ? { ...n, isRead: true } : n))
       );
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to mark notification as read';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to mark notification as read';
       toast.error('Failed to mark notification as read', {
         description: errorMessage,
       });
@@ -100,7 +102,7 @@ export default function NotificationsPage() {
   };
 
   const handleMarkAllAsRead = async () => {
-    const unreadIds = notifications.filter(n => !n.isRead).map(n => n.id);
+    const unreadIds = notifications.filter((n) => !n.isRead).map((n) => n.id);
     if (unreadIds.length === 0) {
       toast.info('All notifications are already read');
       return;
@@ -109,13 +111,12 @@ export default function NotificationsPage() {
     try {
       setIsMarkingAll(true);
       await notificationService.markAsRead({ notificationIds: unreadIds });
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
       setUnreadCount(0);
       toast.success('All notifications marked as read');
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to mark all as read';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to mark all as read';
       toast.error('Failed to mark all as read', {
         description: errorMessage,
       });
@@ -128,9 +129,9 @@ export default function NotificationsPage() {
     if (!notification.isRead) {
       handleMarkAsRead(notification.id);
     }
-    
+
     const payload = notification.payload as Record<string, string> | undefined;
-    
+
     switch (notification.type) {
       case 'request_received':
       case 'request_declined':
@@ -204,39 +205,141 @@ export default function NotificationsPage() {
     const baseClasses = 'px-4 py-2 text-base';
     switch (type) {
       case 'request_received':
-        return <Badge className={`${baseClasses} bg-blue-500/20 text-blue-400 border-blue-500/30`}>Request Received</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-blue-500/30 bg-blue-500/20 text-blue-400`}
+          >
+            Request Received
+          </Badge>
+        );
       case 'request_accepted':
-        return <Badge className={`${baseClasses} bg-green-500/20 text-green-400 border-green-500/30`}>Accepted</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-green-500/30 bg-green-500/20 text-green-400`}
+          >
+            Accepted
+          </Badge>
+        );
       case 'request_declined':
-        return <Badge className={`${baseClasses} bg-red-500/20 text-red-400 border-red-500/30`}>Declined</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-red-500/30 bg-red-500/20 text-red-400`}
+          >
+            Declined
+          </Badge>
+        );
       case 'request_cancelled':
-        return <Badge className={`${baseClasses} bg-neutral-500/20 text-neutral-400 border-neutral-500/30`}>Cancelled</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-neutral-500/30 bg-neutral-500/20 text-neutral-400`}
+          >
+            Cancelled
+          </Badge>
+        );
       case 'request_expired':
-        return <Badge className={`${baseClasses} bg-orange-500/20 text-orange-400 border-orange-500/30`}>Expired</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-orange-500/30 bg-orange-500/20 text-orange-400`}
+          >
+            Expired
+          </Badge>
+        );
       case 'application_submitted':
-        return <Badge className={`${baseClasses} bg-yellow-500/20 text-yellow-400 border-yellow-500/30`}>Submitted</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-yellow-500/30 bg-yellow-500/20 text-yellow-400`}
+          >
+            Submitted
+          </Badge>
+        );
       case 'application_approved':
-        return <Badge className={`${baseClasses} bg-green-500/20 text-green-400 border-green-500/30`}>Approved</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-green-500/30 bg-green-500/20 text-green-400`}
+          >
+            Approved
+          </Badge>
+        );
       case 'application_declined':
-        return <Badge className={`${baseClasses} bg-red-500/20 text-red-400 border-red-500/30`}>Declined</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-red-500/30 bg-red-500/20 text-red-400`}
+          >
+            Declined
+          </Badge>
+        );
       case 'meeting_scheduled':
-        return <Badge className={`${baseClasses} bg-purple-500/20 text-purple-400 border-purple-500/30`}>Scheduled</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-purple-500/30 bg-purple-500/20 text-purple-400`}
+          >
+            Scheduled
+          </Badge>
+        );
       case 'meeting_rescheduled':
-        return <Badge className={`${baseClasses} bg-yellow-500/20 text-yellow-400 border-yellow-500/30`}>Rescheduled</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-yellow-500/30 bg-yellow-500/20 text-yellow-400`}
+          >
+            Rescheduled
+          </Badge>
+        );
       case 'meeting_cancelled':
-        return <Badge className={`${baseClasses} bg-red-500/20 text-red-400 border-red-500/30`}>Cancelled</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-red-500/30 bg-red-500/20 text-red-400`}
+          >
+            Cancelled
+          </Badge>
+        );
       case 'meeting_reminder':
-        return <Badge className={`${baseClasses} bg-blue-500/20 text-blue-400 border-blue-500/30`}>Reminder</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-blue-500/30 bg-blue-500/20 text-blue-400`}
+          >
+            Reminder
+          </Badge>
+        );
       case 'mentorship_started':
-        return <Badge className={`${baseClasses} bg-green-500/20 text-green-400 border-green-500/30`}>Started</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-green-500/30 bg-green-500/20 text-green-400`}
+          >
+            Started
+          </Badge>
+        );
       case 'mentorship_ended':
-        return <Badge className={`${baseClasses} bg-neutral-500/20 text-neutral-400 border-neutral-500/30`}>Ended</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-neutral-500/30 bg-neutral-500/20 text-neutral-400`}
+          >
+            Ended
+          </Badge>
+        );
       case 'mentor_role_granted':
-        return <Badge className={`${baseClasses} bg-blue-500/20 text-blue-400 border-blue-500/30`}>Mentor Role Granted</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-blue-500/30 bg-blue-500/20 text-blue-400`}
+          >
+            Mentor Role Granted
+          </Badge>
+        );
       case 'mentor_role_revoked':
-        return <Badge className={`${baseClasses} bg-red-500/20 text-red-400 border-red-500/30`}>Mentor Role Revoked</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-red-500/30 bg-red-500/20 text-red-400`}
+          >
+            Mentor Role Revoked
+          </Badge>
+        );
       default:
-        return <Badge className={`${baseClasses} bg-neutral-500/20 text-neutral-400 border-neutral-500/30`}>System</Badge>;
+        return (
+          <Badge
+            className={`${baseClasses} border-neutral-500/30 bg-neutral-500/20 text-neutral-400`}
+          >
+            System
+          </Badge>
+        );
     }
   };
 
@@ -257,20 +360,22 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="pt-10 pb-12 flex flex-col items-center justify-center">
-      <div className="flex items-center gap-5 mb-8">
-        <div className="size-20 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
+    <div className="flex flex-col items-center justify-center pt-10 pb-12">
+      <div className="mb-8 flex items-center gap-5">
+        <div className="flex size-20 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800">
           <Bell className="size-10 text-neutral-300" />
         </div>
         <div>
           <h1 className="text-5xl font-bold">Notifications</h1>
           <p className="text-xl text-neutral-500">
-            {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}` : 'All caught up!'}
+            {unreadCount > 0
+              ? `${unreadCount} unread notification${unreadCount > 1 ? 's' : ''}`
+              : 'All caught up!'}
           </p>
         </div>
       </div>
 
-      <div className="w-232 mb-8">
+      <div className="mb-8 w-232">
         <div className="flex items-center justify-between border-b border-neutral-800">
           <div className="flex items-center">
             {FILTERS.map((filter) => {
@@ -279,7 +384,7 @@ export default function NotificationsPage() {
                 <button
                   key={filter.id}
                   onClick={() => setActiveFilter(filter.id)}
-                  className={`cursor-pointer relative px-6 py-4 text-lg font-medium transition-colors ${
+                  className={`relative cursor-pointer px-6 py-4 text-lg font-medium transition-colors ${
                     isActive
                       ? 'text-white'
                       : 'text-neutral-500 hover:text-neutral-300'
@@ -287,14 +392,14 @@ export default function NotificationsPage() {
                 >
                   {filter.label}
                   {filter.id === 'unread' && unreadCount > 0 && (
-                    <span className="ml-2 px-2.5 py-1 text-sm bg-neutral-800 rounded-full text-neutral-300">
+                    <span className="ml-2 rounded-full bg-neutral-800 px-2.5 py-1 text-sm text-neutral-300">
                       {unreadCount}
                     </span>
                   )}
                   {isActive && (
-                    <motion.span 
+                    <motion.span
                       layoutId="activeNotificationFilter"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-white" 
+                      className="absolute right-0 bottom-0 left-0 h-0.5 bg-white"
                     />
                   )}
                 </button>
@@ -339,7 +444,10 @@ export default function NotificationsPage() {
             {isLoading ? (
               <div className="space-y-4">
                 {[...Array(5)].map((_, i) => (
-                  <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-6">
+                  <div
+                    key={i}
+                    className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-6"
+                  >
                     <div className="flex items-start gap-5">
                       <Skeleton className="size-14 rounded-full bg-neutral-800" />
                       <div className="flex-1 space-y-3">
@@ -352,17 +460,19 @@ export default function NotificationsPage() {
                 ))}
               </div>
             ) : notifications.length === 0 ? (
-              <div className="text-center py-24">
-                <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+              <div className="py-24 text-center">
+                <div className="mx-auto mb-8 flex size-24 items-center justify-center rounded-full bg-neutral-800">
                   <Inbox className="size-12 text-neutral-500" />
                 </div>
-                <h2 className="text-3xl font-semibold mb-4">No notifications</h2>
+                <h2 className="mb-4 text-3xl font-semibold">
+                  No notifications
+                </h2>
                 <p className="text-xl text-neutral-400">
-                  {activeFilter === 'unread' 
+                  {activeFilter === 'unread'
                     ? "You've read all your notifications!"
                     : activeFilter === 'read'
-                    ? "No read notifications yet."
-                    : "You don't have any notifications yet."}
+                      ? 'No read notifications yet.'
+                      : "You don't have any notifications yet."}
                 </p>
               </div>
             ) : (
@@ -371,37 +481,44 @@ export default function NotificationsPage() {
                   <button
                     key={notification.id}
                     onClick={() => handleNotificationClick(notification)}
-                    className={`w-full text-left bg-neutral-900/50 border rounded-xl p-6 hover:bg-neutral-800/50 transition-all cursor-pointer ${
-                      !notification.isRead 
-                        ? 'border-neutral-700 bg-white/2' 
+                    className={`w-full cursor-pointer rounded-xl border bg-neutral-900/50 p-6 text-left transition-all hover:bg-neutral-800/50 ${
+                      !notification.isRead
+                        ? 'border-neutral-700 bg-white/2'
                         : 'border-neutral-800'
                     }`}
                   >
                     <div className="flex items-start gap-5">
-                      <div className="size-14 rounded-full bg-neutral-800 flex items-center justify-center shrink-0">
+                      <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-neutral-800">
                         {getNotificationIcon(notification.type)}
                       </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-4 mb-2">
+
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 flex items-start justify-between gap-4">
                           <div className="flex items-center gap-3">
-                            <h3 className={`text-xl font-medium ${
-                              !notification.isRead ? 'text-white' : 'text-neutral-300'
-                            }`}>
+                            <h3
+                              className={`text-xl font-medium ${
+                                !notification.isRead
+                                  ? 'text-white'
+                                  : 'text-neutral-300'
+                              }`}
+                            >
                               {notification.title}
                             </h3>
                             {!notification.isRead && (
-                              <span className="size-2.5 rounded-full bg-green-500 animate-pulse" />
+                              <span className="size-2.5 animate-pulse rounded-full bg-green-500" />
                             )}
                           </div>
                           {getNotificationTypeBadge(notification.type)}
                         </div>
-                        
-                        <p className="text-lg text-neutral-400 mb-3">
+
+                        <p className="mb-3 text-lg text-neutral-400">
                           {notification.message}
                         </p>
-                        
-                        <p className="capitalize text-base text-neutral-500" title={formatFullDate(notification.createdAt)}>
+
+                        <p
+                          className="text-base text-neutral-500 capitalize"
+                          title={formatFullDate(notification.createdAt)}
+                        >
                           {formatTime(notification.createdAt)}
                         </p>
                       </div>
@@ -413,7 +530,7 @@ export default function NotificationsPage() {
                   <div className="flex items-center justify-center gap-3 pt-8">
                     <Button
                       variant="outline"
-                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      onClick={() => setPage((p) => Math.max(1, p - 1))}
                       disabled={page === 1 || isLoading}
                       className="h-12! text-base!"
                     >
@@ -424,7 +541,9 @@ export default function NotificationsPage() {
                     </span>
                     <Button
                       variant="outline"
-                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                      onClick={() =>
+                        setPage((p) => Math.min(totalPages, p + 1))
+                      }
                       disabled={page === totalPages || isLoading}
                       className="h-12! text-base!"
                     >
@@ -440,4 +559,3 @@ export default function NotificationsPage() {
     </div>
   );
 }
-

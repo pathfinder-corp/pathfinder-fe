@@ -2,11 +2,11 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { 
-  GraduationCap, 
-  Loader2, 
-  Plus, 
-  CheckCircle, 
+import {
+  GraduationCap,
+  Loader2,
+  Plus,
+  CheckCircle,
   Trash2,
   ExternalLink,
   Linkedin,
@@ -14,13 +14,17 @@ import {
   Briefcase,
   Calendar,
   FileUp,
-  FileText
+  FileText,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { mentorService } from '@/services';
 import { useUserStore } from '@/stores';
-import type { IMentorApplication, MentorApplicationStatus, IMentorDocument } from '@/types';
+import type {
+  IMentorApplication,
+  MentorApplicationStatus,
+  IMentorDocument,
+} from '@/types';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -41,25 +45,31 @@ import { DocumentUploadDialog, DocumentList } from '../components';
 export default function MyApplicationsPage() {
   const router = useRouter();
   const { user, refreshUser } = useUserStore();
-  
+
   const isMentor = user?.role === 'mentor';
-  
+
   const [applications, setApplications] = useState<IMentorApplication[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState<boolean>(false);
-  const [applicationToWithdraw, setApplicationToWithdraw] = useState<IMentorApplication | null>(null);
+  const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] =
+    useState<boolean>(false);
+  const [applicationToWithdraw, setApplicationToWithdraw] =
+    useState<IMentorApplication | null>(null);
   const [isWithdrawing, setIsWithdrawing] = useState<boolean>(false);
-  
+
   const [isUploadDialogOpen, setIsUploadDialogOpen] = useState<boolean>(false);
-  const [selectedApplicationId, setSelectedApplicationId] = useState<string | null>(null);
-  const [documentsByApplication, setDocumentsByApplication] = useState<Record<string, IMentorDocument[]>>({});
+  const [selectedApplicationId, setSelectedApplicationId] = useState<
+    string | null
+  >(null);
+  const [documentsByApplication, setDocumentsByApplication] = useState<
+    Record<string, IMentorDocument[]>
+  >({});
 
   const fetchDocuments = useCallback(async (applicationId: string) => {
     try {
       const docs = await mentorService.getDocuments(applicationId);
-      setDocumentsByApplication(prev => ({
+      setDocumentsByApplication((prev) => ({
         ...prev,
-        [applicationId]: docs
+        [applicationId]: docs,
       }));
     } catch (error) {
       console.error('Failed to fetch documents:', error);
@@ -71,7 +81,7 @@ export default function MyApplicationsPage() {
       setIsLoading(true);
       const data = await mentorService.getMyApplications();
       setApplications(data || []);
-      
+
       const docsMap: Record<string, IMentorDocument[]> = {};
       for (const app of data || []) {
         if (app.documents && app.documents.length > 0) {
@@ -81,24 +91,28 @@ export default function MyApplicationsPage() {
         }
       }
       if (Object.keys(docsMap).length > 0) {
-        setDocumentsByApplication(prev => ({ ...prev, ...docsMap }));
+        setDocumentsByApplication((prev) => ({ ...prev, ...docsMap }));
       }
-      
-      const hasApprovedApplication = data?.some(app => app.status === 'approved');
+
+      const hasApprovedApplication = data?.some(
+        (app) => app.status === 'approved'
+      );
       if (hasApprovedApplication && user?.role === 'student') {
         await refreshUser();
       }
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to load applications';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load applications';
 
       const normalized = errorMessage.toLowerCase();
       if (normalized.includes('forbidden')) {
         try {
           await refreshUser();
         } catch (refreshError) {
-          console.error('Failed to refresh user after forbidden:', refreshError);
+          console.error(
+            'Failed to refresh user after forbidden:',
+            refreshError
+          );
         }
         router.replace('/mentor');
         return;
@@ -128,9 +142,10 @@ export default function MyApplicationsPage() {
       setApplicationToWithdraw(null);
       fetchApplications();
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Failed to withdraw application';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to withdraw application';
       toast.error('Failed to withdraw application', {
         description: errorMessage,
       });
@@ -191,19 +206,24 @@ export default function MyApplicationsPage() {
 
   if (isLoading) {
     return (
-      <div className="pt-12 pb-16 flex flex-col items-center justify-center">
-        <h1 className="text-6xl font-bold mb-8">My Application</h1>
-        <p className="text-2xl text-neutral-500 mb-10">Track the status of your mentor applications</p>
+      <div className="flex flex-col items-center justify-center pt-12 pb-16">
+        <h1 className="mb-8 text-6xl font-bold">My Application</h1>
+        <p className="mb-10 text-2xl text-neutral-500">
+          Track the status of your mentor applications
+        </p>
         <div className="w-232 space-y-5">
           {[...Array(3)].map((_, i) => (
-            <div key={i} className="bg-neutral-900/50 border border-neutral-800 rounded-xl p-7">
+            <div
+              key={i}
+              className="rounded-xl border border-neutral-800 bg-neutral-900/50 p-7"
+            >
               <div className="flex items-start gap-5">
                 <Skeleton className="size-16 rounded-full bg-neutral-800" />
                 <div className="flex-1 space-y-3">
                   <Skeleton className="h-8 w-md bg-neutral-800" />
                   <Skeleton className="h-6 w-72 bg-neutral-800" />
                 </div>
-                <Skeleton className="h-10 w-32 bg-neutral-800 rounded-full" />
+                <Skeleton className="h-10 w-32 rounded-full bg-neutral-800" />
               </div>
             </div>
           ))}
@@ -213,40 +233,46 @@ export default function MyApplicationsPage() {
   }
 
   return (
-    <div className="pt-12 pb-16 flex flex-col items-center justify-center">
-      <h1 className="text-6xl font-bold mb-8">My Application</h1>
-      <p className="text-2xl text-neutral-500 mb-10">Track the status of your mentor applications</p>
+    <div className="flex flex-col items-center justify-center pt-12 pb-16">
+      <h1 className="mb-8 text-6xl font-bold">My Application</h1>
+      <p className="mb-10 text-2xl text-neutral-500">
+        Track the status of your mentor applications
+      </p>
 
       {applications.length === 0 ? (
         isMentor ? (
-          <div className="w-232 text-center py-20">
-            <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+          <div className="w-232 py-20 text-center">
+            <div className="mx-auto mb-8 flex size-24 items-center justify-center rounded-full bg-neutral-800">
               <GraduationCap className="size-12 text-neutral-500" />
             </div>
-            <h2 className="text-3xl font-semibold mb-4">You&apos;re already a mentor</h2>
-            <p className="text-xl text-neutral-400 mb-10">
-              Your account has been upgraded to mentor. Manage your mentor profile and start accepting students.
+            <h2 className="mb-4 text-3xl font-semibold">
+              You&apos;re already a mentor
+            </h2>
+            <p className="mb-10 text-xl text-neutral-400">
+              Your account has been upgraded to mentor. Manage your mentor
+              profile and start accepting students.
             </p>
-            <Button 
+            <Button
               onClick={() => router.push('/mentor/profile')}
-              className="h-16! text-xl! px-10!"
+              className="h-16! px-10! text-xl!"
             >
               Go to Mentor Profile
               <Plus className="size-7" />
             </Button>
           </div>
         ) : (
-          <div className="w-232 text-center py-20">
-            <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
+          <div className="w-232 py-20 text-center">
+            <div className="mx-auto mb-8 flex size-24 items-center justify-center rounded-full bg-neutral-800">
               <GraduationCap className="size-12 text-neutral-500" />
             </div>
-            <h2 className="text-3xl font-semibold mb-4">No application yet</h2>
-            <p className="text-xl text-neutral-400 mb-10">
-              You haven&apos;t submitted any mentor application. Start your journey to become a mentor today!
+            <h2 className="mb-4 text-3xl font-semibold">No application yet</h2>
+            <p className="mb-10 text-xl text-neutral-400">
+              You haven&apos;t submitted any mentor application. Start your
+              journey to become a mentor today!
             </p>
-            <Button 
+            <Button
               onClick={() => router.push('/mentor')}
-              className="h-16! text-xl! px-10!"
+              className="h-16! px-10! text-xl!"
             >
               Apply to Become a Mentor
               <Plus className="size-7" />
@@ -256,28 +282,29 @@ export default function MyApplicationsPage() {
       ) : (
         <div className="w-232">
           {applications.map((application) => (
-            <div 
+            <div
               key={application.id}
-              className="bg-neutral-900/50 border border-neutral-800 rounded-xl overflow-hidden mb-5 last:mb-0"
+              className="mb-5 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/50 last:mb-0"
             >
-              <div className="p-7 border-b border-neutral-800">
+              <div className="border-b border-neutral-800 p-7">
                 <div className="flex items-start gap-5">
-                  <div className="size-20 rounded-xl bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold shrink-0">
+                  <div className="flex size-20 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-neutral-700 to-neutral-800 text-xl font-bold">
                     <GraduationCap className="size-10 text-neutral-300" />
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-3xl font-semibold mb-2">
-                          {application.applicationData?.headline || 'Mentor Application'}
+                        <h3 className="mb-2 text-3xl font-semibold">
+                          {application.applicationData?.headline ||
+                            'Mentor Application'}
                         </h3>
                         <p className="text-lg text-neutral-400">
                           Submitted on {formatDate(application.createdAt)}
                         </p>
                       </div>
-                      <Badge 
-                        variant="outline" 
-                        className={`py-2.5 px-5 text-lg flex items-center ${getStatusBadgeColor(application.status)}`}
+                      <Badge
+                        variant="outline"
+                        className={`flex items-center px-5 py-2.5 text-lg ${getStatusBadgeColor(application.status)}`}
                       >
                         {formatStatus(application.status)}
                       </Badge>
@@ -286,11 +313,13 @@ export default function MyApplicationsPage() {
                 </div>
               </div>
 
-              <div className="p-7 space-y-7">
+              <div className="space-y-7 p-7">
                 {application.applicationData?.bio && (
                   <div>
-                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-3">Bio</h4>
-                    <p className="text-lg text-neutral-300 leading-relaxed">
+                    <h4 className="mb-3 text-base font-semibold tracking-wider text-neutral-400 uppercase">
+                      Bio
+                    </h4>
+                    <p className="text-lg leading-relaxed text-neutral-300">
                       {application.applicationData.bio}
                     </p>
                   </div>
@@ -298,8 +327,10 @@ export default function MyApplicationsPage() {
 
                 {application.applicationData?.motivation && (
                   <div>
-                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-3">Motivation</h4>
-                    <p className="text-lg text-neutral-300 leading-relaxed">
+                    <h4 className="mb-3 text-base font-semibold tracking-wider text-neutral-400 uppercase">
+                      Motivation
+                    </h4>
+                    <p className="text-lg leading-relaxed text-neutral-300">
                       {application.applicationData.motivation}
                     </p>
                   </div>
@@ -307,9 +338,9 @@ export default function MyApplicationsPage() {
 
                 <Separator className="bg-neutral-800" />
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-7">
+                <div className="grid grid-cols-2 gap-7 lg:grid-cols-4">
                   <div>
-                    <div className="flex items-center gap-2 text-neutral-400 mb-2">
+                    <div className="mb-2 flex items-center gap-2 text-neutral-400">
                       <Briefcase className="size-5" />
                       <span className="text-base">Experience</span>
                     </div>
@@ -318,79 +349,108 @@ export default function MyApplicationsPage() {
                     </p>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 text-neutral-400 mb-2">
+                    <div className="mb-2 flex items-center gap-2 text-neutral-400">
                       <Globe className="size-5" />
                       <span className="text-base">Languages</span>
                     </div>
                     <p className="text-lg">
-                      {application.applicationData?.languages?.join(', ') || 'N/A'}
+                      {application.applicationData?.languages?.join(', ') ||
+                        'N/A'}
                     </p>
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 text-neutral-400 mb-2">
+                    <div className="mb-2 flex items-center gap-2 text-neutral-400">
                       <Calendar className="size-5" />
                       <span className="text-base">Submitted</span>
                     </div>
-                    <p className="text-lg">{formatDateTime(application.createdAt)}</p>
+                    <p className="text-lg">
+                      {formatDateTime(application.createdAt)}
+                    </p>
                   </div>
                   {application.decidedAt && (
                     <div>
-                      <div className="flex items-center gap-2 text-neutral-400 mb-2">
+                      <div className="mb-2 flex items-center gap-2 text-neutral-400">
                         <CheckCircle className="size-5" />
                         <span className="text-base">Decided</span>
                       </div>
-                      <p className="text-lg">{formatDateTime(application.decidedAt)}</p>
+                      <p className="text-lg">
+                        {formatDateTime(application.decidedAt)}
+                      </p>
                     </div>
                   )}
                 </div>
 
-                {application.applicationData?.expertise && application.applicationData.expertise.length > 0 && (
-                  <div>
-                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-4">Expertise</h4>
-                    <div className="flex flex-wrap gap-2.5">
-                      {application.applicationData.expertise.map((exp, i) => (
-                        <Badge key={i} variant="outline" className="py-2 px-4 text-base bg-neutral-800/50">
-                          {exp}
-                        </Badge>
-                      ))}
+                {application.applicationData?.expertise &&
+                  application.applicationData.expertise.length > 0 && (
+                    <div>
+                      <h4 className="mb-4 text-base font-semibold tracking-wider text-neutral-400 uppercase">
+                        Expertise
+                      </h4>
+                      <div className="flex flex-wrap gap-2.5">
+                        {application.applicationData.expertise.map((exp, i) => (
+                          <Badge
+                            key={i}
+                            variant="outline"
+                            className="bg-neutral-800/50 px-4 py-2 text-base"
+                          >
+                            {exp}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {application.applicationData?.skills && application.applicationData.skills.length > 0 && (
-                  <div>
-                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-4">Skills</h4>
-                    <div className="flex flex-wrap gap-2.5">
-                      {application.applicationData.skills.map((skill, i) => (
-                        <Badge key={i} variant="outline" className="py-2 px-4 text-base bg-neutral-800/50">
-                          {skill}
-                        </Badge>
-                      ))}
+                {application.applicationData?.skills &&
+                  application.applicationData.skills.length > 0 && (
+                    <div>
+                      <h4 className="mb-4 text-base font-semibold tracking-wider text-neutral-400 uppercase">
+                        Skills
+                      </h4>
+                      <div className="flex flex-wrap gap-2.5">
+                        {application.applicationData.skills.map((skill, i) => (
+                          <Badge
+                            key={i}
+                            variant="outline"
+                            className="bg-neutral-800/50 px-4 py-2 text-base"
+                          >
+                            {skill}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {application.applicationData?.industries && application.applicationData.industries.length > 0 && (
-                  <div>
-                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-4">Industries</h4>
-                    <div className="flex flex-wrap gap-2.5">
-                      {application.applicationData.industries.map((industry, i) => (
-                        <Badge key={i} variant="outline" className="py-2 px-4 text-base bg-neutral-800/50">
-                          {industry}
-                        </Badge>
-                      ))}
+                {application.applicationData?.industries &&
+                  application.applicationData.industries.length > 0 && (
+                    <div>
+                      <h4 className="mb-4 text-base font-semibold tracking-wider text-neutral-400 uppercase">
+                        Industries
+                      </h4>
+                      <div className="flex flex-wrap gap-2.5">
+                        {application.applicationData.industries.map(
+                          (industry, i) => (
+                            <Badge
+                              key={i}
+                              variant="outline"
+                              className="bg-neutral-800/50 px-4 py-2 text-base"
+                            >
+                              {industry}
+                            </Badge>
+                          )
+                        )}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {(application.applicationData?.linkedinUrl || application.applicationData?.portfolioUrl) && (
+                {(application.applicationData?.linkedinUrl ||
+                  application.applicationData?.portfolioUrl) && (
                   <div className="flex items-center gap-5">
                     {application.applicationData?.linkedinUrl && (
-                      <a 
+                      <a
                         href={application.applicationData.linkedinUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-lg text-blue-400 hover:text-blue-300 transition-colors"
+                        className="flex items-center gap-2 text-lg text-blue-400 transition-colors hover:text-blue-300"
                       >
                         <Linkedin className="size-6" />
                         LinkedIn Profile
@@ -398,11 +458,11 @@ export default function MyApplicationsPage() {
                       </a>
                     )}
                     {application.applicationData?.portfolioUrl && (
-                      <a 
+                      <a
                         href={application.applicationData.portfolioUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 text-lg text-purple-400 hover:text-purple-300 transition-colors"
+                        className="flex items-center gap-2 text-lg text-purple-400 transition-colors hover:text-purple-300"
                       >
                         <Globe className="size-6" />
                         Portfolio
@@ -413,10 +473,10 @@ export default function MyApplicationsPage() {
                 )}
 
                 <Separator className="bg-neutral-800" />
-                
+
                 <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider flex items-center gap-2">
+                  <div className="mb-4 flex items-center justify-between">
+                    <h4 className="flex items-center gap-2 text-base font-semibold tracking-wider text-neutral-400 uppercase">
                       <FileText className="size-5" />
                       Supporting Documents
                     </h4>
@@ -435,7 +495,7 @@ export default function MyApplicationsPage() {
                       </Button>
                     )}
                   </div>
-                  
+
                   <DocumentList
                     applicationId={application.id}
                     documents={documentsByApplication[application.id] || []}
@@ -445,12 +505,12 @@ export default function MyApplicationsPage() {
                 </div>
               </div>
 
-              <div className="p-7 border-t border-neutral-800 bg-neutral-900/30">
+              <div className="border-t border-neutral-800 bg-neutral-900/30 p-7">
                 <div className="flex items-center justify-between">
                   <p className="text-lg text-neutral-500">
-                    {canWithdraw(application.status) 
+                    {canWithdraw(application.status)
                       ? 'You can withdraw this application if you want to submit a new one'
-                      : application.status === 'approved' 
+                      : application.status === 'approved'
                         ? 'Visit your mentor profile to start accepting students'
                         : 'This application has been processed'}
                   </p>
@@ -466,7 +526,7 @@ export default function MyApplicationsPage() {
                     {canWithdraw(application.status) && (
                       <Button
                         variant="outline"
-                        className="dark:text-red-500 border-red-500/30! dark:hover:bg-red-500/10 h-12! text-base!"
+                        className="h-12! border-red-500/30! text-base! dark:text-red-500 dark:hover:bg-red-500/10"
                         onClick={() => {
                           setApplicationToWithdraw(application);
                           setIsWithdrawDialogOpen(true);
@@ -476,7 +536,8 @@ export default function MyApplicationsPage() {
                         <Trash2 className="size-5" />
                       </Button>
                     )}
-                    {(application.status === 'declined' || application.status === 'withdrawn') && (
+                    {(application.status === 'declined' ||
+                      application.status === 'withdrawn') && (
                       <Button
                         onClick={() => router.push('/mentor')}
                         className="h-12! text-base!"
@@ -493,27 +554,34 @@ export default function MyApplicationsPage() {
         </div>
       )}
 
-      <AlertDialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
+      <AlertDialog
+        open={isWithdrawDialogOpen}
+        onOpenChange={setIsWithdrawDialogOpen}
+      >
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl flex items-center gap-2.5">
+            <AlertDialogTitle className="flex items-center gap-2.5 text-2xl">
               <Trash2 className="size-7" />
               Withdraw Application
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base">
-              Are you sure you want to withdraw this application? This action cannot be undone.
-              You will need to submit a new application if you change your mind.
+              Are you sure you want to withdraw this application? This action
+              cannot be undone. You will need to submit a new application if you
+              change your mind.
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isWithdrawing} className="h-12! text-base!">
+            <AlertDialogCancel
+              disabled={isWithdrawing}
+              className="h-12! text-base!"
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={handleWithdraw}
               disabled={isWithdrawing}
-              className="bg-red-600 hover:bg-red-700 text-white h-12! text-base!"
+              className="h-12! bg-red-600 text-base! text-white hover:bg-red-700"
             >
               Withdraw Application
               {isWithdrawing && <Loader2 className="size-5 animate-spin" />}

@@ -58,16 +58,19 @@ export default function ForgotPasswordPage() {
       setEmailSent(true);
 
       toast.success('Email has been sent!', {
-        description: 'Please check your email (and spam folder) to find the email containing the reset password link. This link will expire after 15 minutes.'
+        description:
+          'Please check your email (and spam folder) to find the email containing the reset password link. This link will expire after 15 minutes.',
       });
     } catch (error: unknown) {
       console.error('Forgot password error:', error);
 
       const errorMessage =
-        error instanceof Error ? error.message : 'An error occurred while sending email. Please try again.';
+        error instanceof Error
+          ? error.message
+          : 'An error occurred while sending email. Please try again.';
 
       toast.error('Failed to send email', {
-        description: errorMessage
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -81,10 +84,9 @@ export default function ForgotPasswordPage() {
           Forgot password?
         </CardTitle>
         <CardDescription className="text-2xl text-neutral-400">
-          {emailSent 
+          {emailSent
             ? 'We have sent you an email with instructions to reset your password'
-            : 'Enter your email to receive instructions to reset your password'
-          }
+            : 'Enter your email to receive instructions to reset your password'}
         </CardDescription>
       </CardHeader>
 
@@ -92,16 +94,18 @@ export default function ForgotPasswordPage() {
         <form onSubmit={handleSubmit(onSubmit)}>
           <CardContent className="space-y-6">
             <div className="space-y-3">
-              <Label htmlFor="email" className="text-xl">Email address</Label>
+              <Label htmlFor="email" className="text-xl">
+                Email address
+              </Label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 size-6 text-neutral-400" />
+                <Mail className="absolute top-1/2 left-4 size-6 -translate-y-1/2 text-neutral-400" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="user@example.com"
                   autoComplete="off"
                   disabled={isLoading}
-                  className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pl-14 ${
+                  className={`h-14 border-neutral-800 bg-neutral-900/50 pl-14 text-xl! focus:border-neutral-600 ${
                     errors.email ? 'border-red-500 focus:border-red-500' : ''
                   }`}
                   {...register('email')}
@@ -113,10 +117,10 @@ export default function ForgotPasswordPage() {
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-5 mt-8">
+          <CardFooter className="mt-8 flex flex-col space-y-5">
             <Button
               type="submit"
-              className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+              className="h-14 w-full bg-neutral-100 text-xl text-neutral-900 hover:bg-neutral-200"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -142,12 +146,12 @@ export default function ForgotPasswordPage() {
         </form>
       ) : (
         <CardContent className="space-y-6">
-          <div className="flex flex-col items-center justify-center py-8 space-y-4">
-            <div className="size-20 rounded-full bg-neutral-800/50 flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center space-y-4 py-8">
+            <div className="flex size-20 items-center justify-center rounded-full bg-neutral-800/50">
               <Mail className="size-10 text-neutral-200" />
             </div>
-            
-            <div className="text-center space-y-2">
+
+            <div className="space-y-2 text-center">
               <p className="text-2xl text-neutral-300">
                 Email has been sent to
               </p>
@@ -156,10 +160,11 @@ export default function ForgotPasswordPage() {
               </p>
             </div>
 
-            <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-5 max-w-md">
-              <p className="text-lg text-neutral-400 leading-relaxed">
-                Please check your email (and spam folder) to find the email containing 
-                the reset password link. This link will expire after 15 minutes.
+            <div className="max-w-md rounded-lg border border-neutral-800 bg-neutral-900/50 p-5">
+              <p className="text-lg leading-relaxed text-neutral-400">
+                Please check your email (and spam folder) to find the email
+                containing the reset password link. This link will expire after
+                15 minutes.
               </p>
             </div>
           </div>
@@ -168,18 +173,16 @@ export default function ForgotPasswordPage() {
             <Button
               onClick={() => setEmailSent(false)}
               variant="ghost"
-              className="w-full h-14 text-xl border border-neutral-700 hover:border-white hover:bg-white/5"
+              className="h-14 w-full border border-neutral-700 text-xl hover:border-white hover:bg-white/5"
             >
               Send email again
             </Button>
 
             <Button
               asChild
-              className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+              className="h-14 w-full bg-neutral-100 text-xl text-neutral-900 hover:bg-neutral-200"
             >
-              <Link href="/login">
-                Back to login
-              </Link>
+              <Link href="/login">Back to login</Link>
             </Button>
           </div>
         </CardContent>

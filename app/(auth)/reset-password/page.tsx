@@ -22,22 +22,28 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { authService } from '@/services';
 
-const resetPasswordSchema = z.object({
-  newPassword: z
-    .string()
-    .min(8, { message: 'Password must be at least 8 characters' })
-    .max(100, { message: 'Password is too long' })
-    .regex(/[A-Z]/, { message: 'Password must contain at least 1 uppercase letter' })
-    .regex(/[a-z]/, { message: 'Password must contain at least 1 lowercase letter' })
-    .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
-    .regex(/[^A-Za-z0-9]/, { message: 'Password must contain at least 1 special character' }),
-  confirmPassword: z
-    .string()
-    .min(1, { message: 'Please confirm password' }),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: 'Confirm password does not match',
-  path: ['confirmPassword'],
-});
+const resetPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, { message: 'Password must be at least 8 characters' })
+      .max(100, { message: 'Password is too long' })
+      .regex(/[A-Z]/, {
+        message: 'Password must contain at least 1 uppercase letter',
+      })
+      .regex(/[a-z]/, {
+        message: 'Password must contain at least 1 lowercase letter',
+      })
+      .regex(/[0-9]/, { message: 'Password must contain at least 1 number' })
+      .regex(/[^A-Za-z0-9]/, {
+        message: 'Password must contain at least 1 special character',
+      }),
+    confirmPassword: z.string().min(1, { message: 'Please confirm password' }),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: 'Confirm password does not match',
+    path: ['confirmPassword'],
+  });
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
@@ -47,7 +53,8 @@ export default function ResetPasswordPage() {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
   const [resetSuccess, setResetSuccess] = useState<boolean>(false);
   const [token, setToken] = useState<string | null>(null);
 
@@ -67,10 +74,11 @@ export default function ResetPasswordPage() {
 
   useEffect(() => {
     const tokenFromUrl = searchParams.get('token');
-    
+
     if (!tokenFromUrl) {
       toast.error('Invalid token', {
-        description: 'Please use the link from the email to reset your password.'
+        description:
+          'Please use the link from the email to reset your password.',
       });
       router.push('/forgot-password');
     } else {
@@ -95,20 +103,22 @@ export default function ResetPasswordPage() {
       setResetSuccess(true);
 
       toast.success('Password reset successful!', {
-        description: 'You can login with your new password.'
+        description: 'You can login with your new password.',
       });
 
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       router.push('/login?reset=success');
     } catch (error: unknown) {
       console.error('Reset password error:', error);
 
       const errorMessage =
-        error instanceof Error ? error.message : 'An error occurred while resetting your password. Please try again.';
+        error instanceof Error
+          ? error.message
+          : 'An error occurred while resetting your password. Please try again.';
 
       toast.error('Password reset failed', {
-        description: errorMessage
+        description: errorMessage,
       });
     } finally {
       setIsLoading(false);
@@ -137,10 +147,9 @@ export default function ResetPasswordPage() {
           {resetSuccess ? 'Success!' : 'Reset password'}
         </CardTitle>
         <CardDescription className="text-2xl text-neutral-400">
-          {resetSuccess 
+          {resetSuccess
             ? 'Your password has been reset successfully'
-            : 'Enter your new password'
-          }
+            : 'Enter your new password'}
         </CardDescription>
       </CardHeader>
 
@@ -158,15 +167,17 @@ export default function ResetPasswordPage() {
                   placeholder="••••••••"
                   autoComplete="new-password"
                   disabled={isLoading}
-                  className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
-                    errors.newPassword ? 'border-red-500 focus:border-red-500' : ''
+                  className={`h-14 border-neutral-800 bg-neutral-900/50 pr-14 text-xl! focus:border-neutral-600 ${
+                    errors.newPassword
+                      ? 'border-red-500 focus:border-red-500'
+                      : ''
                   }`}
                   {...register('newPassword')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                  className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer text-neutral-400 transition-colors hover:text-neutral-200"
                   disabled={isLoading}
                 >
                   {showPassword ? (
@@ -177,12 +188,16 @@ export default function ResetPasswordPage() {
                 </button>
               </div>
               {errors.newPassword && (
-                <p className="text-xl text-red-500">{errors.newPassword.message}</p>
+                <p className="text-xl text-red-500">
+                  {errors.newPassword.message}
+                </p>
               )}
-              
+
               <div className="mt-3 space-y-2">
-                <p className="text-lg text-neutral-500">Password must contain:</p>
-                <ul className="text-lg text-neutral-500 space-y-1 ml-4">
+                <p className="text-lg text-neutral-500">
+                  Password must contain:
+                </p>
+                <ul className="ml-4 space-y-1 text-lg text-neutral-500">
                   <li>• At least 8 characters</li>
                   <li>• At least 1 uppercase letter</li>
                   <li>• At least 1 lowercase letter</li>
@@ -203,15 +218,17 @@ export default function ResetPasswordPage() {
                   placeholder="••••••••"
                   autoComplete="new-password"
                   disabled={isLoading}
-                  className={`text-xl! h-14 bg-neutral-900/50 border-neutral-800 focus:border-neutral-600 pr-14 ${
-                    errors.confirmPassword ? 'border-red-500 focus:border-red-500' : ''
+                  className={`h-14 border-neutral-800 bg-neutral-900/50 pr-14 text-xl! focus:border-neutral-600 ${
+                    errors.confirmPassword
+                      ? 'border-red-500 focus:border-red-500'
+                      : ''
                   }`}
                   {...register('confirmPassword')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="cursor-pointer absolute right-4 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-200 transition-colors"
+                  className="absolute top-1/2 right-4 -translate-y-1/2 cursor-pointer text-neutral-400 transition-colors hover:text-neutral-200"
                   disabled={isLoading}
                 >
                   {showConfirmPassword ? (
@@ -222,15 +239,17 @@ export default function ResetPasswordPage() {
                 </button>
               </div>
               {errors.confirmPassword && (
-                <p className="text-xl text-red-500">{errors.confirmPassword.message}</p>
+                <p className="text-xl text-red-500">
+                  {errors.confirmPassword.message}
+                </p>
               )}
             </div>
           </CardContent>
 
-          <CardFooter className="flex flex-col space-y-5 mt-8">
+          <CardFooter className="mt-8 flex flex-col space-y-5">
             <Button
               type="submit"
-              className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+              className="h-14 w-full bg-neutral-100 text-xl text-neutral-900 hover:bg-neutral-200"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -256,12 +275,12 @@ export default function ResetPasswordPage() {
         </form>
       ) : (
         <CardContent className="space-y-6">
-          <div className="flex flex-col items-center justify-center py-8 space-y-4">
-            <div className="size-20 rounded-full bg-green-500/10 flex items-center justify-center">
+          <div className="flex flex-col items-center justify-center space-y-4 py-8">
+            <div className="flex size-20 items-center justify-center rounded-full bg-green-500/10">
               <CheckCircle2 className="size-10 text-green-500" />
             </div>
-            
-            <div className="text-center space-y-2">
+
+            <div className="space-y-2 text-center">
               <p className="text-2xl text-neutral-300">
                 Your password has been reset successfully!
               </p>
@@ -273,11 +292,9 @@ export default function ResetPasswordPage() {
 
           <Button
             asChild
-            className="w-full h-14 text-xl bg-neutral-100 text-neutral-900 hover:bg-neutral-200"
+            className="h-14 w-full bg-neutral-100 text-xl text-neutral-900 hover:bg-neutral-200"
           >
-            <Link href="/login">
-              Login now
-            </Link>
+            <Link href="/login">Login now</Link>
           </Button>
         </CardContent>
       )}

@@ -28,16 +28,16 @@ export function TransitionPanel({
     <div className={cn('relative', className)}>
       <AnimatePresence
         initial={false}
-        mode='popLayout'
+        mode="popLayout"
         custom={motionProps.custom}
       >
         <motion.div
           key={activeIndex}
           variants={variants}
           transition={transition}
-          initial='enter'
-          animate='center'
-          exit='exit'
+          initial="enter"
+          animate="center"
+          exit="exit"
           {...motionProps}
         >
           {children[activeIndex]}

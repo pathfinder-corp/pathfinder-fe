@@ -1,10 +1,10 @@
-import { Loader2 } from "lucide-react";
+import { Loader2 } from 'lucide-react';
 
 export default function DetailLoading() {
   return (
-    <div className="flex items-center justify-center flex-col gap-4 h-[80vh] text-center">
+    <div className="flex h-[80vh] flex-col items-center justify-center gap-4 text-center">
       <Loader2 className="size-20 animate-spin text-neutral-400" />
-      <p className="text-neutral-400 text-2xl">Loading roadmap...</p>
+      <p className="text-2xl text-neutral-400">Loading roadmap...</p>
     </div>
   );
 }

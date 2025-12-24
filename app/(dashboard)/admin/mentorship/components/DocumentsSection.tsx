@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { 
-  FileText, 
-  Award, 
-  Briefcase, 
-  File, 
+import {
+  FileText,
+  Award,
+  Briefcase,
+  File,
   UserCheck,
-  Download, 
-  CheckCircle, 
+  Download,
+  CheckCircle,
   XCircle,
   Loader2,
   Eye,
@@ -16,16 +16,16 @@ import {
   ChevronUp,
   FileSpreadsheet,
   Presentation,
-  FileType
+  FileType,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { adminService } from '@/services';
-import type { 
-  IAdminDocument, 
+import type {
+  IAdminDocument,
   IAdminDocumentDetail,
   IDocumentStats,
   MentorDocumentType,
-  DocumentVerificationStatus 
+  DocumentVerificationStatus,
 } from '@/types';
 import { formatFileSize } from '@/lib';
 
@@ -68,19 +68,25 @@ const getVerificationBadge = (status: DocumentVerificationStatus) => {
   switch (status) {
     case 'verified':
       return (
-        <Badge className={`${baseClasses} bg-green-500/20 text-green-400 border-green-500/30`}>
+        <Badge
+          className={`${baseClasses} border-green-500/30 bg-green-500/20 text-green-400`}
+        >
           Verified
         </Badge>
       );
     case 'rejected':
       return (
-        <Badge className={`${baseClasses} bg-red-500/20 text-red-400 border-red-500/30`}>
+        <Badge
+          className={`${baseClasses} border-red-500/30 bg-red-500/20 text-red-400`}
+        >
           Rejected
         </Badge>
       );
     default:
       return (
-        <Badge className={`${baseClasses} bg-yellow-500/20 text-yellow-400 border-yellow-500/30`}>
+        <Badge
+          className={`${baseClasses} border-yellow-500/30 bg-yellow-500/20 text-yellow-400`}
+        >
           Pending
         </Badge>
       );
@@ -96,28 +102,33 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
   const [stats, setStats] = useState<IDocumentStats | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isOpen, setIsOpen] = useState<boolean>(true);
-  
-  const [selectedDocument, setSelectedDocument] = useState<IAdminDocumentDetail | null>(null);
+
+  const [selectedDocument, setSelectedDocument] =
+    useState<IAdminDocumentDetail | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState<boolean>(false);
   const [isLoadingDetail, setIsLoadingDetail] = useState<boolean>(false);
-  
+
   const [isVerifyDialogOpen, setIsVerifyDialogOpen] = useState<boolean>(false);
-  const [documentToVerify, setDocumentToVerify] = useState<IAdminDocument | null>(null);
-  const [verifyAction, setVerifyAction] = useState<'verify' | 'reject'>('verify');
+  const [documentToVerify, setDocumentToVerify] =
+    useState<IAdminDocument | null>(null);
+  const [verifyAction, setVerifyAction] = useState<'verify' | 'reject'>(
+    'verify'
+  );
   const [verifyNotes, setVerifyNotes] = useState<string>('');
   const [isVerifying, setIsVerifying] = useState<boolean>(false);
-  
+
   const fetchDocuments = useCallback(async () => {
     try {
       setIsLoading(true);
       const [docsResponse, statsResponse] = await Promise.all([
         adminService.getApplicationDocuments(applicationId),
-        adminService.getDocumentStats(applicationId)
+        adminService.getDocumentStats(applicationId),
       ]);
       setDocuments(docsResponse);
       setStats(statsResponse);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load documents';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Failed to load documents';
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -135,7 +146,10 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
       setSelectedDocument(detail);
       setIsDetailDialogOpen(true);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to load document details';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : 'Failed to load document details';
       toast.error(errorMessage);
     } finally {
       setIsLoadingDetail(false);
@@ -143,11 +157,16 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
   };
 
   const handleDownload = (doc: IAdminDocument) => {
-    const downloadUrl = doc.imagekitUrl || adminService.getDocumentDownloadUrl(applicationId, doc.id);
+    const downloadUrl =
+      doc.imagekitUrl ||
+      adminService.getDocumentDownloadUrl(applicationId, doc.id);
     window.open(downloadUrl, '_blank');
   };
 
-  const openVerifyDialog = (doc: IAdminDocument, action: 'verify' | 'reject') => {
+  const openVerifyDialog = (
+    doc: IAdminDocument,
+    action: 'verify' | 'reject'
+  ) => {
     setDocumentToVerify(doc);
     setVerifyAction(action);
     setVerifyNotes('');
@@ -161,14 +180,21 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
       setIsVerifying(true);
       await adminService.verifyDocument(applicationId, documentToVerify.id, {
         verified: verifyAction === 'verify',
-        notes: verifyNotes || undefined
+        notes: verifyNotes || undefined,
       });
-      toast.success(verifyAction === 'verify' ? 'Document verified successfully' : 'Document rejected');
+      toast.success(
+        verifyAction === 'verify'
+          ? 'Document verified successfully'
+          : 'Document rejected'
+      );
       setIsVerifyDialogOpen(false);
       setDocumentToVerify(null);
       fetchDocuments();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : `Failed to ${verifyAction} document`;
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : `Failed to ${verifyAction} document`;
       toast.error(errorMessage);
     } finally {
       setIsVerifying(false);
@@ -186,8 +212,8 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
 
   if (documents.length === 0) {
     return (
-      <div className="text-center py-6 bg-neutral-800/30 rounded-lg">
-        <File className="size-10 text-neutral-500 mx-auto mb-3" />
+      <div className="rounded-lg bg-neutral-800/30 py-6 text-center">
+        <File className="mx-auto mb-3 size-10 text-neutral-500" />
         <p className="text-base text-neutral-400">No documents uploaded</p>
       </div>
     );
@@ -197,10 +223,10 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
     <>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
-          <button className="w-full flex items-center justify-between py-3 text-left cursor-pointer hover:bg-neutral-800/30 rounded-lg px-3 -mx-3 transition-colors">
+          <button className="-mx-3 flex w-full cursor-pointer items-center justify-between rounded-lg px-3 py-3 text-left transition-colors hover:bg-neutral-800/30">
             <div className="flex items-center gap-2">
               <FileText className="size-5 text-neutral-400" />
-              <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider">
+              <h4 className="text-base font-semibold tracking-wider text-neutral-400 uppercase">
                 Documents ({documents.length})
               </h4>
             </div>
@@ -214,7 +240,7 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
 
         <CollapsibleContent className="space-y-4 pt-3">
           {stats && (
-            <div className="grid grid-cols-4 gap-3 p-4 bg-neutral-800/30 rounded-lg">
+            <div className="grid grid-cols-4 gap-3 rounded-lg bg-neutral-800/30 p-4">
               <div className="text-center">
                 <p className="text-2xl font-bold">{stats.total}</p>
                 <p className="text-sm text-neutral-400">Total</p>
@@ -236,17 +262,17 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
 
           <div className="space-y-2">
             {documents.map((doc) => (
-              <div 
+              <div
                 key={doc.id}
-                className="flex items-center gap-3 p-3 bg-neutral-800/50 rounded-lg border border-neutral-700/50 hover:border-neutral-600 transition-colors"
+                className="flex items-center gap-3 rounded-lg border border-neutral-700/50 bg-neutral-800/50 p-3 transition-colors hover:border-neutral-600"
               >
-                <div className="size-10 rounded-lg bg-neutral-700/50 flex items-center justify-center shrink-0">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-neutral-700/50">
                   {getDocumentIcon(doc.type)}
                 </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-base font-medium truncate">
+
+                <div className="min-w-0 flex-1">
+                  <div className="mb-0.5 flex items-center gap-2">
+                    <p className="truncate text-base font-medium">
                       {doc.title || doc.originalFilename}
                     </p>
                     {getVerificationBadge(doc.verificationStatus)}
@@ -264,7 +290,7 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
+                <div className="flex shrink-0 items-center gap-1.5">
                   <Button
                     variant="ghost"
                     size="icon"
@@ -282,13 +308,13 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
                   >
                     <Download className="size-4" />
                   </Button>
-                  
+
                   {doc.verificationStatus === 'pending' && (
                     <>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="size-8 text-green-500 dark:hover:text-green-400 dark:hover:bg-green-500/10"
+                        className="size-8 text-green-500 dark:hover:bg-green-500/10 dark:hover:text-green-400"
                         onClick={() => openVerifyDialog(doc, 'verify')}
                       >
                         <CheckCircle className="size-4" />
@@ -296,7 +322,7 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="size-8 text-red-500 dark:hover:text-red-400 dark:hover:bg-red-500/10"
+                        className="size-8 text-red-500 dark:hover:bg-red-500/10 dark:hover:text-red-400"
                         onClick={() => openVerifyDialog(doc, 'reject')}
                       >
                         <XCircle className="size-4" />
@@ -313,7 +339,7 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
       <Dialog open={isDetailDialogOpen} onOpenChange={setIsDetailDialogOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-xl flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-xl">
               {selectedDocument && getDocumentIcon(selectedDocument.type)}
               Document Details
             </DialogTitle>
@@ -327,9 +353,12 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
               <div className="flex items-start justify-between">
                 <div>
                   <p className="text-lg font-semibold">
-                    {selectedDocument.title || selectedDocument.originalFilename}
+                    {selectedDocument.title ||
+                      selectedDocument.originalFilename}
                   </p>
-                  <p className="text-base text-neutral-400 capitalize">{selectedDocument.type}</p>
+                  <p className="text-base text-neutral-400 capitalize">
+                    {selectedDocument.type}
+                  </p>
                 </div>
                 {getVerificationBadge(selectedDocument.verificationStatus)}
               </div>
@@ -338,46 +367,54 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
 
               <div className="grid grid-cols-2 gap-4 text-base">
                 <div>
-                  <p className="text-neutral-500 mb-1">File Name</p>
-                  <p className="truncate">{selectedDocument.originalFilename}</p>
+                  <p className="mb-1 text-neutral-500">File Name</p>
+                  <p className="truncate">
+                    {selectedDocument.originalFilename}
+                  </p>
                 </div>
                 <div>
-                  <p className="text-neutral-500 mb-1">File Size</p>
+                  <p className="mb-1 text-neutral-500">File Size</p>
                   <p>{formatFileSize(selectedDocument.fileSize)}</p>
                 </div>
                 <div>
-                  <p className="text-neutral-500 mb-1">MIME Type</p>
+                  <p className="mb-1 text-neutral-500">MIME Type</p>
                   <p>{selectedDocument.mimeType}</p>
                 </div>
                 <div>
-                  <p className="text-neutral-500 mb-1">Issued Year</p>
+                  <p className="mb-1 text-neutral-500">Issued Year</p>
                   <p>{selectedDocument.issuedYear || 'N/A'}</p>
                 </div>
                 {selectedDocument.issuingOrganization && (
                   <div className="col-span-2">
-                    <p className="text-neutral-500 mb-1">Issuing Organization</p>
+                    <p className="mb-1 text-neutral-500">
+                      Issuing Organization
+                    </p>
                     <p>{selectedDocument.issuingOrganization}</p>
                   </div>
                 )}
                 {selectedDocument.description && (
                   <div className="col-span-2">
-                    <p className="text-neutral-500 mb-1">Description</p>
+                    <p className="mb-1 text-neutral-500">Description</p>
                     <p>{selectedDocument.description}</p>
                   </div>
                 )}
               </div>
 
               {selectedDocument.verificationNotes && (
-                <div className="p-3 bg-neutral-800/50 rounded-lg">
-                  <p className="text-neutral-500 mb-1 text-sm">Verification Notes</p>
-                  <p className="text-base">{selectedDocument.verificationNotes}</p>
+                <div className="rounded-lg bg-neutral-800/50 p-3">
+                  <p className="mb-1 text-sm text-neutral-500">
+                    Verification Notes
+                  </p>
+                  <p className="text-base">
+                    {selectedDocument.verificationNotes}
+                  </p>
                 </div>
               )}
 
               <div className="flex gap-2">
                 <Button
                   variant="outline"
-                  className="flex-1 h-11! text-md!"
+                  className="text-md! h-11! flex-1"
                   onClick={() => handleDownload(selectedDocument)}
                 >
                   Download
@@ -386,7 +423,7 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
                 {selectedDocument.verificationStatus === 'pending' && (
                   <>
                     <Button
-                      className="flex-1 h-11! text-md! text-white bg-green-500 hover:bg-green-700"
+                      className="text-md! h-11! flex-1 bg-green-500 text-white hover:bg-green-700"
                       onClick={() => {
                         setIsDetailDialogOpen(false);
                         openVerifyDialog(selectedDocument, 'verify');
@@ -397,7 +434,7 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
                     </Button>
                     <Button
                       variant="outline"
-                      className="flex-1 h-11! text-md! text-red-500 border-red-500/30 dark:hover:text-red-400 dark:border-red-400/30 dark:hover:bg-red-500/10"
+                      className="text-md! h-11! flex-1 border-red-500/30 text-red-500 dark:border-red-400/30 dark:hover:bg-red-500/10 dark:hover:text-red-400"
                       onClick={() => {
                         setIsDetailDialogOpen(false);
                         openVerifyDialog(selectedDocument, 'reject');
@@ -417,16 +454,18 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
       <Dialog open={isVerifyDialogOpen} onOpenChange={setIsVerifyDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle className="text-xl flex items-center gap-2">
+            <DialogTitle className="flex items-center gap-2 text-xl">
               {verifyAction === 'verify' ? (
                 <CheckCircle className="size-6" />
               ) : (
                 <XCircle className="size-6" />
               )}
-              {verifyAction === 'verify' ? 'Verify Document' : 'Reject Document'}
+              {verifyAction === 'verify'
+                ? 'Verify Document'
+                : 'Reject Document'}
             </DialogTitle>
             <DialogDescription className="text-base">
-              {verifyAction === 'verify' 
+              {verifyAction === 'verify'
                 ? 'Confirm that this document is valid and authentic.'
                 : 'Reject this document with a reason.'}
             </DialogDescription>
@@ -434,21 +473,29 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
 
           {documentToVerify && (
             <div className="space-y-4">
-              <div className="p-3 bg-neutral-800/50 rounded-lg">
-                <p className="font-medium">{documentToVerify.title || documentToVerify.originalFilename}</p>
-                <p className="text-sm text-neutral-400 capitalize">{documentToVerify.type}</p>
+              <div className="rounded-lg bg-neutral-800/50 p-3">
+                <p className="font-medium">
+                  {documentToVerify.title || documentToVerify.originalFilename}
+                </p>
+                <p className="text-sm text-neutral-400 capitalize">
+                  {documentToVerify.type}
+                </p>
               </div>
 
               <div>
-                <label className="text-base text-neutral-400 mb-2 block">
-                  Notes {verifyAction === 'reject' && <span className="text-red-400">*</span>}
+                <label className="mb-2 block text-base text-neutral-400">
+                  Notes{' '}
+                  {verifyAction === 'reject' && (
+                    <span className="text-red-400">*</span>
+                  )}
                 </label>
                 <Textarea
                   value={verifyNotes}
                   onChange={(e) => setVerifyNotes(e.target.value)}
-                  placeholder={verifyAction === 'verify' 
-                    ? 'Optional verification notes...'
-                    : 'Please provide a reason for rejection...'
+                  placeholder={
+                    verifyAction === 'verify'
+                      ? 'Optional verification notes...'
+                      : 'Please provide a reason for rejection...'
                   }
                   className="min-h-[100px] text-base"
                 />
@@ -466,10 +513,14 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
             </Button>
             <Button
               onClick={handleVerify}
-              disabled={isVerifying || (verifyAction === 'reject' && !verifyNotes.trim())}
-              className={verifyAction === 'verify' 
-                ? 'text-white bg-green-600 hover:bg-green-700'
-                : 'bg-red-600 hover:bg-red-700'
+              disabled={
+                isVerifying ||
+                (verifyAction === 'reject' && !verifyNotes.trim())
+              }
+              className={
+                verifyAction === 'verify'
+                  ? 'bg-green-600 text-white hover:bg-green-700'
+                  : 'bg-red-600 hover:bg-red-700'
               }
             >
               {isVerifying ? (
@@ -478,9 +529,7 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
                   <Loader2 className="size-4 animate-spin" />
                 </>
               ) : (
-                <>
-                  {verifyAction === 'verify' ? 'Verify' : 'Reject'}
-                </>
+                <>{verifyAction === 'verify' ? 'Verify' : 'Reject'}</>
               )}
             </Button>
           </DialogFooter>
