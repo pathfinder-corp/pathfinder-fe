@@ -345,6 +345,7 @@ export interface IAdminPendingDocumentUploader {
   firstName: string;
   lastName: string;
   email: string;
+  avatar: string | null;
 }
 
 export interface IAdminPendingDocumentApplication {

@@ -18,6 +18,7 @@ import type {
   MentorDocumentType
 } from '@/types';
 import { formatFileSize } from '@/lib';
+import Image from 'next/image';
 
 import { formatDate, getDocumentIconComponent } from './utils';
 import { StatusBadge } from './StatusBadge';
@@ -240,9 +241,20 @@ export function PendingDocumentsTab({ refreshTrigger = 0 }: PendingDocumentsTabP
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
-                        <div className="size-8 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold shrink-0">
-                          {doc.uploader.firstName?.[0] || ''}{doc.uploader.lastName?.[0] || ''}
-                        </div>
+                        {doc.uploader.avatar ? (
+                          <div className="relative size-12 rounded-full overflow-hidden shrink-0">
+                            <Image 
+                              src={doc.uploader.avatar} 
+                              alt={`${doc.uploader.firstName} ${doc.uploader.lastName}`}
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold shrink-0">
+                            {doc.uploader.firstName?.[0] || ''}{doc.uploader.lastName?.[0] || ''}
+                          </div>
+                        )}
                         <div className="min-w-0">
                           <p className="text-base text-neutral-100 truncate">
                             {doc.uploader.firstName} {doc.uploader.lastName}
@@ -387,7 +399,7 @@ export function PendingDocumentsTab({ refreshTrigger = 0 }: PendingDocumentsTabP
                 </Button>
                 <Button
                   variant="outline"
-                  className="flex-1 h-11! text-md! text-red-500 border-red-500/30 dark:hover:text-red-400 dark:border-red-400/30 dark:hover:bg-red-500/10"
+                  className="flex-1 h-11! text-md! text-red-500 border-red-500/30! bg-red-500/10! dark:hover:text-red-400 dark:border-red-400/30 dark:hover:bg-red-500/10"
                   onClick={() => {
                     const pendingDoc = documents.find(d => d.id === selectedDocument.id);
                     if (pendingDoc) {

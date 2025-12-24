@@ -18,6 +18,7 @@ export interface IMentorApplicationUser {
   email: string;
   firstName: string;
   lastName: string;
+  avatar?: string | null;
 }
 
 export interface IMentorProfileUser {

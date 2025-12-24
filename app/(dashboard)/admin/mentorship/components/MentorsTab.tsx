@@ -239,12 +239,14 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
                   <TableCell className="py-5 pl-6">
                     <div className="flex items-center gap-3">
                       {mentor.user?.avatar ? (
-                        <Image 
-                          src={mentor.user.avatar} 
-                          alt={`${mentor.user?.firstName} ${mentor.user?.lastName}`}
-                          fill
-                          className="size-12 rounded-full object-cover"
-                        />
+                        <div className="relative size-12 rounded-full overflow-hidden shrink-0">
+                          <Image 
+                            src={mentor.user.avatar} 
+                            alt={`${mentor.user?.firstName} ${mentor.user?.lastName}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                       ) : (
                         <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold shrink-0">
                           {mentor.user?.firstName?.[0] || ''}{mentor.user?.lastName?.[0] || ''}
@@ -371,12 +373,14 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
                 <>
                   <div className="flex items-start gap-4">
                     {selectedMentor.user?.avatar ? (
-                      <Image 
-                        src={selectedMentor.user.avatar} 
-                        alt={`${selectedMentor.user?.firstName} ${selectedMentor.user?.lastName}`}
-                        fill
-                        className="size-16 rounded-full object-cover"
-                      />
+                      <div className="relative size-16 rounded-full overflow-hidden shrink-0">
+                        <Image 
+                          src={selectedMentor.user.avatar} 
+                          alt={`${selectedMentor.user?.firstName} ${selectedMentor.user?.lastName}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="size-16 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-xl font-bold shrink-0">
                         {selectedMentor.user?.firstName?.[0] || ''}{selectedMentor.user?.lastName?.[0] || ''}
@@ -399,7 +403,7 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
 
                   <div>
                     <h4 className="text-base font-semibold text-neutral-400 uppercase tracking-wider mb-2">Bio</h4>
-                    <p className="text-lg text-neutral-300 leading-relaxed">
+                    <p className="text-lg text-neutral-300 leading-relaxed wrap-break-word">
                       {selectedMentor.bio || 'No bio provided'}
                     </p>
                   </div>

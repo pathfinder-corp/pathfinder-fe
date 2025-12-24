@@ -242,13 +242,13 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
                 <TableRow key={i} className="border-neutral-800">
                   <TableCell className="py-5 pl-6">
                     <div className="flex items-center gap-3">
-                      <Skeleton className="size-10 rounded-full bg-neutral-800" />
+                      <Skeleton className="size-12 rounded-full bg-neutral-800" />
                       <Skeleton className="h-5 w-32 bg-neutral-800" />
                     </div>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <Skeleton className="size-10 rounded-full bg-neutral-800" />
+                      <Skeleton className="size-12 rounded-full bg-neutral-800" />
                       <Skeleton className="h-5 w-32 bg-neutral-800" />
                     </div>
                   </TableCell>
@@ -279,14 +279,16 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
                   <TableCell className="py-5 pl-6">
                     <div className="flex items-center gap-3">
                       {mentorship.mentor?.avatar ? (
-                        <Image 
-                          src={mentorship.mentor.avatar} 
-                          alt={`${mentorship.mentor?.firstName} ${mentorship.mentor?.lastName}`}
-                          fill
-                          className="size-10 rounded-full object-cover"
-                        />
+                        <div className="relative size-12 rounded-full overflow-hidden shrink-0">
+                          <Image 
+                            src={mentorship.mentor.avatar} 
+                            alt={`${mentorship.mentor?.firstName} ${mentorship.mentor?.lastName}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                       ) : (
-                        <div className="size-10 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold shrink-0">
+                        <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold shrink-0">
                           {mentorship.mentor?.firstName?.[0] || ''}{mentorship.mentor?.lastName?.[0] || ''}
                         </div>
                       )}
@@ -303,14 +305,16 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
                   <TableCell>
                     <div className="flex items-center gap-3">
                       {mentorship.student?.avatar ? (
-                        <Image 
-                          src={mentorship.student.avatar} 
-                          alt={`${mentorship.student?.firstName} ${mentorship.student?.lastName}`}
-                          fill
-                          className="size-10 rounded-full object-cover"
-                        />
+                        <div className="relative size-12 rounded-full overflow-hidden shrink-0">
+                          <Image 
+                            src={mentorship.student.avatar} 
+                            alt={`${mentorship.student?.firstName} ${mentorship.student?.lastName}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
                       ) : (
-                        <div className="size-10 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-sm font-bold shrink-0">
+                        <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold shrink-0">
                           {mentorship.student?.firstName?.[0] || ''}{mentorship.student?.lastName?.[0] || ''}
                         </div>
                       )}
@@ -433,7 +437,6 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className="text-2xl flex items-center gap-2">
-              <Handshake className="size-7" />
               Mentorship Details
             </DialogTitle>
             <DialogDescription className="text-base">
@@ -453,14 +456,16 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
                 <p className="text-sm text-neutral-500 mb-3">Mentor</p>
                 <div className="flex items-center gap-3">
                   {selectedMentorship.mentor?.avatar ? (
-                    <Image 
-                      src={selectedMentorship.mentor.avatar} 
-                      alt={`${selectedMentorship.mentor?.firstName} ${selectedMentorship.mentor?.lastName}`}
-                      fill
-                      className="size-12 rounded-full object-cover"
-                    />
+                    <div className="relative size-12 rounded-full overflow-hidden shrink-0">
+                      <Image 
+                        src={selectedMentorship.mentor.avatar} 
+                        alt={`${selectedMentorship.mentor?.firstName} ${selectedMentorship.mentor?.lastName}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                   ) : (
-                    <div className="size-12 rounded-full bg-linear-to-br from-amber-600 to-amber-700 flex items-center justify-center text-base font-bold">
+                    <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold shrink-0">
                       {selectedMentorship.mentor?.firstName?.[0] || ''}{selectedMentorship.mentor?.lastName?.[0] || ''}
                     </div>
                   )}
@@ -477,14 +482,16 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
                 <p className="text-sm text-neutral-500 mb-3">Student</p>
                 <div className="flex items-center gap-3">
                   {selectedMentorship.student?.avatar ? (
-                    <Image  
-                      src={selectedMentorship.student.avatar} 
-                      alt={`${selectedMentorship.student?.firstName} ${selectedMentorship.student?.lastName}`}
-                      fill
-                      className="size-12 rounded-full object-cover"
-                    />
+                    <div className="relative size-12 rounded-full overflow-hidden shrink-0">
+                      <Image  
+                        src={selectedMentorship.student.avatar} 
+                        alt={`${selectedMentorship.student?.firstName} ${selectedMentorship.student?.lastName}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
                   ) : (
-                    <div className="size-12 rounded-full bg-linear-to-br from-blue-600 to-blue-700 flex items-center justify-center text-base font-bold">
+                    <div className="size-12 rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 flex items-center justify-center text-base font-bold shrink-0">
                       {selectedMentorship.student?.firstName?.[0] || ''}{selectedMentorship.student?.lastName?.[0] || ''}
                     </div>
                   )}
@@ -511,8 +518,8 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
               </div>
 
               {selectedMentorship.endReason && (
-                <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-lg">
-                  <p className="text-sm text-red-400 mb-1">End Reason</p>
+                <div className="p-4 bg-neutral-800/50 border border-neutral-800 rounded-lg">
+                  <p className="text-sm text-neutral-500 mb-1">End Reason</p>
                   <p className="text-base text-neutral-300">{selectedMentorship.endReason}</p>
                 </div>
               )}
@@ -520,15 +527,15 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
               {selectedMentorship.status === 'active' && (
                 <Button
                   variant="outline"
-                  className="w-full h-12! text-lg text-red-500 border-red-500/30 dark:hover:text-red-400 dark:hover:bg-red-500/10"
+                  className="w-full h-12! text-lg text-red-500 bg-red-500/10! border-red-500/30! dark:hover:text-red-400 dark:hover:bg-red-500/10"
                   onClick={() => {
                     setIsViewDialogOpen(false);
                     setMentorshipToEnd(selectedMentorship);
                     setIsEndDialogOpen(true);
                   }}
                 >
-                  <XCircle className="size-5" />
                   Force End Mentorship
+                  <XCircle className="size-5" />
                 </Button>
               )}
             </div>
@@ -540,7 +547,6 @@ export function MentorshipsTab({ refreshTrigger = 0 }: MentorshipsTabProps) {
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl flex items-center gap-2">
-              <XCircle className="size-7" />
               Force End Mentorship
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base">
