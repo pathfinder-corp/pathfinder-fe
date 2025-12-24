@@ -315,23 +315,23 @@ export default function HistoryPage() {
                 >
                   View {item.type}
                 </DropdownMenuItem>
-                {!isRoadmap && (
+                {!isRoadmap && latestAttempt && latestAttempt.attemptNumber > 1 && (
                   <DropdownMenuItem
-                    onClick={async (e: React.MouseEvent<HTMLDivElement>) => {
-                      e.stopPropagation();
-                      try {
-                        const newAssessment = await assessmentService.retakeAssessment(item.id);
-                        toast.success(`Starting attempt ${newAssessment.attemptNumber}!`);
-                        router.push(`/assessment/${newAssessment.id}`);
-                      } catch (error) {
-                        const errorMessage = error instanceof Error ? error.message : 'Failed to retake assessment';
-                        toast.error(errorMessage);
-                      } finally {
-                      }
-                    }}
-                    className="text-lg py-3"
+                  onClick={async (e: React.MouseEvent<HTMLDivElement>) => {
+                    e.stopPropagation();
+                    try {
+                    const newAssessment = await assessmentService.retakeAssessment(item.id);
+                    toast.success(`Starting attempt ${newAssessment.attemptNumber}!`);
+                    router.push(`/assessment/${newAssessment.id}`);
+                    } catch (error) {
+                    const errorMessage = error instanceof Error ? error.message : 'Failed to retake assessment';
+                    toast.error(errorMessage);
+                    } finally {
+                    }
+                  }}
+                  className="text-lg py-3"
                   >
-                    Retake assessment
+                  Retake assessment
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem

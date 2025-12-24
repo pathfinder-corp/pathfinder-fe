@@ -60,12 +60,6 @@ export function ApplicationDetailDialog({
                   <p className="text-2xl font-semibold">
                     {application.user?.firstName || ''} {application.user?.lastName || ''}
                   </p>
-                  {application.isFlagged && (
-                    <Badge variant="outline" className="bg-orange-500/20 text-orange-400 border-orange-500/30 py-1.5 px-3">
-                      <AlertTriangle className="size-4 mr-1" />
-                      Flagged
-                    </Badge>
-                  )}
                 </div>
                 <p className="text-lg text-neutral-400">{application.user?.email || 'N/A'}</p>
                 <p className="text-lg text-neutral-300 mt-1">
