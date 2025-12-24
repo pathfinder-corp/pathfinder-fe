@@ -186,7 +186,6 @@ export interface IAdminAssessment {
   difficulty: AssessmentDifficulty;
   questionCount: number;
   status: AssessmentStatus;
-  isSharedWithAll: boolean;
   createdAt: string;
   updatedAt: string;
   owner: IAdminAssessmentOwner;
@@ -194,7 +193,6 @@ export interface IAdminAssessment {
 
 export interface IAdminAssessmentDetail extends IAdminAssessment {
   answeredCount: number;
-  shareCount: number;
   result: Record<string, unknown> | null;
 }
 
@@ -217,7 +215,7 @@ export interface IAdminAssessmentsParams {
   domain?: string;
   status?: AssessmentStatus;
   difficulty?: AssessmentDifficulty;
-  isSharedWithAll?: boolean;
+
 }
 
 export interface IMentorApplicationDetail extends IMentorApplication {

@@ -13,8 +13,7 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  ExternalLink,
-  Share2
+  ExternalLink
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
@@ -634,17 +633,6 @@ export default function AdminAssessmentsPage() {
                 <div>
                   <p className="text-base text-neutral-500 mb-1">Answered</p>
                   <p className="text-lg font-semibold">{selectedAssessment.answeredCount} / {selectedAssessment.questionCount}</p>
-                </div>
-                <div>
-                  <p className="text-base text-neutral-500 mb-1">Shared With</p>
-                  <div className="flex items-center gap-2">
-                    <Share2 className="size-4 text-neutral-400" />
-                    <p className="text-lg font-semibold">{selectedAssessment.shareCount} users</p>
-                  </div>
-                </div>
-                <div>
-                  <p className="text-base text-neutral-500 mb-1">Public</p>
-                  <p className="text-lg">{selectedAssessment.isSharedWithAll ? 'Yes' : 'No'}</p>
                 </div>
                 <div>
                   <p className="text-base text-neutral-500 mb-1">Created</p>

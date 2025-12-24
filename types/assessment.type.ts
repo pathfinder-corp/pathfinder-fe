@@ -15,7 +15,6 @@ export interface IAssessment {
   difficulty: AssessmentDifficulty;
   questionCount: number;
   status: AssessmentStatus;
-  isSharedWithAll: boolean;
   answeredCount: number;
   questions: IAssessmentQuestion[];
   createdAt: string;
