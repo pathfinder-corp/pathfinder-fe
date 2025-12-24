@@ -8,14 +8,15 @@ import {
   User,
   Loader2,
   Pencil,
-  Trash2,
   Eye,
   X,
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
   Ban,
-  CheckCircle
+  CheckCircle,
+  GraduationCap,
+  AlertTriangle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
@@ -34,6 +35,7 @@ import { ITEMS_PER_PAGE, SORT_ORDER, USER_ROLES, USER_STATUS } from '@/constants
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -107,6 +109,14 @@ export default function AdminUsersPage() {
   const [isUnbanDialogOpen, setIsUnbanDialogOpen] = useState<boolean>(false);
   const [userToBan, setUserToBan] = useState<IAdminUser | null>(null);
   const [isLoadingAction, setIsLoadingAction] = useState<boolean>(false);
+
+  const [isRevokeMentorDialogOpen, setIsRevokeMentorDialogOpen] = useState<boolean>(false);
+  const [userToRevoke, setUserToRevoke] = useState<IAdminUser | null>(null);
+  const [revokeReason, setRevokeReason] = useState<string>('');
+  const [isRevoking, setIsRevoking] = useState<boolean>(false);
+
+  const [isRoleChangeConfirmDialogOpen, setIsRoleChangeConfirmDialogOpen] = useState<boolean>(false);
+  const [pendingRoleChange, setPendingRoleChange] = useState<{ userId: string; newRole: UserRole; previousRole: UserRole } | null>(null);
 
   const [editRole, setEditRole] = useState<UserRole>(USER_ROLES.STUDENT);
   const [editStatus, setEditStatus] = useState<UserStatus>(USER_STATUS.ACTIVE);
@@ -218,14 +228,42 @@ export default function AdminUsersPage() {
       return;
     }
 
+    if (selectedUser.role === USER_ROLES.MENTOR && editRole !== USER_ROLES.MENTOR) {
+      setPendingRoleChange({
+        userId: selectedUser.id,
+        newRole: editRole,
+        previousRole: selectedUser.role
+      });
+      setIsRoleChangeConfirmDialogOpen(true);
+      return;
+    }
+
+    await performRoleUpdate(selectedUser.id, editRole, editStatus);
+  };
+
+  const performRoleUpdate = async (userId: string, newRole: UserRole, newStatus: UserStatus) => {
     try {
       setIsLoadingAction(true);
-      await adminService.updateUser(selectedUser.id, {
-        role: editRole,
-        status: editStatus,
+      const previousUser = users.find(u => u.id === userId);
+      const wasMentor = previousUser?.role === USER_ROLES.MENTOR;
+      
+      await adminService.updateUser(userId, {
+        role: newRole,
+        status: newStatus,
       });
+      
       toast.success('User updated successfully');
+      
+      if (wasMentor && newRole !== USER_ROLES.MENTOR) {
+        toast.info('Mentor profile has been permanently deleted', {
+          description: 'The mentor profile and all associated data have been removed.',
+          duration: 5000,
+        });
+      }
+      
       setIsEditDialogOpen(false);
+      setIsRoleChangeConfirmDialogOpen(false);
+      setPendingRoleChange(null);
       fetchUsers();
     } catch (error) {
       const errorMessage = error instanceof Error 
@@ -235,6 +273,11 @@ export default function AdminUsersPage() {
     } finally {
       setIsLoadingAction(false);
     }
+  };
+
+  const handleConfirmRoleChange = async () => {
+    if (!pendingRoleChange) return;
+    await performRoleUpdate(pendingRoleChange.userId, pendingRoleChange.newRole, editStatus);
   };
 
   const handleBanUser = async () => {
@@ -274,6 +317,37 @@ export default function AdminUsersPage() {
       toast.error(errorMessage);
     } finally {
       setIsLoadingAction(false);
+    }
+  };
+
+  const handleRevokeMentor = async () => {
+    if (!userToRevoke || !revokeReason.trim()) {
+      toast.error('Please provide a reason for revoking mentor status');
+      return;
+    }
+
+    try {
+      setIsRevoking(true);
+      await adminService.revokeMentorStatus(userToRevoke.id, {
+        reason: revokeReason.trim()
+      });
+      
+      toast.success('Mentor status revoked successfully', {
+        description: 'The mentor profile has been permanently deleted.',
+        duration: 5000,
+      });
+      
+      setIsRevokeMentorDialogOpen(false);
+      setUserToRevoke(null);
+      setRevokeReason('');
+      fetchUsers();
+    } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to revoke mentor status';
+      toast.error(errorMessage);
+    } finally {
+      setIsRevoking(false);
     }
   };
 
@@ -548,6 +622,21 @@ export default function AdminUsersPage() {
                               <Pencil className="size-4" />
                               Edit user
                             </DropdownMenuItem>
+                            {user.role === USER_ROLES.MENTOR && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem 
+                                  onClick={() => {
+                                    setUserToRevoke(user);
+                                    setIsRevokeMentorDialogOpen(true);
+                                  }}
+                                  className="dark:hover:bg-orange-500/10 transition-colors text-base py-2 text-orange-500 focus:text-orange-500"
+                                >
+                                  <GraduationCap className="size-4 text-orange-500" />
+                                  Revoke Mentor
+                                </DropdownMenuItem>
+                              </>
+                            )}
                             <DropdownMenuSeparator />
                             {user.status === USER_STATUS.SUSPENDED ? (
                               <DropdownMenuItem 
@@ -848,6 +937,137 @@ export default function AdminUsersPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog open={isRoleChangeConfirmDialogOpen} onOpenChange={setIsRoleChangeConfirmDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <AlertDialogTitle className="text-2xl">Remove Mentor Role</AlertDialogTitle>
+            </div>
+            <AlertDialogDescription>
+              Changing role from MENTOR will permanently delete the mentor profile
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          
+          <div className="text-base text-neutral-300 space-y-3 mt-4">
+            <div>
+              Changing <strong>{selectedUser?.firstName} {selectedUser?.lastName}</strong>&apos;s role from{' '}
+              <strong>MENTOR</strong> to{' '}
+              <strong>{pendingRoleChange?.newRole.toUpperCase()}</strong> will{' '}
+              <strong>permanently delete</strong> their mentor profile.
+            </div>
+            <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-4 space-y-2">
+              <div className="text-base font-semibold text-neutral-300">This action cannot be undone</div>
+              <ul className="text-sm text-neutral-400 space-y-1 list-disc list-inside">
+                <li>All mentor profile data will be permanently deleted</li>
+                <li>Headline, bio, expertise, skills, and other profile information will be lost</li>
+                <li>Mentor documents will remain in application history</li>
+                <li>Active mentorships will continue but mentor cannot accept new mentees</li>
+              </ul>
+            </div>
+          </div>
+          
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isLoadingAction} className="h-12! text-base!">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmRoleChange}
+              disabled={isLoadingAction}
+              className="bg-red-500 hover:bg-red-600 text-white h-12! text-base!"
+            >
+              Delete Profile & Change Role
+              {isLoadingAction && <Loader2 className="size-4 animate-spin" />}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <Dialog open={isRevokeMentorDialogOpen} onOpenChange={setIsRevokeMentorDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <DialogTitle className="text-2xl">Revoke Mentor Status</DialogTitle>
+            </div>
+            <DialogDescription>
+              Permanently remove mentor status and delete mentor profile
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="text-base text-neutral-300 space-y-3">
+            <div>
+              Revoking mentor status for <strong>{userToRevoke?.firstName} {userToRevoke?.lastName}</strong> will:
+            </div>
+            <ul className="space-y-2 text-base">
+              <li className="flex items-start gap-2">
+                <span className="text-neutral-400 mt-1">•</span>
+                <span>Change their role to <strong>STUDENT</strong></span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-neutral-400 mt-1">•</span>
+                <span><strong>Permanently delete</strong> their mentor profile</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-neutral-400 mt-1">•</span>
+                <span>Send a notification to the user</span>
+              </li>
+            </ul>
+            <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-4 mt-4">
+              <div className="text-sm text-neutral-300 font-semibold mb-1">This action cannot be undone</div>
+              <div className="text-sm text-neutral-400">
+                All mentor profile data will be permanently deleted.
+              </div>
+            </div>
+          </div>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-base font-medium text-neutral-300">
+                Reason for revoking <span className="text-neutral-400">*</span>
+              </label>
+              <Textarea
+                value={revokeReason}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setRevokeReason(e.target.value)}
+                placeholder="Enter the reason for revoking mentor status (e.g., Violation of community guidelines, Inactive mentor, etc.)"
+                className="min-h-[120px] text-base! resize-none"
+                disabled={isRevoking}
+              />
+              <p className="text-sm text-neutral-500">
+                This reason will be included in the notification sent to the user.
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsRevokeMentorDialogOpen(false);
+                setRevokeReason('');
+                setUserToRevoke(null);
+              }}
+              disabled={isRevoking}
+              className="h-12! text-base!"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleRevokeMentor}
+              disabled={isRevoking || !revokeReason.trim()}
+              className="bg-red-500 hover:bg-red-600 text-white h-12! text-base!"
+            >
+              {isRevoking ? (
+                <>
+                  Revoking...
+                  <Loader2 className="size-5 animate-spin" />
+                </>
+              ) : (
+                'Revoke Mentor'
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

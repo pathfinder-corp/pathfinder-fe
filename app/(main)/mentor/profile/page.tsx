@@ -273,17 +273,35 @@ export default function MentorProfilePage() {
 
         fetchDocuments();
       } catch (error) {
+        const errorStatus = error && typeof error === 'object' && 'response' in error
+          ? (error as { response?: { status?: number } }).response?.status
+          : null;
+        
         const errorMessage = error instanceof Error 
           ? error.message 
           : 'Failed to fetch mentor profile';
 
         const normalized = errorMessage.toLowerCase();
-        if (normalized.includes('forbidden')) {
+        
+        if (errorStatus === 404 || errorStatus === 403 || normalized.includes('forbidden') || normalized.includes('not found')) {
           try {
             await refreshUser();
           } catch (refreshError) {
-            console.error('Failed to refresh user after forbidden:', refreshError);
+            console.error('Failed to refresh user after error:', refreshError);
           }
+          
+          if (errorStatus === 404) {
+            toast.error('Mentor profile not found', {
+              description: 'Your mentor profile has been removed. This may have been done by an administrator.',
+              duration: 6000,
+            });
+          } else {
+            toast.error('Access denied', {
+              description: 'You no longer have access to the mentor profile. Your mentor role may have been revoked.',
+              duration: 6000,
+            });
+          }
+          
           router.replace('/mentor/applications');
           return;
         }

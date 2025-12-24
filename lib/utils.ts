@@ -64,6 +64,14 @@ export function extractErrorMessage(error: unknown): string | null {
   return null;
 }
 
+export function extractErrorStatus(error: unknown): number | null {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const axiosError = error as { response?: { status?: number } };
+    return axiosError.response?.status || null;
+  }
+  return null;
+}
+
 export function formatFileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;

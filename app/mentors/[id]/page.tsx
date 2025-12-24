@@ -133,13 +133,25 @@ export default function MentorDetailPage() {
         const data = await mentorService.getMentorWithDocuments(mentorId);
         setMentor(data);
       } catch (error) {
-        const errorMessage = error instanceof Error 
-          ? error.message 
-          : 'Failed to fetch mentor';
-        toast.error('Failed to fetch mentor', {
-          description: errorMessage,
-        });
-        router.push('/mentors');
+        const errorStatus = error && typeof error === 'object' && 'response' in error
+          ? (error as { response?: { status?: number } }).response?.status
+          : null;
+        
+        if (errorStatus === 404) {
+          setMentor(null);
+          toast.error('Mentor profile not found', {
+            description: 'This mentor profile has been removed and is no longer available.',
+            duration: 5000,
+          });
+        } else {
+          const errorMessage = error instanceof Error 
+            ? error.message 
+            : 'Failed to fetch mentor';
+          toast.error('Failed to fetch mentor', {
+            description: errorMessage,
+          });
+          router.push('/mentors');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -295,7 +307,7 @@ export default function MentorDetailPage() {
     );
   }
 
-  if (!mentor) {
+  if (!mentor && !isLoading) {
     return (
       <div className="min-h-screen bg-neutral-950">
         <PublicHeader />
@@ -304,9 +316,12 @@ export default function MentorDetailPage() {
             <div className="size-24 rounded-full bg-neutral-800 flex items-center justify-center mx-auto mb-8">
               <Users className="size-12 text-neutral-500" />
             </div>
-            <h2 className="text-4xl font-bold mb-5">Mentor not found</h2>
-            <p className="text-xl text-neutral-400 mb-10">
-              The mentor profile you&apos;re looking for doesn&apos;t exist or has been removed.
+            <h2 className="text-4xl font-bold mb-5">Mentor Profile Not Found</h2>
+            <p className="text-xl text-neutral-400 mb-4">
+              This mentor profile doesn&apos;t exist or has been removed.
+            </p>
+            <p className="text-lg text-neutral-500 mb-10">
+              The profile may have been deleted by an administrator or the mentor may have withdrawn from the platform.
             </p>
             <Button size="lg" onClick={() => router.push('/mentors')} className="h-14! text-lg! px-10!">
               <ArrowLeft className="size-6 mr-2" />
@@ -314,9 +329,12 @@ export default function MentorDetailPage() {
             </Button>
           </div>
         </main>
+        <PublicFooter />
       </div>
     );
   }
+
+  if (!mentor) return null;
 
   return (
     <div className="min-h-screen bg-neutral-950">
