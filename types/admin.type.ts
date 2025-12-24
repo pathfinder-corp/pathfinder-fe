@@ -406,8 +406,8 @@ export interface IAdminMentor {
   linkedinUrl: string | null;
   portfolioUrl: string | null;
   isActive: boolean;
-  isAcceptingMentees: boolean;
-  maxMentees: number;
+  isAcceptingStudents: boolean;
+  maxStudents: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -424,7 +424,7 @@ export interface IAdminMentorsResponse {
 
 export interface IAdminMentorsParams {
   isActive?: boolean;
-  isAcceptingMentees?: boolean;
+  isAcceptingStudents?: boolean;
   search?: string;
   page?: number;
   limit?: number;
@@ -434,7 +434,8 @@ export interface IAdminMentorStats {
   total: number;
   active: number;
   inactive: number;
-  acceptingMentees: number;
+  acceptingStudents: number;
+  notAcceptingStudents: number;
 }
 
 export interface IRevokeMentorPayload {
@@ -476,7 +477,7 @@ export interface IAdminMentorshipsResponse {
 
 export interface IAdminMentorshipsParams {
   mentorId?: string;
-  menteeId?: string;
+  studentId?: string;
   status?: MentorshipStatus;
   page?: number;
   limit?: number;

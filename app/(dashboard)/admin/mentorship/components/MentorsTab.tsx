@@ -99,7 +99,7 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
       } else if (statusFilter === 'inactive') {
         params.isActive = false;
       } else if (statusFilter === 'accepting') {
-        params.isAcceptingMentees = true;
+        params.isAcceptingStudents = true;
       }
 
       const response = await adminService.getMentors(params);
@@ -299,7 +299,7 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
                     />
                   </TableCell>
                   <TableCell>
-                    {mentor.isAcceptingMentees ? (
+                    {mentor.isAcceptingStudents ? (
                       <CheckCircle className="size-6 text-green-400" />
                     ) : (
                       <XCircle className="size-6 text-neutral-500" />
@@ -471,7 +471,7 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
                         Max Students
                       </p>
                       <p className="text-xl font-semibold">
-                        {selectedMentor.maxMentees}
+                        {selectedMentor.maxStudents}
                       </p>
                     </div>
                     <div>
@@ -479,7 +479,7 @@ export function MentorsTab({ refreshTrigger = 0 }: MentorsTabProps) {
                         Accepting Students
                       </p>
                       <p className="text-lg">
-                        {selectedMentor.isAcceptingMentees ? (
+                        {selectedMentor.isAcceptingStudents ? (
                           <span className="text-green-400">Yes</span>
                         ) : (
                           <span className="text-neutral-500">No</span>

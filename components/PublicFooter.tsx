@@ -58,8 +58,8 @@ export function PublicFooter() {
               Pathfinder.
             </Link>
             <p className="mt-6 text-lg leading-relaxed text-neutral-400">
-              AI-Powered Academic and Career Pathway Recommendation System.
-              Guide your future with intelligent insights.
+              Navigate your career journey with AI-powered insights.
+              Your future, intelligently mapped.
             </p>
             <div className="mt-8 flex items-center gap-4">
               {SOCIAL_LINKS.map((social) => (

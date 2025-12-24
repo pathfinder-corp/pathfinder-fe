@@ -139,7 +139,7 @@ export default function Error({ error, reset }: ErrorProps) {
               href="/contact"
               className="rounded-full border border-neutral-800 bg-neutral-900/50 px-5 py-2.5 text-base text-neutral-400 transition-all hover:border-neutral-700 hover:text-white"
             >
-              support@pathfinder.ai
+              support@pathfinder.powof.tech
             </Link>
           </motion.div>
         </div>

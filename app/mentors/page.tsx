@@ -195,7 +195,7 @@ export default function MentorsPage() {
       <div className="relative h-32 bg-linear-to-br from-neutral-800 via-neutral-900 to-neutral-950">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-white/5 via-transparent to-transparent" />
 
-        {mentor.isAcceptingMentees && (
+        {mentor.isAcceptingStudents && (
           <div className="absolute top-4 right-4">
             <Badge className="border-green-500/30 bg-green-500/20 px-4 py-2 text-base text-green-400 backdrop-blur-sm">
               Available

@@ -64,7 +64,7 @@ export default function Home() {
                 size="lg"
                 className="w-full rounded-full bg-white px-12 py-10 text-2xl text-neutral-950 hover:bg-neutral-200 sm:w-auto"
               >
-                <Link href="/login">Discover your roadmap</Link>
+                <Link href="/roadmap">Discover your roadmap</Link>
               </Button>
 
               <Button

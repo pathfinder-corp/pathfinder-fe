@@ -456,7 +456,7 @@ export default function AdminDashboardPage() {
                     },
                     {
                       name: 'Accepting',
-                      value: mentorStats?.acceptingMentees || 0,
+                      value: mentorStats?.acceptingStudents || 0,
                       fill: '#06b6d4',
                     },
                   ]}
@@ -502,7 +502,7 @@ export default function AdminDashboardPage() {
                       },
                       {
                         name: 'Accepting',
-                        value: mentorStats?.acceptingMentees || 0,
+                        value: mentorStats?.acceptingStudents || 0,
                         fill: '#06b6d4',
                       },
                     ].map((entry, index) => (

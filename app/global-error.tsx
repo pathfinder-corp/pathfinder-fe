@@ -148,7 +148,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                   color: 'rgb(163, 163, 163)',
                 }}
               >
-                support@pathfinder.ai
+                support@pathfinder.powof.tech
               </Link>
             </div>
           </div>

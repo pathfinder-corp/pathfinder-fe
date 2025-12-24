@@ -158,7 +158,7 @@ const EXPERIENCE_OPTIONS = [
   { value: 10, label: '10+ years' },
 ];
 
-const MAX_MENTEES_OPTIONS = [
+const MAX_STUDENTS_OPTIONS = [
   { value: 1, label: '1 student' },
   { value: 2, label: '2 students' },
   { value: 3, label: '3 students' },
@@ -178,7 +178,7 @@ const mentorProfileSchema = z.object({
     .min(50, 'Bio must be at least 50 characters')
     .max(1000, 'Bio must be less than 1000 characters'),
   yearsExperience: z.number().min(1, 'Please select your experience'),
-  maxMentees: z.number().min(1, 'Please select max students'),
+  maxStudents: z.number().min(1, 'Please select max students'),
   linkedinUrl: z
     .string()
     .url('Please enter a valid URL')
@@ -189,7 +189,7 @@ const mentorProfileSchema = z.object({
     .url('Please enter a valid URL')
     .optional()
     .or(z.literal('')),
-  isAcceptingMentees: z.boolean(),
+  isAcceptingStudents: z.boolean(),
 });
 
 type MentorProfileFormData = z.infer<typeof mentorProfileSchema>;
@@ -257,14 +257,14 @@ export default function MentorProfilePage() {
     resolver: zodResolver(mentorProfileSchema),
     defaultValues: {
       yearsExperience: 1,
-      maxMentees: 5,
-      isAcceptingMentees: true,
+      maxStudents: 5,
+      isAcceptingStudents: true,
     },
   });
 
   const selectedExperience = watch('yearsExperience');
-  const selectedMaxMentees = watch('maxMentees');
-  const isAcceptingMentees = watch('isAcceptingMentees');
+  const selectedMaxStudents = watch('maxStudents');
+  const isAcceptingStudents = watch('isAcceptingStudents');
 
   const fetchDocuments = useCallback(async () => {
     try {
@@ -290,10 +290,10 @@ export default function MentorProfilePage() {
           headline: data.headline || '',
           bio: data.bio || '',
           yearsExperience: data.yearsExperience || 1,
-          maxMentees: data.maxMentees || 5,
+          maxStudents: data.maxStudents || 5,
           linkedinUrl: data.linkedinUrl || '',
           portfolioUrl: data.portfolioUrl || '',
-          isAcceptingMentees: data.isAcceptingMentees ?? true,
+          isAcceptingStudents: data.isAcceptingStudents ?? true,
         });
 
         setExpertise(data.expertise || []);
@@ -416,10 +416,10 @@ export default function MentorProfilePage() {
         industries,
         languages,
         yearsExperience: data.yearsExperience,
-        maxMentees: data.maxMentees,
+        maxStudents: data.maxStudents,
         linkedinUrl: data.linkedinUrl || undefined,
         portfolioUrl: data.portfolioUrl || undefined,
-        isAcceptingMentees: data.isAcceptingMentees,
+        isAcceptingStudents: data.isAcceptingStudents,
       };
 
       const updatedProfile = await mentorService.updateMyProfile(requestData);
@@ -629,7 +629,7 @@ export default function MentorProfilePage() {
 
       <div className="mb-8 flex w-232 items-center justify-between rounded-xl border border-neutral-800 bg-neutral-900/50 p-5">
         <div className="flex items-center gap-4">
-          {isAcceptingMentees ? (
+          {isAcceptingStudents ? (
             <Badge className="border-green-500/30 bg-green-500/20 px-4 py-2 text-base text-green-400">
               Accepting Students
             </Badge>
@@ -644,9 +644,9 @@ export default function MentorProfilePage() {
         </div>
         <div className="flex items-center gap-4">
           <Switch
-            checked={isAcceptingMentees}
+            checked={isAcceptingStudents}
             onCheckedChange={(checked) =>
-              setValue('isAcceptingMentees', checked)
+              setValue('isAcceptingStudents', checked)
             }
           />
           <Button
@@ -726,14 +726,14 @@ export default function MentorProfilePage() {
               Max Students <span className="text-red-500">*</span>
             </Label>
             <Select
-              value={String(selectedMaxMentees)}
-              onValueChange={(value) => setValue('maxMentees', Number(value))}
+              value={String(selectedMaxStudents)}
+              onValueChange={(value) => setValue('maxStudents', Number(value))}
             >
               <SelectTrigger className="h-20! w-full px-6! text-xl!">
                 <SelectValue placeholder="Select max students" />
               </SelectTrigger>
               <SelectContent>
-                {MAX_MENTEES_OPTIONS.map((option) => (
+                {MAX_STUDENTS_OPTIONS.map((option) => (
                   <SelectItem
                     key={option.value}
                     value={String(option.value)}
@@ -744,9 +744,9 @@ export default function MentorProfilePage() {
                 ))}
               </SelectContent>
             </Select>
-            {errors.maxMentees && (
+            {errors.maxStudents && (
               <p className="text-lg text-red-500">
-                {errors.maxMentees.message}
+                {errors.maxStudents.message}
               </p>
             )}
           </div>
@@ -1230,7 +1230,7 @@ export default function MentorProfilePage() {
               </h2>
               <p className="mt-0.5 max-w-3xl text-base text-neutral-400">
                 You will no longer appear in mentor search or be able to accept
-                new mentees. You must end all active mentorships before you can
+                new students. You must end all active mentorships before you can
                 withdraw as a mentor.
               </p>
             </div>

@@ -1098,7 +1098,7 @@ export default function AdminUsersPage() {
                 <li>Mentor documents will remain in application history</li>
                 <li>
                   Active mentorships will continue but mentor cannot accept new
-                  mentees
+                  students
                 </li>
               </ul>
             </div>

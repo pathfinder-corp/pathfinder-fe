@@ -290,7 +290,7 @@ export default function MentorDetailPage() {
     user &&
     user.role === USER_ROLES.STUDENT &&
     user.id !== mentor?.userId &&
-    mentor?.isAcceptingMentees &&
+    mentor?.isAcceptingStudents &&
     !activeMentorship;
 
   const canReview =
@@ -506,7 +506,7 @@ export default function MentorDetailPage() {
               {mentor.languages && mentor.languages.length > 0 && (
                 <div className="mb-5 flex items-center gap-2.5 text-lg text-neutral-400">
                   <Globe className="size-5" />
-                  <span>Speaks:</span>
+                  <span>Languages:</span>
                   <span className="text-white">{mentor.languages[0]}</span>
                   {mentor.languages.length > 1 && (
                     <span className="text-neutral-500">
@@ -517,15 +517,15 @@ export default function MentorDetailPage() {
               )}
 
               <div className="flex flex-wrap gap-3">
-                {mentor.yearsExperience >= 5 && (
+                {/* {mentor.yearsExperience >= 5 && (
                   <Badge
                     variant="outline"
                     className="border-neutral-700 px-4 py-2 text-base text-neutral-300"
                   >
-                    {mentor.yearsExperience}+ years experience
+                    {mentor.yearsExperience}+ Years Experience
                   </Badge>
-                )}
-                {mentor.isAcceptingMentees && (
+                )} */}
+                {mentor.isAcceptingStudents && (
                   <Badge
                     variant="outline"
                     className="border-green-500/50 px-4 py-2 text-base text-green-400"
@@ -533,7 +533,7 @@ export default function MentorDetailPage() {
                     Accepting Students
                   </Badge>
                 )}
-                {!mentor.isAcceptingMentees && (
+                {!mentor.isAcceptingStudents && (
                   <Badge
                     variant="outline"
                     className="border-neutral-600 px-4 py-2 text-base text-neutral-400"
@@ -878,7 +878,7 @@ export default function MentorDetailPage() {
 
                 {user &&
                   user.role === USER_ROLES.STUDENT &&
-                  !mentor.isAcceptingMentees && (
+                  !mentor.isAcceptingStudents && (
                     <p className="text-center text-base text-neutral-500">
                       This mentor is currently not accepting new students
                     </p>
@@ -955,7 +955,7 @@ export default function MentorDetailPage() {
                       Max Students
                     </span>
                     <span className="text-lg font-medium">
-                      {mentor.maxMentees || 'N/A'}
+                      {mentor.maxStudents || 'N/A'}
                     </span>
                   </div>
                   <Separator className="bg-neutral-800" />
@@ -964,12 +964,12 @@ export default function MentorDetailPage() {
                     <Badge
                       variant="outline"
                       className={`px-3 py-1.5 text-base ${
-                        mentor.isAcceptingMentees
+                        mentor.isAcceptingStudents
                           ? 'border-green-500/50 text-green-400'
                           : 'border-neutral-600 text-neutral-400'
                       }`}
                     >
-                      {mentor.isAcceptingMentees ? 'Available' : 'Unavailable'}
+                      {mentor.isAcceptingStudents ? 'Available' : 'Unavailable'}
                     </Badge>
                   </div>
                 </div>

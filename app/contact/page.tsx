@@ -415,7 +415,7 @@ export default function ContactPage() {
                     variant="outline"
                     className="h-14 rounded-xl border-neutral-700 px-8 text-lg transition-all duration-300 hover:text-neutral-950 dark:hover:bg-white"
                   >
-                    <a href="mailto:support@pathfinder.ai">
+                    <a href="mailto:support@pathfinder.powof.tech">
                       Contact Support
                       <ArrowRight className="size-5" />
                     </a>

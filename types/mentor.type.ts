@@ -77,8 +77,8 @@ export interface IMentorProfile extends IMentorCoreData {
   userId: string;
   user: IMentorProfileUser;
   isActive: boolean;
-  isAcceptingMentees: boolean;
-  maxMentees: number;
+  isAcceptingStudents: boolean;
+  maxStudents: number;
   documents?: IMentorDocument[];
   createdAt: string;
   updatedAt: string;
@@ -88,8 +88,8 @@ export type IUpdateMentorProfileRequest = Partial<
   Omit<IMentorCoreData, 'linkedinUrl' | 'portfolioUrl'> & {
     linkedinUrl?: string;
     portfolioUrl?: string;
-    isAcceptingMentees?: boolean;
-    maxMentees?: number;
+    isAcceptingStudents?: boolean;
+    maxStudents?: number;
   }
 >;
 
