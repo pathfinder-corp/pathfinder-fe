@@ -26,6 +26,7 @@ import { toast } from 'sonner';
 import { assessmentService } from '@/services';
 import type { IAssessment, IAssessmentResult } from '@/types';
 import { useTour, type TourStep } from '@/hooks';
+import { useUserStore } from '@/stores';
 
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -53,7 +54,8 @@ type AnswerState = {
 export default function AssessmentDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { startTour } = useTour('assessment-tour-completed');
+  const { user } = useUserStore();
+  const { startTour } = useTour('assessment-tour-completed', user?.id);
   const assessmentId = params.id as string;
 
   const [assessment, setAssessment] = useState<IAssessment | null>(null);

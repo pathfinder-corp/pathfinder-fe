@@ -12,11 +12,18 @@ export type TourStep = {
   };
 };
 
-export const useTour = (storageKey: string) => {
+export const useTour = (storageKey: string, userId?: string | null) => {
   const driverObj = useRef<any>(null);
   const cssLoadedRef = useRef<boolean>(false);
   
   const [isTourCompleted, setIsTourCompleted] = useState<boolean>(false);
+
+  const getUserStorageKey = useCallback(() => {
+    if (userId) {
+      return `${storageKey}-${userId}`;
+    }
+    return storageKey;
+  }, [storageKey, userId]);
 
   const initializeDriver = useCallback(async () => {
     if (typeof window === 'undefined' || driverObj.current) return driverObj.current;
@@ -55,7 +62,8 @@ export const useTour = (storageKey: string) => {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    const completed = localStorage.getItem(storageKey) === 'true';
+    const userStorageKey = getUserStorageKey();
+    const completed = localStorage.getItem(userStorageKey) === 'true';
     setIsTourCompleted(completed);
 
     return () => {
@@ -66,7 +74,7 @@ export const useTour = (storageKey: string) => {
         driverObj.current = null;
       }
     };
-  }, [storageKey]);
+  }, [getUserStorageKey]);
 
   const startTour = useCallback(async (steps: TourStep[]) => {
     if (isTourCompleted) return;
@@ -87,6 +95,7 @@ export const useTour = (storageKey: string) => {
       }
 
       let wasCompleted = false;
+      const userStorageKey = getUserStorageKey();
 
       driverObj.current = DriverClass({
         showProgress: true,
@@ -97,7 +106,7 @@ export const useTour = (storageKey: string) => {
           
           if (driver.isLastStep()) {
             wasCompleted = true;
-            localStorage.setItem(storageKey, 'true');
+            localStorage.setItem(userStorageKey, 'true');
             setIsTourCompleted(true);
             driver.destroy();
           } else {
@@ -124,13 +133,14 @@ export const useTour = (storageKey: string) => {
     } catch (error) {
       console.error('Error starting tour:', error);
     }
-  }, [isTourCompleted, initializeDriver, storageKey]);
+  }, [isTourCompleted, initializeDriver, getUserStorageKey]);
 
   const resetTour = useCallback(() => {
     if (typeof window === 'undefined') return;
-    localStorage.removeItem(storageKey);
+    const userStorageKey = getUserStorageKey();
+    localStorage.removeItem(userStorageKey);
     setIsTourCompleted(false);
-  }, [storageKey]);
+  }, [getUserStorageKey]);
 
   return {
     startTour,

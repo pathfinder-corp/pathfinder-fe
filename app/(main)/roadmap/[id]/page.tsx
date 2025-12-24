@@ -38,7 +38,7 @@ export default function RoadmapDetailPage() {
   const router = useRouter();
   const { user } = useUserStore();
   const { setIsViewMode, reset: resetRoadmapStore } = useRoadmapStore();
-  const { startTour } = useTour('roadmap-tour-completed');
+  const { startTour } = useTour('roadmap-tour-completed', user?.id);
   const roadmapId = params.id as string;
 
   const [roadmap, setRoadmap] = useState<IRoadmapResponse | null>(null);
