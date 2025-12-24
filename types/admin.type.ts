@@ -1,5 +1,5 @@
 import { UserRole, UserStatus } from './user.type';
-import { AssessmentSortField, RoadmapSortField, SortField, SortOrder } from './table.type';
+import { AssessmentSortField, ContactSortField, RoadmapSortField, SortField, SortOrder } from './table.type';
 import { AssessmentDifficulty, AssessmentStatus } from './assessment.type';
 import { 
   MentorApplicationStatus,
@@ -9,6 +9,7 @@ import {
   DocumentVerificationStatus
 } from './mentor.type';
 import { MentorshipStatus } from './mentorship.type';
+import { ContactStatus, ContactType } from './contact.type';
 
 export interface IDashboardOverview {
   totalUsers: number;
@@ -484,4 +485,62 @@ export interface IAdminMentorshipStats {
 
 export interface IForceEndMentorshipPayload {
   reason: string;
+}
+
+export interface IAdminContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject?: string;
+  message: string;
+  type: ContactType;
+  userId?: string;
+  status: ContactStatus;
+  adminResponse?: string;
+  respondedAt?: string;
+  respondedBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IAdminContactMessagesResponse {
+  data: IAdminContactMessage[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface IAdminContactMessagesParams {
+  page?: number;
+  limit?: number;
+  status?: ContactStatus;
+  type?: ContactType;
+  search?: string;
+  sortBy?: ContactSortField;
+  sortOrder?: SortOrder;
+}
+
+export interface IAdminContactStats {
+  total: number;
+  pending: number;
+  inProgress: number;
+  resolved: number;
+  closed: number;
+  byType: {
+    general: number;
+    suspended: number;
+    feedback: number;
+    support: number;
+  };
+}
+
+export interface IUpdateContactStatusPayload {
+  status: ContactStatus;
+}
+
+export interface IRespondToContactPayload {
+  response: string;
 }

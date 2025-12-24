@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { Home, ArrowLeft, Search } from 'lucide-react';
 
 import { PublicHeader } from '@/components/PublicHeader';
+import { PublicFooter } from '@/components/PublicFooter';
 import { Button } from '@/components/ui/button';
 
 export default function NotFound() {
@@ -65,7 +66,6 @@ export default function NotFound() {
             >
               <Link href="/">
                 Go Home
-                <Home className="size-5" />
               </Link>
             </Button>
             
@@ -77,7 +77,6 @@ export default function NotFound() {
             >
               <Link href="/mentors">
                 Explore Mentors
-                <Search className="size-5" />
               </Link>
             </Button>
           </motion.div>
@@ -101,7 +100,7 @@ export default function NotFound() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.7 }}
-            className="mt-16 pt-10 border-t border-neutral-800"
+            className="mt-8 pt-10 border-t border-neutral-800"
           >
             <p className="text-neutral-500 mb-6">Or check out these pages:</p>
             <div className="flex flex-wrap items-center justify-center gap-4">
@@ -123,6 +122,7 @@ export default function NotFound() {
           </motion.div>
         </div>
       </main>
+      <PublicFooter />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { RefreshCw, Home, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 interface GlobalErrorProps {
   error: Error & { digest?: string };
@@ -87,7 +87,6 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                 style={{ background: 'white', color: 'rgb(10, 10, 10)' }}
               >
                 Try Again
-                <RefreshCw className="size-5" />
               </button>
               
               <Link
@@ -100,7 +99,6 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
                 }}
               >
                 Go Home
-                <Home className="size-5" />
               </Link>
             </div>
 
@@ -116,7 +114,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
             </div>
 
             <div 
-              className="mt-16 pt-10"
+              className="mt-8 pt-10"
               style={{ borderTop: '1px solid rgb(38, 38, 38)' }}
             >
               <p className="mb-6" style={{ color: 'rgb(115, 115, 115)' }}>

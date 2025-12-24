@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUserStore } from '@/stores';
+import { contactService } from '@/services';
+import type { ContactType } from '@/types';
 
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
@@ -91,10 +93,11 @@ const FAQ_ITEMS = [
 ];
 
 export default function ContactPage() {
-  const initializeUser = useUserStore((state) => state.initializeUser);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [formData, setFormData] = useState({
+  const { user, initializeUser } = useUserStore();
+
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [formData, setFormData] = useState<{ name: string; email: string; subject: string; message: string }>({
     name: '',
     email: '',
     subject: '',
@@ -104,6 +107,16 @@ export default function ContactPage() {
   useEffect(() => {
     initializeUser();
   }, [initializeUser]);
+
+  useEffect(() => {
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        name: `${user.firstName} ${user.lastName}`,
+        email: user.email || ''
+      }));
+    }
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -120,16 +133,32 @@ export default function ContactPage() {
 
     setIsSubmitting(true);
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-    toast.success('Message sent successfully! We\'ll get back to you soon.');
-    
-    setTimeout(() => {
-      setIsSubmitted(false);
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 3000);
+    try {
+      await contactService.createContact({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject.trim() || undefined,
+        message: formData.message.trim(),
+        type: 'general' as ContactType,
+      });
+      
+      setIsSubmitted(true);
+      toast.success('Message sent successfully! We\'ll get back to you soon.');
+      
+      setTimeout(() => {
+        setIsSubmitted(false);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      }, 3000);
+    } catch (error) {
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Failed to send message';
+      toast.error('Failed to send message', {
+        description: errorMessage,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -317,7 +346,6 @@ export default function ContactPage() {
                 <div className="mb-10">
                   <h2 className="text-5xl font-bold mb-4">
                     <span className="inline-flex items-center gap-3">
-                      <Sparkles className="size-10 text-white" />
                       FAQ
                     </span>
                   </h2>

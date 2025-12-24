@@ -35,7 +35,13 @@ import type {
   IAdminMentorshipsParams,
   IAdminMentorship,
   IAdminMentorshipStats,
-  IForceEndMentorshipPayload
+  IForceEndMentorshipPayload,
+  IAdminContactMessagesResponse,
+  IAdminContactMessagesParams,
+  IAdminContactMessage,
+  IAdminContactStats,
+  IUpdateContactStatusPayload,
+  IRespondToContactPayload
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
@@ -496,6 +502,66 @@ export const adminService = {
       return response.data;
     } catch (error) {
       console.error('Force end mentorship failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getContactMessages: async (params?: IAdminContactMessagesParams): Promise<IAdminContactMessagesResponse> => {
+    try {
+      const response = await api.get<IAdminContactMessagesResponse>('/admin/contact', { params });
+      return response.data;
+    } catch (error) {
+      console.error('Get contact messages failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getContactStats: async (): Promise<IAdminContactStats> => {
+    try {
+      const response = await api.get<IAdminContactStats>('/admin/contact/stats');
+      return response.data;
+    } catch (error) {
+      console.error('Get contact stats failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getContactMessageById: async (id: string): Promise<IAdminContactMessage> => {
+    try {
+      const response = await api.get<IAdminContactMessage>(`/admin/contact/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error('Get contact message by id failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  updateContactStatus: async (id: string, payload: IUpdateContactStatusPayload): Promise<IAdminContactMessage> => {
+    try {
+      const response = await api.patch<IAdminContactMessage>(`/admin/contact/${id}/status`, payload);
+      return response.data;
+    } catch (error) {
+      console.error('Update contact status failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  respondToContact: async (id: string, payload: IRespondToContactPayload): Promise<IAdminContactMessage> => {
+    try {
+      const response = await api.post<IAdminContactMessage>(`/admin/contact/${id}/respond`, payload);
+      return response.data;
+    } catch (error) {
+      console.error('Respond to contact failed:', error);
       const message = extractErrorMessage(error);
       if (message) throw new Error(message);
       throw error;

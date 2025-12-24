@@ -8,3 +8,4 @@ export { mentorshipService } from './mentorship.service';
 export { notificationService } from './notification.service';
 export { chatService } from './chat.service';
 export { socketService } from './socket.service';
+export { contactService } from './contact.service';
