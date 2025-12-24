@@ -4,10 +4,11 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { ShieldX, Send, Loader2, CheckCircle2, X } from 'lucide-react';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { useUserStore } from '@/stores';
 import { removeAuthCookie } from '@/lib';
-import { contactService } from '@/services';
+import { contactService, authService } from '@/services';
 import type { ContactType } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -24,10 +25,12 @@ import {
 
 export default function SuspendedPage() {
   const { user, clearUser } = useUserStore();
+  const router = useRouter();
 
   const [isContactDialogOpen, setIsContactDialogOpen] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isSubmitted, setIsSubmitted] = useState<boolean>(false);
+  const [isCheckingStatus, setIsCheckingStatus] = useState<boolean>(true);
   const [formData, setFormData] = useState<{ name: string; email: string; message: string }>({
     name: '',
     email: '',
@@ -35,9 +38,40 @@ export default function SuspendedPage() {
   });
 
   useEffect(() => {
-    clearUser();
-    removeAuthCookie();
-  }, [clearUser]);
+    const checkUserStatus = async () => {
+      try {
+        const token = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('auth-token='))
+          ?.split('=')[1];
+
+        if (token) {
+          const profile = await authService.getProfile();
+          
+          if (profile.status !== 'suspended') {
+            clearUser();
+            removeAuthCookie();
+            router.push('/login');
+            return;
+          }
+        } else {
+          clearUser();
+          removeAuthCookie();
+          router.push('/login');
+          return;
+        }
+      } catch (error) {
+        clearUser();
+        removeAuthCookie();
+        router.push('/login');
+        return;
+      } finally {
+        setIsCheckingStatus(false);
+      }
+    };
+
+    checkUserStatus();
+  }, [clearUser, router]);
 
   useEffect(() => {
     if (user && isContactDialogOpen) {
@@ -91,6 +125,17 @@ export default function SuspendedPage() {
       setIsSubmitting(false);
     }
   };
+
+  if (isCheckingStatus) {
+    return (
+      <div className="min-h-screen bg-neutral-950 relative overflow-hidden flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="size-12 text-neutral-500 mx-auto mb-4 animate-spin" />
+          <p className="text-lg text-neutral-400">Checking account status...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-neutral-950 relative overflow-hidden flex items-center justify-center">

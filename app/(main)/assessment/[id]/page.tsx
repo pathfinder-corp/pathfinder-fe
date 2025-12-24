@@ -240,6 +240,7 @@ export default function AssessmentDetailPage() {
     if (assessment?.status === 'completed') {
       loadHistory();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [assessment?.status]);
 
   const currentQuestion = assessment?.questions[currentQuestionIndex];
@@ -696,8 +697,7 @@ export default function AssessmentDetailPage() {
         {history && history.totalAttempts > 1 && (
           <div className="bg-neutral-900/50 border border-neutral-800 rounded-2xl p-7 mb-8">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold flex items-center gap-3">
-                <HistoryIcon className="size-7" />
+              <h2 className="text-2xl font-bold">
                 Attempt History
               </h2>
               <Badge variant="outline" className="text-lg px-4 py-2">
@@ -706,7 +706,7 @@ export default function AssessmentDetailPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <div className="bg-neutral-800/50 rounded-xl p-5">
+              <div className="bg-neutral-800/50 border border-neutral-700 rounded-xl p-5">
                 <p className="text-sm text-neutral-400 mb-2">Best Score</p>
                 <p className="text-3xl font-bold text-green-400">
                   {history.bestScore !== null && history.bestScore !== undefined
@@ -714,15 +714,15 @@ export default function AssessmentDetailPage() {
                     : 'N/A'}
                 </p>
               </div>
-              <div className="bg-neutral-800/50 rounded-xl p-5">
+              <div className="bg-neutral-800/50 border border-neutral-700 rounded-xl p-5">
                 <p className="text-sm text-neutral-400 mb-2">Latest Score</p>
-                <p className="text-3xl font-bold text-blue-400">
+                <p className="text-3xl font-bold text-orange-400">
                   {history.latestScore !== null && history.latestScore !== undefined
                     ? `${history.latestScore.toFixed(1)}%`
                     : 'N/A'}
                 </p>
               </div>
-              <div className="bg-neutral-800/50 rounded-xl p-5">
+              <div className="bg-neutral-800/50 border border-neutral-700 rounded-xl p-5">
                 <p className="text-sm text-neutral-400 mb-2">Current Attempt</p>
                 <p className="text-3xl font-bold">{assessment.attemptNumber}</p>
               </div>
@@ -741,14 +741,14 @@ export default function AssessmentDetailPage() {
                     }}
                     className={`flex items-center justify-between p-5 rounded-xl border transition-all ${
                       isCurrentAttempt
-                        ? 'border-blue-500 bg-blue-500/10'
-                        : 'border-neutral-800 bg-neutral-900/30 cursor-pointer hover:border-neutral-600 hover:bg-neutral-900/50'
+                        ? 'border-neutral-500 bg-neutral-800'
+                        : 'border-neutral-700 bg-neutral-800/50 cursor-pointer hover:border-neutral-500 hover:bg-neutral-800'
                     }`}
                   >
                     <div className="flex items-center gap-4">
                       <div
                         className={`flex items-center justify-center size-12 rounded-full font-bold text-xl ${
-                          isCurrentAttempt ? 'bg-blue-500 text-white' : 'bg-neutral-800 text-neutral-400'
+                          isCurrentAttempt ? 'bg-neutral-700 text-white' : 'bg-neutral-800 text-neutral-400'
                         }`}
                       >
                         {attempt.attemptNumber}
@@ -756,7 +756,6 @@ export default function AssessmentDetailPage() {
                       <div>
                         <p className="text-lg font-medium">
                           Attempt {attempt.attemptNumber}
-                          {isCurrentAttempt && <Badge className="ml-3 bg-blue-500 text-white">Current</Badge>}
                         </p>
                         <p className="text-sm text-neutral-400">
                           {new Date(attempt.createdAt).toLocaleDateString()} at{' '}
@@ -793,8 +792,8 @@ export default function AssessmentDetailPage() {
           >
             {loadingStates.retaking ? (
               <>
-                <Loader2 className="size-6 animate-spin" />
                 Creating Retake...
+                <Loader2 className="size-6 animate-spin" />
               </>
             ) : (
               <>
@@ -1036,7 +1035,7 @@ export default function AssessmentDetailPage() {
               variant="outline"
               onClick={handleCompleteAssessment}
               disabled={loadingStates.completing}
-              className="h-16! text-xl! border-green-500/50! text-green-400 hover:text-green-400 hover:bg-green-500/10"
+              className="h-16! text-xl! border-green-500/50! text-green-400 dark:hover:text-green-400 dark:hover:bg-green-500/10"
             >
               {loadingStates.completing ? (
                 <>
