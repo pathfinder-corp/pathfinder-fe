@@ -339,7 +339,7 @@ export default function MyMentorshipsPage() {
                                  </>
                                ) : (
                                  <>
-                                   Messages
+                                   Direct Messages
                                    <MessageCircle className="size-5" />
                                  </>
                                )}

@@ -30,9 +30,12 @@ import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 import { useUserStore } from '@/stores';
 import { mentorService, mentorshipService } from '@/services';
-import type { IMentorProfile, MentorDocumentType } from '@/types';
+import type { IMentorProfile, MentorDocumentType, IMentorReview, IMentorship } from '@/types';
+import { USER_ROLES } from '@/constants';
 import { getInitials } from '@/lib';
 
+import { ReviewsList } from './components/ReviewsList';
+import { ReviewForm } from './components/ReviewForm';
 import { PublicHeader } from '@/components/PublicHeader';
 import { PublicFooter } from '@/components/PublicFooter';
 import { TransitionPanel } from '@/components/motion-primitives/transition-panel';
@@ -49,14 +52,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { USER_ROLES } from '@/constants';
 
-type TabType = 'about' | 'background' | 'credentials';
+type TabType = 'about' | 'background' | 'credentials' | 'reviews';
 
 const TABS: { id: TabType; label: string }[] = [
   { id: 'about', label: 'About' },
   { id: 'background', label: 'Background' },
   { id: 'credentials', label: 'Credentials' },
+  { id: 'reviews', label: 'Reviews' },
 ];
 
 const getDocumentIcon = (type: MentorDocumentType) => {
@@ -118,6 +121,14 @@ export default function MentorDetailPage() {
   const [isSendingRequest, setIsSendingRequest] = useState<boolean>(false);
   const [requestSent, setRequestSent] = useState<boolean>(false);
 
+  const [isReviewDialogOpen, setIsReviewDialogOpen] = useState<boolean>(false);
+  const [myReview, setMyReview] = useState<IMentorReview | null>(null);
+  const [isLoadingMyReview, setIsLoadingMyReview] = useState<boolean>(false);
+  const [activeMentorship, setActiveMentorship] = useState<IMentorship | null>(null);
+  const [isCheckingMentorship, setIsCheckingMentorship] = useState<boolean>(false);
+  const [hasAnyMentorship, setHasAnyMentorship] = useState<boolean>(false);
+  const [isCheckingAnyMentorship, setIsCheckingAnyMentorship] = useState<boolean>(false);
+
   const activeIndex = TABS.findIndex(tab => tab.id === activeTab);
 
   useEffect(() => {
@@ -159,6 +170,68 @@ export default function MentorDetailPage() {
 
     fetchMentor();
   }, [mentorId, router]);
+
+  useEffect(() => {
+    const fetchMyReview = async () => {
+      if (!mentorId || !user || user.role !== USER_ROLES.STUDENT) return;
+
+      try {
+        setIsLoadingMyReview(true);
+        const review = await mentorService.getMyReview(mentorId);
+        setMyReview(review);
+      } catch (error) {
+        console.error('Failed to fetch my review:', error);
+        setMyReview(null);
+      } finally {
+        setIsLoadingMyReview(false);
+      }
+    };
+
+    fetchMyReview();
+  }, [mentorId, user]);
+
+  useEffect(() => {
+    const checkAnyMentorship = async () => {
+      if (!mentor?.userId || !user || user.role !== USER_ROLES.STUDENT) {
+        setHasAnyMentorship(false);
+        return;
+      }
+
+      try {
+        setIsCheckingAnyMentorship(true);
+        const [activeResponse, endedResponse] = await Promise.all([
+          mentorshipService.getMentorships({
+            role: 'as_student',
+            status: 'active',
+            limit: 100,
+          }),
+          mentorshipService.getMentorships({
+            role: 'as_student',
+            status: 'ended',
+            limit: 100,
+          }),
+        ]);
+
+        const allMentorships = [
+          ...(activeResponse.mentorships || []),
+          ...(endedResponse.mentorships || []),
+        ];
+
+        const hasMentorship = allMentorships.some(
+          (m) => m.mentorId === mentor.userId
+        );
+
+        setHasAnyMentorship(hasMentorship);
+      } catch (error) {
+        console.error('Failed to check any mentorship:', error);
+        setHasAnyMentorship(false);
+      } finally {
+        setIsCheckingAnyMentorship(false);
+      }
+    };
+
+    checkAnyMentorship();
+  }, [mentor?.userId, user]);
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return 'N/A';
@@ -205,7 +278,35 @@ export default function MentorDetailPage() {
   const canConnect = user && 
     user.role === USER_ROLES.STUDENT && 
     user.id !== mentor?.userId && 
-    mentor?.isAcceptingMentees;
+    mentor?.isAcceptingMentees &&
+    !activeMentorship;
+
+  const canReview = user && 
+    user.role === USER_ROLES.STUDENT && 
+    user.id !== mentor?.userId;
+
+  const handleWriteReview = () => {
+    if (!hasAnyMentorship && !isCheckingAnyMentorship) {
+      toast.error('Cannot write review', {
+        description: 'You must have at least one mentorship (active or ended) with this mentor before you can review them.',
+        duration: 5000,
+      });
+      return;
+    }
+    setIsReviewDialogOpen(true);
+  };
+
+  const handleReviewSuccess = async () => {
+    setIsReviewDialogOpen(false);
+    if (mentorId) {
+      try {
+        const review = await mentorService.getMyReview(mentorId);
+        setMyReview(review);
+      } catch (error) {
+        console.error('Failed to refresh review:', error);
+      }
+    }
+  };
 
   if (isLoading) {
     return (
@@ -665,6 +766,13 @@ export default function MentorDetailPage() {
                     )}
                   </div>
                 </div>
+
+                <div className="space-y-8">
+                  <ReviewsList
+                    mentorId={mentorId}
+                    onWriteReview={canReview ? handleWriteReview : undefined}
+                  />
+                </div>
               </TransitionPanel>
             </div>
 
@@ -675,10 +783,17 @@ export default function MentorDetailPage() {
                 <Button
                   size="lg"
                   className="w-full h-14! text-lg! bg-white text-neutral-950 hover:bg-neutral-200 mb-5"
-                  disabled={!canConnect}
+                  disabled={!canConnect || isCheckingMentorship}
                   onClick={() => setIsConnectDialogOpen(true)}
                 >
-                  Connect Now
+                  {isCheckingMentorship ? (
+                    <>
+                      Checking...
+                      <Loader2 className="size-5 animate-spin ml-2" />
+                    </>
+                  ) : (
+                    'Connect Now'
+                  )}
                 </Button>
 
                 {!user && (
@@ -702,6 +817,12 @@ export default function MentorDetailPage() {
                 {user && user.role === USER_ROLES.STUDENT && !mentor.isAcceptingMentees && (
                   <p className="text-base text-neutral-500 text-center">
                     This mentor is currently not accepting new students
+                  </p>
+                )}
+
+                {user && user.role === USER_ROLES.STUDENT && activeMentorship && (
+                  <p className="text-base text-neutral-500 text-center">
+                    You already have an active mentorship with this mentor
                   </p>
                 )}
 
@@ -863,6 +984,28 @@ export default function MentorDetailPage() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={isReviewDialogOpen} onOpenChange={setIsReviewDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">
+              {myReview ? 'Update Your Review' : `Write a Review for ${mentor.user?.firstName}`}
+            </DialogTitle>
+            <DialogDescription className="text-base">
+              {myReview
+                ? 'Update your review and rating for this mentor.'
+                : 'Share your experience and help others make informed decisions.'}
+            </DialogDescription>
+          </DialogHeader>
+
+          <ReviewForm
+            mentorId={mentorId}
+            existingReview={myReview}
+            onSuccess={handleReviewSuccess}
+            onCancel={() => setIsReviewDialogOpen(false)}
+          />
         </DialogContent>
       </Dialog>
 

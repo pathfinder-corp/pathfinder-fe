@@ -8,7 +8,13 @@ import type {
   IMentorDocument,
   IUploadMentorDocumentRequest,
   IUpdateMentorDocumentRequest,
-  MentorDocumentType
+  MentorDocumentType,
+  IMentorReview,
+  ICreateMentorReviewRequest,
+  IUpdateMentorReviewRequest,
+  IMentorReviewsResponse,
+  IMentorReviewStats,
+  IMentorReviewsParams
 } from '@/types';
 import { api, extractErrorMessage } from '@/lib';
 
@@ -423,5 +429,95 @@ export const mentorService = {
   getDocumentViewUrl: (profileId: string, documentId: string): string => {
     const baseUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
     return `${baseUrl}/mentor-profiles/${profileId}/documents/${documentId}/view`;
+  },
+
+  getMentorReviews: async (
+    mentorId: string,
+    params?: IMentorReviewsParams
+  ): Promise<IMentorReviewsResponse> => {
+    try {
+      const queryParams = new URLSearchParams();
+      if (params?.page) queryParams.append('page', String(params.page));
+      if (params?.limit) queryParams.append('limit', String(params.limit));
+
+      const response = await api.get<IMentorReviewsResponse>(
+        `/mentors/${mentorId}/reviews${queryParams.toString() ? `?${queryParams.toString()}` : ''}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Get mentor reviews failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getMentorReviewStats: async (mentorId: string): Promise<IMentorReviewStats> => {
+    try {
+      const response = await api.get<IMentorReviewStats>(`/mentors/${mentorId}/reviews/stats`);
+      return response.data;
+    } catch (error) {
+      console.error('Get mentor review stats failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  getMyReview: async (mentorId: string): Promise<IMentorReview | null> => {
+    try {
+      const response = await api.get<IMentorReview | null>(`/mentors/${mentorId}/reviews/my`);
+      return response.data;
+    } catch (error) {
+      console.error('Get my review failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  createReview: async (
+    mentorId: string,
+    data: ICreateMentorReviewRequest
+  ): Promise<IMentorReview> => {
+    try {
+      const response = await api.post<IMentorReview>(`/mentors/${mentorId}/reviews`, data);
+      return response.data;
+    } catch (error) {
+      console.error('Create review failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  updateReview: async (
+    mentorId: string,
+    reviewId: string,
+    data: IUpdateMentorReviewRequest
+  ): Promise<IMentorReview> => {
+    try {
+      const response = await api.patch<IMentorReview>(
+        `/mentors/${mentorId}/reviews/${reviewId}`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      console.error('Update review failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  deleteReview: async (mentorId: string, reviewId: string): Promise<void> => {
+    try {
+      await api.delete(`/mentors/${mentorId}/reviews/${reviewId}`);
+    } catch (error) {
+      console.error('Delete review failed:', error);
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
   }
 };

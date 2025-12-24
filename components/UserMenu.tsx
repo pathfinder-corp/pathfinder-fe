@@ -71,7 +71,9 @@ export function UserMenu() {
               <p className="text-xl font-semibold text-white">
                 {user.firstName} {user.lastName}
               </p>
-              <p className="text-lg text-neutral-400">{user.email}</p>
+              <p className="text-lg text-neutral-400 truncate" title={user.email}>
+                {user.email}
+              </p>
             </div>
 
             {user.role === USER_ROLES.ADMIN && (

@@ -161,3 +161,61 @@ export interface IUpdateMentorDocumentRequest {
   issuingOrganization?: string;
   displayOrder?: number;
 }
+
+export interface IMentorReviewStudent {
+  id: string;
+  firstName: string;
+  lastName: string;
+  avatar?: string | null;
+}
+
+export interface IMentorReview {
+  id: string;
+  mentorId: string;
+  studentId: string;
+  mentorshipId?: string | null;
+  rating: number;
+  feedback?: string | null;
+  student?: IMentorReviewStudent;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ICreateMentorReviewRequest {
+  rating: number;
+  feedback?: string;
+  mentorshipId?: string;
+}
+
+export interface IUpdateMentorReviewRequest {
+  rating?: number;
+  feedback?: string;
+}
+
+export interface IMentorReviewStats {
+  averageRating: number;
+  totalReviews: number;
+  ratingDistribution: {
+    5: number;
+    4: number;
+    3: number;
+    2: number;
+    1: number;
+  };
+}
+
+export interface IMentorReviewsResponse {
+  reviews: IMentorReview[];
+  stats: IMentorReviewStats;
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+export interface IMentorReviewsParams {
+  page?: number;
+  limit?: number;
+}

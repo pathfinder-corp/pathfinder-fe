@@ -16,7 +16,7 @@ import {
 import { toast } from 'sonner';
 import { format, parseISO, formatDistanceToNow } from 'date-fns';
 import { useUserStore } from '@/stores';
-import { mentorshipService } from '@/services';
+import { mentorshipService, chatService } from '@/services';
 import { USER_ROLES } from '@/constants';
 import type { 
   IMentorshipRequest, 
@@ -109,15 +109,26 @@ export default function MentorshipRequestsPage() {
 
     try {
       setIsProcessing(true);
-      await mentorshipService.acceptRequest(selectedRequest.id, {
+      const response = await mentorshipService.acceptRequest(selectedRequest.id, {
         message: acceptMessage.trim() || undefined
       });
+      
       toast.success('Request accepted successfully! Redirecting to messages...');
       setIsAcceptDialogOpen(false);
       setSelectedRequest(null);
       setAcceptMessage('');
       
-      router.push('/messages');
+      if (response.mentorshipId) {
+        try {
+          const conversation = await chatService.getConversationByMentorship(response.mentorshipId);
+          router.push(`/messages?conversation=${conversation.id}`);
+        } catch (conversationError) {
+          console.error('Failed to get conversation:', conversationError);
+          router.push('/messages');
+        }
+      } else {
+        router.push('/messages');
+      }
     } catch (error) {
       const errorMessage = error instanceof Error 
         ? error.message 
