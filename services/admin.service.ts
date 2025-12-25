@@ -465,7 +465,8 @@ export const adminService = {
     applicationId: string,
     documentId: string
   ): string => {
-    const baseUrl = 'https://api.pathfinder.powof.tech/api';
+    const baseUrl =
+      process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
     return `${baseUrl}/admin/mentor-applications/${applicationId}/documents/${documentId}/download`;
   },
 
