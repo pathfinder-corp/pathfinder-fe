@@ -55,9 +55,7 @@ class SocketService {
       return;
     }
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ||
-      'http://localhost:8000';
+    const baseUrl = 'https://pathfinder.powof.tech';
 
     this.socket = io(`${baseUrl}/chat`, {
       auth: { token, userId },
