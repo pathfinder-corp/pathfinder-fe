@@ -1,26 +1,26 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
+import { useRoadmapStore, useUserStore } from '@/stores';
 import {
+  ClipboardList,
+  FileText,
+  GraduationCap,
+  History,
   Map,
   Menu,
-  X,
-  History,
-  ClipboardList,
-  GraduationCap,
-  FileText,
   UserPlus,
   Users,
+  X,
 } from 'lucide-react';
-import { useUserStore, useRoadmapStore } from '@/stores';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-import { UserMenu } from '@/components/UserMenu';
 import { NotificationDropdown } from '@/components/NotificationDropdown';
 import { Button } from '@/components/ui/button';
-import { USER_ROLES } from '@/constants';
 import { Skeleton } from '@/components/ui/skeleton';
+import { UserMenu } from '@/components/UserMenu';
+import { USER_ROLES } from '@/constants';
 
 interface NavItem {
   label: string;
@@ -35,7 +35,7 @@ interface NavSection {
 }
 
 const LEARNING_NAV: NavItem[] = [
-  { label: 'Create Roadmap', href: '/roadmap', icon: Map, exact: true },
+  { label: 'Roadmap', href: '/roadmap', icon: Map, exact: true },
   {
     label: 'Assessment',
     href: '/assessment',

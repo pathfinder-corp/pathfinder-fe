@@ -17,8 +17,12 @@ interface ISummary {
 
 interface IPhase {
   title: string;
+  description: string;
   outcome: string;
   estimatedDuration: string;
+  objectives?: string[];
+  keySkills?: string[];
+  prerequisites?: string[];
   steps: IStep[];
 }
 

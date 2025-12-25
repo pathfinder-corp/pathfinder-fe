@@ -14,12 +14,71 @@ export function RoadmapNodeDetail({ node }: IRoadmapNodeDetailProps) {
       <div className="space-y-6 py-6">
         <div className="-mt-4">
           <h3 className="mb-3 text-2xl font-semibold">
-            {node.isPhase ? 'Expected Outcome' : 'Description'}
+            {node.isPhase ? 'Phase Description' : 'Description'}
           </h3>
           <p className="text-xl leading-relaxed text-neutral-300">
             {node.description}
           </p>
         </div>
+
+        {node.isPhase && node.outcome && (
+          <div className="border-t border-neutral-800 pt-6">
+            <h3 className="mb-3 text-2xl font-semibold">Expected Outcome</h3>
+            <p className="text-xl leading-relaxed text-neutral-300">
+              {node.outcome}
+            </p>
+          </div>
+        )}
+
+        {node.isPhase && node.objectives && node.objectives.length > 0 && (
+          <div className="border-t border-neutral-800 pt-6">
+            <h3 className="mb-4 text-2xl font-semibold">Learning Objectives</h3>
+            <ul className="space-y-3">
+              {node.objectives.map((objective, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-white text-lg font-bold text-black">
+                    {idx + 1}
+                  </span>
+                  <span className="text-xl leading-relaxed text-neutral-300">
+                    {objective}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {node.isPhase && node.keySkills && node.keySkills.length > 0 && (
+          <div className="border-t border-neutral-800 pt-6">
+            <h3 className="mb-4 text-2xl font-semibold">Key Skills</h3>
+            <div className="flex flex-wrap gap-3">
+              {node.keySkills.map((skill, idx) => (
+                <span
+                  key={idx}
+                  className="rounded-full bg-neutral-800 px-4 py-2 text-lg text-neutral-200"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {node.isPhase && node.prerequisites && node.prerequisites.length > 0 && (
+          <div className="border-t border-neutral-800 pt-6">
+            <h3 className="mb-4 text-2xl font-semibold">Prerequisites</h3>
+            <ul className="space-y-3">
+              {node.prerequisites.map((prereq, idx) => (
+                <li key={idx} className="flex items-start gap-3">
+                  <span className="mt-2 size-2 shrink-0 rounded-full bg-white" />
+                  <span className="text-xl leading-relaxed text-neutral-300">
+                    {prereq}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {!node.isPhase &&
           node.keyActivities &&

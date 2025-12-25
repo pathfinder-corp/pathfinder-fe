@@ -143,9 +143,12 @@ export default function RoadmapDetailPage() {
       if (phase) {
         setSelectedNode({
           title: phase.title,
-          description: phase.outcome,
+          description: phase.description || phase.outcome,
           duration: phase.estimatedDuration,
           outcome: phase.outcome,
+          objectives: phase.objectives,
+          keySkills: phase.keySkills,
+          prerequisites: phase.prerequisites,
           isPhase: true,
           phaseTitle: phase.title,
         });
@@ -532,16 +535,16 @@ export default function RoadmapDetailPage() {
             <AccordionContent className="px-6 pb-6">
               <div className="space-y-3 text-xl text-neutral-300">
                 <p>
-                  <strong>Recommended cadence:</strong>{' '}
+                  <strong>Recommended Cadence:</strong>{' '}
                   {roadmap.summary.recommendedCadence}
                 </p>
                 <p>
-                  <strong>Recommended duration:</strong>{' '}
+                  <strong>Recommended Duration:</strong>{' '}
                   {roadmap.summary.recommendedDuration}
                 </p>
                 {roadmap.summary.additionalNotes && (
                   <p>
-                    <strong>Additional notes:</strong>{' '}
+                    <strong>Additional Notes:</strong>{' '}
                     {roadmap.summary.additionalNotes}
                   </p>
                 )}
@@ -550,8 +553,8 @@ export default function RoadmapDetailPage() {
               {roadmap.summary.successTips &&
                 roadmap.summary.successTips.length > 0 && (
                   <div className="mt-4">
-                    <strong className="mb-2 block text-xl">
-                      Success tips:
+                    <strong className="mb-2 block text-xl text-neutral-300">
+                      Success Tips:
                     </strong>
                     <ul className="list-inside list-disc space-y-2 text-xl text-neutral-300">
                       {roadmap.summary.successTips.map((tip, index) => (

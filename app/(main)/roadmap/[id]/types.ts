@@ -3,6 +3,9 @@ export interface INodeDetail {
   description: string;
   duration: string;
   outcome?: string;
+  objectives?: string[];
+  keySkills?: string[];
+  prerequisites?: string[];
   keyActivities?: string[];
   resources?: Array<{
     type: string;
