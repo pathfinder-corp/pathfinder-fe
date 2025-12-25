@@ -55,7 +55,7 @@ class SocketService {
       return;
     }
 
-    const baseUrl = 'https://pathfinder.powof.tech';
+    const baseUrl = 'https://api.pathfinder.powof.tech';
 
     this.socket = io(`${baseUrl}/chat`, {
       auth: { token, userId },

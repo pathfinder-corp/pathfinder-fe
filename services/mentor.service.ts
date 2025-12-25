@@ -467,8 +467,7 @@ export const mentorService = {
   },
 
   getDocumentViewUrl: (profileId: string, documentId: string): string => {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
+    const baseUrl = 'https://api.pathfinder.powof.tech/api';
     return `${baseUrl}/mentor-profiles/${profileId}/documents/${documentId}/view`;
   },
 
