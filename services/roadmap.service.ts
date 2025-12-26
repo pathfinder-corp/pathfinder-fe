@@ -1,19 +1,24 @@
+import { api, extractErrorMessage } from '@/lib';
 import type {
-  IRoadmapRequest,
-  IRoadmapResponse,
   IAskInsightRequest,
   IAskInsightResponse,
-  IShareSettings,
+  IRoadmapRequest,
+  IRoadmapResponse,
   IShareRoadmapRequest,
+  IShareSettings,
   ISharedUser,
 } from '@/types';
-import { api, extractErrorMessage } from '@/lib';
 
 export const roadmapService = {
-  createRoadmap: async (data: IRoadmapRequest): Promise<IRoadmapResponse> => {
+  createRoadmap: async (
+    data: IRoadmapRequest,
+    options?: { useMapReduce?: boolean }
+  ): Promise<IRoadmapResponse> => {
     try {
+      const params = options?.useMapReduce ? { useMapReduce: 'true' } : {};
       const response = await api.post<IRoadmapResponse>('/roadmaps', data, {
         timeout: 180000,
+        params,
       });
       return response.data;
     } catch (error) {

@@ -1,25 +1,25 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { Send, Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
+import { cleanObject } from '@/lib';
 import { roadmapService } from '@/services/roadmap.service';
 import type { IRoadmapRequest } from '@/types';
-import { cleanObject } from '@/lib';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2, Send } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
+import { z } from 'zod';
 
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import {
   Select,
-  SelectValue,
-  SelectTrigger,
-  SelectItem,
   SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from '@/components/ui/select';
 import {
   TimeframePicker,
@@ -84,7 +84,9 @@ export default function RoadmapPage() {
         timeframe: timeframeStr,
       }) as IRoadmapRequest;
 
-      const response = await roadmapService.createRoadmap(requestData);
+      const response = await roadmapService.createRoadmap(requestData, {
+        useMapReduce: true,
+      });
 
       toast.success('Create roadmap successfully!');
 
