@@ -311,9 +311,7 @@ export function ApplicationsTab({
                   </TableCell>
                   <TableCell className="text-lg text-neutral-300">
                     {application.applicationData?.yearsExperience ?? 0}{' '}
-                    {application.applicationData?.yearsExperience === 1
-                      ? 'year'
-                      : 'years'}
+                    year{application.applicationData?.yearsExperience > 1 ? 's' : ''}
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={application.status} />

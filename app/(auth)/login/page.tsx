@@ -88,6 +88,15 @@ export default function LoginPage() {
 
       setUser(response.user);
 
+      if (response.user.status === 'suspended') {
+        toast.error('Your account has been suspended', {
+          description: 'Please contact support for assistance.',
+        });
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        window.location.href = '/suspended';
+        return;
+      }
+
       toast.success('Login successful!', {
         description: `Welcome ${response.user.firstName}!`,
       });
@@ -103,6 +112,20 @@ export default function LoginPage() {
         error instanceof Error
           ? error.message
           : 'An error occurred while logging in. Please try again.';
+
+      const isSuspendedError =
+        errorMessage.includes('not active') ||
+        errorMessage.includes('suspended') ||
+        errorMessage.toLowerCase().includes('account is not active');
+
+      if (isSuspendedError) {
+        toast.error('Your account has been suspended', {
+          description: 'Please contact support for assistance.',
+        });
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        window.location.href = '/suspended';
+        return;
+      }
 
       toast.error('Login failed', {
         description: errorMessage,

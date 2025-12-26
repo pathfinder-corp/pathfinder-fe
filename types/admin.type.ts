@@ -139,6 +139,7 @@ export interface IAdminRoadmapOwner {
   email: string;
   firstName: string;
   lastName: string;
+  avatar?: string | null;
 }
 
 export interface IAdminRoadmap {
@@ -185,6 +186,7 @@ export interface IAdminAssessmentOwner {
   email: string;
   firstName: string;
   lastName: string;
+  avatar?: string | null;
 }
 
 export interface IAdminAssessment {
@@ -494,6 +496,14 @@ export interface IForceEndMentorshipPayload {
   reason: string;
 }
 
+export interface IAdminContactUser {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  avatar?: string | null;
+}
+
 export interface IAdminContactMessage {
   id: string;
   name: string;
@@ -502,10 +512,13 @@ export interface IAdminContactMessage {
   message: string;
   type: ContactType;
   userId?: string;
+  user?: IAdminContactUser;
+  avatar?: string | null; // Keep for backward compatibility
   status: ContactStatus;
   adminResponse?: string;
   respondedAt?: string;
   respondedBy?: string;
+  respondedByUser?: IAdminContactUser;
   createdAt: string;
   updatedAt: string;
 }

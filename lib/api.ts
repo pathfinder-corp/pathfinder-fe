@@ -33,16 +33,24 @@ api.interceptors.response.use(
       response.config.url?.includes('/auth/me') ||
       response.config.url?.includes('/auth/profile');
 
-    if (
-      isProfileEndpoint &&
-      (response.data?.status === 'suspended' ||
-        response.data?.user?.status === 'suspended')
-    ) {
-      if (
-        typeof window !== 'undefined' &&
-        window.location.pathname !== '/suspended'
-      ) {
-        window.location.href = '/suspended';
+    if (isProfileEndpoint) {
+      const userStatus =
+        response.data?.status || response.data?.user?.status;
+
+      if (userStatus === 'suspended') {
+        if (
+          typeof window !== 'undefined' &&
+          window.location.pathname !== '/suspended'
+        ) {
+          window.location.href = '/suspended';
+        }
+      } else if (userStatus && userStatus !== 'suspended') {
+        if (
+          typeof window !== 'undefined' &&
+          window.location.pathname === '/suspended'
+        ) {
+          window.location.href = '/';
+        }
       }
     }
     return response;
@@ -56,10 +64,16 @@ api.interceptors.response.use(
 
     const isContactEndpoint = error.config?.url?.includes('/contact');
 
-    if (error.response?.status === 401 && message.includes('not active')) {
+    const isLoginEndpoint = error.config?.url?.includes('/auth/login');
+    if (
+      error.response?.status === 401 &&
+      message.includes('not active') &&
+      !isLoginEndpoint
+    ) {
       if (
         typeof window !== 'undefined' &&
-        window.location.pathname !== '/suspended'
+        window.location.pathname !== '/suspended' &&
+        window.location.pathname !== '/login'
       ) {
         window.location.href = '/suspended';
         return Promise.reject(new Error(message));
@@ -67,14 +81,25 @@ api.interceptors.response.use(
     }
 
     if (error.response?.status === 401 && !isContactEndpoint) {
-      if (typeof window !== 'undefined') {
-        document.cookie =
-          'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
-        if (
-          window.location.pathname !== '/suspended' &&
-          window.location.pathname !== '/contact'
-        ) {
-          window.location.href = '/login';
+      const isSuspendedError =
+        message.includes('not active') ||
+        message.includes('suspended') ||
+        message.toLowerCase().includes('account is not active');
+      
+      const isOnSuspendedPage =
+        typeof window !== 'undefined' &&
+        window.location.pathname === '/suspended';
+      
+      if (!isSuspendedError && !isOnSuspendedPage) {
+        if (typeof window !== 'undefined') {
+          document.cookie =
+            'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT';
+          if (
+            window.location.pathname !== '/suspended' &&
+            window.location.pathname !== '/contact'
+          ) {
+            window.location.href = '/login';
+          }
         }
       }
     }

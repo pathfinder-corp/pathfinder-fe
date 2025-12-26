@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   Search,
   MoreVertical,
@@ -28,6 +29,7 @@ import type {
 } from '@/types';
 import { ITEMS_PER_PAGE, SORT_ORDER } from '@/constants';
 import { useDebounceValue } from 'usehooks-ts';
+import { getInitials } from '@/lib/utils';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -421,10 +423,20 @@ export default function AdminRoadmapsPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-sm font-bold">
-                        {roadmap.owner.firstName[0]}
-                        {roadmap.owner.lastName[0]}
-                      </div>
+                      {roadmap.owner.avatar ? (
+                        <div className="relative size-10 shrink-0 overflow-hidden rounded-full">
+                          <Image
+                            src={roadmap.owner.avatar}
+                            alt={`${roadmap.owner.firstName} ${roadmap.owner.lastName}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-sm font-bold">
+                          {getInitials(roadmap.owner.firstName, roadmap.owner.lastName)}
+                        </div>
+                      )}
                       <div className="min-w-0">
                         <p className="max-w-[160px] truncate text-lg text-neutral-300">
                           {roadmap.owner.firstName} {roadmap.owner.lastName}
@@ -598,10 +610,20 @@ export default function AdminRoadmapsPage() {
               <div className="rounded-lg bg-neutral-800/50 p-4">
                 <p className="mb-2 text-sm text-neutral-500">Owner</p>
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 text-sm font-bold">
-                    {selectedRoadmap.owner.firstName[0]}
-                    {selectedRoadmap.owner.lastName[0]}
-                  </div>
+                  {selectedRoadmap.owner.avatar ? (
+                    <div className="relative size-16 overflow-hidden rounded-full">
+                      <Image
+                        src={selectedRoadmap.owner.avatar}
+                        alt={`${selectedRoadmap.owner.firstName} ${selectedRoadmap.owner.lastName}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex size-16 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-xl font-bold">
+                      {getInitials(selectedRoadmap.owner.firstName, selectedRoadmap.owner.lastName)}
+                    </div>
+                  )}
                   <div>
                     <p className="text-base font-medium">
                       {selectedRoadmap.owner.firstName}{' '}

@@ -1063,13 +1063,6 @@ export default function MentorProfilePage() {
               Upload documents to strengthen your profile and build trust with
               students
             </p>
-            <Button
-              onClick={() => setIsUploadDialogOpen(true)}
-              className="h-12! text-base!"
-            >
-              Upload Document
-              <Plus className="size-5" />
-            </Button>
           </div>
         ) : (
           <>

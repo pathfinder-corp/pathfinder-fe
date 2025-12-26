@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
+import Image from 'next/image';
 import {
   Search,
   MoreVertical,
@@ -29,6 +29,7 @@ import type {
 } from '@/types';
 import { ITEMS_PER_PAGE, SORT_ORDER } from '@/constants';
 import { useDebounceValue } from 'usehooks-ts';
+import { getInitials } from '@/lib/utils';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -499,10 +500,20 @@ export default function AdminAssessmentsPage() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-3">
-                      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-sm font-bold">
-                        {assessment.owner.firstName[0]}
-                        {assessment.owner.lastName[0]}
-                      </div>
+                      {assessment.owner.avatar ? (
+                        <div className="relative size-10 shrink-0 overflow-hidden rounded-full">
+                          <Image
+                            src={assessment.owner.avatar}
+                            alt={`${assessment.owner.firstName} ${assessment.owner.lastName}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-sm font-bold">
+                          {getInitials(assessment.owner.firstName, assessment.owner.lastName)}
+                        </div>
+                      )}
                       <div className="min-w-0">
                         <p className="max-w-[140px] truncate text-lg text-neutral-300">
                           {assessment.owner.firstName}{' '}
@@ -684,10 +695,20 @@ export default function AdminAssessmentsPage() {
               <div className="rounded-lg bg-neutral-800/50 p-4">
                 <p className="mb-2 text-sm text-neutral-500">Owner</p>
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-full bg-linear-to-br from-neutral-600 to-neutral-700 text-sm font-bold">
-                    {selectedAssessment.owner.firstName[0]}
-                    {selectedAssessment.owner.lastName[0]}
-                  </div>
+                  {selectedAssessment.owner.avatar ? (
+                    <div className="relative size-16 overflow-hidden rounded-full">
+                      <Image
+                        src={selectedAssessment.owner.avatar}
+                        alt={`${selectedAssessment.owner.firstName} ${selectedAssessment.owner.lastName}`}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex size-16 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-xl font-bold">
+                      {getInitials(selectedAssessment.owner.firstName, selectedAssessment.owner.lastName)}
+                    </div>
+                  )}
                   <div>
                     <p className="text-base font-medium">
                       {selectedAssessment.owner.firstName}{' '}

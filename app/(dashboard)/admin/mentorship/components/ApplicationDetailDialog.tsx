@@ -10,6 +10,7 @@ import {
   History,
   User,
   XCircle,
+  Linkedin
 } from 'lucide-react';
 import Image from 'next/image';
 
@@ -121,9 +122,7 @@ export function ApplicationDetailDialog({
                 </div>
                 <p className="text-xl font-semibold">
                   {application.applicationData?.yearsExperience ?? 0}{' '}
-                  {application.applicationData?.yearsExperience === 1
-                    ? 'year'
-                    : 'years'}
+                  year{application.applicationData?.yearsExperience > 1 ? 's' : ''}
                 </p>
               </div>
               <div>

@@ -346,9 +346,7 @@ export default function MyApplicationsPage() {
                     </div>
                     <p className="text-xl font-semibold">
                       {application.applicationData?.yearsExperience}{' '}
-                      {application.applicationData?.yearsExperience === 1
-                        ? 'year'
-                        : 'years'}
+                      year{application.applicationData?.yearsExperience > 1 ? 's' : ''}
                     </p>
                   </div>
                   <div>

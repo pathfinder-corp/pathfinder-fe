@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import Image from 'next/image';
 import {
   Search,
   MoreVertical,
@@ -24,12 +25,14 @@ import { adminService } from '@/services';
 import type {
   IAdminContactMessage,
   IAdminContactMessagesParams,
-  IAdminContactStats,
   IUpdateContactStatusPayload,
   IRespondToContactPayload,
+  SortOrder,
+  ContactSortField
 } from '@/types';
 import { useDebounceValue } from 'usehooks-ts';
 import { ITEMS_PER_PAGE, SORT_ORDER } from '@/constants';
+import { getInitials } from '@/lib/utils';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -78,13 +81,6 @@ import {
 
 type StatusFilter = 'pending' | 'in_progress' | 'resolved' | 'closed' | 'all';
 type TypeFilter = 'general' | 'suspended' | 'feedback' | 'support' | 'all';
-type SortField =
-  | 'createdAt'
-  | 'updatedAt'
-  | 'name'
-  | 'email'
-  | 'status'
-  | 'type';
 
 export default function AdminContactPage() {
   const [messages, setMessages] = useState<IAdminContactMessage[]>([]);
@@ -96,8 +92,8 @@ export default function AdminContactPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [totalMessages, setTotalMessages] = useState<number>(0);
-  const [sortBy, setSortBy] = useState<SortField>('createdAt');
-  const [sortOrder, setSortOrder] = useState<'ASC' | 'DESC'>(SORT_ORDER.DESC);
+  const [sortBy, setSortBy] = useState<ContactSortField>('createdAt');
+  const [sortOrder, setSortOrder] = useState<SortOrder>(SORT_ORDER.DESC);
 
   const [selectedMessage, setSelectedMessage] =
     useState<IAdminContactMessage | null>(null);
@@ -161,7 +157,7 @@ export default function AdminContactPage() {
     setCurrentPage(1);
   }, [debouncedSearch, statusFilter, typeFilter]);
 
-  const handleSort = (field: SortField) => {
+  const handleSort = (field: ContactSortField) => {
     if (sortBy === field) {
       setSortOrder(
         sortOrder === SORT_ORDER.ASC ? SORT_ORDER.DESC : SORT_ORDER.ASC
@@ -173,7 +169,7 @@ export default function AdminContactPage() {
     setCurrentPage(1);
   };
 
-  const getSortIcon = (field: SortField) => {
+  const getSortIcon = (field: ContactSortField) => {
     if (sortBy !== field) {
       return <ArrowUpDown className="ml-2 size-5 opacity-50" />;
     }
@@ -510,13 +506,27 @@ export default function AdminContactPage() {
                 >
                   <TableCell className="py-4 pl-6">
                     <div className="flex items-center gap-3">
-                      <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-sm font-bold">
-                        {message.name[0]}
-                        {message.name.split(' ')[1]?.[0] || ''}
-                      </div>
+                      {message.user?.avatar ? (
+                        <div className="relative size-10 shrink-0 overflow-hidden rounded-full">
+                          <Image
+                            src={message.user.avatar}
+                            alt={message.user ? `${message.user.firstName} ${message.user.lastName}` : message.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-sm font-bold">
+                          {message.user
+                            ? getInitials(message.user.firstName, message.user.lastName)
+                            : getInitials(message.name, message.name.split(' ')[1] || '')}
+                        </div>
+                      )}
                       <div>
                         <span className="block text-base font-medium text-neutral-100">
-                          {message.name}
+                          {message.user
+                            ? `${message.user.firstName} ${message.user.lastName}`
+                            : message.name}
                         </span>
                         {message.type === 'suspended' && (
                           <Badge
@@ -530,7 +540,7 @@ export default function AdminContactPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-base text-neutral-300">
-                    {message.email}
+                    {message.user?.email || message.email}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -715,17 +725,38 @@ export default function AdminContactPage() {
 
           {selectedMessage && (
             <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="mb-1 text-base text-neutral-500">From</p>
-                  <p className="text-lg font-semibold">
-                    {selectedMessage.name}
+              <div className="flex items-start gap-4">
+                {selectedMessage.user?.avatar ? (
+                  <div className="relative size-16 shrink-0 overflow-hidden rounded-full">
+                    <Image
+                      src={selectedMessage.user.avatar}
+                      alt={selectedMessage.user
+                        ? `${selectedMessage.user.firstName} ${selectedMessage.user.lastName}`
+                        : selectedMessage.name}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-xl font-bold">
+                    {selectedMessage.user
+                      ? getInitials(selectedMessage.user.firstName, selectedMessage.user.lastName)
+                      : getInitials(selectedMessage.name, selectedMessage.name.split(' ')[1] || '')}
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <p className="text-xl font-semibold">
+                    {selectedMessage.user
+                      ? `${selectedMessage.user.firstName} ${selectedMessage.user.lastName}`
+                      : selectedMessage.name}
+                  </p>
+                  <p className="text-lg text-neutral-400">
+                    {selectedMessage.user?.email || selectedMessage.email}
                   </p>
                 </div>
-                <div>
-                  <p className="mb-1 text-base text-neutral-500">Email</p>
-                  <p className="text-lg">{selectedMessage.email}</p>
-                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="mb-1 text-base text-neutral-500">Type</p>
                   <Badge
@@ -759,6 +790,40 @@ export default function AdminContactPage() {
                   </div>
                 )}
               </div>
+
+              {selectedMessage.respondedByUser && (
+                <div className="rounded-lg bg-neutral-800/50 p-4">
+                  <p className="mb-2 text-sm text-neutral-500">Responded By</p>
+                  <div className="flex items-center gap-3">
+                    {selectedMessage.respondedByUser.avatar ? (
+                      <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
+                        <Image
+                          src={selectedMessage.respondedByUser.avatar}
+                          alt={`${selectedMessage.respondedByUser.firstName} ${selectedMessage.respondedByUser.lastName}`}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-neutral-700 to-neutral-800 text-base font-bold">
+                        {getInitials(
+                          selectedMessage.respondedByUser.firstName,
+                          selectedMessage.respondedByUser.lastName
+                        )}
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-base font-medium">
+                        {selectedMessage.respondedByUser.firstName}{' '}
+                        {selectedMessage.respondedByUser.lastName}
+                      </p>
+                      <p className="text-sm text-neutral-400">
+                        {selectedMessage.respondedByUser.email}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {selectedMessage.subject && (
                 <div>
@@ -819,7 +884,9 @@ export default function AdminContactPage() {
               Respond to Contact Message
             </DialogTitle>
             <DialogDescription className="text-lg text-neutral-400">
-              Send a response to {selectedMessage?.name}
+              Send a response to {selectedMessage?.user
+                ? `${selectedMessage.user.firstName} ${selectedMessage.user.lastName}`
+                : selectedMessage?.name}
             </DialogDescription>
           </DialogHeader>
 

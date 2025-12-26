@@ -9,7 +9,7 @@ import { toast } from 'sonner';
 import { useUserStore } from '@/stores';
 import { removeAuthCookie } from '@/lib';
 import { contactService, authService } from '@/services';
-import type { ContactType } from '@/types';
+import type { ContactType, IUser } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/dialog';
 
 export default function SuspendedPage() {
-  const { user, clearUser } = useUserStore();
+  const { user, clearUser, setUser } = useUserStore();
   const router = useRouter();
 
   const [isContactDialogOpen, setIsContactDialogOpen] =
@@ -49,34 +49,65 @@ export default function SuspendedPage() {
           .split('; ')
           .find((row) => row.startsWith('auth-token='))
           ?.split('=')[1];
-
-        if (token) {
-          const profile = await authService.getProfile();
-
-          if (profile.status !== 'suspended') {
-            clearUser();
-            removeAuthCookie();
-            router.push('/login');
-            return;
-          }
-        } else {
-          clearUser();
-          removeAuthCookie();
-          router.push('/login');
+        if (!token) {
+          setIsCheckingStatus(false);
           return;
         }
+
+        try {
+          const profile = await authService.getProfile();
+          
+          if (profile && profile.status !== 'suspended') {
+            const updatedUser: IUser = {
+              id: profile.id,
+              email: profile.email,
+              firstName: profile.firstName,
+              lastName: profile.lastName,
+              role: profile.role,
+              status: profile.status,
+              avatar: profile.avatar,
+              phone: profile.phone,
+              dateOfBirth: profile.dateOfBirth,
+              location: profile.location,
+              createdAt: profile.createdAt,
+              updatedAt: profile.updatedAt,
+            };
+            setUser(updatedUser);
+            window.location.href = '/';
+            return;
+          }
+        } catch (apiError) {
+          const errorMessage =
+            apiError instanceof Error ? apiError.message : '';
+          const errorStatus =
+            apiError && typeof apiError === 'object' && 'response' in apiError
+              ? (apiError as { response?: { status?: number } }).response?.status
+              : null;
+          
+          const isSuspendedError =
+            errorMessage.includes('suspended') ||
+            errorMessage.includes('not active') ||
+            errorMessage.toLowerCase().includes('account is not active');
+          
+          if (
+            errorStatus === 401 &&
+            !isSuspendedError
+          ) {
+            clearUser();
+            removeAuthCookie();
+            window.location.href = '/login';
+            return;
+          }
+        }
       } catch (error) {
-        clearUser();
-        removeAuthCookie();
-        router.push('/login');
-        return;
+        console.error('Error checking user status:', error);
       } finally {
         setIsCheckingStatus(false);
       }
     };
 
     checkUserStatus();
-  }, [clearUser, router]);
+  }, [clearUser, setUser, router]);
 
   useEffect(() => {
     if (user && isContactDialogOpen) {

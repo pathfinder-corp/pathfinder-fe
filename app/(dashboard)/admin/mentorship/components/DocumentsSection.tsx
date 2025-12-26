@@ -455,11 +455,6 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-xl">
-              {verifyAction === 'verify' ? (
-                <CheckCircle className="size-6" />
-              ) : (
-                <XCircle className="size-6" />
-              )}
               {verifyAction === 'verify'
                 ? 'Verify Document'
                 : 'Reject Document'}
@@ -520,7 +515,7 @@ export function DocumentsSection({ applicationId }: DocumentsSectionProps) {
               className={
                 verifyAction === 'verify'
                   ? 'bg-green-600 text-white hover:bg-green-700'
-                  : 'bg-red-600 hover:bg-red-700'
+                  : 'text-white bg-red-600 hover:bg-red-700'
               }
             >
               {isVerifying ? (

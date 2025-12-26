@@ -249,7 +249,7 @@ export default function MentorsPage() {
             <span className="font-medium text-white">
               {mentor.yearsExperience}
             </span>
-            <span>{mentor.yearsExperience === 1 ? 'year' : 'years'}</span>
+            <span>year{mentor.yearsExperience > 1 ? 's' : ''}</span>
           </div>
           {mentor.languages && mentor.languages.length > 0 && (
             <div className="flex items-center gap-2 text-base text-neutral-400">
