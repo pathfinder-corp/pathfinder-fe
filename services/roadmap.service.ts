@@ -2,11 +2,13 @@ import { api, extractErrorMessage } from '@/lib';
 import type {
   IAskInsightRequest,
   IAskInsightResponse,
+  IProgressResponse,
   IRoadmapRequest,
   IRoadmapResponse,
   IShareRoadmapRequest,
   IShareSettings,
   ISharedUser,
+  IUpdateProgressRequest,
 } from '@/types';
 
 export const roadmapService = {
@@ -17,7 +19,7 @@ export const roadmapService = {
     try {
       const params = options?.useMapReduce ? { useMapReduce: 'true' } : {};
       const response = await api.post<IRoadmapResponse>('/roadmaps', data, {
-        timeout: 180000,
+        timeout: 600000,
         params,
       });
       return response.data;
@@ -133,6 +135,37 @@ export const roadmapService = {
   revokeAccess: async (id: string, userId: string): Promise<void> => {
     try {
       await api.delete(`/roadmaps/${id}/share/${userId}`);
+    } catch (error) {
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  // Progress Tracking
+  getProgress: async (id: string): Promise<IProgressResponse> => {
+    try {
+      const response = await api.get<IProgressResponse>(
+        `/roadmaps/${id}/progress`
+      );
+      return response.data;
+    } catch (error) {
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  updateProgress: async (
+    id: string,
+    data: IUpdateProgressRequest
+  ): Promise<IProgressResponse> => {
+    try {
+      const response = await api.post<IProgressResponse>(
+        `/roadmaps/${id}/progress`,
+        data
+      );
+      return response.data;
     } catch (error) {
       const message = extractErrorMessage(error);
       if (message) throw new Error(message);

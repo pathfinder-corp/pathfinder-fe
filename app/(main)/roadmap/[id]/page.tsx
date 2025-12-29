@@ -13,7 +13,7 @@ import {
   Share2,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import type { IRoadmapResponse } from '@/types';
+import type { IRoadmapResponse, IProgressResponse } from '@/types';
 import type { Node, Edge } from '@xyflow/react';
 import { roadmapService } from '@/services';
 import { convertRoadmapToFlow, extractTitle } from '@/lib';
@@ -37,6 +37,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import RoadmapFlow from './RoadmapFlow';
 import DetailLoading from './loading';
 import {
@@ -83,17 +84,17 @@ export default function RoadmapDetailPage() {
     const fetchRoadmap = async () => {
       try {
         updateLoadingState('initial', true);
-        const data = await roadmapService.getRoadmap(roadmapId);
-        setRoadmap(data);
+        const roadmapData = await roadmapService.getRoadmap(roadmapId);
+        setRoadmap(roadmapData);
 
         const isOwner =
-          user && data.owner?.id
-            ? data.owner.id === user.id
-            : data.accessType === 'owner';
+          user && roadmapData.owner?.id
+            ? roadmapData.owner.id === user.id
+            : roadmapData.accessType === 'owner';
         setIsViewMode(!isOwner);
 
         const { nodes: flowNodes, edges: flowEdges } =
-          convertRoadmapToFlow(data);
+          convertRoadmapToFlow(roadmapData);
         setNodes(flowNodes);
         setEdges(flowEdges);
       } catch (error) {
@@ -568,95 +569,97 @@ export default function RoadmapDetailPage() {
         </Accordion>
       )}
 
-      <div
-        className="overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900/50"
-        data-driver="roadmap-flow-container"
-      >
-        <div className="flex items-center justify-between border-b border-neutral-800 p-5">
-          <h2 className="text-3xl font-semibold">Learning Roadmap</h2>
+      <div className="space-y-6">
+        <div
+            className="overflow-hidden rounded-lg border border-neutral-800 bg-neutral-900/50"
+            data-driver="roadmap-flow-container"
+          >
+            <div className="flex items-center justify-between border-b border-neutral-800 p-5">
+              <h2 className="text-3xl font-semibold">Learning Roadmap</h2>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              className="h-10!"
-              onClick={handleResetView}
-              title="Reset view to initial position"
-              data-driver="reset-view-button"
-            >
-              <RotateCcw className="size-5" />
-            </Button>
-
-            <Sheet>
-              <SheetTrigger asChild>
+              <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   className="h-10!"
-                  data-driver="maximize-button"
+                  onClick={handleResetView}
+                  title="Reset view to initial position"
+                  data-driver="reset-view-button"
                 >
-                  <Maximize2 className="size-5" />
+                  <RotateCcw className="size-5" />
                 </Button>
-              </SheetTrigger>
-              <SheetContent side="bottom" className="h-[95vh] w-full">
-                <SheetHeader>
-                  <SheetTitle className="text-3xl">{roadmap.topic}</SheetTitle>
-                  <SheetDescription className="text-xl">
-                    Detailed learning roadmap - Move with mouse, zoom with
-                    scroll
-                  </SheetDescription>
-                </SheetHeader>
-                <div className="mt-4 h-[calc(95vh-120px)]">
-                  <RoadmapFlow
-                    nodes={nodes}
-                    edges={edges}
-                    onNodeClick={handleNodeClick}
-                    resetTrigger={resetTrigger}
-                  />
-                </div>
-              </SheetContent>
-            </Sheet>
-          </div>
-        </div>
 
-        <div className="h-screen">
-          <RoadmapFlow
-            nodes={nodes}
-            edges={edges}
-            onNodeClick={handleNodeClick}
-            resetTrigger={resetTrigger}
-          />
-        </div>
-      </div>
-
-      {roadmap.milestones && roadmap.milestones.length > 0 && (
-        <div
-          className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-7"
-          data-driver="roadmap-milestones"
-        >
-          <h2 className="mb-5 text-3xl font-semibold">Important Milestones</h2>
-          <div className="grid gap-4">
-            {roadmap.milestones.map((milestone, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-4 rounded-lg border border-neutral-700 bg-neutral-800/50 p-5"
-              >
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-lg font-bold text-black">
-                  {index + 1}
-                </div>
-                <div className="flex-1">
-                  <h3 className="mb-2 text-2xl font-semibold">
-                    {milestone.title}
-                  </h3>
-                  <p className="text-xl text-neutral-400">
-                    {milestone.successCriteria}
-                  </p>
-                </div>
+                <Sheet>
+                  <SheetTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="h-10!"
+                      data-driver="maximize-button"
+                    >
+                      <Maximize2 className="size-5" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" className="h-[95vh] w-full">
+                    <SheetHeader>
+                      <SheetTitle className="text-3xl">{roadmap.topic}</SheetTitle>
+                      <SheetDescription className="text-xl">
+                        Detailed learning roadmap - Move with mouse, zoom with
+                        scroll
+                      </SheetDescription>
+                    </SheetHeader>
+                    <div className="mt-4 h-[calc(95vh-120px)]">
+                      <RoadmapFlow
+                        nodes={nodes}
+                        edges={edges}
+                        onNodeClick={handleNodeClick}
+                        resetTrigger={resetTrigger}
+                      />
+                    </div>
+                  </SheetContent>
+                </Sheet>
               </div>
-            ))}
+            </div>
+
+            <div className="h-screen">
+              <RoadmapFlow
+                nodes={nodes}
+                edges={edges}
+                onNodeClick={handleNodeClick}
+                resetTrigger={resetTrigger}
+              />
+            </div>
           </div>
-        </div>
-      )}
+
+          {roadmap.milestones && roadmap.milestones.length > 0 && (
+            <div
+              className="rounded-lg border border-neutral-800 bg-neutral-900/50 p-7"
+              data-driver="roadmap-milestones"
+            >
+              <h2 className="mb-5 text-3xl font-semibold">Important Milestones</h2>
+              <div className="grid gap-4">
+                {roadmap.milestones.map((milestone, index) => (
+                  <div
+                    key={index}
+                    className="flex items-start gap-4 rounded-lg border border-neutral-700 bg-neutral-800/50 p-5"
+                  >
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white text-lg font-bold text-black">
+                      {index + 1}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="mb-2 text-2xl font-semibold">
+                        {milestone.title}
+                      </h3>
+                      <p className="text-xl text-neutral-400">
+                        {milestone.successCriteria}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+      </div>
 
       <Sheet
         open={isDetailOpen}
@@ -670,7 +673,7 @@ export default function RoadmapDetailPage() {
       >
         <SheetContent
           side="right"
-          className="w-full p-0 sm:w-[600px] sm:max-w-[600px]"
+          className="w-full p-0 sm:w-150 sm:max-w-150"
           showClose={false}
         >
           {selectedNode && (

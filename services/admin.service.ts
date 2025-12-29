@@ -466,7 +466,9 @@ export const adminService = {
     documentId: string
   ): string => {
     const baseUrl =
-      process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
+      (process.env.NEXT_PUBLIC_BACKEND_URL ||
+        process.env.BACKEND_URL ||
+        'http://localhost:8000') + '/api';
     return `${baseUrl}/admin/mentor-applications/${applicationId}/documents/${documentId}/download`;
   },
 

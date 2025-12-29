@@ -56,7 +56,8 @@ class SocketService {
     }
 
     const baseUrl =
-      process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') ||
+      process.env.NEXT_PUBLIC_BACKEND_URL ||
+      process.env.BACKEND_URL ||
       'http://localhost:8000';
 
     this.socket = io(`${baseUrl}/chat`, {

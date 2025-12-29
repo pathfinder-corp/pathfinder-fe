@@ -100,6 +100,102 @@ export interface IShareSettings {
   sharedUsers: ISharedUser[];
 }
 
+// Progress Tracking Types
+export interface IStepProgress {
+  stepIndex: number;
+  completed: boolean;
+  completedAt: string | null;
+}
+
+export interface IPhaseProgress {
+  phaseIndex: number;
+  completed: boolean;
+  completedAt: string | null;
+  steps: IStepProgress[];
+}
+
+export interface IMilestoneProgress {
+  milestoneIndex: number;
+  completed: boolean;
+  completedAt: string | null;
+}
+
+export interface IProgressResponse {
+  id: string;
+  roadmapId: string;
+  phases: IPhaseProgress[];
+  milestones: IMilestoneProgress[];
+  overallProgress: number;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IUpdateProgressRequest {
+  phaseIndex?: number;
+  stepIndex?: number;
+  milestoneIndex?: number;
+  completed: boolean;
+}
+
+// Gamification Types
+export enum BadgeType {
+  FIRST_ROADMAP = 'first_roadmap',
+  ROADMAP_COMPLETE = 'roadmap_complete',
+  PHASE_MASTER = 'phase_master',
+  WEEK_STREAK = 'week_streak',
+  MONTH_STREAK = 'month_streak',
+  EARLY_BIRD = 'early_bird',
+  NIGHT_OWL = 'night_owl',
+  CONSISTENT_LEARNER = 'consistent_learner',
+  SPEED_LEARNER = 'speed_learner',
+  MILESTONE_ACHIEVER = 'milestone_achiever'
+}
+
+export enum BadgeTier {
+  BRONZE = 'bronze',
+  SILVER = 'silver',
+  GOLD = 'gold',
+  PLATINUM = 'platinum',
+  DIAMOND = 'diamond'
+}
+
+export interface IBadge {
+  id: string;
+  type: BadgeType;
+  tier: BadgeTier;
+  title: string;
+  description: string;
+  iconName: string;
+  xpAwarded: number;
+  earnedAt: string;
+}
+
+export interface IGamificationStats {
+  userId: string;
+  totalXp: number;
+  level: number;
+  xpToNextLevel: number;
+  currentStreak: number;
+  longestStreak: number;
+  roadmapsCompleted: number;
+  phasesCompleted: number;
+  stepsCompleted: number;
+  milestonesCompleted: number;
+  lastActivityDate: string | null;
+  badgesCount: number;
+}
+
+export interface ILeaderboardEntry {
+  userId: string;
+  displayName: string;
+  totalXp: number;
+  level: number;
+  rank: number;
+  badgesCount: number;
+}
+
 export interface IShareRoadmapRequest {
   shareWithAll?: boolean;
   userIds?: string[];

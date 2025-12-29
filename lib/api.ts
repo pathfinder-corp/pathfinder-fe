@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api',
+  baseURL:
+    (process.env.NEXT_PUBLIC_BACKEND_URL ||
+      process.env.BACKEND_URL ||
+      'http://localhost:8000') + '/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -34,8 +37,7 @@ api.interceptors.response.use(
       response.config.url?.includes('/auth/profile');
 
     if (isProfileEndpoint) {
-      const userStatus =
-        response.data?.status || response.data?.user?.status;
+      const userStatus = response.data?.status || response.data?.user?.status;
 
       if (userStatus === 'suspended') {
         if (
@@ -85,11 +87,11 @@ api.interceptors.response.use(
         message.includes('not active') ||
         message.includes('suspended') ||
         message.toLowerCase().includes('account is not active');
-      
+
       const isOnSuspendedPage =
         typeof window !== 'undefined' &&
         window.location.pathname === '/suspended';
-      
+
       if (!isSuspendedError && !isOnSuspendedPage) {
         if (typeof window !== 'undefined') {
           document.cookie =
@@ -109,3 +111,4 @@ api.interceptors.response.use(
 );
 
 export default api;
+

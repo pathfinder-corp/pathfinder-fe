@@ -468,7 +468,9 @@ export const mentorService = {
 
   getDocumentViewUrl: (profileId: string, documentId: string): string => {
     const baseUrl =
-      process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8000/api';
+      (process.env.NEXT_PUBLIC_BACKEND_URL ||
+        process.env.BACKEND_URL ||
+        'http://localhost:8000') + '/api';
     return `${baseUrl}/mentor-profiles/${profileId}/documents/${documentId}/view`;
   },
 
