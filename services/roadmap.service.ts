@@ -19,7 +19,7 @@ export const roadmapService = {
     try {
       const params = options?.useMapReduce ? { useMapReduce: 'true' } : {};
       const response = await api.post<IRoadmapResponse>('/roadmaps', data, {
-        timeout: 600000,
+        timeout: 600000, // 10 minutes
         params,
       });
       return response.data;
