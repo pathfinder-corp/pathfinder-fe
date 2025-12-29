@@ -170,7 +170,6 @@ export default function MentorDetailPage() {
       try {
         setIsLoading(true);
         const data = await mentorService.getMentorWithDocuments(mentorId);
-        console.log(data);
         setMentor(data);
       } catch (error) {
         console.error('Failed to fetch mentor profile:', error);
