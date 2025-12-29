@@ -122,9 +122,30 @@ export const roadmapService = {
   shareRoadmap: async (
     id: string,
     data: IShareRoadmapRequest
-  ): Promise<void> => {
+  ): Promise<IShareSettings> => {
     try {
-      await api.post(`/roadmaps/${id}/share`, data);
+      const response = await api.post<IShareSettings>(
+        `/roadmaps/${id}/share`,
+        data
+      );
+      return response.data;
+    } catch (error) {
+      const message = extractErrorMessage(error);
+      if (message) throw new Error(message);
+      throw error;
+    }
+  },
+
+  addUsersToShare: async (
+    id: string,
+    userIds: string[]
+  ): Promise<IShareSettings> => {
+    try {
+      const response = await api.post<IShareSettings>(
+        `/roadmaps/${id}/share/add`,
+        { userIds }
+      );
+      return response.data;
     } catch (error) {
       const message = extractErrorMessage(error);
       if (message) throw new Error(message);

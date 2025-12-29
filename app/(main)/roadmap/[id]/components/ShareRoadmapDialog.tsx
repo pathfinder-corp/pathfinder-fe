@@ -211,9 +211,7 @@ export function ShareRoadmapDialog({
   const handleInviteUser = async (user: ISearchUserResult) => {
     try {
       setIsInviting(true);
-      await roadmapService.shareRoadmap(roadmapId, {
-        userIds: [user.id],
-      });
+      await roadmapService.addUsersToShare(roadmapId, [user.id]);
       toast.success(`Shared with ${user.firstName} ${user.lastName}`, {
         description: 'User invited successfully',
       });
@@ -319,7 +317,7 @@ export function ShareRoadmapDialog({
                       placeholder="Enter email address (e.g. user@example.com)"
                       value={searchEmail}
                       onChange={(e) => setSearchEmail(e.target.value)}
-                      className="h-14! border-neutral-800 bg-neutral-900/50 pl-14 text-lg"
+                      className="h-14! border-neutral-800 bg-neutral-900/50 pl-14 text-lg!"
                     />
                     {isSearching && (
                       <Loader2 className="absolute top-1/2 right-4 size-6 -translate-y-1/2 animate-spin text-neutral-500" />
@@ -486,8 +484,8 @@ export function ShareRoadmapDialog({
             >
               {isRevoking ? (
                 <>
-                  <Loader2 className="mr-2 size-6 animate-spin" />
                   Revoking...
+                  <Loader2 className="size-6 animate-spin" />
                 </>
               ) : (
                 'Revoke Access'

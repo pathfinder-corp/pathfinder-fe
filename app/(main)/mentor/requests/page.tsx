@@ -601,7 +601,6 @@ export default function MentorshipRequestsPage() {
         <AlertDialogContent className="max-w-md">
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2.5 text-2xl">
-              <Trash2 className="size-7" />
               Cancel Request
             </AlertDialogTitle>
             <AlertDialogDescription className="text-base">

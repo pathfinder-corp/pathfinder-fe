@@ -170,6 +170,7 @@ export default function MentorDetailPage() {
       try {
         setIsLoading(true);
         const data = await mentorService.getMentorWithDocuments(mentorId);
+        console.log(data);
         setMentor(data);
       } catch (error) {
         console.error('Failed to fetch mentor profile:', error);
@@ -507,12 +508,14 @@ export default function MentorDetailPage() {
                 <div className="mb-5 flex items-center gap-2.5 text-lg text-neutral-400">
                   <Globe className="size-5" />
                   <span>Languages:</span>
-                  <span className="text-white">{mentor.languages[0]}</span>
-                  {mentor.languages.length > 1 && (
-                    <span className="text-neutral-500">
-                      , {mentor.languages.slice(1).join(', ')}
-                    </span>
-                  )}
+                  <span>
+                    <span className="text-white">{mentor.languages[0]}</span>
+                    {mentor.languages.length > 1 && (
+                      <span className="text-neutral-500">
+                        , {mentor.languages.slice(1).join(', ')}
+                      </span>
+                    )}
+                  </span>
                 </div>
               )}
 
@@ -952,10 +955,19 @@ export default function MentorDetailPage() {
                   <Separator className="bg-neutral-800" />
                   <div className="flex items-center justify-between">
                     <span className="text-lg text-neutral-400">
-                      Max Students
+                      Max Students Allowed
                     </span>
                     <span className="text-lg font-medium">
                       {mentor.maxStudents || 'N/A'}
+                    </span>
+                  </div>
+                  <Separator className="bg-neutral-800" />
+                  <div className="flex items-center justify-between">
+                    <span className="text-lg text-neutral-400">
+                      Total Students Connected
+                    </span>
+                    <span className="text-lg font-medium">
+                      {mentor.totalStudents || 'N/A'}
                     </span>
                   </div>
                   <Separator className="bg-neutral-800" />

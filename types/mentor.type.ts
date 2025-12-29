@@ -79,6 +79,7 @@ export interface IMentorProfile extends IMentorCoreData {
   isActive: boolean;
   isAcceptingStudents: boolean;
   maxStudents: number;
+  totalStudents: number;
   documents?: IMentorDocument[];
   createdAt: string;
   updatedAt: string;
